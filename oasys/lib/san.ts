@@ -21,7 +21,9 @@ export function gotoSan(section: SanSection = null, subPage: 'information' | 'an
 
     new oasys.Pages.Assessment.SanSections().goto(supressLog).openSan.click()
 
-    handleLandingPage('san')
+    const landingPage = new oasys.Pages.San.LandingPage()
+    landingPage.confirmCheck.setValue(true)
+    landingPage.confirm.click()
 
     new oasys.Pages.San.SectionLandingPage('Accommodation')  // .checkCurrent(supressLog)  Removed for release 1.11, titles vary depending on current state of the section
     if (section) {
@@ -64,32 +66,6 @@ export function checkSanLoaded(probationCrn: string, pnc: string) {
     cy.get('.hmpps-header__title__service-name').contains('Strengths and needs').should('be.visible')
     cy.get('dd').contains(probationCrn).should('be.visible')
     cy.get('dd').contains(pnc).should('be.visible')
-}
-
-/**
- * Navigates to the Sentence Plan, assuming you are somewhere in the OASys assessment.
- */
-export function gotoSentencePlan() {
-
-    new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
-    handleLandingPage('sp')
-    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
-}
-
-export function handleLandingPage(type: 'san' | 'sp') {
-
-    const landingPage = type == 'san' ? new oasys.Pages.San.LandingPage() : new oasys.Pages.SanSp.LandingPage()
-    landingPage.confirmCheck.setValue(true)
-    landingPage.confirm.click()
-}
-
-/**
- * Navigates to the Sentence Plan in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
- */
-export function gotoSentencePlanReadOnly() {
-
-    new oasys.Pages.SentencePlan.SentencePlanService().goto().openSp.click()
-    cy.get('h1.govuk-heading-l').contains('plan').should('be.visible')
 }
 
 /**

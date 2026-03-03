@@ -27,9 +27,9 @@ describe('NOD1045 probation SAN assessments', () => {
 
             oasys.Populate.Rosh.screeningNoRisks(true)
 
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-            oasys.San.returnToOASys()
+            // oasys.San.gotoSentencePlan()
+            // oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
+            // oasys.San.returnToOASys()
         }
     })
 

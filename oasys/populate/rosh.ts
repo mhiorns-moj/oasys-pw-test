@@ -1,4 +1,5 @@
 import * as oasys from 'oasys'
+import { PopulateAssessmentParams } from 'populate'
 
 /**
  * Populates risk screening sections 1 to 4 with no risks.  The optional parameter indicates that the Rationale (R2.3) is expected and should be populated.

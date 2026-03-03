@@ -1,4 +1,6 @@
 import { defineConfig } from 'cypress'
+import * as playwrightScripts from './cypress/support/playwright/newSp1'
+
 import { populateAutoData } from './cypress/support/data/autoData'
 import * as oasysDb from './cypress/support/data/oasysDb'
 import * as restApi from './cypress/support/restApi'
@@ -229,6 +231,13 @@ module.exports = defineConfig({
           })
         },
 
+        newSp1(params: { username: string }): Promise<void> {
+          return new Promise((resolve) => {
+            playwrightScripts.newSp1(params.username).then((response) => {
+              resolve(response)
+            })
+          })
+        }
       })
 
       on('before:run', (details) => {
@@ -249,9 +258,15 @@ module.exports = defineConfig({
       on('before:browser:launch', (browser, launchOptions) => {
         launchOptions.preferences.default = { plugins: { always_open_pdf_externally: true } }
         launchOptions.args.push("--inprivate")
+        if (browser.isHeadless) {
+          launchOptions.args.push("--no-sandbox")
+          launchOptions.args.push("--disable-gl-drawing-for-tests")
+          launchOptions.args.push("--disable-gpu")
+        }
         return launchOptions
       })
     },
+
   },
 })
 

@@ -1,4 +1,5 @@
 import * as oasys from 'oasys'
+import { PopulateAssessmentParams } from 'populate'
 
 export function minimal(earlyAllocation: boolean = false) {
 
