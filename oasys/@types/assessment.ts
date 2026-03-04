@@ -110,3 +110,15 @@ declare type AssessmentSigning = 'ASS_DEL_RESTORE' |
     'TRF_GRANT_SIGNING' |
     'TRF_REQ_COUNTERSIGNING' |
     'TRF_REQ_REJECTION'
+
+declare type PopulateAssessmentParams = {
+
+    layer?: Layer
+    maxStrings?: boolean,
+    provider?: Provider,
+    sentencePlan?: SentencePlan,
+    r1_30PrePopulated?: boolean,
+    r1_41PrePopulated?: boolean,
+    populate6_11?: 'Yes' | 'No',
+    newSp?: boolean,
+}

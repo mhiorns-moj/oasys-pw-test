@@ -1,5 +1,4 @@
 import * as populate from './'
-import { PopulateAssessmentParams } from 'populate'
 
 export function minimal(params: PopulateAssessmentParams) {
 
@@ -28,7 +27,7 @@ export function minimal(params: PopulateAssessmentParams) {
     populate.Rosh.screeningNoRisks()
 
     if (params.newSp) {
-        populate.San.NewSpService.minimal(params.user)
+        populate.San.NewSpService.minimal()
     } else if (params.layer == 'Layer 3') {
         if (params.sentencePlan == 'Review') {
             populate.SentencePlanPages.RspSection72to10.minimal()

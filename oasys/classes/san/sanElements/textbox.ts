@@ -19,11 +19,7 @@ export class Textbox<T> {
         } else if (typeof value != 'string') {
             textValue = OasysDateTime.oasysDateAsString(value as OasysDate)
         }
-        cy.get(this.selector).clear()
-        if (textValue != '') {
-            cy.get(this.selector).invoke('val', textValue)
-        }
-        cy.get(this.selector).should('have.value', textValue)
+        cy.get(this.selector).invoke('val', textValue)
     }
 
     checkValue(value: T, partial: boolean = false) {

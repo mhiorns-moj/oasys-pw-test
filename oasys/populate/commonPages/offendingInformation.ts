@@ -1,5 +1,4 @@
 import * as oasys from 'oasys'
-import { PopulateAssessmentParams } from 'populate'
 
 /** 
  * Minimal population to complete the page, assuming offence and sentence details have already been set via the stub.

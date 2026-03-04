@@ -8,6 +8,11 @@ import * as oasys from 'oasys'
 import { User } from 'classes/user'
 import { testEnvironment } from '../../localSettings'
 
+// Save current user for use in Playwright scripts
+export let currentUserName: string = null
+export let currentPassword: string = null
+export let currentProvider: string = null
+
 /**
  * Log in to OASys, assuming you are already on the login screen.  Can be called with either:
  *  - a predefined User object, and optional provider name
@@ -35,9 +40,14 @@ export function login(p1: User | string, p2?: string, p3?: string) {
     page.username.setValue(username)
     page.password.setValue(password)
     page.login.click()
+    currentUserName = username
+    currentPassword = password
 
-    if (provider !== undefined) {
+    if (provider) {
         selectProvider(provider)
+        currentProvider = provider
+    } else {
+        currentProvider = null
     }
 
     cy.title().should('include', 'Task Manager')
@@ -54,6 +64,7 @@ export function selectProvider(provider: string) {
     const page = new oasys.Pages.Login.SelectProvider()
     page.chooseProviderEstablishment.setValue(provider)
     page.setProviderEstablishment.click()
+    currentProvider = provider
 }
 
 /**
@@ -64,4 +75,7 @@ export function logout() {
     cy.get('input[type="button"][value="Logout"]').click()
     cy.title().should('include', 'Login')
     cy.log('Logged out')
+    currentUserName = null
+    currentPassword = null
+    currentProvider = null
 }

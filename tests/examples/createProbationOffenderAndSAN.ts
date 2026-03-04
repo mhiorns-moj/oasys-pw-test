@@ -33,9 +33,9 @@ describe('Example test - create a probation offender and a SAN 3.2 assessment', 
         oasys.Populate.Rosh.screeningNoRisks(true)
 
         // Complete SP, then sign and lock
-        oasys.Populate.San.NewSpService.minimal(oasys.Users.probSanHeadPdu)
+        oasys.Populate.San.NewSpService.minimal()
 
-        oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
+        oasys.Assessment.signAndLock()
         oasys.logout()
     })
 })
