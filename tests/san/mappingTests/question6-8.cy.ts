@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import { mappingTestOffenderFile } from './xMappingTest'
 
 const accommodation1 = new oasys.Pages.San.Accommodation.Accommodation1()

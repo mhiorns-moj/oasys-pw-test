@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 const offender1: OffenderDef = {
 

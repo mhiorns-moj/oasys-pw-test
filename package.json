@@ -6,15 +6,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.3.3",
     "@types/oracledb": "^6.10.0",
     "@types/pdf-parse": "^1.1.4",
-    "cypress": "^15.6.0",
     "decimal.js": "^10.6.0",
     "fs-extra": "^11.3.2",
-    "mochawesome": "^7.1.4",
-    "mochawesome-merge": "^5.0.0",
-    "mochawesome-report-generator": "^6.3.2",
     "oracledb": "^6.10.0",
     "pdf-parse": "^2.4.5",
     "ts-loader": "^9.5.4",
@@ -25,5 +23,6 @@
     "@js-temporal/polyfill": "^0.5.1",
     "axios": "^1.13.2",
     "flat": "^6.0.1"
-  }
+  },
+  "scripts": {}
 }

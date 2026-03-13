@@ -1,0 +1,136 @@
+import { Page, TestInfo } from '@playwright/test'
+import { Temporal } from '@js-temporal/polyfill'
+
+import * as lib from 'lib'
+import * as pages from './pages'
+import { testEnvironment } from 'localSettings'
+import { User } from 'classes'
+
+
+export class Oasys {
+
+    constructor(public readonly page: Page, public readonly testInfo: TestInfo) { }
+
+    appConfig: AppConfig
+    loginPage = new pages.Login(this.page)
+
+    async login(user: User, provider?: string): Promise<void>
+    async login(username: string, password: string, provider?: string): Promise<void>
+    async login(p1: User | string, p2?: string, p3?: string) {
+
+        var username: string
+        var password: string
+        var provider: string
+
+        if (p1 instanceof User) {
+            username = p1.username
+            password = testEnvironment.standardUserPassword
+            provider = p2
+        }
+        else if (typeof p1 == 'string') {
+            username = p1
+            password = p2
+            provider = p3
+        }
+
+        await this.loginPage.username.setValue(username)
+        await this.loginPage.password.setValue(password)
+        await this.loginPage.login.click()
+
+        // if (provider) {
+        //     selectProvider(provider)
+        // }
+
+        const loginDetails = await this.page.locator('#bannerbarrightrnd').textContent()
+        lib.log(`${loginDetails.replace(/[\n\r\t]/gm, '')}  (${username})`, 'User')
+    }
+
+    // /**
+    //  * Selects a provider or establishment, assuming you are already on the Provider/Establishment page
+    //  */
+    // export function selectProvider(provider: string) {
+
+    //     const page = new oasys.Pages.Login.SelectProvider()
+    //     page.chooseProviderEstablishment.setValue(provider)
+    //     page.setProviderEstablishment.click()
+    // }
+
+    /**
+     * Click the logout button on any page
+     */
+    async logout() {
+
+        await this.clickButton('Logout', true)
+        await new pages.Login(this.page).checkCurrent(true)
+        lib.log('Logged out', 'User')
+    }
+
+    async clickButton(label: string, suppressLog: Boolean = false) {
+
+        await this.page.getByRole('button', { name: label }).first().click()
+        if (!suppressLog) lib.log(`Click button: ${label}`)
+    }
+
+    /**
+     * Selects an item on the history menu.
+     * 
+     * If no parameters are provided, selects the first item on the menu, otherwise:
+     * 
+     * - history(surname, forename) - to select an offender by name
+     * - history(surname, forename, assessment) - to select an assessment
+     * 
+     * or replace surname, forename with an Offender object, e.g.
+     * 
+     * - history(offender1)
+     * - history(offender1, 'Start of Community Order')
+     * 
+     * (NOTE this will not work if the offender object contains auto-generated values that haven't been popuplated)
+     */
+    async history(): Promise<void>
+    async history(surname: string, forename: string, assessment?: PurposeOfAssessment): Promise<void>
+    async history(offender: OffenderDef, assessment?: PurposeOfAssessment): Promise<void>
+    async history(p1?: OffenderDef | string, p2?: string, p3?: string): Promise<void> {
+
+        await this.page.locator('#oasysmainmenu').getByText('History').click()
+
+        if (p1 === undefined) {
+            await this.page.locator('#history_1').click()
+            lib.log('First item', 'History menu')
+            return null
+        }
+
+        let surname: string
+        let forename: string
+        let assessment: string
+
+        if ((p1 as OffenderDef).surname === undefined) { // Not an Offender object, so treat parameters as strings
+            surname = p1 as string
+            forename = p2
+            assessment = p3
+
+        } else {
+            const offender = (p1 as OffenderDef)
+            surname = offender.surname
+            forename = offender.forename1
+            assessment = p2
+        }
+
+        if (surname === undefined || forename === undefined) {
+            throw new Error(`Missing surname or forename in history data: ${surname}, ${forename}`)
+        }
+
+        const menuText = assessment == undefined ? `Offender - ${forename} ${surname}` : `${assessment} - ${forename} ${surname}`
+        await this.page.getByText(menuText).click()
+        lib.log(menuText, 'History menu')
+
+        return null
+    }
+
+
+    async screenshot() {
+
+        const path = `playwright-report/${Temporal.Now.plainTimeISO().toString().replaceAll('/', '-').replaceAll(':', '.')}.png`
+        const screenshot = await this.page.screenshot({ path: path, fullPage: true })
+        await this.testInfo.attach(path, { body: screenshot, contentType: 'image/png' })
+    }
+}

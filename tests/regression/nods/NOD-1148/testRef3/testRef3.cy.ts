@@ -1,5 +1,5 @@
 import { Ogrs4CalcResult } from 'lib/ogrs'
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('OGRS regression test ref 3', () => {
 
@@ -11,25 +11,21 @@ describe('OGRS regression test ref 3', () => {
         cy.task('retrieveValue', 'offender').then((offenderData) => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
-            // const offender: OffenderDef = {
-            //     forename1: 'Autotest',
-            //     gender: 'Male',
-            //     dateOfBirth: { years: -25 },
-            //     probationCrn: 'ZXCUTIV',
-            //     pnc: '41/7061614Q',
-            // }
 
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
-            oasys.Populate.fullyPopulated({ layer: 'Layer 1V2' })
-            // oasys.Nav.history()            
 
             const predictors = new oasys.Pages.Assessment.RoshaPredictors().goto()
-            // predictors.o1_39.setValue('Yes')
-            // predictors.save.click()
+            predictors.save.click() // generate a calculation
+            oasys.Ogrs.checkOgrs4CalcsOffender(offender, 'ogrs')
+            
+            oasys.Populate.RoshaPages.RoshaPredictors.fullyPopulated()
+            oasys.Populate.Rosh.screeningFullyPopulated({layer: 'Layer 1V2'})
+            oasys.Populate.Rosh.fullAnalysisFullyPopulated({layer: 'Layer 1V2'})
 
+            predictors.goto()
 
-            const ogrsCalc = oasys.Ogrs.checkOgrs4CalcsOffender(offender, 'ogrs')
+            oasys.Ogrs.checkOgrs4CalcsOffender(offender, 'ogrs')
             cy.get<Ogrs4CalcResult>('@ogrs').then((ogrs) => {
                 predictors.arpText.checkValue(ogrs.arpText)
                 predictors.vrpText.checkValue(ogrs.vrpText)
@@ -40,7 +36,16 @@ describe('OGRS regression test ref 3', () => {
                 predictors.csrpType.checkValue(ogrs.csrpType)
                 predictors.csrpScore.checkValue(ogrs.csrpScore)
 
+                const roshSummary = new oasys.Pages.Rosh.RoshSummary().goto()
+                roshSummary.dcSrpBand.checkValue(ogrs.dcSrpBand)
+                roshSummary.iicSrpBand.checkValue(ogrs.iicSrpBand)
+                roshSummary.csrpBand.checkValue(ogrs.csrpBand)
+                roshSummary.csrpType.checkValue(ogrs.csrpType)
+                roshSummary.csrpScore.checkValue(ogrs.csrpScore)
+
+
                 oasys.Assessment.signAndLock({ page: oasys.Pages.Rosh.RiskManagementPlan, expectRsrScore: true })
+                oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
                 oasys.logout()
             })

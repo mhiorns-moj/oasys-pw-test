@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('Cloning test - current period of supervision', () => {
 

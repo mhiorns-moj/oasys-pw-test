@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import * as testData from '../../data/testRef23'
 
 describe('SAN integration - test ref 23', () => {
@@ -118,9 +118,7 @@ describe('SAN integration - test ref 23', () => {
                     Ensure we get back a 200 response from the Sign API and that OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SSP_PLAN_VERSION NO have been populated
                     Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                oasys.San.gotoSentencePlan()
-                oasys.San.populateSanSections('Test ref 23 SP', oasys.Populate.San.SentencePlan.minimal)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('populateMinimal')
 
                 const isp = new oasys.Pages.SentencePlan.IspSection52to8().goto()
                 isp.publicProtectionConference.setValue('Yes')

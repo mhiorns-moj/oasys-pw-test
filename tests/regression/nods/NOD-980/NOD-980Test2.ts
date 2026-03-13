@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('NOD-980: Test for RA cloning 2', () => {
 

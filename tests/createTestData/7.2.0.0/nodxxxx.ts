@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 // Define an offender like this: (CTRL-click on 'OffenderDef' below to see the fields available).
 // nomisId, probationCrn, pnc and surname can all be included, but unique values will be generated if they are missing or null.

@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('Example test - create a prison offender and a RoSHa assessment', () => {
 

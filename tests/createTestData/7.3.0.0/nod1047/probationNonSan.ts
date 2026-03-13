@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import * as offenders from './offenderList'
 
 describe('Create probation assessments (non-SAN)', () => {

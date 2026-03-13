@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('SAN integration - test ref 15 part 1', () => {
 
@@ -31,7 +31,7 @@ describe('SAN integration - test ref 15 part 1', () => {
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.prisSanCAdm, oasys.Users.prisonSanCode, 'INITIAL', 0, 0)
+                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.prisSanCAdm, oasys.Users.prisonSanCode, 'INITIAL')
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
 
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {

@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import * as testData from '../../data/testRef21'
 
 describe('SAN integration - test ref 21 part 5', () => {
@@ -19,7 +19,7 @@ describe('SAN integration - test ref 21 part 5', () => {
             oasys.San.populateSanSections('Test ref 21', testData.assessment7)
             oasys.San.returnToOASys()
             new oasys.Pages.Rosh.RoshScreeningSection2to4().goto().rationale.setValue('Because')
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
 
             oasys.logout()

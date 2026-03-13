@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import * as testData from '../../data/testRef20'
 
 describe('SAN integration - test ref 20', () => {
@@ -30,7 +30,7 @@ describe('SAN integration - test ref 20', () => {
                 oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
 
                 // Check Create call
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanPo, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
+                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanPo, oasys.Users.probationSanCode, 'INITIAL')
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
 
                 // Complete section 1
@@ -157,19 +157,13 @@ describe('SAN integration - test ref 20', () => {
                 oasys.Populate.RoshPages.RoshScreeningSection2to4.noRisks(true)
                 oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('High')
                 oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields()
+                oasys.Nav.clickButton('Save')
 
                 cy.log(`Navigate out to the 'Sentence Plan Service' - complete entry with 2 goals/steps and ensure you 'Agree the Plan'	
                     Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen	
                     Navigate to Section 5.2 to 8 - complete entry of the three fields on the screen for Public Protection conference`)
 
-                oasys.San.gotoSentencePlan()
-                oasys.San.populateSanSections('SAN sentence plan', testData.sentencePlan)
-                oasys.San.returnToOASys()
-
-                const isp = new oasys.Pages.SentencePlan.IspSection52to8().goto()
-                isp.publicProtectionConference.setValue('Yes')
-                isp.conferenceDate.setValue({ months: -1 })
-                isp.conferenceChair.setValue('Chair of the conference')
+                oasys.ArnsSp.runScript('populateTwoGoals')
 
                 cy.log(`Click on S&L - get the complete sections alert	
                     Continue to S&L - asks for a Countersigner, accept the default and enter a comment`)
@@ -180,12 +174,10 @@ describe('SAN integration - test ref 20', () => {
                         including the 'signType' being set to 'COUNTERSIGN' along with users ID and name	
                     In the database ensure the field OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SSP_PLAN_VERSION_NO have been populated`)
 
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGN', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGN')
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
-                    SAN_ASSESSMENT_VERSION_NO: '0',
-                    SSP_PLAN_VERSION_NO: '0'
                 })
 
                 cy.log(`Log out and log back in as the Countersigner	
@@ -202,7 +194,7 @@ describe('SAN integration - test ref 20', () => {
                 oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
                 oasys.Assessment.openLatest()
-                isp.goto().countersignOverview.click()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto().countersignOverview.click()
                 const countersigningOverview = new oasys.Pages.Signing.CountersigningOverview()
                 countersigningOverview.header.checkStatus('visible')
                 countersigningOverview.details.checkValue('Sending test ref 20 for countersigning', true)
@@ -239,9 +231,9 @@ describe('SAN integration - test ref 20', () => {
                 oasys.logout()
                 oasys.login(oasys.Users.probSanPo)
                 oasys.Nav.history()
-                isp.goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Second attempt' })
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGN', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGN')
 
                 cy.log(`Log out and log back in as the Countersigner	
                     Open the assessment and go to the Countersigner Overview screen	
@@ -258,7 +250,7 @@ describe('SAN integration - test ref 20', () => {
                 oasys.logout()
                 oasys.login(oasys.Users.probSanHeadPdu)
                 oasys.Nav.history()
-                isp.goto().countersignOverview.click()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto().countersignOverview.click()
                 countersigningOverview.details.checkValue(`Rejecting test 20 for rework`, true)
                 countersigningOverview.details.checkValue('Second attempt', true)
                 countersigningOverview.details.checkValue(`This is the first assessment in the Offender's period of supervision.`, true)
@@ -280,8 +272,6 @@ describe('SAN integration - test ref 20', () => {
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
-                    SAN_ASSESSMENT_VERSION_NO: '0',
-                    SSP_PLAN_VERSION_NO: '1',
                 })
 
                 oasys.logout()

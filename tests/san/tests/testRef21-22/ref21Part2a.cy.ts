@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('SAN integration - test ref 21 part 2a', () => {
 
@@ -27,7 +27,7 @@ describe('SAN integration - test ref 21 part 2a', () => {
             oasys.Assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
             oasys.Populate.sections2To13NoIssues()
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
             oasys.logout()
 

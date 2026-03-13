@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('Create a probation offender and a layer 3 assessment plus SARA', () => {
 

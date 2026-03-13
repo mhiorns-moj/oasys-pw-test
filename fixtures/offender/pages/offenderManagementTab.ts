@@ -1,0 +1,43 @@
+﻿import { OasysPage, Element } from 'classes'
+
+export class OffenderManagementTab extends OasysPage {
+
+    name = 'OffenderManagementTab'
+
+    reviewDueDate = new Element.Textbox<OasysDate>(this.page, '#P10_REVIEW_DATE', true)
+    reviewReminderDate = new Element.Textbox<OasysDate>(this.page, '#P10_REVIEW_REMINDER_DATE', true)
+    remandIndicator = new Element.Checkbox(this.page, '#P10_REMAND_IND_0')
+    controllingOwnerPrison = new Element.Textbox(this.page, '#P10_CONT_OWNER_PRIS')
+    prisonEstablishment = new Element.Textbox(this.page, '#P10_PRISON_EST')
+    prisonLau = new Element.Lov(this.page, '#P10_PRIS_LDU_LABEL')
+    offenderSupervisorTeam = new Element.Lov(this.page, '#P10_OFF_SUP_TEAM_LABEL')
+    offenderSupervisor = new Element.Lov(this.page, '#P10_OFF_SUP_LABEL')
+    offenderSupervisorPosition = new Element.Textbox(this.page, '#P10_OFF_SUP_POS')
+    prisonTelephone = new Element.Textbox(this.page, '#P10_PRISON_TEL_NO')
+    prisonEmail = new Element.Textbox(this.page, '#P10_PRISON_EMAIL')
+    prisonAdditionalTeams = new Element.Textbox(this.page, '#P10_PRISON_ADD_TEAMS')
+    hostCrc = new Element.Textbox(this.page, '#P10_HOST_CRC')
+    resettlementOfficer = new Element.Textbox(this.page, '#P10_RESETTLEMENT_OFFICER')
+    awaitingPrisonOwner = new Element.Textbox(this.page, '#P10_AWAITING_PRISON_OWNER')
+    omFlag = new Element.Checkbox(this.page, '#P10_OFFENDER_MANAGED_IND_0')
+    controllingOwnerProbation = new Element.Textbox(this.page, '#P10_CONT_OWNER_PROB')
+    probationProvider = new Element.Textbox(this.page, '#P10_PROB_AREA')
+    probationLau = new Element.Lov(this.page, '#P10_PROB_LDU_LABEL')
+    offenderManagerTeam = new Element.Lov(this.page, '#P10_OFF_MAN_TEAM_LABEL')
+    offenderManager = new Element.Lov(this.page, '#P10_OFF_MANAGER_LABEL')
+    offenderManagerPosition = new Element.Textbox(this.page, '#P10_OFF_MAN_POS')
+    probationTelephone = new Element.Textbox(this.page, '#P10_PROB_TEL_NO')
+    probationEmail = new Element.Textbox(this.page, '#P10_PROB_EMAIL')
+    additionalTeams = new Element.Textbox(this.page, '#P10_PROB_ADD_TEAMS')
+    addEditViewTeams = new Element.Button(this.page, '#P10_ADD_PROBATION_TEAM')
+    awaitingProbationOwner = new Element.Textbox(this.page, '#P10_AWAITING_PROB_OWNER')
+    awaitingProbationTeam = new Element.Textbox(this.page, '#P10_AWAITING_PROB_TEAM')
+    awaitingProbationOffenderManager = new Element.Textbox(this.page, '#P10_AWAITING_PROB_MAN')
+    additionalProvider = new Element.Textbox(this.page, '#P10_PSR_AREA')
+    additionalProviderTelephone = new Element.Textbox(this.page, '#P10_PSR_TEL')
+    additionalProviderTeam = new Element.Select(this.page, '#P10_PSR_TEAM')
+    additionalProviderEmail = new Element.Textbox(this.page, '#P10_PSR_EMAIL')
+    addtionalProviderAssessor = new Element.Lov(this.page, '#P10_PSR_ASSESSOR_LABEL')
+    retainOffenderRecords = new Element.Checkbox(this.page, '#P10_RETAINED_IND_0')
+    reasonForRetentionOfOffenderData = new Element.Textbox(this.page, '#P10_RETAINED_REASON')
+}

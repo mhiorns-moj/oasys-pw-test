@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('Pre-prod tests for PNI SARA parameters', () => {
 

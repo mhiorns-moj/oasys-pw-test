@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 import { baseOffenderProb, baseOffenderPris, probNonSanOffenders, probSanOffenders, prisonOffenders, sets, getSurname } from './parameters'
 

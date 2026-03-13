@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import * as offenders from './offenderList'
 
 describe('Create prison SAN assessments', () => {
@@ -27,9 +27,9 @@ function createPrisSanAssessments(offenders: { surname: string, forename: string
     oasys.Populate.Rosh.screeningNoRisks(true)
 
     // Complete SP, then sign and lock
-    oasys.San.gotoSentencePlan()
-    oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-    oasys.San.returnToOASys()
+    // oasys.San.gotoSentencePlan()
+    // oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
+    // oasys.San.returnToOASys()
 
     oasys.logout()
 }

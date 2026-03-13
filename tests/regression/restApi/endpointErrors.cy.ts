@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import { restErrorResults } from '../../../cypress/support/restApi/restApiUrls'
 
 /**

@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import { User } from 'classes/user'
 import { testEnvironment } from '../../localSettings'
 

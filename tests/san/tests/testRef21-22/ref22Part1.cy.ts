@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('SAN integration - test ref 22 part 1', () => {
 
@@ -37,7 +37,7 @@ describe('SAN integration - test ref 22 part 1', () => {
                 oasys.Nav.clickButton('Close')
                 oasys.logout()
 
-                oasys.San.checkSanMergeCall(oasys.Users.admin, 3)
+                oasys.San.checkSanMergeCall(oasys.Users.admin, 5)
             })
         })
     })

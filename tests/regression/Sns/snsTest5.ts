@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('Create assessments and check SNS messages - SAN assessment', () => {
 
@@ -24,12 +24,10 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
             oasys.Populate.Rosh.specificRiskLevel('High')
 
             // Complete SP
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-            oasys.San.returnToOASys()
+            oasys.Populate.San.NewSpService.minimal()
 
             // Sign assessment and send for countersigning, then check SNS messages
-            oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.IspSection52to8, expectCountersigner: true, expectRsrWarning: true, countersigner: oasys.Users.probSanHeadPdu })
+            oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService, expectCountersigner: true, expectRsrWarning: true, countersigner: oasys.Users.probSanHeadPdu })
             oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS'])
             oasys.logout()
 
@@ -38,7 +36,7 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
 
             oasys.Offender.searchAndSelect('@offender1')
             oasys.Assessment.openLatest()
-            oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.IspSection52to8, comment: 'Test comment' })
+            oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test comment' })
 
             oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
             oasys.logout()

@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('SAN integration - test ref 45', () => {
 
@@ -24,7 +24,7 @@ describe('SAN integration - test ref 45', () => {
                 // Complete the WIP 3.2 from test 35
                 oasys.Assessment.openLatest()
                 oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Low')
-                new oasys.Pages.SentencePlan.RspSection72to10().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.Assessment.signAndLock()
 
                 cy.log(`As the assessor create a new assessment BUT make it a classic 3.1 assessment, say 'No' to the SAN question
@@ -65,8 +65,7 @@ describe('SAN integration - test ref 45', () => {
                     Navigates out to the Sentence Plan which should be shown in READ ONLY mode - check the OTL access mode parameter for SP
                     Return back to OASys`)
 
-                oasys.Nav.clickButton('Open SP')
-                oasys.San.checkSentencePlanEditMode(false)
+                oasys.ArnsSp.runScript('checkReadOnly', { openFromOffender: true })
 
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
@@ -84,8 +83,6 @@ describe('SAN integration - test ref 45', () => {
                 },
                     'sp', null
                 )
-
-                oasys.San.returnToOASys()
 
                 oasys.logout()
             })

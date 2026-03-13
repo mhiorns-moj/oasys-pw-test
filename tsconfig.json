@@ -6,19 +6,16 @@
             "dom"
         ],
         "types": [
-            "cypress",
-            "node",
-            "./cypress/support/index.d.ts"
+            "node"
         ],
         "rootDir": ".",
-        "baseUrl": "oasys",
+        "baseUrl": ".",
         "moduleResolution": "node",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true
     },
     "include": [
-        "**/*.ts",
-        "cypress/support/commands.js"
+        "**/*.ts"
     ],
     "exclude": [],
 }

@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('Create assessments and check SNS messages - layer 3', () => {
 

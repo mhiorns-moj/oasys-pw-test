@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import * as testData from '../../data/testRef35'
 
 describe('SAN integration - test ref 35', () => {
@@ -25,9 +25,7 @@ describe('SAN integration - test ref 35', () => {
                 oasys.San.populateSanSections('Test ref 35', testData.sanPopulation1)
                 oasys.San.returnToOASys()
 
-                oasys.San.gotoSentencePlan()
-                oasys.San.populateSanSections('Test ref 35 SP', oasys.Populate.San.SentencePlan.minimal)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('populateMinimal')
 
                 new oasys.Pages.Assessment.SummarySheet().goto().maturityScreening.checkValue('This individual is likely to need support or services aimed at promoting maturation.', true)
 
@@ -51,7 +49,7 @@ describe('SAN integration - test ref 35', () => {
                 oasys.Populate.Rosh.screeningNoRisks(true)
                 oasys.Nav.clickButton('Save')
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.Assessment.signAndLock()
 
                 oasys.Db.checkAnswers(pk1, testData.preRsrDataCheck, 'failed', true)

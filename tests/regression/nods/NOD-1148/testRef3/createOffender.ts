@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 
 describe('NOD-1148 OGRS4 regression test ref 3', () => {

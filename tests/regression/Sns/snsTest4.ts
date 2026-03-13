@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 
 describe('Create assessments and check SNS messages - SAN assessment', () => {
 
@@ -29,12 +29,10 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
             oasys.Populate.Rosh.screeningNoRisks(true)
 
             // Complete SP
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-            oasys.San.returnToOASys()
+            oasys.ArnsSp.runScript('populateMinimal')
 
             // Sign assessment, then check SNS messages
-            oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.IspSection52to8 })
+            oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
             oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
             // Create another assessment (cloning from the one above), this one with OPD override
@@ -46,8 +44,10 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
             summarySheet.opdOverrideReason.setValue('Testing')
 
             // Sign assessment, then check SNS messages again
-            oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.IspSection52to8 })
+            oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
             oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR', 'OPD'])
+
+            oasys.logout()
         })
     })
 })

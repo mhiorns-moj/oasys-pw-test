@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import { sets, getSurname } from '../parameters'
 
 describe('NOD1045 probation non-SAN completed assessments', () => {

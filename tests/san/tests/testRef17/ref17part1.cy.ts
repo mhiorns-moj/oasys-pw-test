@@ -1,4 +1,4 @@
-import * as oasys from 'oasys'
+import * as oasys from 'lib'
 import * as testData from '../../data/testRef17'
 
 describe('SAN integration - test ref 17 part 1', () => {
@@ -28,7 +28,7 @@ describe('SAN integration - test ref 17 part 1', () => {
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanPso, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
+                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanPso, oasys.Users.probationSanCode, 'INITIAL')
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
@@ -163,7 +163,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                         Complete entry of the sentence plan with 2 goals/steps and ensure you 'Agree the Plan'
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen`)
 
-                oasys.San.gotoSentencePlan()
+                oasys.ArnsSp.runScript('populateTwoGoals')
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
@@ -244,8 +244,6 @@ describe('SAN integration - test ref 17 part 1', () => {
                         }
 
                     })
-                oasys.San.populateSanSections('SAN sentence plan', testData.sentencePlan)
-                oasys.San.returnToOASys()
 
                 cy.log(`Navigate to Section 5.2 to 8 - green tick on the Sentence Plan Service menu option. Complete entry of the three fields on the screen for
                             Public Protection conference
@@ -254,15 +252,11 @@ describe('SAN integration - test ref 17 part 1', () => {
                         Check that a 'Sign API' has been posted to the SAN Service and the contents are correct (signType passed is 'COUNTERSIGN' along
                             with the User ID and name)`)
 
-                const isp = new oasys.Pages.SentencePlan.IspSection52to8().goto()
-                isp.publicProtectionConference.setValue('Yes')
-                isp.conferenceDate.setValue({ months: -1 })
-                isp.conferenceChair.setValue('Chair of the conference')
-
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersignComment: 'Signing test 17' })
 
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPso, 'COUNTERSIGN', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPso, 'COUNTERSIGN')
 
                 oasys.logout()
             })
