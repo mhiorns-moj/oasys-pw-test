@@ -25,9 +25,7 @@ describe('SAN integration - test ref 14', () => {
                 oasys.San.populateSanSections('Test ref 14', oasys.Populate.San.ExampleTest.sanPopulation1)
                 oasys.San.returnToOASys()
 
-                oasys.San.gotoSentencePlan()
-                oasys.San.populateSanSections('Test ref 14 SP', oasys.Populate.San.SentencePlan.minimal)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('populateMinimal')
 
                 cy.log(`Complete the OASys part of the assessment invoking a full analysis by saying 'Yes' to something in the RoSH Screening.
                     Fully sign and lock and countersign (if applicable) the 3.2 assessment.`)
@@ -50,7 +48,7 @@ describe('SAN integration - test ref 14', () => {
                 oasys.Populate.RoshPages.RoshSummary.fullyPopulated()
                 oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields()
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.Assessment.signAndLock()
 
                 cy.log(`Open up the completed 3.2 and from the Admin Menu select 'Mark all assessments as historic'`)
@@ -88,7 +86,8 @@ describe('SAN integration - test ref 14', () => {
                 oasys.San.checkSanEditMode(false)
                 oasys.San.returnToOASys()
 
-                oasys.San.gotoSentencePlanReadOnly()
+
+                oasys.ArnsSp.runScript('openAndReturn', { readonly: true })
                 oasys.San.checkSanOtlCall(pk1,
                     {
                         'crn': offender.probationCrn,
@@ -108,8 +107,7 @@ describe('SAN integration - test ref 14', () => {
                     'sp', 0
                 )
 
-                oasys.San.checkSentencePlanEditMode(false)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('checkReadOnly')
                 oasys.Nav.clickButton('Close')
 
                 cy.log(`Now create a new 3.2 OASys-SAN Assessment (not PSR), the new SAN question defaults to 'Yes' and during the Create process 
@@ -125,15 +123,12 @@ describe('SAN integration - test ref 14', () => {
 
                 cy.get<number>('@pk2').then((pk2) => {
 
-                    oasys.San.checkSanCreateAssessmentCall(pk2, null, oasys.Users.probSanHeadPdu, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
+                    oasys.San.checkSanCreateAssessmentCall(pk2, null, oasys.Users.probSanHeadPdu, oasys.Users.probationSanCode, 'INITIAL')
                     // Check values in OASYS_SET
-                    oasys.San.getSanApiTimeAndCheckDbValues(pk2, 'Y', null, null)
+                    oasys.San.getSanApiTimeAndCheckDbValues(pk2, 'Y', null)
 
                     new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
-
-                    oasys.San.gotoSentencePlan()
-                    oasys.San.checkSPGoalCount(0, 0)
-                    oasys.San.returnToOASys()
+                    oasys.ArnsSp.runScript('checkZeroGoals')
 
                     oasys.logout()
 

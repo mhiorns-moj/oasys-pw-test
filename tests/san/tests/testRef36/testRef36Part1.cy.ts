@@ -27,10 +27,10 @@ describe('SAN integration - test ref 36', () => {
 
             cy.get<number>('@result').then((pk) => {
                 // Check values in OASYS_SET
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null)
 
                 // Check Create call
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
+                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'INITIAL')
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
 
                 // Complete section 1
@@ -76,15 +76,12 @@ describe('SAN integration - test ref 36', () => {
                 oasys.Populate.Rosh.screeningNoRisks(true)
 
                 // Complete SP
-                oasys.San.gotoSentencePlan()
-                oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('populateMinimal')
 
                 // Sign and lock, check API calls and OASYS_SET
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
 
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanUnappr, 'COUNTERSIGN', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanUnappr, 'COUNTERSIGN')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
@@ -97,7 +94,7 @@ describe('SAN integration - test ref 36', () => {
                 oasys.login(oasys.Users.probSanHeadPdu)
                 oasys.Assessment.countersign({ offender: offender, comment: 'Test comment' })
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
                 oasys.logout()
 

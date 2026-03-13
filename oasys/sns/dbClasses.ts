@@ -42,6 +42,7 @@ export class DbAssessmentOrRsr {
 
     eventNumber: number
     sanIndicator: string
+    spIndicator: string
 
     ogrs4gYr2: number
     ogrs4gBand: string
@@ -91,6 +92,7 @@ export class DbAssessmentOrRsr {
             this.opdOverride = assessmentData[19] ?? ''
             this.purposeOfAssessment = assessmentData[22]
             this.sanIndicator = assessmentData[24]
+            this.spIndicator = assessmentData[39]
 
             this.signedDate = assessmentData[20] == null ? null : assessmentData[20] + tzOffset
             this.countersignedDate = assessmentData[23] == null ? null : assessmentData[23] + tzOffset
@@ -143,7 +145,8 @@ export class DbAssessmentOrRsr {
                     s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, 
                     s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, 
                     s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm,
-                    s.rsr_algorithm_version, s.ogrs3_risk_recon_elm
+                    s.rsr_algorithm_version, s.ogrs3_risk_recon_elm,
+                    s.arns_sp_only_linked_ind
                     from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.ref_element r 
                     where o.cms_prob_number = '${crn}'
                     and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 

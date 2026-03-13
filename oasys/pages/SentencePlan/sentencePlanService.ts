@@ -1,8 +1,8 @@
 ﻿import { Page } from 'classes/page'
 import * as Element from 'classes/elements'
-import { BaseAssessmentPage } from '../baseAssessmentPage'
+import { SentencePlan } from './sentencePlan'
 
-export class SentencePlanService extends BaseAssessmentPage {
+export class SentencePlanService extends SentencePlan {
 
     name = 'SentencePlanService'
     title = 'Sentence Plan Service'

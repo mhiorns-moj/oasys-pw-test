@@ -35,7 +35,7 @@ describe('SAN integration - test ref 17 part 2', () => {
             // countersigningOverview.details.checkValue('Integrated Offender Management (IOM)', true)
 
             countersigningOverview.returnToAssessment.click()
-            new oasys.Pages.SentencePlan.IspSection52to8().checkCurrent()
+            new oasys.Pages.SentencePlan.SentencePlanService().checkCurrent()
 
             oasys.logout()
 

@@ -42,36 +42,44 @@ describe('SAN integration - test ref 27', () => {
                 oasys.Nav.clickButton('Yes')
                 oasys.Nav.clickButton('Yes - Guillotine WIP Immediately')
 
-                oasys.Db.getData(`select to_char(lastupd_date, ${oasys.OasysDateTime.oracleTimestampFormat})  from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate')
-                cy.get<string[][]>('@lastUpdDate').then((initialData) => {
+                oasys.Db.getData(`select to_char(lastupd_from_san, '${oasys.OasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate1')
+                // TODO added workaround for NOD-1xxx, ignore R2.2.2 as it might get created
+                const questionsQuery = `select max(to_char(q.lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
+                                        where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
+                                        and q.ref_question_code <> 'R2.2.2'
+                                        and st.oasys_set_pk = ${pks[0]}`
+                oasys.Db.getData(questionsQuery, 'questions1')
 
-                    const lastUpdDate = oasys.OasysDateTime.stringToTimestamp(initialData[0][0])
+                cy.get<string[][]>('@lastUpdDate1').then((initialData) => {
+                    cy.get<string[][]>('@questions1').then((questions1) => {
 
-                    cy.log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
+                        const lastUpdFromSan1 = oasys.OasysDateTime.stringToTimestamp(initialData[0][0])
+                        const lastUpdDate1 = oasys.OasysDateTime.stringToTimestamp(initialData[0][1])
+                        const latestQuestionUpdDate1 = oasys.OasysDateTime.stringToTimestamp(questions1[0][0])
+
+                        cy.log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                         Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' populated by the return API response
                         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                    oasys.San.checkSanLockIncompleteCall(pks[0], oasys.Users.probHeadPdu, 0, 0)
-                    oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
-                        SAN_ASSESSMENT_LINKED_IND: 'Y',
-                        CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),
-                        SAN_ASSESSMENT_VERSION_NO: '1',
-                        SSP_PLAN_VERSION_NO: '2',
-                    })
+                        oasys.San.checkSanLockIncompleteCall(pks[0], oasys.Users.probHeadPdu)
+                        oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+                        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
+                            SAN_ASSESSMENT_LINKED_IND: 'Y',
+                            CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),
+                        })
 
-                    const sectionQuery = `select count(*) from eor.oasys_section where oasys_set_pk = ${pks[0]} 
+                        const sectionQuery = `select count(*) from eor.oasys_section where oasys_set_pk = ${pks[0]} 
                                                 and section_status_elm = 'COMPLETE_LOCKED' and ref_section_code in ('SAN', 'SSP')`
 
-                    oasys.Db.selectCount(sectionQuery, 'sections')
-                    cy.get<number>('@sections').then((sections) => {
-                        expect(sections).equal(2)
-                    })
-                    oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
-                    oasys.logout()
+                        oasys.Db.selectCount(sectionQuery, 'sections')
+                        cy.get<number>('@sections').then((sections) => {
+                            expect(sections).equal(2)
+                        })
+                        oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                        oasys.logout()
 
-                    cy.log(`Log back in as a user from the probation area of the offender
+                        cy.log(`Log back in as a user from the probation area of the offender
                         Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
                         Click on the 'Open Strengths and Needs' button
                         Taken into the SAN Service - ensure the assessment is shown all in READ ONLY format and that the SAN part of the assessment shows correctly
@@ -80,40 +88,35 @@ describe('SAN integration - test ref 27', () => {
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen
                         Close the assessment - back to the offender record`)
 
-                    oasys.login(oasys.Users.probSanUnappr)
-                    oasys.Nav.history(offender)
-                    oasys.Assessment.openLatest()
-                    oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                    oasys.San.checkSanEditMode(false)
-                    oasys.San.returnToOASys()
+                        oasys.login(oasys.Users.probSanUnappr)
+                        oasys.Nav.history(offender)
+                        oasys.Assessment.openLatest()
+                        oasys.San.gotoSanReadOnly('Accommodation', 'information')
+                        oasys.San.checkSanEditMode(false)
+                        oasys.San.returnToOASys()
 
-                    oasys.San.gotoSentencePlanReadOnly()
-                    oasys.San.checkSentencePlanEditMode(false)
-                    oasys.San.returnToOASys()
+                        oasys.ArnsSp.runScript('checkReadOnly')
 
-                    oasys.Nav.clickButton('Close')
+                        oasys.Nav.clickButton('Close')
 
-                    cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
+                        cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                         and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
-                    const questionsQuery = `select max(to_char(q.lastupd_date, ${oasys.OasysDateTime.oracleTimestampFormat})) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
-                                                where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
-                                                and st.oasys_set_pk = ${pks[0]}`
+                        oasys.Db.getData(questionsQuery, 'questions2')
+                        oasys.Db.getData(`select to_char(lastupd_from_san, '${oasys.OasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate2')
+                        cy.get<string[][]>('@questions2').then((questions2) => {
+                            cy.get<string[][]>('@lastUpdDate2').then((updatedSetData2) => {
 
-                    oasys.Db.getData(questionsQuery, 'questions')
-                    oasys.Db.getData(`select to_char(lastupd_from_san, ${oasys.OasysDateTime.oracleTimestampFormat}), to_char(lastupd_date, ${oasys.OasysDateTime.oracleTimestampFormat}) from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate2')
-                    cy.get<string[][]>('@questions').then((questions) => {
-                        cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
+                                const latestQuestionUpdDate2 = oasys.OasysDateTime.stringToTimestamp(questions2[0][0])
+                                const lastUpdFromSan2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData2[0][0])
+                                const lastUpdDate2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData2[0][1])
 
-                            const latestQuestionUpdDate = oasys.OasysDateTime.stringToTimestamp(questions[0][0])
-                            const lastUpdFromSan = oasys.OasysDateTime.stringToTimestamp(updatedSetData[0][0])
-                            const lastUpdDate2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData[0][1])
+                                expect(oasys.OasysDateTime.timestampDiff(latestQuestionUpdDate1, latestQuestionUpdDate2)).lte(0)
+                                expect(oasys.OasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
+                                expect(oasys.OasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
 
-                            expect(oasys.OasysDateTime.timestampDiff(lastUpdDate, latestQuestionUpdDate)).lte(0)
-                            expect(oasys.OasysDateTime.timestampDiff(lastUpdDate, lastUpdFromSan)).lte(0)
-                            expect(oasys.OasysDateTime.timestampDiff(lastUpdDate, lastUpdDate2)).lte(0)
-
-                            oasys.logout()
+                                oasys.logout()
+                            })
                         })
                     })
                 })

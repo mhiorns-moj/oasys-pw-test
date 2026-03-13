@@ -50,11 +50,9 @@ describe('SAN integration - tests 39-40', () => {
 
             // Sign and lock
             // Complete SP, then sign and lock
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-            oasys.San.returnToOASys()
+            oasys.ArnsSp.runScript('populateMinimal')
 
-            new oasys.Pages.SentencePlan.IspSection52to8().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock()
             oasys.logout()
         })

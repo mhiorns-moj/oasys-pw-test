@@ -45,7 +45,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 new oasys.Pages.Rosh.RoshScreeningSection1().checkIsOnMenu()
                 new oasys.Pages.Rosh.RoshScreeningSection2to4().checkIsOnMenu()
                 new oasys.Pages.Rosh.RoshScreeningSection5().checkIsOnMenu()
-                new oasys.Pages.SentencePlan.IspSection52to8().checkIsOnMenu()
+                new oasys.Pages.SentencePlan.IspSection52to8().checkIsNotOnMenu()
 
                 cy.log(`Check the OASYS_SET record has new field 'SAN_ASSESSMENT_LINKED_IND' is SET to 'Y' and 'CLONED_FROM_PREV_OASYS_SAN_PK' is NULL
                         Check that a CreateAssessment API post was sent off with the correct details in it (the OASYS_SET_PK of the newly created record,
@@ -58,8 +58,8 @@ describe('SAN integration - test ref 08 part 2', () => {
                         Check the OASYS_SET record, it is not clear yet but I am assuming that we will get something back from SAN even if the OASys equivalent section is blank - but OASYS_SET.LASTUPD_FROM_SAN should be set to date/timestamp from the API response
                         None of the navigation menu options have ticks against them`)
 
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null)
+                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'INITIAL')
 
                 oasys.San.checkNoQuestionsCreated(pk)
                 oasys.San.checkNoIspQuestions1Or2(pk)
@@ -76,7 +76,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                         Then a list of the sections follows which are: Accommodation, Employment and education, Finance, Drug use, Alcohol use, Health and wellbeing, Personal relationships and community, Thinking, behaviours and attitudes, Offence analysis
                         There is a new error stating 'In OASys the offender has been marked at 1.30 as having behaviours that are sexually motivated.  There are relevant questions within the Strengths and Needs assessment that must be completed.  Please press 'Return to Assessment' and navigate back to the 'Strengths and Needs Sections' to complete.`)
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto().signAndLock.click()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto().signAndLock.click()
 
                 oasys.Errors.checkSignAndLockErrorsNotVisible('section2To13Errors')
                 oasys.Errors.checkSingleSignAndLockError(`Please provide a clear rationale for not fully completing the Self Assessment Questionnaire`, false)
@@ -121,8 +121,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 sanSections.previous.checkStatus('enabled')
                 sanSections.markAsComplete.checkStatus('notVisible')
                 sanSections.openSanLabel.checkStatus('visible')
-                sanSections.openSan.click()
-                oasys.San.handleLandingPage('san')
+                oasys.San.gotoSan()
 
                 cy.log(`Within the SAME browser tab the OASys screen closes and is replaced by the first screen in the SAN Assessment
                          - get evidence here of the One-Time link API so we can check the parameters going out

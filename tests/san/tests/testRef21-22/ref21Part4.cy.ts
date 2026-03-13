@@ -76,7 +76,7 @@ function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: n
     oasys.San.checkSanEditMode(false)
     oasys.San.returnToOASys()
 
-    oasys.San.gotoSentencePlanReadOnly()
+    oasys.ArnsSp.runScript('checkReadOnly')
     oasys.San.checkSanOtlCall(pk,
         {
             'crn': offender.probationCrn,
@@ -95,6 +95,4 @@ function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: n
         },
         'sp', spVersion
     )
-    oasys.San.checkSentencePlanEditMode(false)
-    oasys.San.returnToOASys()
 }

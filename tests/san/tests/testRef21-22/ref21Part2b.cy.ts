@@ -29,7 +29,7 @@ describe('SAN integration - test ref 21 part 2b', () => {
             oasys.San.populateSanSections('Test ref 21', testData.assessment5)
             oasys.San.returnToOASys()
             new oasys.Pages.Rosh.RoshScreeningSection2to4().goto().rationale.setValue('Because')
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
 
             // Create and complete assessment 6 (layer 3 v2)
@@ -39,7 +39,7 @@ describe('SAN integration - test ref 21 part 2b', () => {
             oasys.San.populateSanSections('Test ref 21', testData.assessment6)
             oasys.San.returnToOASys()
             new oasys.Pages.Rosh.RoshScreeningSection2to4().goto().rationale.setValue('Because')
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
 
             oasys.logout()

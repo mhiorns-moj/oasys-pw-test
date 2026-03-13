@@ -1,3 +1,4 @@
+import * as oasys from 'oasys'
 import * as populate from './'
 
 export function minimal(params: PopulateAssessmentParams) {
@@ -27,7 +28,7 @@ export function minimal(params: PopulateAssessmentParams) {
     populate.Rosh.screeningNoRisks()
 
     if (params.newSp) {
-        populate.San.NewSpService.minimal()
+        oasys.ArnsSp.runScript('populateMinimal')
     } else if (params.layer == 'Layer 3') {
         if (params.sentencePlan == 'Review') {
             populate.SentencePlanPages.RspSection72to10.minimal()

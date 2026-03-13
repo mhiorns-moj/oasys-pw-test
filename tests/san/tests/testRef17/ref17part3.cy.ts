@@ -26,14 +26,14 @@ describe('SAN integration - test ref 17 part 3', () => {
                         'outcome' being 'COUNTERSIGNED' along with the countersigners ID and name
                     Check that on the SNS_MESSAGE table there are records for OGRS, RSR, OPD and AssSumm (with URL asssummsan)`)
 
-            oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.IspSection52to8, comment: 'Countersigning test ref 17' })
+            oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Countersigning test ref 17' })
             // TODO restore OPD check (needs IOM stub) oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OPD'])    // Others checked at signing
             oasys.Sns.testSnsMessageData(offender.probationCrn,'assessment',['AssSumm'])
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGNED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGNED')
 
                 cy.log(`Open up the Offender record
                             Ensure the latest completed assessment shows an 'S&N/SSP' icon next to it

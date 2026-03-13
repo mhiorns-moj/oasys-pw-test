@@ -30,7 +30,7 @@ describe('SAN integration - tests 39-40', () => {
             oasys.San.returnToOASys()
 
             // Sign and lock
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock()
             oasys.logout()
         })

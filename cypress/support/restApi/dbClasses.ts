@@ -379,7 +379,7 @@ export class DbOffence {
             this.offenceSubCode = null
             this.offence = null
             this.subOffence = null
-            this.additionalOffence = 'N'
+            this.additionalOffence = null//'N'
         } else {
             this.offenceCode = offencePivotData[0]
             this.offenceSubCode = offencePivotData[1]

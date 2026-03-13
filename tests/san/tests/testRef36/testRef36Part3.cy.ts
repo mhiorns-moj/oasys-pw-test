@@ -25,9 +25,9 @@ describe('SAN integration - test ref 36', () => {
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result')
             cy.get<number[]>('@result').then((pks) => {
-                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[2], null)
+                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[2])
 
-                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[2], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 2, 3)
+                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[2], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
                 oasys.San.checkSanGetAssessmentCall(pks[0], 2)
 
                 // Check cloning from first assessment to second (non-deleted)
@@ -58,7 +58,7 @@ describe('SAN integration - test ref 36', () => {
 
                 // Lock incomplete, check API call and OASYS_SET
                 oasys.Assessment.lockIncomplete()
-                oasys.San.checkSanLockIncompleteCall(pks[0], oasys.Users.probSanUnappr, 2, 3)
+                oasys.San.checkSanLockIncompleteCall(pks[0], oasys.Users.probSanUnappr)
 
                 oasys.logout()
             })

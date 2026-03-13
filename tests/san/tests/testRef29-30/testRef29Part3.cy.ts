@@ -52,12 +52,11 @@ describe('SAN integration - test ref 29/30', () => {
             oasys.Populate.RoshPages.RoshScreeningSection2to4.noRisks(true)
             oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('High')
             oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields()
+            oasys.Nav.clickButton('Save')
 
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', testData.sentencePlan)
-            oasys.San.returnToOASys()
+            oasys.ArnsSp.runScript('populateTwoGoals')
 
-            new oasys.Pages.SentencePlan.IspSection52to8().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Sending test ref 20 for countersigning' })
 
             // Countersign

@@ -24,11 +24,11 @@ describe('SAN integration - test ref 45', () => {
                 // Complete the WIP 3.2 from test 35
                 oasys.Assessment.openLatest()
                 oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Low')
-                new oasys.Pages.SentencePlan.RspSection72to10().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.Assessment.signAndLock()
 
                 cy.log(`As the assessor create a new assessment BUT make it a classic 3.1 assessment, say 'No' to the SAN question
-                Close the WIP 3.1`)
+                        Close the WIP 3.1`)
 
                 oasys.Nav.history(offender)
                 oasys.Assessment.createProb({ purposeOfAssessment: 'Review', includeSanSections: 'No' })
@@ -62,11 +62,10 @@ describe('SAN integration - test ref 45', () => {
                 oasys.San.returnToOASys()
 
                 cy.log(`From the offender record click on the <Open SP> button
-                    Navigates out to the Sentence Plan which should be shown in READ ONLY mode - check the OTL access mode parameter for SP
+                    Navigates out to the Sentence Plan which should be shown in READ WRITE mode - check the OTL access mode parameter for SP
                     Return back to OASys`)
 
-                oasys.Nav.clickButton('Open SP')
-                oasys.San.checkSentencePlanEditMode(false)
+                oasys.ArnsSp.runScript('openAndReturn', { openFromOffender: true })
 
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
@@ -80,12 +79,10 @@ describe('SAN integration - test ref 45', () => {
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
                     'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
-                    'planAccessMode': 'READ_ONLY',
+                    'planAccessMode': 'READ_WRITE',
                 },
                     'sp', null
                 )
-
-                oasys.San.returnToOASys()
 
                 oasys.logout()
             })

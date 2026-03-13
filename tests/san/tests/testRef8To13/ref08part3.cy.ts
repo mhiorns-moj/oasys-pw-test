@@ -104,13 +104,8 @@ describe('SAN integration - test ref 08 part 3', () => {
                     Leave the default countersigner and enter a countersign comment
                     Check that a 'Sign API' has been posted to the SAN Service and the contents are correct (status passed is 'SIGNED' along with the User ID and User name)`)
 
-            // Complete SP, then sign and lock
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-            oasys.San.returnToOASys()
-
             oasys.Assessment.signAndLock({
-                page: oasys.Pages.SentencePlan.IspSection52to8,
+                page: oasys.Pages.SentencePlan.SentencePlanService,
                 expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: '3.2 assessment needs countersigning'
             })
             oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])

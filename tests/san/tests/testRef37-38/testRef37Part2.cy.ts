@@ -42,14 +42,14 @@ describe('SAN integration - test ref 37 part 2', () => {
                 oasys.San.returnToOASys()
 
                 // Countersign the assessment
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
                 oasys.Nav.clickButton('Countersign')
                 const countersigning = new oasys.Pages.Signing.Countersigning()
                 countersigning.selectAction.setValue('Countersign')
                 countersigning.comments.setValue('Test 37 part 2 countersigning')
                 countersigning.ok.click()
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
                 oasys.logout()
 

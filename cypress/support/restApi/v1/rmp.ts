@@ -36,7 +36,7 @@ export class RmpEndpointResponse extends v1Common.V1EndpointResponse {
             const assessment = dbAssessments[i] as dbClasses.DbAssessment
             if (['M', 'H', 'V'].includes(assessment.roshLevel)) {
 
-                if (assessment.qaData['RM28'] || assessment.qaData['RM28.1'] ||  assessment.qaData['RM28.1'] || assessment.qaData['RM30'] || assessment.qaData['RM31']
+                if (assessment.qaData['RM28'] || assessment.qaData['RM28.1'] || assessment.qaData['RM30'] || assessment.qaData['RM31']
                     || assessment.qaData['RM32'] || assessment.qaData['RM33'] || assessment.qaData['RM34']) {
                     if (this.rmpTimeline == undefined) {
                         this.rmpTimeline = []

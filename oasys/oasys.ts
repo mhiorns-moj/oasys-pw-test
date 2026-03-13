@@ -1,6 +1,7 @@
 export * from './lib/autoData'
 export * from './lib/login'
 export * as Api from './lib/api'
+export * as ArnsSp from './lib/arnsSp'
 export * as Assessment from './lib/assessment'
 export * as Db from './lib/db'
 export * as Errors from './lib/errors'

@@ -72,10 +72,10 @@ describe('This is a sample test to create some probation offenders', () => {
 
     it('Create probation offenders', () => {
 
-        oasys.login(oasys.Users.probHeadPdu)
+        oasys.login(oasys.Users.probSanHeadPdu)
 
-        for (var i = 1; i <= 2; i++) {
-            offenderDetails.forename1 = `Test ${i}`
+        for (var i = 1; i <= 1; i++) {
+            offenderDetails.forename1 = `Test`
             oasys.Offender.createProb(offenderDetails, `probationOffender${i}`)
         }
 

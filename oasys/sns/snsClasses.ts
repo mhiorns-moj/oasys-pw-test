@@ -59,7 +59,7 @@ export class AssSummMessageData extends SnsMessageData {
         super(crn)
         this.eventType = 'assessment.summary.produced'
         this.description = 'Assessment Summary has been produced'
-        const endPoint = assessment.sanIndicator == 'Y' ? 'asssummsan' : 'asssumm'
+        const endPoint = assessment.sanIndicator == 'Y' || assessment.spIndicator == 'Y' ? 'asssummsan' : 'asssumm'
         this.detailUrl = `${baseUrl}/${endPoint}/${crn}/ALLOW/${assessment.pk}/${assessment.status}`
     }
 }

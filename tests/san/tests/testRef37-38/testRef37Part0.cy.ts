@@ -19,16 +19,6 @@ describe('SAN integration - test ref 37 part 0', () => {
         oasys.Offender.createProb(offender, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {
 
-            // const offender: Offender = {
-
-            //     probationCrn: 'ZIGADKO',
-            //     pnc: '54/5985640B',
-            //     surname: 'Auto_MH 02/08/24 09:39:22',
-            //     forename1: 'TestRef37',
-            //     gender: 'Male',
-            //     dateOfBirth: '01/08/1984',
-            // }
-
             // Save the offender details for use in later tests
             cy.task('storeValue', { key: 'offender', value: JSON.stringify(offender) })
         })

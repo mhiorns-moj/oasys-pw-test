@@ -32,7 +32,7 @@ export class OasysDateTime {
 
     static stringToTimestamp(param: string): Temporal.PlainDateTime {
 
-        return Temporal.PlainDateTime.from(param)
+        return !param ? null : Temporal.PlainDateTime.from(param)
     }
 
     static dateParameterToString(param: Temporal.PlainDate): string {
@@ -122,14 +122,23 @@ export class OasysDateTime {
         return OasysDateTime.calculateOffsetDate(offset)
     }
 
+    static oasysDateAsDbString(offset?: OasysDate): string {
+
+        if (typeof offset == 'string') {
+            return this.stringToDate(offset).toString()     // Assume it's a standard date, reformat it to YYYY-MM-DD
+        }
+
+        return OasysDateTime.calculateOffsetDate(offset).toString()
+    }
+
     static calculateOffsetDate(offset: OasysDate): Temporal.PlainDate {
 
         const d = offset as { days?: number, weeks?: number, months?: number, years?: number }
         let result = OasysDateTime.testStartDate
 
-        if (d.days) result = result.add({ days: d.days })
-        if (d.months) result = result.add({ months: d.months })
-        if (d.years) result = result.add({ years: d.years })
+        if (d?.days) result = result.add({ days: d.days })
+        if (d?.months) result = result.add({ months: d.months })
+        if (d?.years) result = result.add({ years: d.years })
 
         return result
     }
@@ -175,7 +184,7 @@ export class OasysDateTime {
         const testDate = typeof date == 'string' ? OasysDateTime.stringToTimestamp(date) : date
 
         for (let key of Object.keys(appVersions)) {
-            if (Temporal.PlainDateTime.compare(testDate, appVersions[key]) >=0) {
+            if (Temporal.PlainDateTime.compare(testDate, appVersions[key]) >= 0) {
                 return key
             }
         }

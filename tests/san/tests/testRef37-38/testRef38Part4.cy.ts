@@ -48,11 +48,11 @@ describe('SAN integration - test ref 38 part 4', () => {
                 oasys.San.returnToOASys()
 
                 // Countersign the assessment
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.San.checkSanGetAssessmentCall(pk, 2)
                 oasys.Assessment.countersign({ comment: 'Countersigning for the third time' })
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED', 2, 2)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
                 oasys.San.checkSanGetAssessmentCall(pk, 2)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 

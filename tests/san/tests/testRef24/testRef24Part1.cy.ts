@@ -28,7 +28,7 @@ describe('SAN integration - test ref 24', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
 
             cy.get<number>('@pk').then((pk) => {
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanHeadPdu, oasys.Users.probationSanCode, 'INITIAL', 0, 0)
+                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanHeadPdu, oasys.Users.probationSanCode, 'INITIAL')
                 oasys.Nav.clickButton('Close')
                 offenderDetails.openSan.checkStatus('enabled')
                 offenderDetails.openSp.checkStatus('enabled')
@@ -37,8 +37,7 @@ describe('SAN integration - test ref 24', () => {
                     Complete entry of the SAN assessment with whatever you want
                     Return back to the Offender record`)
 
-                offenderDetails.openSan.click()
-                oasys.San.handleLandingPage('san')
+                oasys.San.gotoSanFromOffender()
                 oasys.San.populateSanSections('Test ref 24', oasys.Populate.San.ExampleTest.sanPopulation1)
                 oasys.San.returnToOASys()
 
@@ -46,10 +45,7 @@ describe('SAN integration - test ref 24', () => {
                     Complete entry of the Sentence Plan with whatever you want but ensure you agree the plan
                     Return back to the Offender record`)
 
-                offenderDetails.openSp.click()
-                oasys.San.handleLandingPage('sp')
-                oasys.San.populateSanSections('Test ref 24 SP', oasys.Populate.San.SentencePlan.minimal)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('populateMinimal', { openFromOffender: true })
 
                 cy.log(`Check the database for the OASys-SAN assessment - at this point there will be nothing in it from the SAN assessment`)
 
@@ -76,10 +72,10 @@ describe('SAN integration - test ref 24', () => {
 
                 oasys.Populate.Rosh.screeningNoRisks(true)
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock()
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF')
 
                 oasys.logout()
             })

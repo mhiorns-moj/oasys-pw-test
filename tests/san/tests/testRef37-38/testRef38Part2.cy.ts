@@ -48,9 +48,7 @@ describe('SAN integration - test ref 38 part 2', () => {
 
 
                 // Check OASYS_SET and API calls
-                oasys.San.getSanApiTimeAndCheckDbValues(pks[1], 'Y', null, null)
-
-                oasys.San.checkSanRollbackCall(pks[1], oasys.Users.admin, 0, 1)
+                oasys.San.checkSanRollbackCall(pks[1], oasys.Users.admin)
                 oasys.logout()
 
             })

@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress'
-import * as playwrightScripts from './cypress/support/playwright/newSp1'
+import { runArnsSpScript } from './cypress/support/playwright/runArnsSpScript'
 
 import { populateAutoData } from './cypress/support/data/autoData'
 import * as oasysDb from './cypress/support/data/oasysDb'
@@ -231,9 +231,9 @@ module.exports = defineConfig({
           })
         },
 
-        newSp1(params: { username: string }): Promise<void> {
+        runArnsSpScript(params: ArnsSpParams): Promise<string> {
           return new Promise((resolve) => {
-            playwrightScripts.newSp1(params.username).then((response) => {
+            runArnsSpScript(params).then((response) => {
               resolve(response)
             })
           })

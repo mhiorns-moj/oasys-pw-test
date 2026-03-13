@@ -43,7 +43,7 @@ export class Predictors extends BaseAssessmentPage {
     /** All reoffending predictor */
     arp = new Element.Text("td:contains('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
     /** Violent reoffending predictor */
-    vrp = new Element.Text("td:contains('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS'):first+td")
+    vrp = new Element.Text("td:contains('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td:first")
     /** Servious violent reoffending predictor */
     svrp = new Element.Text("td:contains('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
     ospDc = new Element.Textbox<string>('#textarea_D6')

@@ -26,8 +26,7 @@ describe('SAN integration - test ref 21 part 2', () => {
             // Create and complete assessment 1 (layer 1 v1)
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' })
 
-            oasys.Populate.minimal({ layer: 'Layer 1' })
-            new oasys.Pages.SentencePlan.BasicSentencePlan().goto()
+            oasys.Populate.minimal({ layer: 'Layer 1', newSp: true })
             oasys.Assessment.signAndLock()
 
             // Create and complete assessment 2 (layer 3 v1)
@@ -38,7 +37,7 @@ describe('SAN integration - test ref 21 part 2', () => {
             oasys.Populate.sections2To13NoIssues({ populate6_11: 'No' })
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
 
-            new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
 
             // Create and complete assessment 3 (layer 3 v2)
@@ -47,12 +46,10 @@ describe('SAN integration - test ref 21 part 2', () => {
             oasys.San.gotoSan()
             oasys.San.populateSanSections('Test ref 21', testData.assessment3)
             oasys.San.returnToOASys()
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-            oasys.San.returnToOASys()
+            
             new oasys.Pages.Rosh.RoshScreeningSection2to4().goto().rationale.setValue('Because')
 
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
             oasys.logout()
 

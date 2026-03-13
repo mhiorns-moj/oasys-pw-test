@@ -24,9 +24,7 @@ describe('SAN integration - test ref 29/30', () => {
                 oasys.San.populateSanSections('Test ref 29', oasys.Populate.San.ExampleTest.sanPopulation1)
                 oasys.San.returnToOASys()
 
-                oasys.San.gotoSentencePlan()
-                oasys.San.populateSanSections('Test ref 29 SP', oasys.Populate.San.SentencePlan.minimal)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('populateMinimal')
 
                 // Complete section 1
                 new oasys.Pages.Assessment.OffendingInformation().goto().count.setValue(1)
@@ -41,7 +39,7 @@ describe('SAN integration - test ref 29/30', () => {
 
                 oasys.Populate.Rosh.screeningNoRisks(true)
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock()
 

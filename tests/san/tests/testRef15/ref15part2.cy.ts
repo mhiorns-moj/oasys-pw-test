@@ -41,9 +41,8 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'san', null
                 )
 
-                oasys.San.gotoSentencePlanReadOnly()
-                oasys.San.checkSentencePlanEditMode(false)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('checkReadOnly')
+
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': null,
                     'pnc': offender.pnc,
@@ -115,8 +114,8 @@ describe('SAN integration - test ref 15 part 2', () => {
                         Do not change the sentence plan type.
                     Return back to the OASys assessment.`)
 
-                oasys.San.gotoSentencePlan()
-                oasys.San.checkSentencePlanEditMode(true)
+                oasys.ArnsSp.runScript('populateMinimal')
+
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': null,
                     'pnc': offender.pnc,
@@ -134,23 +133,15 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'sp', null, testData.otlCrimNeeds
                 )
 
-                oasys.San.populateSanSections('SAN sentence plan', testData.sentencePlan)
-                oasys.San.returnToOASys()
-
-                cy.log(`Navigate to the last screen, section 5.2 to 8 of the ISP and complete it.
-                    For each of the OASys assessment sections, apart from Case ID and Summary Sheet, click on the 'Mark as Complete' flag.
+                cy.log(`For each of the OASys assessment sections, apart from Case ID and Summary Sheet, click on the 'Mark as Complete' flag.
                     Sign and lock the assessment`)
-
-                const isp = new oasys.Pages.SentencePlan.IspSection52to8().goto()
-                isp.publicProtectionConference.setValue('Yes')
-                isp.conferenceDate.setValue({ months: -1 })
-                isp.conferenceChair.setValue('Chair of the conference')
 
                 rosh1.markCompleteAndCheck()
 
                 new oasys.Pages.Rosh.RoshSummary().markCompleteAndCheck()
                 new oasys.Pages.Rosh.RiskManagementPlan().markCompleteAndCheck()
-                isp.markCompleteAndCheck()
+
+                const isp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersignComment: 'Signing test 15' })
 

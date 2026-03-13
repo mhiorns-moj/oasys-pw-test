@@ -20,7 +20,7 @@ describe('SAN integration - test ref 29/30', () => {
 
             cy.get<number>('@pk').then((pk) => {
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
 

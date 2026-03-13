@@ -50,7 +50,7 @@ describe('SAN integration - test ref 42', () => {
             cy.log(`Complete the Fast Review assessment`)
 
             oasys.Populate.Layer3Pages.FastReview.noChanges()
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock()
 
             cy.log(`Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page - defaults POA to Fast Review
@@ -72,7 +72,7 @@ describe('SAN integration - test ref 42', () => {
                 Ensure that the POA drop down list does NOT contain FAST REVIEW`)
 
             new oasys.Pages.Rosh.RoshScreeningSection2to4().goto().rationale.setValue('Some reason')
-            new oasys.Pages.SentencePlan.RspSection72to10().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock()
 
             oasys.Nav.history(offender)
