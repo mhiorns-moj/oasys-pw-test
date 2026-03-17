@@ -1,6 +1,6 @@
 import { Locator, expect, Page } from '@playwright/test'
 
-import * as oasys from 'lib'
+import * as lib from 'lib'
 
 export class Select<T extends string> {
 
@@ -13,8 +13,7 @@ export class Select<T extends string> {
 
     async setValue(value: T): Promise<void> {
 
-        let textValue = value as string
-        await this.selector.selectOption(textValue)
+        await this.selector.selectOption(value as string)
         return null
     }
 

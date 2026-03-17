@@ -12,5 +12,5 @@ export class CmsStubAlias extends OasysPage {
     forename1 = new Element.Textbox(this.page, '#P300_ALIAS_FORENAME_1')
     forename2 = new Element.Textbox(this.page, '#P300_ALIAS_FORENAME_2')
     gender = new Element.Select(this.page, '#P300_ALIAS_GENDER_ELM')
-    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P300_ALIAS_DATE_OF_BIRTH')
+    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P300_ALIAS_DATE_OF_BIRTH', true)
 }

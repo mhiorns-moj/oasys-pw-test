@@ -1,6 +1,6 @@
 import { Locator, expect, Page, selectors } from '@playwright/test'
 
-import * as oasys from 'lib'
+import * as lib from 'lib'
 
 export class Column {
 

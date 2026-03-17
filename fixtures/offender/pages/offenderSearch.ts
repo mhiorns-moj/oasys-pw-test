@@ -10,7 +10,7 @@ export class OffenderSearch extends OasysPage {
     surname = new Element.Textbox(this.page, '#P900_SURNAME')
     forename = new Element.Textbox(this.page, '#P900_FORENAME')
     surnameSoundsLike = new Element.Select(this.page, '#P900_SOUNDSLIKE')
-    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P900_DOB')
+    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P900_DOB', true)
     pnc = new Element.Textbox(this.page, '#P900_PNC')
     provider = new Element.Select(this.page, '#P900_CT_AREA_EST')
     cro = new Element.Textbox(this.page, '#P900_CRO')

@@ -1,25 +1,26 @@
 import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
-import { Oasys, Cms, Offender } from 'fixtures'
-import { Common, Layer1, Risk } from 'fixtures/assessment'
+import { Oasys, Cms, Offender, OasysDb } from 'fixtures'
+import { BaseAssessmentPage, Common, Layer1, Layer3, Risk, Signing, SentencePlan } from 'fixtures/assessment'
 import * as pages from './pages'
-
-import { IPage } from 'classes/oasysPage'
-import { User } from 'classes/user'
-import { checkOgrs4CalcsPk } from 'lib/ogrs'
 
 
 export class Assessment {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly cms: Cms, readonly offender: Offender) { }
+    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly cms: Cms, readonly offender: Offender, readonly oasysDb: OasysDb) { }
 
     assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
-    createAssessmentPage = new pages.CreateAssessment(this.page)
-    common = new Common(this.page, this.testInfo, this.oasys)
-    layer1 = new Layer1(this.page, this.testInfo, this.oasys)
-    risk = new Risk(this.page, this.testInfo, this.oasys)
+    readonly baseAssessmentPage = new BaseAssessmentPage(this.page)
+    readonly createAssessmentPage = new pages.CreateAssessment(this.page)
+
+    readonly common = new Common(this.page, this.testInfo, this.oasys)
+    readonly layer1 = new Layer1(this.page, this.testInfo, this.oasys)
+    readonly layer3 = new Layer3(this.page, this.testInfo, this.oasys)
+    readonly risk = new Risk(this.page, this.testInfo, this.oasys)
+    readonly signing = new Signing(this.page, this.testInfo, this.oasys, this)
+    readonly sentencePlan = new SentencePlan(this.page, this.testInfo, this.oasys)
 
     /**
      * Create a probation assessment with the details provided for the Create Assessment page. Assumes you are starting on the Offender Details page.
@@ -84,11 +85,21 @@ export class Assessment {
         if (!suppressLog) lib.log('Navigated to CreateAssessment page')
     }
 
-    async populateMinimal() {
+    async populateMinimal(params?: PopulateAssessmentParams) {
 
-        await this.common.populateMinimal()
-        await this.layer1.populateMinimal()
-        await this.risk.populateMinimal()
+        await this.common.populateMinimal(params)
+        switch (params?.layer) {
+            case 'Layer 1':
+                await this.layer1.populateMinimal(params)
+                break
+            case 'Layer 1V2':
+                break
+            case 'Layer 3':
+                await this.layer3.populateMinimal(params)
+                break
+        }
+        await this.risk.populateMinimal(params)
+        await this.sentencePlan.populateMinimal(params)
     }
 
     /**
@@ -232,130 +243,102 @@ export class Assessment {
     //     })
     // }
 
-    /**
-     * Sign and lock an assessment.  The optional parameter is an object with optional properties as listed below.
-     * 
-     * The function will attempt to deal with normal process flows depending on the parameter values. Assumes you are on an assessment page with a Sign & Lock button, 
-     * unless the 'page' property is specified - in that case you just need to be in the assessment.
-     * 
-     *   - page: an assessment page to select, e.g. pages.SentencePlan.IspSection52to8
-     *   - expectOutstandingQuestion: if true, expect to get an Outstanding Question page
-     *   - expectRsrScore: if true, expect to get an RSR Score page
-     *   - expectRsrWarning: if true, expect to get an RSR Warning page
-     *   - expectCountersigner: if true, expect countersigning
-     *   - countersignCancel: allows you to cancel out after confirming that a countersignature is required
-     *   - countersigner: either a predefined User object, or a string to enter as the countersigner
-     *   - countersignComment: countersigner comment (a generic comment will be entered if this is not specified)
-     *   - offender: an OffenderDef object, if specified the OGRS4 calculations will be checked
-     */
-    // async signAndLock(
-    //     params?: {
-    //         page?: IPage, expectOutstandingQuestions?: boolean, expectRsrScore?: boolean, expectRsrWarning?: boolean,
-    //         expectCountersigner?: boolean, countersignCancel?: boolean, countersigner?: any, countersignComment?: string
-    //     }) {
+    // /**
+    //  * Finds the latest non-deleted oasys_set record for a given offender
+    //  * Uses the PNC stored in oasys_set, so doesn't account for merges etc.
+    //  * 
+    //  * Returns the pk using the resultAlias.
+    //  */
+    // async getLatestSetPk(offenderAlias: string, resultAlias: string) {
 
-    //     lib.log(`Sign & lock assessment`)
+    //     cy.get<OffenderDef>(offenderAlias).then((offender) => {
 
-    //     if (params?.page) {
-    //         new params.page().goto(true)
-    //     }
-
-    //     new this.oasys.Pages.BaseAssessmentPage().getPncFromScreenContext('pnc')
-    //     cy.get<string>('@pnc').then((pnc) => {  // Grab the PNC to find the oasys_set in the database for OGRS4 testing
-
-    //         this.oasys.Nav.clickButton('Sign & Lock', true)
-
-    //         const signingStatus = new this.oasys.Pages.Signing.SigningStatus()
-
-    //         if (params?.expectOutstandingQuestions) {
-    //             signingStatus.continueWithSigning.click()
-    //         }
-    //         if (params?.expectRsrScore) {
-    //             new this.oasys.Pages.Signing.RsrConfirm().ok.click()
-    //         }
-    //         if (params?.expectRsrWarning) {
-    //             signingStatus.continueWithSigning.click()
-    //         }
-
-    //         signingStatus.confirmSignAndLock.click()
-
-    //         if (params?.expectCountersigner) {
-    //             const cPage = new this.oasys.Pages.Signing.CountersignatureRequired()
-    //             if (params?.countersignCancel) {
-    //                 cPage.cancel.click()
-    //             }
-    //             else {
-    //                 if (params.countersigner?.constructor?.name == 'User') {
-    //                     cPage.countersigner.setValue((params.countersigner as User).lovLookup)
-    //                 } else if (params.countersigner != null) {
-    //                     cPage.countersigner.setValue(params.countersigner as string)
-    //                 }
-    //                 cPage.comments.setValue(params.countersignComment ?? 'Assessment needs to be countersigned')
-    //                 cPage.confirm.click()
-    //             }
-    //         }
-
-    //         // Check the OGRS4 calculations
-    //         this.oasys.Db.getLatestSetPkByPnc(pnc, 'pk')
-    //         cy.get<number>('@pk').then((pk) => {
-    //             checkOgrs4CalcsPk(pk)
-    //         })
-
-    //         // Check for unwanted countersigning
-    //         if (!params?.countersignCancel) {
-    //             new this.oasys.Pages.Tasks.TaskManager().checkCurrent()
-    //         }
-
+    //         const query = `select oasys_set_pk from eor.oasys_set where pnc = '${offender.pnc}' and deleted_date is null order by initiation_date desc`
+    //         getPk(query, resultAlias)
     //     })
     // }
 
-    /**
-     * Countersign an assessment.  The optional parameter is a CountersignParams object which may contain:
-     * 
-     *   - page: an assessment page to select, e.g. this.oasys.pages.SentencePlan.IspSection52to8, assuming you are already in the assessment.
-     * OR
-     *   - offender: an Offender object; if this is provided, the assessment will be opened by searching for a countersigning task
-     * 
-     * If neither of the above are provided, you should already be on a page with the Countersigning button available.
-     * 
-     *   - comment: countersigning comment (a generic comment will be used if this is not provided)
-     */
-    // async countersign(params?: { page?: IPage, offender?: OffenderDef, comment?: string }) {
+    // /**
+    //  * Finds the latest non-deleted oasys_set record for a given offender surname and forename.
+    //  * 
+    //  * Returns the pk using the resultAlias.
+    //  */
+    // async getLatestSetPkByName(surname: string, forename: string, resultAlias: string) {
 
-    //     lib.log(`Countersign assessment`)
-
-    //     if (params?.offender) {
-    //         this.oasys.Task.openAssessmentFromCountersigningTaskByName(params.offender.surname)
-    //         this.oasys.Nav.clickButton('Return to Assessment')
-    //     }
-
-    //     if (params?.page) {
-    //         new params.page().goto(true)
-    //     }
-
-    //     this.oasys.Nav.clickButton('Countersign')
-    //     const countersigning = new this.oasys.Pages.Signing.Countersigning()
-    //     countersigning.selectAction.setValue('Countersign')
-    //     countersigning.comments.setValue(params?.comment ?? 'Countersigning the assessment')
-    //     countersigning.ok.click()
-    //     new this.oasys.Pages.Tasks.TaskManager().checkCurrent()
+    //     const query = `select oasys_set_pk from eor.oasys_set where family_name = '${surname}' and forename_1 = '${forename}' and deleted_date is null order by initiation_date desc`
+    //     getPk(query, resultAlias)
     // }
 
     /**
-     * Checks that the expected set of OASYS_SIGNING records are found for a given assessment PK; the expectedActions parameter should include all actions, latest first.
+     * Finds the latest non-deleted oasys_set record for a given offender PNC
      */
-    // async checkSigningRecord(pk: number, expectedActions: AssessmentSigning[]) {
+    async getLatestSetPkByPnc(pnc: string): Promise<number> {
 
-    //     this.oasys.Db.getData(`select signing_action_elm from eor.oasys_signing where oasys_set_pk = ${pk} order by create_date desc`, 'data')
-    //     cy.get<string[][]>('@data').then((data) => {
+        const query = `select oasys_set_pk from eor.oasys_set where pnc = '${pnc}' and deleted_date is null order by create_date desc`
+        return await this.getPk(query) as number
+    }
 
-    //         lib.log(`Checking OASYS_SIGNING actions for ${pk}: ${JSON.stringify(data)} `)
+    // /**
+    //  * Finds all oasys_set records for a given offender PNC (including deleted, unless optional parameter is true).
+    //  * 
+    //  * Returns the pks as a number[] (most recent first) using the resultAlias.
+    //  */
+    // async getAllSetPksByPnc(pnc: string, resultAlias: string, ignoreDeleted: boolean = false) {
 
-    //         expect(data.length).eq(expectedActions.length)
-    //         for (let i = 0; i < expectedActions.length; i++) {
-    //             expect(data[i][0]).eq(expectedActions[i])
-    //         }
-    //     })
+    //     const query = ignoreDeleted ?
+    //         `select oasys_set_pk from eor.oasys_set where pnc = '${pnc}' and deleted_date is null order by initiation_date desc`
+    //         : `select oasys_set_pk from eor.oasys_set where pnc = '${pnc}' order by initiation_date desc`
+    //     getPk(query, resultAlias, true)
     // }
+
+    /**/
+
+    async getPk(query: string, returnAll: boolean = false): Promise<number | number[]> {
+
+        const data = await this.oasysDb.getData(query)
+
+        if (data.length > 0) {
+            if (returnAll) {
+                const pks: number[] = []
+                data.forEach((pk) => pks.push(Number.parseInt(pk[0])))
+                lib.log(JSON.stringify(pks), 'Assessment PKs')
+                return pks
+            } else {
+                const pk = Number.parseInt(data[0][0])
+                lib.log(pk.toString(), 'Assessment PK')
+                return pk
+            }
+        } else {
+            return null
+        }
+    }
+
+    /** 
+     * Returns a string with x characters.  The string includes some spaces and carriage returns, and a counter at regular intervals.
+     */
+    oasysString(length: number): string {
+
+        let result = ''
+        let i = 0
+        let letters = 'ABCD efg'
+        let lineLength = 0
+
+        while (i < length - 12) {
+            // Add 10 characters at a time, including a counter, until nearly at the end
+            i += 10
+            lineLength += 10
+            let counter = i.toString()
+            result += `${letters.substring(0, 10 - counter.length)}${counter}`
+
+            if (lineLength == 400) {
+                result += '\n'  // newline counts 2 characters
+                i += 2
+                lineLength = 0
+            }
+        }
+
+        return `${result}${'.'.repeat(length - i)}`
+    }
+
 
 }

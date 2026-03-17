@@ -1,12 +1,12 @@
 import { Locator, expect, Page } from '@playwright/test'
 
-import * as oasys from 'lib'
+import * as lib from 'lib'
 
 export class Textbox<T> {
 
     selector: Locator
 
-    constructor(page: Page, selector: string, readonly slowType: boolean = false) {
+    constructor(readonly page: Page, selector: string, readonly slowType: boolean = false) {
 
         this.selector = page.locator(selector)
     }
@@ -19,11 +19,12 @@ export class Textbox<T> {
         } else if (typeof value == 'number') {
             textValue = value == 0 ? '0' : value.toString()
         } else if (typeof value != 'string') {
-            textValue = oasys.OasysDateTime.oasysDateAsString(value as OasysDate)
+            textValue = lib.OasysDateTime.oasysDateAsString(value as OasysDate)
         }
         if (this.slowType) {  // Handle date fields, the normal fill doesn't work for these
             await this.selector.click()
-            await this.selector.pressSequentially(textValue, { delay: 100 })
+            await this.page.waitForTimeout(50)
+            await this.selector.pressSequentially(textValue, { delay: 50 })
         } else {
             await this.selector.fill(textValue)
         }

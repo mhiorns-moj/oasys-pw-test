@@ -1,6 +1,6 @@
-import { Locator, Page } from '@playwright/test'
+import { Locator, expect, Page } from '@playwright/test'
 
-import * as oasys from 'lib'
+import * as lib from 'lib'
 
 
 export class Button {
@@ -21,7 +21,7 @@ export class Button {
     async checkStatus(status: ElementStatus) {
 
         const actualStatus = await this.getStatus()
-        oasys.expect(actualStatus).toBe(status)
+        expect(actualStatus).toBe(status)
     }
 
     async getStatus(): Promise<ElementStatus> {

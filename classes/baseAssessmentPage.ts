@@ -1,4 +1,5 @@
-﻿import { OasysPage, Element } from 'classes'
+﻿import { expect } from '@playwright/test'
+import { OasysPage, Element } from 'classes'
 
 /**
  * this.page is a base class for assessment pages that contain the standard navigation buttons
@@ -59,13 +60,12 @@ export class BaseAssessmentPage extends OasysPage {
     //     return this.page
     // }
 
-    // getPncFromScreenContext(resultAlias: string) {
+    async getPncFromScreenContext(): Promise<string> {
 
-    //     this.page.context.getValue('context')
-    //     cy.get<string>('@context').then((context) => {
-    //         cy.wrap(context.split('|')[3].trim()).as(resultAlias)
-    //     })
-    // }
+        await expect(this.page.locator('#contextright')).toContainText('|')
+        const context = await this.context.getValue()
+        return context.split('|')[3].trim()
+    }
 
 }
 

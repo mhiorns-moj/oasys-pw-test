@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 
 import * as oasys from 'lib'
 
@@ -18,16 +18,18 @@ export abstract class OasysPage {
     constructor(public readonly page: Page) { }
 
 
-    // async waitForPageUpdate() {
+    floatingMenu = this.page.locator('#leftmenuul')
 
-    //     let updatingElement = this.page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
+    static async waitForPageUpdate(page: Page) {
 
-    //     await this.page.waitForTimeout(200)
-    //     const waiting = updatingElement.count() > 0
-    //     if (Cypress.$(updatingElement).length > 0) {
-    //         cy.get(updatingElement).should('not.exist')  // If shown, wait for it to go
-    //     }
-    // }
+        let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
+
+        await page.waitForTimeout(200)
+        let pleaseWaitCount = await updatingElement.count()
+        while (pleaseWaitCount > 0) {
+            pleaseWaitCount = await updatingElement.count()
+        }
+    }
 
     /**
      * Sets the value of a multiple element on the pages, each identified by the element name
@@ -118,25 +120,28 @@ export abstract class OasysPage {
             switch (this.menu.type) {
 
                 case 'Floating':
+                    await this.waitForAnimation(this.floatingMenu)
+                    
                     if (this.menu.level2 == undefined) {
                         // first level only, just click
-                        await this.page.locator('#leftmenuul').getByText(this.menu.level1).click()
-
+                        await this.floatingMenu.getByText(this.menu.level1).click()
+                        
                     } else {
                         // two levels: check if first level is expanded already, if not then click on the first
-                        const level1Link = this.page.locator('.active.expanded').filter({ hasText: this.menu.level1 })
-                        const level2Visible = await level1Link.isVisible()
-
-                        if (!level2Visible) {
-                            await this.page.locator('#leftmenuul').locator('.expandable').filter({ hasText: this.menu.level1 }).click()
+                        const level1LinkExpanded = this.page.locator('.active.expanded').filter({ hasText: this.menu.level1 })
+                        const level1Expanded = await level1LinkExpanded.isVisible()
+                        
+                        if (!level1Expanded) {
+                            await this.floatingMenu.locator('.expandable').filter({ hasText: this.menu.level1 }).click()
+                            await this.waitForAnimation(this.floatingMenu)
                         }
-                        const level1List = this.page.locator('#leftmenuul').getByRole('listitem').filter({ has: level1Link })
-                        await level1List.getByRole('listitem').filter({ hasText: this.menu.level2 }).click()
+                        const level2List = this.floatingMenu.getByRole('listitem').filter({ has: level1LinkExpanded })
+                        await level2List.getByRole('listitem').filter({ hasText: this.menu.level2 }).click()
                     }
                     break
 
                 case 'Main':
-                    this.page.locator('#oasysmainmenu').getByText(this.menu.level1).click()
+                    await this.page.locator('#oasysmainmenu').getByText(this.menu.level1).click()
                     if (this.menu.level2 !== undefined) {
                         if (this.menu.level2[0] == '#') {
                             await this.page.locator(this.menu.level2).click()
@@ -161,7 +166,7 @@ export abstract class OasysPage {
             }
         }
 
-        // oasys.Nav.waitForPageUpdate()
+        await this.checkCurrent(suppressLog)
         if (!suppressLog) oasys.log(`Go to page: ${this.name} `)
         return this
     }
@@ -173,10 +178,30 @@ export abstract class OasysPage {
      */
     async checkCurrent(suppressLog: Boolean = false): Promise<typeof this> {
 
-        const title = await this.page.title()
+        await OasysPage.waitForPageUpdate(this.page)
+        let title = await this.page.title()
+
         oasys.expect(title).toContain(this.title)
         if (!suppressLog) oasys.log(`Check current page: ${this.name} `)
         return this
+    }
+
+    async waitForAnimation(locator: Locator) {
+
+        const box = await locator.boundingBox()
+        let y1 = box.y
+        let y2: number
+        let h1 = box.height
+        let h2: number
+
+        while (y1 != y2 || h1 != h2) {
+            await this.page.waitForTimeout(20)
+            y2 = y1
+            h2 = h1
+            const box = await locator.boundingBox()
+            y1 = box.y
+            h1 = box.height
+        }
     }
 
 
@@ -305,9 +330,4 @@ export abstract class OasysPage {
     //     }
     // }
 
-}
-
-// Interface allows Page classes to be passed as parameters
-export interface IPage {
-    new(): OasysPage
 }

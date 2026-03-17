@@ -1,10 +1,11 @@
-import { Page, TestInfo } from '@playwright/test'
+import { Dialog, expect, Page, TestInfo } from '@playwright/test'
 import { Temporal } from '@js-temporal/polyfill'
 
 import * as lib from 'lib'
 import * as pages from './pages'
 import { testEnvironment } from 'localSettings'
-import { User } from 'classes'
+import { OasysPage, User } from 'classes'
+import * as users from './users'
 
 
 export class Oasys {
@@ -12,7 +13,9 @@ export class Oasys {
     constructor(public readonly page: Page, public readonly testInfo: TestInfo) { }
 
     appConfig: AppConfig
-    loginPage = new pages.Login(this.page)
+    readonly users = users.Users
+    readonly loginPage = new pages.Login(this.page)
+    readonly taskManager = new pages.TaskManager(this.page)  // TODO move to tasks object
 
     async login(user: User, provider?: string): Promise<void>
     async login(username: string, password: string, provider?: string): Promise<void>
@@ -96,6 +99,7 @@ export class Oasys {
         if (p1 === undefined) {
             await this.page.locator('#history_1').click()
             lib.log('First item', 'History menu')
+            await OasysPage.waitForPageUpdate(this.page)
             return null
         }
 
@@ -122,10 +126,25 @@ export class Oasys {
         const menuText = assessment == undefined ? `Offender - ${forename} ${surname}` : `${assessment} - ${forename} ${surname}`
         await this.page.getByText(menuText).click()
         lib.log(menuText, 'History menu')
+        await OasysPage.waitForPageUpdate(this.page)
 
         return null
     }
 
+    /**
+     * Clicks the button that should trigger an alert, optionally checks the alert text then and accepts the alert.
+     * Alternatively, just let Playwright dismiss the alert automatically
+     */
+    async handleAlert(buttonToClick: string, exptectedText: string = null) {
+
+        // Trap the alert
+        this.page.on('dialog', async (dialog: Dialog) => {
+            if (exptectedText != null) {
+                expect(dialog.message).toBe(exptectedText)
+            }
+        })
+        await this.clickButton(buttonToClick)
+    }
 
     async screenshot() {
 

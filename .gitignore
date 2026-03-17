@@ -3,9 +3,6 @@ node_modules
 localSettings.ts
 **/local
 vsc.bat
-cypress/screenshots
-cypress/downloads
-cypress/videos
 report
 /package-lock.json
 .DS_Store

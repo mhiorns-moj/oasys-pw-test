@@ -1,16 +1,19 @@
 import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
-import { Oasys, Cms } from 'fixtures'
+import { Oasys, Cms, OasysDb, offender } from 'fixtures'
 import * as pages from './pages'
+import * as offenders from './offenders'
 
 
 export class Offender {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly cms: Cms) { }
+    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly cms: Cms, readonly oasysDb: OasysDb) { }
 
-    offenderSearch = new pages.OffenderSearch(this.page)
-    offenderDetails = new pages.OffenderDetails(this.page)
+    readonly offenderSearch = new pages.OffenderSearch(this.page)
+    readonly offenderDetails = new pages.OffenderDetails(this.page)
+
+    readonly offenders = offenders
 
     /**
      * Create a probation offender using the details provided in an Offender type object.
@@ -37,7 +40,7 @@ export class Offender {
         let offender = JSON.parse(JSON.stringify(source)) as OffenderDef
 
         // Populate any null key fields (PNC, CRN, NOMIS ID and Surname).
-        await lib.populateAutoData(offender)
+        await this.oasysDb.populateAutoData(offender)
         offender.dateOfBirth = lib.OasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
         // Delete the NOMIS Id if there is one to avoid attempting to populate it on the stub screen
@@ -91,7 +94,7 @@ export class Offender {
         let offender = JSON.parse(JSON.stringify(source)) as OffenderDef
 
         // Populate any null key fields (PNC, CRN, NOMIS ID and Surname).
-        await lib.populateAutoData(offender)
+        await this.oasysDb.populateAutoData(offender)
         offender.dateOfBirth = lib.OasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
         // Delete the probation CRN if there is one to avoid attempting to populate it on the stub screen

@@ -1,6 +1,6 @@
 import { Locator, expect, Page } from '@playwright/test'
 
-import * as oasys from 'lib'
+import * as lib from 'lib'
 
 export class Text {
 
@@ -14,56 +14,53 @@ export class Text {
     /**
      * Check if the element contains the specified text.  The optional second parameter can be set to true to indicate a partial match (i.e. contains rather than equals).
      */
-    checkValue(value: string, partial: boolean = false) {
+    async checkValue(value: string, partial: boolean = false) {
 
-        cy.get(this.selector).should(partial ? 'contain' : 'have.text', value)
+        const statusAndValue = await this.getStatusAndValue()
+        if (partial) {
+            expect(statusAndValue.value).toContain(value)
+        } else {
+            expect(statusAndValue.value).toEqual(value)
+        }
     }
 
-    getValue(alias: string) {
+    async getValue(): Promise<string> {
 
-        cy.get(this.selector).invoke('text').as(alias)
+        const statusAndValue = await this.getStatusAndValue()
+        return statusAndValue.value
     }
 
-    checkStatus(status: ElementStatus) {
+    async checkStatus(status: ElementStatus) {
 
-        this.getStatusAndValue('result')
-        cy.get<ElementStatusAndValue>('@result').then((result) => {
-            if (status != result.status) {
-                throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
-            }
-        })
+        const statusAndValue = await this.getStatusAndValue()
+        expect(statusAndValue.status).toEqual(status)
     }
 
-    logValue(desc: string = null) {
+    async logValue(desc: string = null) {
 
-        cy.get(this.selector).invoke('text').then((text) => {
-
-            cy.log(`${desc || this.selector}: ${text}`)
-        })
+        const statusAndValue = await this.getStatusAndValue()
+        lib.log(`${desc || this.selector}: ${statusAndValue.value}`)
     }
 
     /**
      * Gets the current status and value of a text element, assumes it exists
-     * Parameter is a Cypress alias which can then be used to access the return value.
      * The return value is an ElementStatusAndValue object, containing status and value properties.
      */
-    getStatusAndValue(alias: string) {
+    async getStatusAndValue(): Promise<ElementStatusAndValue> {
 
-        let result: ElementStatusAndValue = { status: 'notVisible', value: '' }
+        const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
 
-        cy.get('#content').then((containerDiv) => {
+        const count = await this.selector.count()
 
-            let element = containerDiv.find(this.selector)
+        if (count == 0) {
+            return result
+        }
+        const visible = await this.selector.isVisible()
+        const disabled = await this.selector.isDisabled()
 
-            if (element.length > 0) { // If element exists in the DOM
+        result.status = !visible ? 'notVisible' : disabled ? 'visible' : 'enabled'
+        result.value = await this.selector.innerText()
 
-                if (element.is(':visible')) {
-                    result.status = 'visible'
-                }
-                result.value = element.text()
-            }
-
-        })
-        cy.wrap(result).as(alias)
+        return result
     }
 }

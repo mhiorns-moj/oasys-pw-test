@@ -15,7 +15,7 @@ export class Predictors extends BaseAssessmentPage {
     /** Number of sanctions involving violent offences */
     o1_40 = new Element.Textbox<number>(this.page, '#itm_1_40')
     /** Date of current conviction */
-    o1_29 = new Element.Textbox<OasysDate>(this.page, '#itm_1_29')
+    o1_29 = new Element.Textbox<OasysDate>(this.page, '#itm_1_29', true)
     /** Ever committed sexually motivated offence */
     o1_30 = new Element.Select<YesNoAnswer>(this.page, '#itm_1_30')
     o1_30RO = new Element.Textbox<string>(this.page, '#itm_1_30')
@@ -24,7 +24,7 @@ export class Predictors extends BaseAssessmentPage {
     /** Contact with stranger */
     o1_44 = new Element.Select<YesNoAnswer>(this.page, '#itm_1_44')
     /** Date of most recent sexual sanction */
-    o1_33 = new Element.Textbox<OasysDate>(this.page, '#itm_1_33')
+    o1_33 = new Element.Textbox<OasysDate>(this.page, '#itm_1_33', true)
     /** Number of adult sexual offences */
     o1_34 = new Element.Textbox<number>(this.page, '#itm_1_34')
     /** Number of child sexual offences */

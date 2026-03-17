@@ -9,15 +9,15 @@ export class Cms {
 
     constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys) { }
 
-    cmsStub = new pages.CmsStub(this.page)
-    maintainCmsStub = new pages.MaintainCmsStub(this.page)
-    cmsOffenderDetails = new pages.CmsOffenderDetails(this.page)
-    cmsStubEvent = new pages.CmsStubEvent(this.page)
-    cmsStubSentenceDetail = new pages.CmsStubSentenceDetail(this.page)
-    cmsStubOffence = new pages.CmsStubOffence(this.page)
-    cmsStubAlias = new pages.CmsStubAlias(this.page)
-    cmsSearchResults = new pages.CmsSearchResults(this.page)
-    crnAmendment = new pages.CrnAmendment(this.page)
+    readonly cmsStub = new pages.CmsStub(this.page)
+    readonly maintainCmsStub = new pages.MaintainCmsStub(this.page)
+    readonly cmsOffenderDetails = new pages.CmsOffenderDetails(this.page)
+    readonly cmsStubEvent = new pages.CmsStubEvent(this.page)
+    readonly cmsStubSentenceDetail = new pages.CmsStubSentenceDetail(this.page)
+    readonly cmsStubOffence = new pages.CmsStubOffence(this.page)
+    readonly cmsStubAlias = new pages.CmsStubAlias(this.page)
+    readonly cmsSearchResults = new pages.CmsSearchResults(this.page)
+    readonly crnAmendment = new pages.CrnAmendment(this.page)
 
     async createProbStub(offender: OffenderDef) {
 
@@ -121,6 +121,7 @@ export class Cms {
             await this.maintainCmsStub.sentenceTypeColumn.clickFirstRow()
 
             await this.cmsStubEvent.setValues(offender.event.eventDetails, true)
+            lib.log(JSON.stringify(offender.event.eventDetails))
             await this.cmsStubEvent.save.click()
 
             if (offender.event.sentenceDetails != null) {

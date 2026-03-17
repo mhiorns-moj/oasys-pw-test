@@ -8,7 +8,7 @@ export class ChildAtRisk extends OasysPage {
     save = new Element.Button(this.page, 'Save')
     close = new Element.Button(this.page, 'Close')
     childName = new Element.Textbox(this.page, '#P3_NAME_OF_CHILD')
-    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P3_DATE_OF_BIRTH')
+    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P3_DATE_OF_BIRTH', true)
     age = new Element.Select(this.page, '#P3_AGE_OF_CHILD_ELM')
     gender = new Element.Select(this.page, '#P3_GENDER_ELM')
     address = new Element.Textbox(this.page, '#P3_ADDRESS_OF_CHILD')

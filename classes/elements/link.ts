@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from '@playwright/test'
 
-import * as oasys from 'lib'
+import * as lib from 'lib'
 
 export class Link {
 

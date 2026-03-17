@@ -26,3 +26,13 @@ declare type ActionStatus =
     'Termination' |
     'Transferred' |
     'Not Achieved - Other'
+
+declare type ArnsSpScript = 'populateMinimal' | 'openAndReturn' | 'checkReadOnly' | 'checkZeroGoals' | 'populateTwoGoals' | 'addGoal' | 'checkGoalCount'
+
+declare type ArnsSpParams = {
+    script: ArnsSpScript,
+    readonly: boolean,
+    openFromOffender: boolean,
+    currentGoals?: number,
+    futureGoals?: number,
+}

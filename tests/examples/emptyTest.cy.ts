@@ -1,9 +1,8 @@
-import * as oasys from 'lib'
+import * as lib from 'lib'
+import { test } from 'fixtures'
 
-describe('TEST SCRIPT DESCRIPTION HERE', () => {
-
-    it('SCENARIO DESCRIPTION HERE', () => {
+test('SCENARIO DESCRIPTION HERE', async ({ oasys, offender, assessment }) => {
 
 
-    })
+
 })

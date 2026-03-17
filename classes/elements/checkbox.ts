@@ -1,6 +1,6 @@
 import { Locator, expect, Page } from '@playwright/test'
 
-import * as oasys from 'lib'
+import * as lib from 'lib'
 
 export class Checkbox {
 
@@ -11,77 +11,65 @@ export class Checkbox {
         this.selector = page.locator(selector)
     }
 
-    setValue(value: boolean) {
+    async setValue(value: boolean) {
 
         if (value) {
-            cy.get(this.selector).check()
+            await this.selector.check()
         }
         else {
-            cy.get(this.selector).uncheck()
-        }
-        this.checkValue(value)
-    }
-
-    checkValue(value: boolean) {
-
-        if (value) {
-            cy.get(this.selector).should('be.checked')
-        }
-        else {
-            cy.get(this.selector).should('not.be.checked')
+            await this.selector.uncheck()
         }
     }
 
-    checkStatus(status: ElementStatus) {
+    // checkValue(value: boolean) {
 
-        this.getStatusAndValue('result')
-        cy.get<ElementStatusAndValue>('@result').then((result) => {
-            if (status != result.status) {
-                throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
-            }
-        })
-    }
+    //     if (value) {
+    //         cy.get(this.selector).should('be.checked')
+    //     }
+    //     else {
+    //         cy.get(this.selector).should('not.be.checked')
+    //     }
+    // }
+
+    // checkStatus(status: ElementStatus) {
+
+    //     this.getStatusAndValue('result')
+    //     cy.get<ElementStatusAndValue>('@result').then((result) => {
+    //         if (status != result.status) {
+    //             throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
+    //         }
+    //     })
+    // }
 
     /**
      * Gets the current value the checkbox, assumes it exists.
-     * Parameter is a Cypress alias which can then be used to access the return value.
      */
-    getValue(alias: string) {
+    // getValue() {
 
-        cy.get(this.selector).invoke('prop', 'checked').as(alias)
-    }
+    //     cy.get(this.selector).invoke('prop', 'checked').as(alias)
+    // }
 
 
     /**
-     * Gets the current status and value of the checkbox, assumes it exists
-     * Parameter is a Cypress alias which can then be used to access the return value.
-     * The return value is an ElementStatusAndValue object, containing status and value properties.
-     */
-    getStatusAndValue(alias: string) {
+    * Gets the current status and value of a text element, assumes it exists
+    * The return value is an ElementStatusAndValue object, containing status and value properties.
+    */
+    async getStatusAndValue(): Promise<ElementStatusAndValue> {
 
-        let result: ElementStatusAndValue = { status: 'notVisible', value: '' }
+        const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
 
-        cy.get('#content').then((containerDiv) => {
+        const count = await this.selector.count()
 
-            let element = containerDiv.find(this.selector)
+        if (count == 0) {
+            return result
+        }
+        const visible = await this.selector.isVisible()
+        const disabled = await this.selector.isDisabled()
 
-            if (element.length > 0) { // If element exists in the DOM
+        result.status = !visible ? 'notVisible' : disabled ? 'visible' : 'enabled'
+        result.value = this.selector.isChecked().toString()
 
-                if (element.is(':visible')) {
-
-                    result.status = 'enabled'
-
-                    this.getValue('val')
-                    cy.get('@val').then((val) => result.value = val.toString())
-
-                    if (!element.is(':enabled')) {
-                        result.status = 'readonly'
-                    }
-                }
-            }
-
-        })
-        cy.wrap(result).as(alias)
+        return result
     }
 
 }

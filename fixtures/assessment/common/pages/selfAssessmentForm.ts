@@ -4,6 +4,7 @@ import * as lib from 'lib'
 export class SelfAssessmentForm extends BaseAssessmentPage {
 
     name = 'SelfAssessmentForm'
+    title = 'Self Assessment Form'
     menu: Menu = { type: 'Floating', level1: 'Self Assessment Form' }
 
     helpNeeded = new Element.Select(this.page, '#itm_SAQA')

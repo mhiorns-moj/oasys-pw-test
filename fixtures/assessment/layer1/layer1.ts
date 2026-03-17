@@ -10,9 +10,9 @@ export class Layer1 {
 
     constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys) { }
 
-    section2 = new pages.Section2(this.page)
-    predictorQuestions = new pages.PredictorQuestions(this.page)
-    roshaPredictors = new pages.RoshaPredictors(this.page)
+    readonly section2 = new pages.Section2(this.page)
+    readonly predictorQuestions = new pages.PredictorQuestions(this.page)
+    readonly roshaPredictors = new pages.RoshaPredictors(this.page)
     
     async populateMinimal(params?: PopulateAssessmentParams) {
 
