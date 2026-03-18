@@ -60,7 +60,7 @@ declare type CreateAssessmentDetails = {
     selectAssessor?: string
 }
 
-declare type Layer = 'Layer 1' | 'Layer 1V2' | 'Layer 3'
+declare type Layer = 'Layer 1' | 'Layer 1V2' | 'Layer 3' | 'Layer 3V2'
 declare type RiskLevel = 'Low' | 'Medium' | 'High' | 'Very High' | ''
 declare type FrameworkRole = 'Legacy - Unapproved PSO & unapproved PQiP' | 'Legacy - Approved PSO, approved PQiP, NQO or unapproved PO' | 'Legacy - Approved PO' | 'Legacy - SPO' | 'Legacy - Head of PDU' |
     'Unapproved Prison POM & unapproved PQiP' | 'Approved Prison POM, approved PQiP, NQO or unapproved Probation POM' | 'Approved Probation POM' | 'HOMDs'

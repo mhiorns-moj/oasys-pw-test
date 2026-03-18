@@ -1,4 +1,5 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
+import * as lib from 'lib'
 
 export class Section8 extends BaseAssessmentPage {
 
@@ -66,6 +67,14 @@ export class Section8 extends BaseAssessmentPage {
     identifyIssues = new Element.Textbox(this.page, '#textarea_8_97')
     linkedToRisk = new Element.Select(this.page, '#itm_8_98')
     linkedToBehaviour = new Element.Select(this.page, '#itm_8_99')
+
+
+    async populateNoIssues(suppressLog: boolean = false) {
+
+        if (!suppressLog) lib.log('Populating section 8 - no issues')
+        await this.goto(true)
+        await this.o8_1.setValue('No')
+    }
 }
 
 

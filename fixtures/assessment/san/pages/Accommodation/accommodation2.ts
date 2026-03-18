@@ -1,20 +1,21 @@
-import * as SanElement from 'classes/san/sanElements'
+import { Element } from 'classes'
 import { BaseSanEditPage } from '../baseSanEditPage'
+import * as lib from 'lib'
 
 export class Accommodation2 extends BaseSanEditPage {
 
     name = 'Accommodation2'
     title = 'Accommodation - Strengths and Needs'
 
-    livingWith = new SanElement.CheckboxGroup<'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'>('#living_with', ['family', 'friends', 'partner', 'child', 'other', 'unknown', '-', 'alone'])
-    locationSuitable = new SanElement.Radiogroup<'yes' | 'no'>('#suitable_housing_location', ['yes', 'no'])
-    accommodationSuitable = new SanElement.Radiogroup<'yes' | 'yesWithConcerns' | 'no'>('#suitable_housing', ['yes', 'yesWithConcerns', 'no'])
-    wantChanges = new SanElement.Radiogroup<SanWantChanges>('#accommodation_changes', ['madeChanges', 'makingChanges', 'wantToChange', 'needHelp', 'thinking', 'notWanted', 'notAnswering', '-', 'notPresent', 'notApplicable'])
+    livingWith = new Element.CheckboxGroup<'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'>('#living_with', ['family', 'friends', 'partner', 'child', 'other', 'unknown', '-', 'alone'])
+    locationSuitable = new Element.Radiogroup<'yes' | 'no'>('#suitable_housing_location', ['yes', 'no'])
+    accommodationSuitable = new Element.Radiogroup<'yes' | 'yesWithConcerns' | 'no'>('#suitable_housing', ['yes', 'yesWithConcerns', 'no'])
+    wantChanges = new Element.Radiogroup<SanWantChanges>('#accommodation_changes', ['madeChanges', 'makingChanges', 'wantToChange', 'needHelp', 'thinking', 'notWanted', 'notAnswering', '-', 'notPresent', 'notApplicable'])
 
 }
 /*
-futurePlanned = new SanElement.Radiogroup('#suitable_housing_planned', ['yes', 'no'])
-futureType = new SanElement.Radiogroup('#future_accommodation_type', ['awaitingAssessment', 'awatingPlacement', 'buyHouse', 'friends', 'privateRent', 'socialRent', 'healthcare', 'supported', 'other')
+futurePlanned = new Element.Radiogroup('#suitable_housing_planned', ['yes', 'no'])
+futureType = new Element.Radiogroup('#future_accommodation_type', ['awaitingAssessment', 'awatingPlacement', 'buyHouse', 'friends', 'privateRent', 'socialRent', 'healthcare', 'supported', 'other')
 
 
 accommodationStrengths: {

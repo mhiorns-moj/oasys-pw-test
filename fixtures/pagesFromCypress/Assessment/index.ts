@@ -5,4 +5,4 @@ export { ProposalInformation } from './proposalInformation'
 export { Rfis } from './rfis'
 
 export { SummarySheet } from './summarySheet'
-export { SanSections } from './sanSections'
+export { SanSections } from '../../assessment/san/pages/sanSections'

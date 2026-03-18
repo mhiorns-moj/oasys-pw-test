@@ -128,4 +128,16 @@ export class Radiogroup<T extends string> {
     // cy.wrap(result).as(alias)
     // }
 
+
+    /**
+     * Select an item in a radio group.  Parameters are:
+     *   - item: a SanId defining a San radio group
+     *   - value: name of the item to select
+     */
+    static async sanSetValue(page: Page, item: SanId, value: string) {
+
+        const itemNo = item.options.indexOf(value)
+        const itemSuffix = itemNo == 0 ? '' : `-${itemNo + 1}`  // First item has no suffix on the id used to find it, remainder are -2, -3 etc
+        await page.locator(`${item.id}${itemSuffix}`).click()
+    }
 }

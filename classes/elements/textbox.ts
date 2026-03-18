@@ -121,4 +121,25 @@ export class Textbox<T> {
     //     cy.wrap(result).as(alias)
     // }
 
+
+    /**
+     * Enter text in a textbox.  Parameters are:
+     *   - item: a SanId defining a San textbox
+     *   - text: the text to enter
+     */
+    static async sanSetValue(page: Page, item: SanId, value: string) {
+
+        await page.locator(item.id).fill(value)
+    }
+
+    /**
+     * Check the text in a textbox.  Parameters are:
+     *   - item: a SanId defining a San textbox
+     *   - text: the text to check
+     */
+    static async sanCheckValue(page: Page, item: SanId, value: string) {
+
+        await expect(page.locator(item.id)).toHaveText(value)
+    }
+
 }

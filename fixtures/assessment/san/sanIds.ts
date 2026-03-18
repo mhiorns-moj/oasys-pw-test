@@ -224,7 +224,7 @@ export const sanIds: SanIds = {
     otherFrequency: { type: 'radio', id: '#how_often_used_last_six_months_other_drug', options: ['daily', 'weekly', 'monthly', 'occasionally'] },
     detailsNotLastSixMonths: { type: 'textbox', id: '#not_used_in_last_six_months_details' },
     injected: {
-        type: 'conditionalCheckbox', id: '#drugs_injected',
+        type: 'checkbox', id: '#drugs_injected',
         options: ['none', '-', 'amphetamines', 'benzodiazepines', 'cocaine', 'crack', 'heroin', 'methadone', 'prescribed', 'opiates', 'steroids', 'other']
     },
     amphetaminesInjectedLastSixMonths: { type: 'checkbox', id: '#drugs_injected_amphetamines', options: ['lastSix', 'moreThanSix'] },

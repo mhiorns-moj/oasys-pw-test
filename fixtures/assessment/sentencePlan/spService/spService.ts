@@ -19,7 +19,7 @@ export class SpService {
         if (from == 'offender') {
             await this.oasys.clickButton('Open SP')
         } else {
-            await this.sentencePlanService.goto()
+            await this.sentencePlanService.goto(true)
             await this.sentencePlanService.openSp.click()
         }
         if (!readonly) {

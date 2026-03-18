@@ -2,7 +2,7 @@ import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
 import { Oasys, Cms, Offender, OasysDb } from 'fixtures'
-import { BaseAssessmentPage, Common, Layer1, Layer3, Risk, Signing, SentencePlan } from 'fixtures/assessment'
+import { BaseAssessmentPage, Common, Layer1, Layer3, San, Risk, Signing, SentencePlan } from 'fixtures/assessment'
 import * as pages from './pages'
 
 
@@ -18,6 +18,7 @@ export class Assessment {
     readonly common = new Common(this.page, this.testInfo, this.oasys)
     readonly layer1 = new Layer1(this.page, this.testInfo, this.oasys)
     readonly layer3 = new Layer3(this.page, this.testInfo, this.oasys)
+    readonly san = new San(this.page, this.testInfo, this.oasys)
     readonly risk = new Risk(this.page, this.testInfo, this.oasys)
     readonly signing = new Signing(this.page, this.testInfo, this.oasys, this)
     readonly sentencePlan = new SentencePlan(this.page, this.testInfo, this.oasys)
@@ -36,8 +37,10 @@ export class Assessment {
      *  - selectAssessor?: string
      *
      * The second (Yes/No) parameter should be supplied if you are expecting the option to clone from a historic assessment.
+     * 
+     * Returns the assessment PK
      */
-    async createProb(assessmentDetails: CreateAssessmentDetails, clonePreviousHistoric?: 'Yes' | 'No') {
+    async createProb(assessmentDetails: CreateAssessmentDetails, clonePreviousHistoric?: 'Yes' | 'No'): Promise<number> {
 
         await this.getToCreateAssessmentPage(true)
 
@@ -47,7 +50,11 @@ export class Assessment {
             await this.oasys.clickButton(clonePreviousHistoric)
         }
 
-        lib.log(`Created assessment: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
+        const pnc = await this.baseAssessmentPage.getPncFromScreenContext()
+        const pk = await this.getLatestSetPkByPnc(pnc)
+
+        lib.log(`Created assessment PK ${pk}: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
+        return pk
     }
 
     /**
@@ -88,6 +95,7 @@ export class Assessment {
     async populateMinimal(params?: PopulateAssessmentParams) {
 
         await this.common.populateMinimal(params)
+
         switch (params?.layer) {
             case 'Layer 1':
                 await this.layer1.populateMinimal(params)
@@ -95,12 +103,61 @@ export class Assessment {
             case 'Layer 1V2':
                 break
             case 'Layer 3':
-                await this.layer3.populateMinimal(params)
+                await this.layer3.sections2To13NoIssues(params)
+                break
+            case 'Layer 3V2':
+                await this.san.populateMinimal()
                 break
         }
         await this.risk.populateMinimal(params)
         await this.sentencePlan.populateMinimal(params)
     }
+
+    // export function fullyPopulated(params: PopulateAssessmentParams) {
+
+    //     if (params.layer != 'Layer 1V2') {
+    //         populate.CommonPages.OffendingInformation.fullyPopulated(params)
+    //     }
+
+    //     switch (params.layer) {
+    //         case 'Layer 1':
+    //             populate.Layer1Pages.Predictors.minimal()
+    //             populate.Layer1Pages.Section2.fullyPopulated(params.maxStrings)
+    //             break
+    //         case 'Layer 1V2':
+    //             populate.RoshaPages.RoshaPredictors.fullyPopulated()
+    //             break
+    //         case 'Layer 3':
+    //             populate.Layer3Pages.Predictors.fullyPopulated(params)
+    //             sections2To13FullyPopulated(params)
+    //             break
+    //     }
+
+    //     if (params.layer != 'Layer 1V2') {
+    //         populate.CommonPages.SelfAssessmentForm.fullyPopulated(params.maxStrings)
+    //     }
+
+    //     populate.Rosh.screeningFullyPopulated(params)
+    //     populate.Rosh.fullAnalysisFullyPopulated(params)
+
+    //     switch (params.layer) {
+    //         case 'Layer 1':
+    //             // TODO
+    //             break
+    //         case 'Layer 1V2':
+    //             break
+    //         case 'Layer 3':
+    //             if (params.sentencePlan == 'Review') {
+    //                 rspFullyPopulated(params)
+    //             } else {
+    //                 ispFullyPopulated(params)
+    //             }
+    //             break
+    //     }
+
+    //     cy.log(`Fully populated assessment: ${JSON.stringify(params)}`)
+    // }
+
 
     /**
      * Select any existing assessments and delete them.  Assumes you have the appropriate rights and are on the OffenderDetails page with the assessments tab visible.

@@ -17,7 +17,9 @@ export class Common {
 
         await this.offendingInformation.populateMinimal()
         await this.predictors.populateMinimal()
-        await this.selfAssessmentForm.populateMinimal()
+        if (params?.layer != 'Layer 3V2') {
+            await this.selfAssessmentForm.populateMinimal()
+        }
     }
 
 }

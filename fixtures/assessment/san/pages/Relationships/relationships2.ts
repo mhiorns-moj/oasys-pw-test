@@ -1,15 +1,16 @@
-import * as SanElement from 'classes/san/sanElements'
+import { Element } from 'classes'
 import { BaseSanEditPage } from '../baseSanEditPage'
+import * as lib from 'lib'
 
 export class Relationships2 extends BaseSanEditPage {
 
     name = 'Relationships2'
     title = 'Personal relationships and community - Strengths and Needs'
 
-    importantPeople = new SanElement.CheckboxGroup<'partner' | 'ownChildren' | 'otherChildren' | 'family' | 'friends' | 'other'>('#personal_relationships_community_important_people', ['partner', 'ownChildren', 'otherChildren', 'family', 'friends', 'other'])
-// importantOtherDetails: {
-//     type: 'textbox', id: '#personal_relationships_community_important_people_other_details'
-// },
+    importantPeople = new Element.CheckboxGroup<'partner' | 'ownChildren' | 'otherChildren' | 'family' | 'friends' | 'other'>('#personal_relationships_community_important_people', ['partner', 'ownChildren', 'otherChildren', 'family', 'friends', 'other'])
+    // importantOtherDetails: {
+    //     type: 'textbox', id: '#personal_relationships_community_important_people_other_details'
+    // },
 }
 
 

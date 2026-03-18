@@ -111,7 +111,7 @@ export abstract class OasysPage {
      * 
      * Writes to the log, unless suppressLog (optional) is true.
      */
-    async goto(suppressLog: Boolean = false): Promise<typeof this> {
+    async goto(suppressLog: Boolean = false) {
 
         if (this.menu == null) {
             throw new Error(`Invalid goto for page ${this.name}`)
@@ -121,16 +121,16 @@ export abstract class OasysPage {
 
                 case 'Floating':
                     await this.waitForAnimation(this.floatingMenu)
-                    
+
                     if (this.menu.level2 == undefined) {
                         // first level only, just click
                         await this.floatingMenu.getByText(this.menu.level1).click()
-                        
+
                     } else {
                         // two levels: check if first level is expanded already, if not then click on the first
                         const level1LinkExpanded = this.page.locator('.active.expanded').filter({ hasText: this.menu.level1 })
                         const level1Expanded = await level1LinkExpanded.isVisible()
-                        
+
                         if (!level1Expanded) {
                             await this.floatingMenu.locator('.expandable').filter({ hasText: this.menu.level1 }).click()
                             await this.waitForAnimation(this.floatingMenu)
@@ -161,6 +161,10 @@ export abstract class OasysPage {
                     // }
                     break
 
+                case 'San':
+                    await this.page.locator('.moj-side-navigation__item a').filter({ hasText: this.name }).first().click()
+                    break
+                    
                 default:
                     throw new Error(`Invalid menu type for page ${this.name}`)
             }
@@ -168,7 +172,6 @@ export abstract class OasysPage {
 
         await this.checkCurrent(suppressLog)
         if (!suppressLog) oasys.log(`Go to page: ${this.name} `)
-        return this
     }
 
     /**
