@@ -1,6 +1,6 @@
 ﻿export { OffenderSearch } from './offenderSearch'
 export { AliasTab } from './aliasTab'
-export { AssessmentsTab } from './assessmentsTab'
+export { AssessmentsTab } from '../../assessment/pages/assessmentsTab'
 export { DeleteOffender } from './deleteOffender'
 export { Intbdtto } from './intbdtto'
 export { IntbdttoTab } from './intbdttoTab'

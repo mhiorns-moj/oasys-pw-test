@@ -9,7 +9,9 @@ export class Column {
     constructor(readonly page: Page, readonly type: ColumnType, selector: string, readonly tableId: string = null) {
 
         this.type = type
-        this.selector = page.getByRole('columnheader', { name: selector })
+        this.selector = selector.startsWith('#') || selector.includes('[')
+            ? page.locator(selector)
+            : page.getByRole('columnheader', { name: selector })
         if (tableId) {
             this.tableId = `#${tableId}`
         }
@@ -31,7 +33,7 @@ export class Column {
     async clickFirstRow() {
 
         const id = await this.getColumnHeaderId()
-        this.page.locator(`[headers="${id}"]`).first().click()
+        await this.page.locator(`[headers="${id}"]`).first().click()
     }
 
     /**
@@ -51,22 +53,21 @@ export class Column {
     }
 
     /**
-     * Returns the number of rows visible in a column using an alias
+     * Returns the number of rows visible in a column
      */
-    // getCount(resultAlias: string) {
+    async getCount(): Promise<number> {
 
-    //     cy.get(this.tableId ?? '#content').then((containerDiv) => {
-    //         const noData = containerDiv.find('.nodatafound')
-    //         if (noData.length > 0) {
-    //             cy.wrap(0).as(resultAlias)
-    //         } else {
-    //             this.getColumnHeaderId().then((id) => {
-    //                 const rows = containerDiv.find(`[headers="${id}"]`)
-    //                 cy.wrap(rows.length).as(resultAlias)
-    //             })
-    //         }
-    //     })
-    // }
+        const container = this.page.locator(this.tableId ?? '#content')
+        await container.waitFor()
+        const noData = await container.locator('.nodatafound').count()
+
+        if (noData > 0) {
+            return 0
+        } else {
+            const id = await this.getColumnHeaderId()
+            return await container.locator(`[headers="${id}"]`).count()
+        }
+    }
 
     /**
      * Checks that the number of rows visible in a column is as expected

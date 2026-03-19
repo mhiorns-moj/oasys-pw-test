@@ -41,7 +41,7 @@ export const oasys = base.extend<{ oasys: Oasys, oasysDb: OasysDb }>({
         await oasysDb.getLatestElogAndUnprocEventTime('check')
         await oasysDb.closeConnection()
         for (let log of lib.oasysLog) {
-            oasys.testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type ? '\n' : ''}${log.logText}` })
+            oasys.testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
         }
     }
 })

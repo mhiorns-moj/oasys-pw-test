@@ -15,6 +15,7 @@ export class Oasys {
     appConfig: AppConfig
     readonly users = users.Users
     readonly loginPage = new pages.Login(this.page)
+    readonly selectProviderPage = new pages.SelectProvider(this.page)
     readonly taskManager = new pages.TaskManager(this.page)  // TODO move to tasks object
 
     async login(user: User, provider?: string): Promise<void>
@@ -40,23 +41,22 @@ export class Oasys {
         await this.loginPage.password.setValue(password)
         await this.loginPage.login.click()
 
-        // if (provider) {
-        //     selectProvider(provider)
-        // }
+        if (provider) {
+            await this.selectProvider(provider)
+        }
 
         const loginDetails = await this.page.locator('#bannerbarrightrnd').textContent()
         lib.log(`${loginDetails.replace(/[\n\r\t]/gm, '')}  (${username})`, 'User')
     }
 
-    // /**
-    //  * Selects a provider or establishment, assuming you are already on the Provider/Establishment page
-    //  */
-    // export function selectProvider(provider: string) {
+    /**
+     * Selects a provider or establishment, assuming you are already on the Provider/Establishment page
+     */
+    async selectProvider(provider: string) {
 
-    //     const page = new oasys.Pages.Login.SelectProvider()
-    //     page.chooseProviderEstablishment.setValue(provider)
-    //     page.setProviderEstablishment.click()
-    // }
+        await this.selectProviderPage.chooseProviderEstablishment.setValue(provider)
+        await this.selectProviderPage.setProviderEstablishment.click()
+    }
 
     /**
      * Click the logout button on any page

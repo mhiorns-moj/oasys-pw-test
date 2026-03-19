@@ -11,7 +11,7 @@ import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
 import { User, Element } from 'classes'
-import { Oasys } from 'fixtures'
+import { Oasys, Assessment, OasysDb } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
 import { OasysDateTime } from 'lib'
@@ -20,7 +20,7 @@ import * as exampleTest from './exampleTest'
 
 export class San {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys) { }
+    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly assessment: Assessment, readonly oasysDb: OasysDb) { }
 
     readonly sanSections = new pages.SanSections(this.page)
     readonly landingPage = new pages.LandingPage(this.page)
@@ -130,38 +130,31 @@ export class San {
     async runScript(assessmentPk: number, script: SanScript, reset130: boolean = false): Promise<boolean> {
 
         let failed = false
-        let scenarioFailed: boolean[] = []
 
-        for (let i = 0; i < script.scenarios.length; i++) {  // Loop through scenarios in the script
-            let scenario = script.scenarios[i]
-            scenarioFailed.push(false)
+        for (let scenario of script.scenarios) { // Loop through scenarios in the script
 
-            await this.gotoSan(script.section)
-            console.log(scenario.name)
-            await this.runScenario(scenario.name, scenario.steps)
+            await this.gotoSan(script.section, true)
+            await this.runScenario(scenario.name, scenario.steps, true)
             await this.returnToOASys()
-            await this.oasys.clickButton('Previous')
+            await this.oasys.clickButton('Previous', true)
 
-            // checkLastUpdateTime(assessmentPk, `failedAlias${i}`)
-            // oasys.Db.checkAnswers(assessmentPk, scenario.oasysAnswers, `failedAlias${i}`)
-            // checkSanGetAssessmentCall(assessmentPk, 0)
-            // if (reset130) {  // OA testing requires 1.30 to be reset between scenarios because a YES will not be overwritten
-            //     gotoSan()
-            //     populateSanSections('Reset 1.30', reset)  // Change OA details to allow 1.30 to be editable
-            //     returnToOASys()
-            //     new oasys.Pages.Assessment.Predictors().goto().o1_30.setValue('')
-            // }
+            const updateTimeFailed = await this.oasysDb.sanQueries.checkLastUpdateTime(assessmentPk)
+            const getAssessmentCallFailed = await this.oasysDb.sanQueries.checkSanGetAssessmentCall(assessmentPk, 0, true)
+            const answersFailed = await this.oasysDb.oasysDataQueries.checkAnswers(assessmentPk, scenario.oasysAnswers, true)
+
+            if (updateTimeFailed || getAssessmentCallFailed || answersFailed) {
+                failed = true
+                lib.log('', `Scenario ${scenario.name} FAILED`)
+            }
+
+            if (reset130) {  // OA testing requires 1.30 to be reset between scenarios because a YES will not be overwritten
+                await this.gotoSan()
+                await this.populateSanSections('Reset 1.30', reset)  // Change OA details to allow 1.30 to be editable
+                await this.returnToOASys()
+                await this.assessment.common.predictors.goto()
+                await this.assessment.common.predictors.o1_30.setValue('')
+            }
         }
-
-        // Log statuses   
-        // for (let i = 0; i < script.scenarios.length; i++) {
-        //     cy.get<boolean>(`@failedAlias${i}`).then((failed) => {
-        //         lib.log(`Scenario ${i + 1} ${failed ? 'failed' : 'passed'}`)
-        //         if (failed) {
-        //             cy.wrap(true).as(resultAlias)
-        //         }
-        //     })
-        // }
 
         return failed
     }
@@ -171,13 +164,13 @@ export class San {
      *  - name: text for reporting purposes
      *  - script: a SanPopulation object defining questions/values/button clicks for one or more sections.
      */
-    async populateSanSections(name: string, script: SanPopulation) {
+    async populateSanSections(name: string, script: SanPopulation, suppressLog: boolean = false) {
 
         for (let section of script) {
             if (section.section != 'Sentence plan') {
-                await this.goto(section.section)
+                await this.goto(section.section, suppressLog)
             }
-            await this.runScenario(`${name} / ${section.section}`, section.steps)
+            await this.runScenario(`${name} / ${section.section}`, section.steps, suppressLog = false)
         }
     }
 
@@ -186,18 +179,20 @@ export class San {
      *  - name: text for reporting purposes
      *  - steps: a SanStep array defining all of the questions/values/button clicks required.
      */
-    async runScenario(name: string, steps: SanStep[]) {
+    async runScenario(name: string, steps: SanStep[], suppressLog = false) {
 
-        lib.log(`Scenario: ${name}`)
+        lib.log(' ', '')
+        lib.log('', `Scenario: ${name}`)
+        console.log(`Scenario: ${name}`)
         for (let step of steps) {
-            await this.runStep(step)
+            await this.runStep(step, suppressLog)
         }
     }
 
     /**
      * Execute a single test step on a SAN or SP screen, e.g. set a value or click a button.  The SanStep parameter defines the item and value(s) required.
      */
-    async runStep(step: SanStep) {
+    async runStep(step: SanStep, suppressLog: boolean = false) {
         const stepItem = sanIds[step.item]
         if (stepItem == undefined) {
             throw new Error(`Invalid item name: ${step.item}`)
@@ -206,23 +201,23 @@ export class San {
         switch (stepItem.type) {
             case 'radio':
                 await Element.Radiogroup.sanSetValue(this.page, stepItem, step.value)
-                lib.log(`Radio: ${step.item} - '${step.value}'`)
+                if (!suppressLog) lib.log(`Radio: ${step.item} - '${step.value}'`)
                 break
             case 'checkbox':
                 await Element.Checkbox.sanSetValue(this.page, stepItem, step.value)
-                lib.log(`Checkbox: ${step.item} - '${step.value}'`)
+                if (!suppressLog) lib.log(`Checkbox: ${step.item} - '${step.value}'`)
                 break
             case 'textbox':
                 await Element.Textbox.sanSetValue(this.page, stepItem, step.value)
-                lib.log(`Textbox: ${step.item} - '${step.value.length > 50 ? step.value.substring(0, 50) + '...' : step.value}'`)
+                if (!suppressLog) lib.log(`Textbox: ${step.item} - '${step.value.length > 50 ? step.value.substring(0, 50) + '...' : step.value}'`)
                 break
             case 'combo':
                 await Element.Combo.sanSetValue(this.page, stepItem, step.value)
-                lib.log(`Combo: ${step.item} - '${step.value}'`)
+                if (!suppressLog) lib.log(`Combo: ${step.item} - '${step.value}'`)
                 break
             case 'select':
                 await Element.Select.sanSetValue(this.page, stepItem, step.value)
-                lib.log(`Select: ${step.item} - '${step.value}'`)
+                if (!suppressLog) lib.log(`Select: ${step.item} - '${step.value}'`)
                 break
             case 'date':
                 // await this.enterDate(stepItem, step.value)
@@ -230,10 +225,11 @@ export class San {
                 break
             case 'action':
                 await this.action(step.item)
-                lib.log(`Action: ${step.item}`)
+                if (!suppressLog) lib.log(`Action: ${step.item}`)
                 break
             case 'button':
                 await Element.Button.sanClick(this.page, stepItem)
+                if (!suppressLog) lib.log(`Button: ${step.item}`)
                 break
         }
     }
@@ -440,27 +436,7 @@ export class San {
 
     // }
 
-    // /**
-    //  * Checks that the last update time in oasys_set matches the current system time (with a 30 second tolerance) for a given assessment PK.
-    //  * 
-    //  * Returns a boolean result using the supplied alias (true if failed).
-    //  */
-    // async checkLastUpdateTime(pk: number, resultAlias: string) {
 
-    //     const query = `select to_char(lastupd_from_san, '${OasysDateTime.oracleTimestampFormat}'), to_char(sysdate, '${OasysDateTime.oracleTimestampFormat}') 
-    //                 from eor.oasys_set where oasys_set_pk = ${pk}`
-
-    //     oasys.Db.getData(query, 'updateTimes')
-    //     cy.get<string[][]>('@updateTimes').then((updateTimes) => {
-    //         const diff = OasysDateTime.timestampDiffString(updateTimes[0][0], updateTimes[0][1])  // ms
-    //         let failed = false
-    //         if (diff > 30000) {  // 30 seconds - allows time from updating SAN, returning to OASys and updating the db.
-    //             cy.log(`FAILED - SAN update time mismatch in oasys_set- expected: ${updateTimes[0][0]}, updated: ${updateTimes[0][1]}`)
-    //             failed = true
-    //         }
-    //         cy.wrap(failed).as(resultAlias)
-    //     })
-    // }
 
     // /**
     //  * Gets the time for the last API call of the specified type for a given PK, returned using an alias as a Temporal date/time object including milliseconds
@@ -768,39 +744,7 @@ export class San {
     //     })
     // }
 
-    // /**
-    //  * Checks cLog for a getAssessment call for the given PK, including the expected version number in the respose.
-    //  */
-    // async checkSanGetAssessmentCall(pk: number, expectedVersion: number) {
 
-    //     cy.log(`Checking GetAssessment call for ${pk}`)
-    //     const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_GET_ASS%' order by time_stamp desc fetch first 2 rows only`
-    //     oasys.Db.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         let failed = false
-
-    //         if (clogData.length != 2) {
-    //             cy.log(`Expected 2 rows in CLog, found ${clogData.length}`)
-    //             failed = true
-    //         } else {
-    //             if (clogData[1][0].search(pk.toString()) < 0) {
-    //                 cy.log(`${pk} not found in GetAssessment call`)
-    //                 failed = true
-    //             }
-    //             const sanVersionNumber = findSanVersion(clogData[0][0])
-    //             if (sanVersionNumber != expectedVersion) {
-    //                 cy.log(`Expected version: ${expectedVersion}, found ${sanVersionNumber}`)
-    //                 failed = true
-    //             }
-    //         }
-
-    //         cy.then(() => {
-    //             if (failed) {
-    //                 throw new Error('Error checking GetAssessment API call')
-    //             }
-    //         })
-    //     })
-    // }
 
     // /**
     //  * Confirms that there is nothing in cLog relating to any SAN API calls for the given PK
@@ -862,25 +806,6 @@ export class San {
     //         })
     //     })
     // }
-
-    findSanVersion(data: string): number {
-
-        const vStart = data.search('sanAssessmentVersion') + 22
-        let sanVersionNumber = data.substring(vStart, vStart + 4)
-        const vEnd = sanVersionNumber.search(',')
-
-        const number = parseInt(sanVersionNumber.substring(0, vEnd))
-        return number
-    }
-
-    findSpVersion(data: string): number {
-
-        const vStart = data.search('sentencePlanVersion') + 21
-        let spVersionNumber = data.substring(vStart, vStart + 4)
-        const vEnd = spVersionNumber.search('}')
-        const number = parseInt(spVersionNumber.substring(0, vEnd))
-        return number
-    }
 
     //  checkSanCall(name: string, sourceFilter: string, url: string, pk: number, expectedUser: User,
     //     otherChecks?: { signingType?: 'SELF' | 'COUNTERSIGN', outcome?: string }) {

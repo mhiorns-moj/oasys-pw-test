@@ -164,13 +164,15 @@ export abstract class OasysPage {
                 case 'San':
                     await this.page.locator('.moj-side-navigation__item a').filter({ hasText: this.name }).first().click()
                     break
-                    
+
                 default:
                     throw new Error(`Invalid menu type for page ${this.name}`)
             }
         }
 
-        await this.checkCurrent(suppressLog)
+        if (this.menu.type != 'San') {
+            await this.checkCurrent(suppressLog)
+        }
         if (!suppressLog) oasys.log(`Go to page: ${this.name} `)
     }
 

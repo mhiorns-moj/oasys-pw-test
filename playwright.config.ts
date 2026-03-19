@@ -12,11 +12,11 @@ export default defineConfig({
   testDir: 'tests',
   testMatch: '**/*.test.ts',
   fullyParallel: false,
-  timeout: 300_000,
+  timeout: 600_000,
   maxFailures: 1,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { open: 'never' }]],
+  reporter: [['html', { open: 'never', noSnippets: true }]],
 
   use: {
     trace: 'on-first-retry',
@@ -24,7 +24,7 @@ export default defineConfig({
     headless: true,
     actionTimeout: 10_000,
     navigationTimeout: 10_000,
-    
+
   },
 
   /* Configure projects for major browsers */

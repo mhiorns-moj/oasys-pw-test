@@ -1,11 +1,10 @@
+import { test } from 'fixtures'
 import { mappingTest } from './xMappingTest'
 import * as data from '../data/mapping'
 
 // Ensure tests/data/local/mappingTestsOffender.txt has been updated by running aaSanMappingTestOffender first.
 
-describe('SAN mapping tests', () => {
+test('Mapping test: thinking part 1', async ({ oasys, offender, assessment }) => {
 
-    it('Health', () => {
-        mappingTest(data.Health.script)
-    })
+    await mappingTest(oasys, offender, assessment, data.Thinking.script)
 })

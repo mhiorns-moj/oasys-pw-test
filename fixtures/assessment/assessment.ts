@@ -14,11 +14,13 @@ export class Assessment {
 
     readonly baseAssessmentPage = new BaseAssessmentPage(this.page)
     readonly createAssessmentPage = new pages.CreateAssessment(this.page)
+    readonly assessmentsTab = new pages.AssessmentsTab(this.page)
+    readonly deleteAssessment = new pages.DeleteAssessment(this.page)
 
     readonly common = new Common(this.page, this.testInfo, this.oasys)
     readonly layer1 = new Layer1(this.page, this.testInfo, this.oasys)
     readonly layer3 = new Layer3(this.page, this.testInfo, this.oasys)
-    readonly san = new San(this.page, this.testInfo, this.oasys)
+    readonly san = new San(this.page, this.testInfo, this.oasys, this, this.oasysDb)
     readonly risk = new Risk(this.page, this.testInfo, this.oasys)
     readonly signing = new Signing(this.page, this.testInfo, this.oasys, this)
     readonly sentencePlan = new SentencePlan(this.page, this.testInfo, this.oasys)
@@ -71,12 +73,18 @@ export class Assessment {
      *  - selectAssessor?: string
      * 
      */
-    async createPris(assessmentDetails: CreateAssessmentDetails) {
+    async createPris(assessmentDetails: CreateAssessmentDetails): Promise<number> {
 
         await this.offender.offenderDetails.createAssessment.click()
         await this.createAssessmentPage.setValues(assessmentDetails, true)
         await this.createAssessmentPage.create.click()
-        lib.log(`Created assessment: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
+
+        const pnc = await this.baseAssessmentPage.getPncFromScreenContext()
+        const pk = await this.getLatestSetPkByPnc(pnc)
+
+        lib.log(`Created assessment PK ${pk}: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
+        return pk
+
     }
 
     /**
@@ -162,23 +170,19 @@ export class Assessment {
     /**
      * Select any existing assessments and delete them.  Assumes you have the appropriate rights and are on the OffenderDetails page with the assessments tab visible.
      */
-    // async deleteAll(surname: string, forename: string) {
+    async deleteAll(surname: string, forename: string) {
 
-    //     const tab = new this.oasys.Pages.Offender.AssessmentsTab()
-    //     const deleteAssessment = new this.oasys.Pages.Assessment.Other.DeleteAssessment()
+        const count = await this.assessmentsTab.assessments.purposeOfAssessment.getCount()
 
-    //     tab.assessments.purposeOfAssessment.getCount('count')
-    //     cy.get<number>('@count').then((count) => {
-    //         for (let i = 0; i < count; i++) {
-    //             tab.assessments.purposeOfAssessment.clickFirstRow()
-    //             deleteAssessment.goto(true)
-    //             deleteAssessment.reasonForDeletion.setValue('Testing')
-    //             deleteAssessment.ok.click()
-    //             this.oasys.Nav.history(surname, forename)
-    //         }
-    //         lib.log(`Deleted ${count} assessment(s)`)
-    //     })
-    // }
+        for (let i = 0; i < count; i++) {
+            await this.assessmentsTab.assessments.purposeOfAssessment.clickFirstRow()
+            await this.deleteAssessment.goto(true)
+            await this.deleteAssessment.reasonForDeletion.setValue('Testing')
+            await this.deleteAssessment.ok.click()
+            await this.oasys.history(surname, forename)
+        }
+        lib.log(`Deleted ${count} assessment(s)`)
+    }
 
     /**
      * Delete the most recent assessment.  Assumes you have the appropriate rights and are on the OffenderDetails page with the assessments tab visible.
@@ -353,16 +357,13 @@ export class Assessment {
     async getPk(query: string, returnAll: boolean = false): Promise<number | number[]> {
 
         const data = await this.oasysDb.getData(query)
-
         if (data.length > 0) {
             if (returnAll) {
                 const pks: number[] = []
                 data.forEach((pk) => pks.push(Number.parseInt(pk[0])))
-                lib.log(JSON.stringify(pks), 'Assessment PKs')
                 return pks
             } else {
                 const pk = Number.parseInt(data[0][0])
-                lib.log(pk.toString(), 'Assessment PK')
                 return pk
             }
         } else {
