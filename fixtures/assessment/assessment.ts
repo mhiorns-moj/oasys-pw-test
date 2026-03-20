@@ -1,14 +1,15 @@
 import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
-import { Oasys, Cms, Offender, OasysDb } from 'fixtures'
+import { Oasys, Cms, Offender, OasysDb, Tasks } from 'fixtures'
 import { BaseAssessmentPage, Common, Layer1, Layer3, San, Risk, Signing, SentencePlan } from 'fixtures/assessment'
 import * as pages from './pages'
 
 
 export class Assessment {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly cms: Cms, readonly offender: Offender, readonly oasysDb: OasysDb) { }
+    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly cms: Cms,
+        readonly offender: Offender, readonly oasysDb: OasysDb, readonly tasks: Tasks) { }
 
     assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
@@ -22,7 +23,7 @@ export class Assessment {
     readonly layer3 = new Layer3(this.page, this.testInfo, this.oasys)
     readonly san = new San(this.page, this.testInfo, this.oasys, this, this.oasysDb)
     readonly risk = new Risk(this.page, this.testInfo, this.oasys)
-    readonly signing = new Signing(this.page, this.testInfo, this.oasys, this)
+    readonly signing = new Signing(this.page, this.testInfo, this.oasys, this, this.tasks)
     readonly sentencePlan = new SentencePlan(this.page, this.testInfo, this.oasys)
 
     /**

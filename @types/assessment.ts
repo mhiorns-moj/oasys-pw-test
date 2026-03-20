@@ -122,3 +122,5 @@ declare type PopulateAssessmentParams = {
     populate6_11?: 'Yes' | 'No',
     newSp?: boolean,
 }
+
+declare type SigningPage = 'basic' | 'isp' | 'rsp' | 'spService' | 'rmp' | 'riskScreening'

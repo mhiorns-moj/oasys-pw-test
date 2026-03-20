@@ -42,8 +42,8 @@ export class Sns {
                 }
             }
 
-            // Get SNS messages from the database for the assessment - limit to last 15 seconds
-            const snsData = await this.oasysDb.getData(DbSns.query(assessment.pk, type, 15))
+            // Get SNS messages from the database for the assessment - limit to last 5 seconds
+            const snsData = await this.oasysDb.getData(DbSns.query(assessment.pk, type, 5))
             for (let sns of snsData) {
                 actualSnsMessages.push(new DbSns(sns))
             }
@@ -68,22 +68,22 @@ export class Sns {
             }
 
             for (let expectedSnsMessage of expectedSnsMessages) {
-                lib.log(`* ${expectedSnsMessage.messageType}`)
-
+                
                 const actualSnsMessage = this.getLastActualSnsMessage(actualSnsMessages, expectedSnsMessage.messageType)
                 if (actualSnsMessage == null) {
                     failed = true
-                    lib.log(`Expected ${expectedSnsMessage.messageType} message not found`)
+                    lib.log(`FAILED - Expected ${expectedSnsMessage.messageType} message not found`)
                 } else if (actualSnsMessage.messageSubject != expectedSnsMessage.messageSubject) {
                     failed = true
-                    lib.log(`Expected subject: ${expectedSnsMessage.messageSubject}, got: ${actualSnsMessage.messageSubject}`)
+                    lib.log(`FAILED - Expected subject: ${expectedSnsMessage.messageSubject}, got: ${actualSnsMessage.messageSubject}`)
                 } else {
                     if (this.validateSNS(expectedSnsMessage, actualSnsMessage)) {
+                        lib.log(`FAILED - ${expectedSnsMessage.messageType}`)
                         lib.log(JSON.stringify(actualSnsMessage))
                         failed = true
                     }
                     else {
-                        lib.log(`Passed`)
+                        lib.log(`* ${expectedSnsMessage.messageType} - passed`)
                     }
                 }
                 lib.log('')
@@ -92,7 +92,7 @@ export class Sns {
                 actualSnsMessages.forEach((actualSnsMessage) => {
                     if (expectedSnsMessages.filter(m => m.messageType == actualSnsMessage.messageType).length == 0) {
                         failed = true
-                        lib.log(`Found ${actualSnsMessage.messageType} message not expected`)
+                        lib.log(`FAILED - Found ${actualSnsMessage.messageType} message not expected`)
                     }
                 })
             }

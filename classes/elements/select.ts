@@ -33,10 +33,10 @@ export class Select<T extends string> {
     //     })
     // }
 
-    // getValue(alias: string) {
+    async getValue(): Promise<string> {
 
-    //     cy.get(this.selector).find(':selected').invoke('text').as(alias)
-    // }
+        return await this.selector.textContent()
+    }
 
     // checkStatus(status: ElementStatus) {
 

@@ -8,6 +8,7 @@ import { Cms } from './cms/cms'
 import { Offender } from './offender/offender'
 import { Assessment } from './assessment'
 import { Sns } from './sns/sns'
+import { Tasks } from './tasks/tasks'
 
 export { OasysDb } from './oasysDb/oasysDb'
 export { Oasys } from './oasys/oasys'
@@ -15,6 +16,7 @@ export { Cms } from './cms/cms'
 export { Offender } from './offender/offender'
 export { Assessment } from './assessment'
 export { Sns } from './sns/sns'
+export { Tasks } from './tasks/tasks'
 
 
 export const oasysDb = base.extend<{ oasysDb: OasysDb }>({
@@ -58,6 +60,15 @@ export const cms = oasys.extend<{ oasys: Oasys, cms: Cms }>({
     }
 })
 
+export const tasks = oasys.extend<{ oasys: Oasys, tasks: Tasks }>({
+
+    tasks: async ({ page, oasys }, use: Function, testInfo: TestInfo) => {
+
+        const tasks = new Tasks(page, testInfo, oasys)
+        await use(tasks)
+    }
+})
+
 export const offender = oasys.extend<{ oasys: Oasys, cms: Cms, offender: Offender, oasysDb: OasysDb }>({
 
     offender: async ({ page, oasys, cms, oasysDb }, use: Function, testInfo: TestInfo) => {
@@ -67,11 +78,11 @@ export const offender = oasys.extend<{ oasys: Oasys, cms: Cms, offender: Offende
     }
 })
 
-export const assessment = oasys.extend<{ oasys: Oasys, cms: Cms, offender: Offender, assessment: Assessment, oasysDb: OasysDb }>({
+export const assessment = oasys.extend<{ oasys: Oasys, cms: Cms, offender: Offender, assessment: Assessment, oasysDb: OasysDb, tasks: Tasks }>({
 
-    assessment: async ({ page, oasys, cms, offender, oasysDb }, use: Function, testInfo: TestInfo) => {
+    assessment: async ({ page, oasys, cms, offender, oasysDb, tasks }, use: Function, testInfo: TestInfo) => {
 
-        const assessment = new Assessment(page, testInfo, oasys, cms, offender, oasysDb)
+        const assessment = new Assessment(page, testInfo, oasys, cms, offender, oasysDb, tasks)
         await use(assessment)
     }
 })
@@ -85,4 +96,4 @@ export const sns = oasys.extend<{ oasys: Oasys, oasysDb: OasysDb, sns: Sns }>({
     }
 })
 
-export const test = mergeTests(oasys, cms, offender, assessment, oasysDb, sns)
+export const test = mergeTests(oasys, cms, offender, assessment, oasysDb, sns, tasks)

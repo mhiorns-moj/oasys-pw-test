@@ -12,6 +12,8 @@ export class Risk {
     readonly roshScreeningSection1 = new pages.RoshScreeningSection1(this.page)
     readonly roshScreeningSection2to4 = new pages.RoshScreeningSection2to4(this.page)
     readonly roshScreeningSection5 = new pages.RoshScreeningSection5(this.page)
+    readonly roshSummary = new pages.RoshSummary(this.page)
+    readonly riskManagementPlan = new pages.RiskManagementPlan(this.page)
 
     async populateMinimal(params?: PopulateAssessmentParams) {
 
@@ -19,4 +21,34 @@ export class Risk {
         await this.roshScreeningSection2to4.populateMinimal()
     }
 
+    /**
+     * Enters minimum Rosh screening responses but with R1.2.1P set to Yes to get full analysis.
+     * Sets risk flags to the risk level specified, and enters some basic text on risk summary and RMP.
+     */
+    async populateWithSpecificRiskLevel(risk: RiskLevel, withRationale: boolean = false) {
+
+        await this.roshScreeningSection1.populateMinimal()
+        await this.roshScreeningSection1.r1_2_1P.setValue('Yes')
+        await this.roshScreeningSection2to4.populateMinimal(withRationale)
+
+        await this.roshSummary.goto(true)
+        await this.roshSummary.r10_1.setValue('R10.1 details')
+        await this.roshSummary.r10_2.setValue('R10.2 details')
+        await this.roshSummary.riskFactorAnslysis.setValue('Risk factor analysis')
+        await this.roshSummary.r10_5.setValue('R10.5 details')
+        await this.roshSummary.r10_3.setValue('R10.3 details')
+        await this.roshSummary.r10_6ChildrenCommunity.setValue(risk)
+        await this.roshSummary.r10_6ChildrenCustody.setValue(risk)
+        await this.roshSummary.r10_6PublicCommunity.setValue(risk)
+        await this.roshSummary.r10_6PublicCustody.setValue(risk)
+        await this.roshSummary.r10_6AdultCommunity.setValue(risk)
+        await this.roshSummary.r10_6AdultCustody.setValue(risk)
+        await this.roshSummary.r10_6StaffCommunity.setValue(risk)
+        await this.roshSummary.r10_6StaffCustody.setValue(risk)
+        await this.roshSummary.r10_6PrisonersCustody.setValue(risk)
+
+        if (risk != 'Low') {
+            await this.riskManagementPlan.minimalWithTextFields()
+        }
+    }
 }

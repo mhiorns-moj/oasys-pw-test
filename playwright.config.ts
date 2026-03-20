@@ -12,6 +12,7 @@ export default defineConfig({
   testDir: 'tests',
   testMatch: '**/*.test.ts',
   fullyParallel: false,
+  workers: 1,
   timeout: 600_000,
   maxFailures: 1,
 

@@ -4,6 +4,7 @@ import * as lib from 'lib'
 export class RiskManagementPlan extends BaseAssessmentPage {
 
     name = 'RiskManagementPlan'
+    title = 'Risk Management Plan'
     menu: Menu = { type: 'Floating', level1: 'Risk Management Plan' }
 
     signAndLock = new Element.Button(this.page, 'Sign & Lock')
@@ -55,4 +56,93 @@ export class RiskManagementPlan extends BaseAssessmentPage {
     contingency = new Element.Textbox(this.page, '#textarea_RM34')
     additionalComments = new Element.Textbox(this.page, '#textarea_RM35')
     considerMappa = new Element.Text(this.page, 'You have assessed the individual as High Rosh and committing current or past domestic abuse.Consider referral to MAPPA.')
+
+
+    async minimal(earlyAllocation: boolean = false) {
+
+        lib.log('Minimally populating Risk Management Plan')
+        await this.goto(true)
+
+        await this.r11_1a.setValue('Yes')
+        await this.r11_1b.setValue('Yes')
+        await this.r11_1c.setValue('Yes')
+        await this.r11_1d.setValue('Yes')
+        if (earlyAllocation) {
+            await this.r11_13.setValue('Automatic early allocation')
+        }
+    }
+
+    async minimalWithTextFields(earlyAllocation: boolean = false) {
+
+        await this.minimal(earlyAllocation)
+        await this.additionalComments.setValue('Some additional comments')
+        await this.furtherConsiderations.setValue('FurtherConsiderations')
+        await this.supervision.setValue('Supervision')
+        await this.monitoring.setValue('Monitoring')
+        await this.interventions.setValue('Interventions')
+        await this.victimSafety.setValue('VictimSafety')
+        await this.contingency.setValue('Contingency')
+    }
+
+    // export function fullyPopulated(params?: PopulateAssessmentParams) {
+
+    //     const page = new oasys.Pages.Rosh.RiskManagementPlan().goto(true)
+    //     page.r11_1a.setValue('Yes')
+    //     page.r11_1b.setValue('Yes')
+    //     page.r11_1c.setValue('Yes')
+    //     page.r11_1d.setValue('Yes')
+    //     if (params?.provider) {
+    //         page.r11_13.setValue('Automatic early allocation')
+    //     }
+
+    //     if (params?.layer != 'Layer 1V2') {
+    //         rmpCheckboxes(page, params)
+
+    //         page.additionalComments.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Some additional comments')
+    //         page.furtherConsiderations.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'FurtherConsiderations')
+    //         page.supervision.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Supervision')
+    //         page.monitoring.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Monitoring')
+    //         page.interventions.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Interventions')
+    //         page.victimSafety.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'VictimSafety')
+    //         page.contingency.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Contingency')
+    //     }
+    // }
+
+    // function rmpCheckboxes(page: oasys.Pages.Rosh.RiskManagementPlan, params?: PopulateAssessmentParams) {
+
+    //     if (params?.layer != 'Layer 1V2') {
+    //         page.weapons.setValue(true)
+    //         page.arson.setValue(true)
+    //         if (params?.layer == 'Layer 3') {
+    //             page.accommodation.setValue(true)
+    //             page.education.setValue(true)
+    //             page.finances.setValue(true)
+    //             page.relationships.setValue(true)
+    //             page.lifestyle.setValue(true)
+    //             page.drugs.setValue(true)
+    //             page.alcohol.setValue(true)
+    //             page.emotional.setValue(true)
+    //             page.thinking.setValue(true)
+    //             page.attitudes.setValue(true)
+    //         }
+    //         page.domesticAbuse.setValue(true)
+    //         page.hateCrime.setValue(true)
+    //         page.stalking.setValue(true)
+    //         page.selfHarm.setValue(true)
+    //         page.copingInCustody.setValue(true)
+    //         page.vulnerability.setValue(true)
+    //         page.escapeRisks.setValue(true)
+    //         page.riskToChildren.setValue(true)
+    //         page.riskToKnownAdult.setValue(true)
+    //         page.riskToPrisoners.setValue(true)
+    //         page.riskToStaff.setValue(true)
+    //         if (params?.layer == 'Layer 3') {
+    //             page.emotionalCongruence.setValue(true)
+    //             page.sexualPreOccupation.setValue(true)
+    //             page.sexualInterests.setValue(true)
+    //             page.victimSafetyPlanning.setValue(true)
+    //             page.hostileOrientation.setValue(true)
+    //         }
+    //     }
+    // }
 }

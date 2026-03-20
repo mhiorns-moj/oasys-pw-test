@@ -1,7 +1,7 @@
 import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
-import { Oasys, Assessment } from 'fixtures'
+import { Oasys, Assessment, Tasks } from 'fixtures'
 import * as pages from './pages'
 import { User } from 'classes/user'
 import { checkOgrs4CalcsPk } from 'lib/ogrs'
@@ -9,12 +9,13 @@ import { checkOgrs4CalcsPk } from 'lib/ogrs'
 export class Signing {
 
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly assessment: Assessment) { }
+    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly assessment: Assessment, readonly tasks: Tasks) { }
 
 
     readonly signingStatus = new pages.SigningStatus(this.page)
     readonly rsrConfirm = new pages.RsrConfirm(this.page)
     readonly cPage = new pages.CountersignatureRequired(this.page)
+    readonly countersigning = new pages.Countersigning(this.page)
 
     /**
      * Sign and lock an assessment.  The optional parameter is an object with optional properties as listed below.
@@ -34,22 +35,12 @@ export class Signing {
      */
     async signAndLock(
         params?: {
-            page?: 'basic' | 'isp' | 'rsp' | 'spService' | 'rmp' | 'riskScreening',
-            expectOutstandingQuestions?: boolean, expectRsrScore?: boolean, expectRsrWarning?: boolean,
+            page?: SigningPage, expectOutstandingQuestions?: boolean, expectRsrScore?: boolean, expectRsrWarning?: boolean,
             expectCountersigner?: boolean, countersignCancel?: boolean, countersigner?: any, countersignComment?: string
         }) {
 
         lib.log(`Sign & lock assessment`)
-        if (params?.page) {  // TODO complete this
-            switch (params.page) {
-                case 'basic':
-                    await this.assessment.sentencePlan.basicSentencePlan.goto(true)
-                    break
-                case 'spService':
-                    await this.assessment.sentencePlan.spService.sentencePlanService.goto(true)
-                    break
-            }
-        }
+        await this.gotoSigningPage(params?.page)
 
         // Grab the PNC to find the oasys_set in the database for OGRS4 testing
         const pnc = await this.assessment.baseAssessmentPage.getPncFromScreenContext()
@@ -74,9 +65,9 @@ export class Signing {
             }
             else {
                 if (params.countersigner?.constructor?.name == 'User') {
-                    // await this.cPage.countersigner.setValue((params.countersigner as User).lovLookup) // TODO
+                    await this.cPage.countersigner.setValue((params.countersigner as User).lovLookup)
                 } else if (params.countersigner != null) {
-                    // await this.cPage.countersigner.setValue(params.countersigner as string)
+                    await this.cPage.countersigner.setValue(params.countersigner as string)
                 }
                 await this.cPage.comments.setValue(params.countersignComment ?? 'Assessment needs to be countersigned')
                 await this.cPage.confirm.click()
@@ -89,7 +80,7 @@ export class Signing {
 
         // Check for unwanted countersigning
         if (!params?.countersignCancel) {
-            await this.oasys.taskManager.checkCurrent(true)
+            await this.tasks.taskManager.checkCurrent(true)
         }
     }
 
@@ -104,26 +95,24 @@ export class Signing {
      * 
      *   - comment: countersigning comment (a generic comment will be used if this is not provided)
      */
-    // async countersign(params?: { page?: IPage, offender?: OffenderDef, comment?: string }) {
+    async countersign(params?: { page?: SigningPage, offender?: OffenderDef, comment?: string }) {
 
-    //     lib.log(`Countersign assessment`)
+        lib.log(`Countersign assessment`)
 
-    //     if (params?.offender) {
-    //         this.oasys.Task.openAssessmentFromCountersigningTaskByName(params.offender.surname)
-    //         this.oasys.Nav.clickButton('Return to Assessment')
-    //     }
+        if (params?.offender) {
+            await this.tasks.openAssessmentFromCountersigningTask(params.offender)
+            await this.oasys.clickButton('Return to Assessment')
+        }
 
-    //     if (params?.page) {
-    //         new params.page().goto(true)
-    //     }
+        await this.gotoSigningPage(params?.page)
 
-    //     this.oasys.Nav.clickButton('Countersign')
-    //     const countersigning = new this.oasys.Pages.Signing.Countersigning()
-    //     countersigning.selectAction.setValue('Countersign')
-    //     countersigning.comments.setValue(params?.comment ?? 'Countersigning the assessment')
-    //     countersigning.ok.click()
-    //     new this.oasys.Pages.Tasks.TaskManager().checkCurrent()
-    // }
+        await this.oasys.clickButton('Countersign')
+        await this.countersigning.selectAction.setValue('Countersign')
+        await this.countersigning.comments.setValue(params?.comment ?? 'Countersigning the assessment')
+        await this.countersigning.ok.click()
+
+        await this.tasks.taskManager.checkCurrent(true)
+    }
 
     /**
      * Checks that the expected set of OASYS_SIGNING records are found for a given assessment PK; the expectedActions parameter should include all actions, latest first.
@@ -141,5 +130,19 @@ export class Signing {
     //         }
     //     })
     // }
+
+    async gotoSigningPage(signingPage: SigningPage) {
+
+        // TODO complete this
+        switch (signingPage) {
+            case 'basic':
+                await this.assessment.sentencePlan.basicSentencePlan.goto(true)
+                break
+            case 'spService':
+                await this.assessment.sentencePlan.spService.sentencePlanService.goto(true)
+                break
+        }
+
+    }
 
 }

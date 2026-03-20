@@ -97,8 +97,8 @@ export class Table {
     /**
      * Click the first row in a table
      */
-    clickFirstRow() {
-        this.firstColumn().clickFirstRow()
+    async clickFirstRow() {
+        await this.firstColumn().clickFirstRow()
     }
 
     /**
@@ -109,7 +109,7 @@ export class Table {
     }
 
     firstColumn(): Column {
-        return (this[Object.keys(this).filter((k) => !['id', 'name'].includes(k))[0]] as Column)
+        return (this[Object.keys(this).filter((k) => !['page', 'id', 'name'].includes(k))[0]] as Column)
     }
 
 }

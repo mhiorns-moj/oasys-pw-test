@@ -16,7 +16,6 @@ export class Oasys {
     readonly users = users.Users
     readonly loginPage = new pages.Login(this.page)
     readonly selectProviderPage = new pages.SelectProvider(this.page)
-    readonly taskManager = new pages.TaskManager(this.page)  // TODO move to tasks object
 
     async login(user: User, provider?: string): Promise<void>
     async login(username: string, password: string, provider?: string): Promise<void>
