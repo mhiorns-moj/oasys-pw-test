@@ -152,13 +152,13 @@ export abstract class OasysPage {
                     break
 
                 case 'Subform':
-                    // if (this.menu.level1 != '') {
-                    //     if (this.menu.level1.startsWith('#') || this.menu.level1.includes('[')) {
-                    //         cy.get(this.menu.level1).eq(0).click()
-                    //     } else {
-                    //         oasys.Nav.clickButton(this.menu.level1, true)
-                    //     }
-                    // }
+                    if (this.menu.level1 != '') {
+                        if (this.menu.level1.startsWith('#') || this.menu.level1.includes('[')) {
+                            await this.page.locator(this.menu.level1).first().click()
+                        } else {
+                            await this.page.getByRole('button', { name: this.menu.level1 }).first().click()
+                        }
+                    }
                     break
 
                 case 'San':

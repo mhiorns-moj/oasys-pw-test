@@ -17,6 +17,7 @@ export class Assessment {
     readonly createAssessmentPage = new pages.CreateAssessment(this.page)
     readonly assessmentsTab = new pages.AssessmentsTab(this.page)
     readonly deleteAssessment = new pages.DeleteAssessment(this.page)
+    readonly rfis = new pages.Rfis(this.page)
 
     readonly common = new Common(this.page, this.testInfo, this.oasys)
     readonly layer1 = new Layer1(this.page, this.testInfo, this.oasys)

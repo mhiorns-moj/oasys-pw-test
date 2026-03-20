@@ -10,20 +10,20 @@ export class StandaloneRsr extends OasysPage {
     close = new Element.Button(this.page, 'Close')
     calculateScores = new Element.Button(this.page, 'Calculate Predictor Scores')
 
-    offence = new Element.Textbox<string>('#P5_CT_OFFENCE_CODE_TEXT')
-    offenceDescription = new Element.Textbox<string>('#LOVDSC_P5_CT_OFFENCE_CODE_TEXT')
-    subcode = new Element.Textbox<string>('#P5_CT_OFFENCE_SUBCODE_TEXT')
-    subcodeDescription = new Element.Textbox<string>('#LOVDSC_P5_CT_OFFENCE_SUBCODE_TEXT')
-    offenceLov = new Element.Link("//input[@id='P5_CT_OFFENCE_CODE_TEXT']/following::a/img")
-    subcodeLov = new Element.Link("//input[@id='P5_CT_OFFENCE_SUBCODE_TEXT']/following::a/img")
+    offence = new Element.Textbox<string>(this.page, '#P5_CT_OFFENCE_CODE_TEXT')
+    offenceDescription = new Element.Textbox<string>(this.page, '#LOVDSC_P5_CT_OFFENCE_CODE_TEXT')
+    subcode = new Element.Textbox<string>(this.page, '#P5_CT_OFFENCE_SUBCODE_TEXT')
+    subcodeDescription = new Element.Textbox<string>(this.page, '#LOVDSC_P5_CT_OFFENCE_SUBCODE_TEXT')
+    offenceLov = new Element.Link(this.page, "//input[@id='P5_CT_OFFENCE_CODE_TEXT']/following::a/img")
+    subcodeLov = new Element.Link(this.page, "//input[@id='P5_CT_OFFENCE_SUBCODE_TEXT']/following::a/img")
     /**
      *  Date of first sanction
      */
-    o1_8 = new Element.Textbox<OasysDate>('#P5_QU_1_8_2')
+    o1_8 = new Element.Textbox<OasysDate>(this.page, '#P5_QU_1_8_2', true)
     /**
      *  Age at first conviction (calculated from 1.8)
      */
-    o1_8Age = new Element.Textbox<string>('#P5_QU_1_8')
+    o1_8Age = new Element.Textbox<string>(this.page, '#P5_QU_1_8')
     /**
      *  Number of sanctions for all offences
      */
@@ -35,7 +35,7 @@ export class StandaloneRsr extends OasysPage {
     /**
      *  Date of current conviction
      */
-    o1_29 = new Element.Textbox<OasysDate>('#P5_QU_1_29')
+    o1_29 = new Element.Textbox<OasysDate>(this.page, '#P5_QU_1_29', true)
     /**
      *  Ever committed a sexual offence
      */
@@ -51,7 +51,7 @@ export class StandaloneRsr extends OasysPage {
     /**
      *  Date of most recent sexual offence
      */
-    o1_33 = new Element.Textbox<OasysDate>('#P5_QU_1_33')
+    o1_33 = new Element.Textbox<OasysDate>(this.page, '#P5_QU_1_33', true)
     /**
      *  Number of adult sexual offences
      */
@@ -71,7 +71,7 @@ export class StandaloneRsr extends OasysPage {
     /**
      *  Date of commencement of community sentence
      */
-    o1_38 = new Element.Textbox<OasysDate>('#P5_QU_1_38')
+    o1_38 = new Element.Textbox<OasysDate>(this.page, '#P5_QU_1_38', true)
     /**
      *  Have you completed an Offender interview?
      */
@@ -91,7 +91,7 @@ export class StandaloneRsr extends OasysPage {
     /**
      *  Is the person unemployed?
      */
-    o4_2 = new Element.Select<'0-No' | '0-Not available for work' | '2-Yes' | 'Missing'>('#P5_QU_4_2')
+    o4_2 = new Element.Select<'0-No' | '0-Not available for work' | '2-Yes' | 'Missing'>(this.page, '#P5_QU_4_2')
     /**
      *  What is the person's current relationship with partner?
      */
@@ -137,13 +137,13 @@ export class StandaloneRsr extends OasysPage {
     /**
      * OSP - Indecent Image and Indirect Sexual Reoffending Risk
      */
-    ospIic = new Element.Textbox<string>('#P5_OSPIIC_TEXTAREA')
+    ospIic = new Element.Textbox<string>(this.page, '#P5_OSPIIC_TEXTAREA')
     /**
      * OSP - Direct Contact Sexual Reoffending Risk
      */
-    ospDc = new Element.Textbox<string>('#P5_OSPDC_TEXTAREA')
+    ospDc = new Element.Textbox<string>(this.page, '#P5_OSPDC_TEXTAREA')
     /**
      * RSR Score
      */
-    rsrScore = new Element.Textbox<string>('#P5_RSR_TEXT_1')
+    rsrScore = new Element.Textbox<string>(this.page, '#P5_RSR_TEXT_1')
 }

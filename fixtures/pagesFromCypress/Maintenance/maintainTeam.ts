@@ -12,5 +12,5 @@ export class MaintainTeam extends OasysPage {
     contactTelephoneNumber = new Element.Textbox(this.page, '#P10_CONTACT_NUMBER')
     emailAddress = new Element.Textbox(this.page, '#P10_EMAIL_ADDRESS')
     status = new Element.Radiogroup('#P10_ACTIVE')
-    usersInTeam = new Element.Shuttle('#shuttlePRO040_TEAM')
+    usersInTeam = new Element.Shuttle(this.page, '#shuttlePRO040_TEAM')
 }

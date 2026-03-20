@@ -80,10 +80,10 @@ export class Table {
     /** 
      * Check if the table has the expected number of rows
      */
-    checkCount(expectedRows: number) {
+    async checkCount(expectedRows: number) {
 
-        cy.log(`Checking table row count, expected count = ${expectedRows}`)
-        this.firstColumn().checkCount(expectedRows)  // Get first column property to check the row count
+        lib.log(`Checking table row count, expected count = ${expectedRows}`)
+        await this.firstColumn().checkCount(expectedRows)  // Get first column property to check the row count
     }
 
     /**

@@ -13,10 +13,10 @@ export class RequestTransfer extends OasysPage {
     forenames = new Element.Textbox(this.page, '#P10_FORENAMES')
     prisonOwner = new Element.Textbox(this.page, '#P10_OWNING_PRISON_AREA')
     probationCrn = new Element.Textbox(this.page, '#P10_PROBATION_CRN')
-    dateOfBirth = new Element.Textbox<OasysDate>('#P10_DATE_OF_BIRTH')
+    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P10_DATE_OF_BIRTH')
     omFlag = new Element.Textbox(this.page, '#P10_OFFENDER_MANAGED')
     offenderManagerTeam = new Element.Select(this.page, '#P10_OFF_MGR_TEAM')
-    offenderManager = new Element.Lov('#P10_OFF_MGR_USER_LABEL')
-    selectAdditionalTeams = new Element.Shuttle('#shuttleTRF010_ADD_TEAMS')
+    offenderManager = new Element.Lov(this.page, '#P10_OFF_MGR_USER_LABEL')
+    selectAdditionalTeams = new Element.Shuttle(this.page, '#shuttleTRF010_ADD_TEAMS')
     requestorComments = new Element.Textbox(this.page, '#P10_REQUESTOR_COMMENTS')
 }

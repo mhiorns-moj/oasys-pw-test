@@ -72,29 +72,11 @@ export class Column {
     /**
      * Checks that the number of rows visible in a column is as expected
      */
-    // checkCount(expectedCount: number) {
+    async checkCount(expectedCount: number) {
 
-    //     cy.get(this.tableId ?? '#content').then((containerDiv) => {
-    //         const noData = containerDiv.find('.nodatafound')
-    //         if (noData.length > 0) {
-    //             if (expectedCount != 0) {
-    //                 throw new Error(`Expected ${expectedCount} rows, found 0`)
-    //             }
-    //         } else if (this.selector == '') {
-    //             const rows = containerDiv.find('td')
-    //             if (rows.length != expectedCount) {
-    //                 throw new Error(`Expected ${expectedCount} rows, found ${rows.length}`)
-    //             }
-    //         } else {
-    //             this.getColumnHeaderId().then((id) => {
-    //                 const rows = containerDiv.find(`[headers="${id}"]`)
-    //                 if (rows.length != expectedCount) {
-    //                     throw new Error(`Expected ${expectedCount} rows, found ${rows.length}`)
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
+        const count = await this.getCount()
+        expect(count).toBe(expectedCount)
+    }
 
     /**
      * Returns the data visible in a column using an alias.  Image columns return a comma-separated list of the title attributes for each row

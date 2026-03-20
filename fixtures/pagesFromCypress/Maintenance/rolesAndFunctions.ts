@@ -11,8 +11,8 @@ export class RolesAndFunctions extends OasysPage {
     search = new Element.Button(this.page, 'Search')
     restrictedRole = new Element.Radiogroup('#P7_RESTRICTED_IND')
     functionType = new Element.Select(this.page, '#P7_FUNCTION_TYPE')
-    functionsShuttle = new Element.Shuttle('#shuttleREF050_FUNCTIONS')
-    providerTypesShuttle = new Element.Shuttle('#shuttleREF050_PROVIDER_TYPES')
+    functionsShuttle = new Element.Shuttle(this.page, '#shuttleREF050_FUNCTIONS')
+    providerTypesShuttle = new Element.Shuttle(this.page, '#shuttleREF050_PROVIDER_TYPES')
     close = new Element.Button(this.page, 'Close')
     save = new Element.Button(this.page, 'Save')
 }

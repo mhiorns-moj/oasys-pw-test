@@ -20,9 +20,9 @@ export class MaintainFullUserProfile extends OasysPage {
     privacyControls = new Element.Select(this.page, '#P9_RBAC_HIERARCHY')
     lau = new Element.Select(this.page, '#P9_LDU')
     mainTeam = new Element.Select(this.page, '#P9_DEFAULT_TEAM')
-    defaultCountersigner = new Element.Lov('#P9_DEFAULT_COUNTERSIGNER_LABEL')
+    defaultCountersigner = new Element.Lov(this.page, '#P9_DEFAULT_COUNTERSIGNER_LABEL')
     signingRole = new Element.Select(this.page, '#P9_SIGNING_ROLE')
-    teams = new Element.Shuttle('PRO060_TEAMS')
-    roles = new Element.Shuttle('PRO060_ROLES')
+    teams = new Element.Shuttle(this.page, 'PRO060_TEAMS')
+    roles = new Element.Shuttle(this.page, 'PRO060_ROLES')
     frameworkRole = new Element.Select(this.page, '#P9_FRAMEWORK_ROLE')
 }

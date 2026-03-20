@@ -1,7 +1,7 @@
 import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
-import { Oasys, Cms, OasysDb, offender } from 'fixtures'
+import { Oasys, Cms, OasysDb } from 'fixtures'
 import * as pages from './pages'
 import * as offenders from './offenders'
 
@@ -12,6 +12,7 @@ export class Offender {
 
     readonly offenderSearch = new pages.OffenderSearch(this.page)
     readonly offenderDetails = new pages.OffenderDetails(this.page)
+    readonly rfi = new pages.Rfi(this.page)
 
     readonly offenders = offenders
 
