@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef17'
 
 
@@ -33,7 +33,7 @@ describe('SAN integration - test ref 17 part 3', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGNED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGNED')
 
                 cy.log(`Open up the Offender record
                             Ensure the latest completed assessment shows an 'S&N/SSP' icon next to it

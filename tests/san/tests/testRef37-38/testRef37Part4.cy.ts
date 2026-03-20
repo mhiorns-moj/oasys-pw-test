@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 37 part 4', () => {
     /**
@@ -45,11 +45,10 @@ describe('SAN integration - test ref 37 part 4', () => {
                 oasys.San.returnToOASys()
 
                 // Countersign the assessment
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
-                oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.IspSection52to8, comment: 'Test 37 part 4 countersign again' })
+                oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test 37 part 4 countersign again' })
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
                 oasys.logout()

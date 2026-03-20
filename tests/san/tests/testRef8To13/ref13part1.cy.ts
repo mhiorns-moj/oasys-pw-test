@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef13'
 
 describe('SAN integration - test ref 13 part 1', () => {
@@ -29,8 +29,6 @@ describe('SAN integration - test ref 13 part 1', () => {
                     expect(answerCheck).equal(false)
                 })
 
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', prevSanPk, null)
-
                 cy.log(`Fully complete the 3.2 OASys, you may want to go into the SAN Assessment and change some data and then ensure the SAN assessment is
                         fully marked as complete for all sections.`)
                 oasys.San.gotoSan()
@@ -38,7 +36,7 @@ describe('SAN integration - test ref 13 part 1', () => {
                 oasys.San.checkSanSectionsCompletionStatus(9)
                 oasys.San.returnToOASys()
 
-                oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.RspSection72to10, expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
+                oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService, expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
                 oasys.logout()
 
                 oasys.login(oasys.Users.probSanHeadPdu)

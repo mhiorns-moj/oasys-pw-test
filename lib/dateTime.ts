@@ -32,7 +32,7 @@ export class OasysDateTime {
 
     static stringToTimestamp(param: string): Temporal.PlainDateTime {
 
-        return Temporal.PlainDateTime.from(param)
+        return !param ? null : Temporal.PlainDateTime.from(param)
     }
 
     static dateParameterToString(param: Temporal.PlainDate): string {

@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 08 part 4', () => {
 
@@ -25,7 +25,7 @@ describe('SAN integration - test ref 08 part 4', () => {
             countersigningOverview.details.checkValue(`The previous assessment was countersigned for the same risk attributes by ${oasys.Users.probSanHeadPdu.forenameSurname} on the ${today}`, true)
 
             countersigningOverview.returnToAssessment.click()
-            new oasys.Pages.SentencePlan.IspSection52to8().checkCurrent()
+            new oasys.Pages.SentencePlan.SentencePlanService().checkCurrent()
 
             oasys.logout()
 

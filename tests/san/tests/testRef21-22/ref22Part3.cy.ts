@@ -1,4 +1,5 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
+import { testEnvironment } from '../../../../localSettings'
 
 describe('SAN integration - test ref 22 part 3', () => {
 
@@ -47,7 +48,7 @@ describe('SAN integration - test ref 22 part 3', () => {
 function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: number, spVersion: number, accommodation: string) {
 
     cy.log(`Checking assessment pk ${pk}`)
-    oasys.San.gotoSanReadOnly('Accommodation','information')
+    oasys.San.gotoSanReadOnly('Accommodation', 'information')
     oasys.San.checkSanOtlCall(pk,
         {
             'crn': offender.probationCrn,
@@ -70,8 +71,8 @@ function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: n
         expect(container.find(`.summary__answer--secondary:contains("${accommodation}"):visible`).length).equal(1)
 
         oasys.San.returnToOASys()
-
-        oasys.ArnsSp.runScript('checkReadOnly')
+        // Pass user details as they get lost in the cy.get.then structure
+        oasys.ArnsSp.runScript('checkReadOnly', { username: oasys.Users.probSanHeadPdu.username, password: testEnvironment.standardUserPassword })
         oasys.San.checkSanOtlCall(pk,
             {
                 'crn': offender.probationCrn,

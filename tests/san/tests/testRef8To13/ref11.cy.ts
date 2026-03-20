@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef11'
 
 describe('SAN integration - test ref 11', () => {
@@ -42,7 +42,7 @@ describe('SAN integration - test ref 11', () => {
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
 
-            oasys.San.checkLayer3Menu(false)
+            oasys.San.checkLayer3Menu(false, true)
             new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
@@ -50,7 +50,7 @@ describe('SAN integration - test ref 11', () => {
                 const pk = pks[0]
                 const prevPk = pks[1]
 
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk, null)
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, null, prevPk)
 
                 oasys.Db.checkAnswers(pk, testData.nonOASysQuestions, 'nonOASysQuestionsResult', true)
                 cy.get<boolean>('@nonOASysQuestionsResult').then((failed) => {
@@ -103,7 +103,8 @@ describe('SAN integration - test ref 11', () => {
                 section12.o12_8.setValue('1-Quite motivated')
                 new oasys.Pages.Assessment.SelfAssessmentForm().goto().whyNotCompleted.setValue(`Didn't want to complete it`)
 
-                oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.RspSection1to2 })
+                new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
+                oasys.Assessment.signAndLock()
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
                     CLONED_FROM_PREV_OASYS_SAN_PK: prevPk.toString(),

@@ -23,6 +23,17 @@ export class SentencePlan {
         }
     }
 
+    async goto(planType: SpType, suppressLog = false) {
+
+        switch (planType) {
+            case 'basic':
+                await this.basicSentencePlan.goto(suppressLog)
+                break
+            case 'spService':
+                await this.spService.sentencePlanService.goto(suppressLog)
+                break
+        }
+    }
 
     // export function ispFullyPopulated(params: PopulateAssessmentParams) {
 

@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 
 describe('SAN integration - test ref 15 part 3', () => {
@@ -33,7 +33,7 @@ describe('SAN integration - test ref 15 part 3', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.prisSanPom, 'AWAITING_DOUBLE_COUNTERSIGN', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.prisSanPom, 'AWAITING_DOUBLE_COUNTERSIGN')
 
                 oasys.logout()
 
@@ -46,7 +46,7 @@ describe('SAN integration - test ref 15 part 3', () => {
                 oasys.Assessment.openLatest()
                 oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Countersigning test ref 15 second time' })
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.prisSanHomds, 'DOUBLE_COUNTERSIGNED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.prisSanHomds, 'DOUBLE_COUNTERSIGNED')
 
                 oasys.Nav.history()
                 oasys.San.gotoSanReadOnly('Accommodation', 'information')

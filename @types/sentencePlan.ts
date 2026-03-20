@@ -36,3 +36,5 @@ declare type ArnsSpParams = {
     currentGoals?: number,
     futureGoals?: number,
 }
+
+declare type SpType = 'isp' | 'rsp' | 'spService' | 'basic'

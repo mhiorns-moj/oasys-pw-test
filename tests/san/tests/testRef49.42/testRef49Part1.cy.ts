@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 49', () => {
 
@@ -100,7 +100,7 @@ describe('SAN integration - test ref 49', () => {
 
                 oasys.San.returnToOASys()
 
-                oasys.ArnsSp.runScript('openAndReturn', true)
+                oasys.ArnsSp.runScript('openAndReturn', { readonly: true })
 
                 oasys.San.checkSanOtlCall(pk1, {
                     'crn': offender.probationCrn,
@@ -131,7 +131,7 @@ describe('SAN integration - test ref 49', () => {
                         Check other OASYS_SET record fields; SAN_ASSESSMENT_LINKED_IND is N, LASTUPD_FROM_SAN is populated,  retrieved the data but SAN_ASSESSMENT_VERSION_NO
                             AND SSP_PLAN_VERSION_NO are NULL.`)
 
-                    oasys.San.getSanApiTimeAndCheckDbValues(pk2, 'N', pk1, null, null)
+                    oasys.San.getSanApiTimeAndCheckDbValues(pk2, 'N', pk1)
 
                     cy.log(`Check that there are NO OASYS_SECTION records for 'SAN'
                         Check that on any cloned through OASYS_SECTION records the fields 'SAN_CRIM_NEED_SCORE' have been nulled out
@@ -144,7 +144,7 @@ describe('SAN integration - test ref 49', () => {
                         }
                     })
 
-                    oasys.Db.selectCount(`select count(*) from eor.oasys_section where san_crim_need_score is not null and oasys_set_pk = ${pk2};`, 'count')
+                    oasys.Db.selectCount(`select count(*) from eor.oasys_section where san_crim_need_score is not null and oasys_set_pk = ${pk2}`, 'count')
                     cy.get<number>('@count').then((count) => {
                         if (count! > 0) {
                             throw new Error(`Unexpected san_crim_need_score found for pk ${pk2}`)
@@ -175,6 +175,7 @@ describe('SAN integration - test ref 49', () => {
                     oasys.Populate.Layer3Pages.Section11.noIssues()
                     oasys.Populate.Layer3Pages.Section12.noIssues()
                     oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
+                    new oasys.Pages.Rosh.RoshScreeningSection2to4().goto().rationale.setValue('because')
                     oasys.ArnsSp.runScript('populateMinimal')
                     oasys.Assessment.signAndLock()
 
@@ -205,14 +206,13 @@ describe('SAN integration - test ref 49', () => {
 
                     oasys.San.returnToOASys()
 
-                    cy.log(`Click on the <Open SP> button - Sentence Plan opens in READ ONLY mode
-                        Ensure the OTL passes across READ_ONLY for the accessMode and the sentence plan version number is NULL
+                    cy.log(`Click on the <Open SP> button - Sentence Plan opens in READ/WRITE mode
+                        Ensure the OTL passes across READ_WRITE for the accessMode and the sentence plan version number is NULL
                         Return to OASys`)
 
-                    oasys.Nav.clickButton('Open SP')
-                    oasys.San.checkSentencePlanEditMode(false) // TODO
+                    oasys.ArnsSp.runScript('openAndReturn', { openFromOffender: true })
 
-                    oasys.San.checkSanOtlCall(pk1, {
+                    oasys.San.checkSanOtlCall(pk2, {
                         'crn': offender.probationCrn,
                         'pnc': offender.pnc,
                         'nomisId': null,
@@ -221,13 +221,11 @@ describe('SAN integration - test ref 49', () => {
                         'dateOfBirth': offender.dateOfBirth,
                         'gender': '1',
                         'location': 'COMMUNITY',
-                        'sexuallyMotivatedOffenceHistory': 'NO',
+                        'sexuallyMotivatedOffenceHistory': null,
                     },
-                        { 'displayName': oasys.Users.probSanHeadPdu.forenameSurname, 'planAccessMode': 'READ_ONLY', },
+                        { 'displayName': oasys.Users.probSanHeadPdu.forenameSurname, 'planAccessMode': 'READ_WRITE', },
                         'san', null
                     )
-
-                    oasys.San.returnToOASys()
 
                     cy.log(`Open the historic 3.2 assessment
                         Navigate out to the SAN Service via the screen - SAN opens in READ ONLY mode
@@ -259,7 +257,7 @@ describe('SAN integration - test ref 49', () => {
 
                     oasys.San.returnToOASys()
 
-                    oasys.ArnsSp.runScript('openAndReturn', true)
+                    oasys.ArnsSp.runScript('openAndReturn', { readonly: true })
 
                     oasys.San.checkSanOtlCall(pk1,
                         {

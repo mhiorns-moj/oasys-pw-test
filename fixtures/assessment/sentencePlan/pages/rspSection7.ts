@@ -1,6 +1,6 @@
 ﻿import { OasysPage, Element } from 'classes'
 import { SentencePlan } from './sentencePlan'
-import * as CommonTables from 'fixtures/pagesFromCypress/commonTables'
+import * as CommonTables from 'fixtures/assessment/commonTables'
 
 export class RspSection7 extends SentencePlan {
 

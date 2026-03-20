@@ -7,12 +7,14 @@ import { Oasys } from './oasys/oasys'
 import { Cms } from './cms/cms'
 import { Offender } from './offender/offender'
 import { Assessment } from './assessment'
+import { Sns } from './sns/sns'
 
 export { OasysDb } from './oasysDb/oasysDb'
 export { Oasys } from './oasys/oasys'
 export { Cms } from './cms/cms'
 export { Offender } from './offender/offender'
 export { Assessment } from './assessment'
+export { Sns } from './sns/sns'
 
 
 export const oasysDb = base.extend<{ oasysDb: OasysDb }>({
@@ -74,4 +76,13 @@ export const assessment = oasys.extend<{ oasys: Oasys, cms: Cms, offender: Offen
     }
 })
 
-export const test = mergeTests(oasys, cms, offender, assessment, oasysDb)
+export const sns = oasys.extend<{ oasys: Oasys, oasysDb: OasysDb, sns: Sns }>({
+
+    sns: async ({ page, oasys, oasysDb }, use: Function) => {
+
+        const sns = new Sns(page, oasys, oasysDb)
+        await use(sns)
+    }
+})
+
+export const test = mergeTests(oasys, cms, offender, assessment, oasysDb, sns)

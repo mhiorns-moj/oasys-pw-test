@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef9'
 
 
@@ -26,9 +26,7 @@ describe('SAN integration - test ref 09', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
-                offenderDetails.openSan.click()
-                oasys.San.handleLandingPage('san')
+                oasys.San.gotoSanFromOffender()
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,

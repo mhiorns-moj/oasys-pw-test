@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef38'
 
 describe('SAN integration - test ref 38 part 3', () => {
@@ -55,10 +55,10 @@ describe('SAN integration - test ref 38 part 3', () => {
                 rmp.checkIsNotOnMenu()  // Shouldn't be there
 
                 // Sign and lock again, check API calls and OASYS_SET
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Signing for the third time' })
-                oasys.San.checkSanSigningCall(pks[1], oasys.Users.probSanUnappr, 'COUNTERSIGN', 2, 2)
+                oasys.San.checkSanSigningCall(pks[1], oasys.Users.probSanUnappr, 'COUNTERSIGN')
                 oasys.San.checkSanGetAssessmentCall(pks[1], 2)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[1]}`, {

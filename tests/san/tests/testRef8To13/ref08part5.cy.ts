@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 
 describe('SAN integration - test ref 08 part 5', () => {
@@ -37,11 +37,11 @@ describe('SAN integration - test ref 08 part 5', () => {
                     oasys.San.gotoSanReadOnly('Accommodation', 'information')
                     oasys.San.checkSanEditMode(false)
                     oasys.San.returnToOASys()
-                    oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.IspSection52to8, comment: 'Test comment' })
+                    oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test comment' })
                     oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])  // Note AssSumm only at this stage, as others were sent on signing
                     new oasys.Pages.Tasks.TaskManager().checkCurrent()
 
-                    oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED', 0, 0)
+                    oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
 
                     cy.log(`Open up the Offender record
                         Ensure the latest completed assessment shows an 'S&N' icon next to it

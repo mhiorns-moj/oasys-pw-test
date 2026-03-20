@@ -21,6 +21,7 @@ export class Layer3 {
     readonly section11 = new pages.Section11(this.page)
     readonly section12 = new pages.Section12(this.page)
     readonly section13 = new pages.Section13(this.page)
+    readonly summarySheet = new pages.SummarySheet(this.page)
 
     async sections2To13NoIssues(params?: PopulateAssessmentParams) {
 

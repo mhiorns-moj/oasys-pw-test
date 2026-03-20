@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef36'
 
 describe('SAN integration - test ref 36', () => {
@@ -26,10 +26,11 @@ describe('SAN integration - test ref 36', () => {
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result')
             cy.get<number[]>('@result').then((pks) => {
-                // Check OASYS_SET and API calls
-                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1], null)
 
-                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 1, 2)
+                // Check OASYS_SET and API calls
+                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1])
+
+                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
                 oasys.San.checkSanGetAssessmentCall(pks[0], 1)
                 oasys.Db.checkCloning(pks[0], pks[1], ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
                     'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SKILLSCHECKER', 'SAN',])

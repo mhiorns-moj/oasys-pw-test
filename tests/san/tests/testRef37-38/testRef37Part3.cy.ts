@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 37 part 3', () => {
     /**
@@ -44,8 +44,7 @@ describe('SAN integration - test ref 37 part 3', () => {
                 oasys.Assessment.rollBack('Test 37 part 3 rollback')
 
                 // Check OASYS_SET and API calls
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
-                oasys.San.checkSanRollbackCall(pk, oasys.Users.admin, 0, 0)
+                oasys.San.checkSanRollbackCall(pk, oasys.Users.admin)
                 oasys.logout()
 
                 // Sign and lock again, check API calls and OASYS_SET
@@ -75,10 +74,10 @@ describe('SAN integration - test ref 37 part 3', () => {
                 oasys.Nav.clickButton('Next')
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Test 37 part 3 signing again' })
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanUnappr, 'COUNTERSIGN', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanUnappr, 'COUNTERSIGN')
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {

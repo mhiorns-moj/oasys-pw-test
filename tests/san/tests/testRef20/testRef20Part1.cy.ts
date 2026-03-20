@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef20'
 
 describe('SAN integration - test ref 20', () => {
@@ -27,7 +27,7 @@ describe('SAN integration - test ref 20', () => {
 
             cy.get<number>('@result').then((pk) => {
                 // Check values in OASYS_SET
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null, null)
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null)
 
                 // Check Create call
                 oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanPo, oasys.Users.probationSanCode, 'INITIAL')
@@ -215,7 +215,7 @@ describe('SAN integration - test ref 20', () => {
                 countersigning.comments.setValue('Rejecting test 20 for rework')
                 countersigning.ok.click()
                 oasys.Nav.clickButton('Yes')
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'REJECTED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'REJECTED')
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
@@ -268,7 +268,7 @@ describe('SAN integration - test ref 20', () => {
 
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED', 0, 0)
+                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,

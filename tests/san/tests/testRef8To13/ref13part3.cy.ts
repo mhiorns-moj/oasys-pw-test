@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef13'
 
 describe('SAN integration - test ref 13 part 3', () => {
@@ -28,9 +28,7 @@ describe('SAN integration - test ref 13 part 3', () => {
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
 
-                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 4, 6)
-
-                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1], null)
+                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
 
                 cy.log(`Check Section 1 of the assessment - ONLY 1.8 has cloned through.  
                         The offence will not have cloned through unless it has been setup on the CMS stub and it gets copied from there.

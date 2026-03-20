@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 08 part 1', () => {
 
@@ -54,8 +54,8 @@ describe('SAN integration - test ref 08 part 1', () => {
 
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
 
-                const isp = new oasys.Pages.SentencePlan.IspSection52to8().goto()
-                isp.signAndLock.click()
+                const sp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
+                sp.signAndLock.click()
                 oasys.Errors.checkSignAndLockErrorsVisible('section2To13Errors')
                 oasys.Errors.checkSignAndLockErrorsNotVisible('sanSectionsIncomplete')
                 new oasys.Pages.Signing.SigningStatus().returnToAssessment.click()
@@ -75,7 +75,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                 oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
                 oasys.Populate.Rosh.screeningNoRisks(true)
 
-                isp.goto().agreeWithPlan.setValue('Yes')
+                oasys.ArnsSp.runScript('populateMinimal')
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
 

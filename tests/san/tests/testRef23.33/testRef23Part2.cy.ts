@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 23', () => {
 
@@ -30,7 +30,7 @@ describe('SAN integration - test ref 23', () => {
 
                 oasys.Assessment.rollBack()
                 oasys.Assessment.checkSigningRecord(pk, ['ROLLBACK', 'SIGNING'])
-                oasys.San.checkSanRollbackCall(pk, oasys.Users.admin, 0, 0)
+                oasys.San.checkSanRollbackCall(pk, oasys.Users.admin)
 
                 oasys.logout()
 
@@ -48,7 +48,7 @@ describe('SAN integration - test ref 23', () => {
                 oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Low')
                 oasys.Populate.RoshPages.RiskManagementPlan.minimal()
 
-                new oasys.Pages.SentencePlan.IspSection52to8().goto()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock()
 
@@ -57,7 +57,7 @@ describe('SAN integration - test ref 23', () => {
                         and they differ from the version numbers logged at the time of the initial S&L
                     Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF', 1, 1)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
             })
         })

@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 48 part 1', () => {
 
@@ -16,8 +16,7 @@ describe('SAN integration - test ref 48 part 1', () => {
 
             // Create and complete layer 3
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'No' })
-            oasys.Populate.minimal({ layer: 'Layer 3', populate6_11: 'No' })
-            new oasys.Pages.SentencePlan.IspSection1to4().goto()
+            oasys.Populate.minimal({ layer: 'Layer 3', populate6_11: 'No', newSp: true })
             oasys.Assessment.signAndLock({ expectRsrWarning: true })
 
             // Make historic
@@ -29,8 +28,7 @@ describe('SAN integration - test ref 48 part 1', () => {
 
             oasys.Nav.clickButton('Close')
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' }, 'No')
-            oasys.Populate.minimal({ layer: 'Layer 1' })
-            new oasys.Pages.SentencePlan.BasicSentencePlan().goto()
+            oasys.Populate.minimal({ layer: 'Layer 1', newSp: true })
             oasys.Assessment.signAndLock()
 
             cy.log(`Assessor creates a 3.2 assessment - does NOT get asked whether they wish to clone section 3 to 13 and sentence plan question (improved cloning)`)

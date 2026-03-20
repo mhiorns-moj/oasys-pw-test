@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/mergeTest'
 
 describe('SAN integration - tests 39-40', () => {
@@ -50,11 +50,9 @@ describe('SAN integration - tests 39-40', () => {
             oasys.Populate.Rosh.screeningNoRisks(true)
 
             // Complete SP, then sign and lock
-            oasys.San.gotoSentencePlan()
-            oasys.San.populateSanSections('SAN sentence plan', oasys.Populate.San.SentencePlan.minimal)
-            oasys.San.returnToOASys()
+            oasys.ArnsSp.runScript('populateMinimal')
 
-            new oasys.Pages.SentencePlan.IspSection52to8().goto()
+            new oasys.Pages.SentencePlan.SentencePlanService().goto()
             oasys.Assessment.signAndLock()
 
             // Deleted assessment added for testing of SAN defect ARN-2427

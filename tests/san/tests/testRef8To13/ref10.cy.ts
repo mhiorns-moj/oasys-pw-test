@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef10'
 
 
@@ -29,7 +29,7 @@ describe('SAN integration - test ref 10', () => {
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevPk = pks[1]
-                oasys.San.checkSanCreateAssessmentCall(pk, prevPk, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 2, 2)
+                oasys.San.checkSanCreateAssessmentCall(pk, prevPk, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
 
                 oasys.Db.checkCloning(pk, prevPk, [
                     '2', '7', '8', '9', '10', '11', '12', '13',
@@ -47,7 +47,7 @@ describe('SAN integration - test ref 10', () => {
                         RSR and OSP-IIC and OSP-DC are all calculated.
                         The SAN 'Strengths and Needs Sections' menu option has a green tick against it for the data being complete.`)
 
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk, null)
+                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk)
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     RSR_PERCENTAGE_SCORE: '9.96',
                     RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
@@ -111,7 +111,7 @@ describe('SAN integration - test ref 10', () => {
                 new oasys.Pages.Rosh.RoshSummary().markCompleteAndCheck()
                 new oasys.Pages.Rosh.RiskManagementPlan().markCompleteAndCheck()
 
-                new oasys.Pages.SentencePlan.RspSection72to10().goto().markCompleteAndCheck()
+                new oasys.Pages.SentencePlan.SentencePlanService().goto().checkCompletionStatus(true)
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
 
                 oasys.logout()

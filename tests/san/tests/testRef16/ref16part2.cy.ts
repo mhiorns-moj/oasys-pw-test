@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef16'
 
 describe('SAN integration - test ref 16 part 2', () => {

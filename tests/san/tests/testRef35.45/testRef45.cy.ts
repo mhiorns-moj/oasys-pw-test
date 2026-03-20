@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 45', () => {
 
@@ -28,7 +28,7 @@ describe('SAN integration - test ref 45', () => {
                 oasys.Assessment.signAndLock()
 
                 cy.log(`As the assessor create a new assessment BUT make it a classic 3.1 assessment, say 'No' to the SAN question
-                Close the WIP 3.1`)
+                        Close the WIP 3.1`)
 
                 oasys.Nav.history(offender)
                 oasys.Assessment.createProb({ purposeOfAssessment: 'Review', includeSanSections: 'No' })
@@ -62,10 +62,10 @@ describe('SAN integration - test ref 45', () => {
                 oasys.San.returnToOASys()
 
                 cy.log(`From the offender record click on the <Open SP> button
-                    Navigates out to the Sentence Plan which should be shown in READ ONLY mode - check the OTL access mode parameter for SP
+                    Navigates out to the Sentence Plan which should be shown in READ WRITE mode - check the OTL access mode parameter for SP
                     Return back to OASys`)
 
-                oasys.ArnsSp.runScript('checkReadOnly', { openFromOffender: true })
+                oasys.ArnsSp.runScript('openAndReturn', { openFromOffender: true })
 
                 oasys.San.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
@@ -79,7 +79,7 @@ describe('SAN integration - test ref 45', () => {
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
                     'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
-                    'planAccessMode': 'READ_ONLY',
+                    'planAccessMode': 'READ_WRITE',
                 },
                     'sp', null
                 )

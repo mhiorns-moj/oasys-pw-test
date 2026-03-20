@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef38'
 
 describe('SAN integration - test ref 38 part 1', () => {
@@ -25,10 +25,10 @@ describe('SAN integration - test ref 38 part 1', () => {
 
             cy.get<number[]>('@pks').then((pks) => {
                 // Check values in OASYS_SET
-                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1], null)
+                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1])
 
                 // Check Create call
-                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW', 1, 3)
+                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
                 oasys.San.checkSanGetAssessmentCall(pks[0], 1)
 
                 // Tweak section 1

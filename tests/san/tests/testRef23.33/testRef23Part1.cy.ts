@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 import * as testData from '../../data/testRef23'
 
 describe('SAN integration - test ref 23', () => {
@@ -120,13 +120,10 @@ describe('SAN integration - test ref 23', () => {
 
                 oasys.ArnsSp.runScript('populateMinimal')
 
-                const isp = new oasys.Pages.SentencePlan.IspSection52to8().goto()
-                isp.publicProtectionConference.setValue('Yes')
-                isp.conferenceDate.setValue({ months: -1 })
-                isp.conferenceChair.setValue('Chair of the conference')
-
+                const isp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
+  
                 oasys.Assessment.signAndLock() // OGRS warning, requires same action as the RSR warning
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
                 cy.log(`Still logged in as the Assessor open up the SAN Assessment from the offender records 'Open S&N' button.
@@ -136,8 +133,7 @@ describe('SAN integration - test ref 23', () => {
 
                 oasys.Nav.history(offender)
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
-                offenderDetails.openSan.click()
-                oasys.San.handleLandingPage('san')
+                oasys.San.gotoSanFromOffender()
                 oasys.San.populateSanSections('Test ref 23 modification', testData.modifySan)
                 oasys.San.returnToOASys()
 
@@ -145,10 +141,7 @@ describe('SAN integration - test ref 23', () => {
                     This should have invoked a new version of the Sentence Plan in their database - Add another goal/steps to the sentence plan 
                     Return back to the OASys Offender record screen`)
 
-                offenderDetails.openSp.click()
-                oasys.San.handleLandingPage('sp')
-                oasys.San.populateSanSections('Test ref 23 SP modification', testData.addGoal)
-                oasys.San.returnToOASys()
+                oasys.ArnsSp.runScript('addGoal', { openFromOffender: true })
 
                 oasys.logout()
 

@@ -4,5 +4,5 @@ export { PreviousHistoric } from './previousHistoric'
 export { ProposalInformation } from './proposalInformation'
 export { Rfis } from './rfis'
 
-export { SummarySheet } from './summarySheet'
+export { SummarySheet } from '../../assessment/layer3/pages/summarySheet'
 export { SanSections } from '../../assessment/san/pages/sanSections'

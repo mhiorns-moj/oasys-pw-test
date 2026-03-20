@@ -1,4 +1,4 @@
-import * as oasys from 'lib'
+import * as oasys from 'oasys'
 
 describe('SAN integration - test ref 24', () => {
 
@@ -75,7 +75,7 @@ describe('SAN integration - test ref 24', () => {
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
                 oasys.Assessment.signAndLock()
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF', 0, 0)
+                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF')
 
                 oasys.logout()
             })

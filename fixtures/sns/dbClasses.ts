@@ -42,6 +42,7 @@ export class DbAssessmentOrRsr {
 
     eventNumber: number
     sanIndicator: string
+    spIndicator: string
 
     ogrs4gYr2: number
     ogrs4gBand: string
@@ -91,6 +92,7 @@ export class DbAssessmentOrRsr {
             this.opdOverride = assessmentData[19] ?? ''
             this.purposeOfAssessment = assessmentData[22]
             this.sanIndicator = assessmentData[24]
+            this.spIndicator = assessmentData[39]
 
             this.signedDate = assessmentData[20] == null ? null : assessmentData[20] + tzOffset
             this.countersignedDate = assessmentData[23] == null ? null : assessmentData[23] + tzOffset
@@ -136,14 +138,14 @@ export class DbAssessmentOrRsr {
                     s.opd_result, s.opd_screen_out_override, 
                     to_char(s.assessor_signed_date, '${OasysDateTime.oracleTimestampFormat}'), s.ref_ass_version_code, r.ref_element_desc,
                     to_char(s.countersigner_signed_date, '${OasysDateTime.oracleTimestampFormat}'), s.san_assessment_linked_ind, 
-
                     s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, 
                     s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm,
                     s.ogp2_percentage_2yr, s.ogp2_band_risk_recon_elm, 
                     s.ovp2_percentage_2yr, s.ovp2_band_risk_recon_elm, 
                     s.snsv_percentage_2yr_static, s.snsv_stat_band_risk_recon_elm, 
                     s.snsv_percentage_2yr_dynamic, s.snsv_dyn_band_risk_recon_elm,
-                    s.rsr_algorithm_version, s.ogrs3_risk_recon_elm
+                    s.rsr_algorithm_version, s.ogrs3_risk_recon_elm,
+                    s.arns_sp_only_linked_ind
                     from eor.offender o, eor.oasys_assessment_group g, eor.oasys_set s, eor.ref_element r 
                     where o.cms_prob_number = '${crn}'
                     and o.offender_pk = g.offender_PK and g.oasys_assessment_group_PK = s.oasys_assessment_group_PK 
@@ -167,7 +169,6 @@ export class DbAssessmentOrRsr {
                     r.rsr_percentage_score, r.rsr_risk_recon_elm, r.rsr_static_or_dynamic, 
                     r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm, 
                     r.osp_iic_percentage_score, r.osp_iic_risk_recon_elm, r.osp_dc_percentage_score, r.osp_dc_risk_recon_elm  
-                     
                     from eor.offender_rsr_scores r, eor.offender o 
                     where r.offender_pk = o.offender_pk and o.cms_prob_number = '${crn}' and o.deleted_date is null and r.deleted_date is null 
                     order by r.initiation_date desc`
@@ -184,12 +185,7 @@ export class DbSns {
 
         this.messageType = snsData[0]
         if (snsData[1] != null && snsData[1].length > 2) {
-            const messageData = snsData[1].replace(/\\"/g, '"')  // Change \" to "
-            try {
-                this.messageData = JSON.parse(messageData)
-            } catch (e) {
-                cy.groupedLog(`Error ${e.message} parsing ${messageData}`)
-            }
+            this.messageData = JSON.parse(snsData[1].replace(/\\"/g, '"')) // Change \" to "
         }
         this.messageSubject = snsData[2]
     }
