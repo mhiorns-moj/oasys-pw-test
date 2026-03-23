@@ -10,7 +10,7 @@ test('Example test - create a probation offender and a layer 1 assessment using 
     await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' })
 
     // Use one of the following two lines to populate the assessment.  maxStrings paramater can be set to populate text fields to maximum length
-    await assessment.populateMinimal({ layer: 'Layer 1', newSp: true })
+    await assessment.populateMinimal({ layer: 'Layer 1', sentencePlan: 'SpService' })
     // await oasys.Populate.fullyPopulated({layer: 'Layer 1', maxStrings: false })
 
     await assessment.signing.signAndLock()

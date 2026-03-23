@@ -18,6 +18,7 @@ export class Assessment {
     readonly assessmentsTab = new pages.AssessmentsTab(this.page)
     readonly deleteAssessment = new pages.DeleteAssessment(this.page)
     readonly rfis = new pages.Rfis(this.page)
+    readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
 
     readonly common = new Common(this.page, this.testInfo, this.oasys)
     readonly layer1 = new Layer1(this.page, this.testInfo, this.oasys)
@@ -264,6 +265,14 @@ export class Assessment {
     //     lib.log('Rolled back assessment')
     // }
 
+    /**
+     * Make the assessment historic.  Assumes you are on an assessment page.
+     */
+    async markHistoric() {
+
+        await this.markAssessmentHistoric.goto()
+        await this.markAssessmentHistoric.ok.click()
+    }
     /**
      * Open the latest assessment, assuming you have the assessments tab showing.
      */

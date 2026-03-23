@@ -209,105 +209,55 @@ export abstract class OasysPage {
         }
     }
 
+    async checkMenuVisibility(expectVisible: boolean): Promise<boolean> {
 
-    // /**
-    //  * Check that this page is available on the menu.
-    //  * 
-    //  * Returns the page object so you can chain other commands.
-    //  */
-    // checkIsOnMenu(): typeof this {
+        if (this.menu == null) {
+            throw new Error(`Invalid menu check for page ${this.name}`)
+        }
+        else {
 
-    //     if (this.menu == null) {
-    //         throw new Error(`Invalid menu check for page ${this.name}`)
-    //     }
-    //     else {
+            let visible: boolean
 
-    //         cy.log(`Checking page is on menu: ${this.name} `)
-    //         switch (this.menu.type) {
-    //             case 'Floating':
-    //                 cy.get('#leftmenuul').within(() => {
+            switch (this.menu.type) {
+                case 'Floating':
+                    await this.waitForAnimation(this.floatingMenu)
+                    if (this.menu.level2 == undefined) {
+                        visible = await this.floatingMenu.getByText(this.menu.level1).isVisible()
+                    } else {
+                        // two levels: check if first level is expanded already, if not then click on the first
 
-    //                     if (this.menu.level2 === undefined) {
-    //                         // first level only
-    //                         cy.get('li').contains('a', this.menu.level1).should('be.visible')
-    //                     }
-    //                     else {
-    //                         // two levels: check if second level is showing already, if not then click on the first
-    //                         cy.get('li').contains('a', this.menu.level1).as('menu1').siblings('ul').within(() => {
+                        const level1LinkExpanded = this.page.locator('.active.expanded').filter({ hasText: this.menu.level1 })
+                        const level1Expanded = await level1LinkExpanded.isVisible()
 
-    //                             cy.get('li').contains('a', this.menu.level2).then(($link) => {
-    //                                 if ($link.is(':hidden')) {
-    //                                     cy.get('@menu1').click()
-    //                                 }
-    //                             })
-    //                             cy.get('li').contains('a', this.menu.level2).should('be.visible')
-    //                         })
-    //                     }
-    //                 })
-    //                 break
+                        if (!level1Expanded) {
+                            await this.floatingMenu.locator('.expandable').filter({ hasText: this.menu.level1 }).click()
+                            await this.waitForAnimation(this.floatingMenu)
+                        }
+                        const level2List = this.floatingMenu.getByRole('listitem').filter({ has: level1LinkExpanded })
+                        visible = await level2List.getByRole('listitem').filter({ hasText: this.menu.level2 }).isVisible()
+                    }
+                    break
 
-    //             case 'Main':
-    //                 cy.get('#oasysmainmenu').within(() => {
-    //                     cy.contains(this.menu.level1).should('be.visible')
-    //                     if (this.menu.level2 !== undefined) {
-    //                         cy.contains(this.menu.level1).click()
-    //                         cy.contains(this.menu.level2).should('be.visible')
-    //                     }
-    //                 })
-    //                 break
+                case 'Main':
+                    if (this.menu.level2 === undefined) {
+                        visible = await this.page.locator('#oasysmainmenu').getByText(this.menu.level1).isVisible()
+                    }
+                    else {
+                        await this.page.locator('#oasysmainmenu').getByText(this.menu.level1).click()
+                        if (this.menu.level2[0] == '#') {
+                            visible = await this.page.locator(this.menu.level2).isVisible()
+                        } else {
+                            visible = await this.page.getByText(this.menu.level2).isVisible()
+                        }
+                    }
+                    break
 
-    //             default:
-    //                 throw new Error(`Invalid menu type for page ${this.name}`)
-    //         }
-    //     }
-
-    //     return this
-    // }
-
-    // /**
-    //  * Check that this page is not available on the menu.
-    //  */
-    // checkIsNotOnMenu(): typeof this {
-
-    //     if (this.menu == null) {
-    //         throw new Error(`Invalid menu check for page ${this.name}`)
-    //     }
-    //     else {
-
-    //         cy.log(`Checking page is NOT on menu: ${this.name} `)
-    //         switch (this.menu.type) {
-    //             case 'Floating':
-    //                 cy.get('#leftmenuul').within(() => {
-
-    //                     if (this.menu.level2 === undefined) {
-    //                         // first level only
-    //                         cy.get('li').contains('a', this.menu.level1).should('not.exist')
-    //                     }
-    //                     else {
-    //                         // two levels
-    //                         cy.get('li').contains('a', this.menu.level2).should('not.exist')
-    //                     }
-    //                 })
-    //                 break
-
-    //             case 'Main':
-    //                 cy.get('#oasysmainmenu').within(() => {
-    //                     if (this.menu.level2 === undefined) {
-    //                         cy.contains(this.menu.level1).should('not.exist')
-    //                     }
-    //                     else {
-    //                         cy.contains(this.menu.level2).should('not.exist')
-    //                     }
-    //                 })
-    //                 break
-
-    //             default:
-    //                 throw new Error(`Invalid menu type for page ${this.name}`)
-    //         }
-    //     }
-    //     return this
-
-    // }
+                default:
+                    throw new Error(`Invalid menu type for page ${this.name}`)
+            }
+            expect(visible).toBe(expectVisible)
+        }
+    }
 
     // /**
     //  * Get the completion status of a section on the floating menu, using a result alias.

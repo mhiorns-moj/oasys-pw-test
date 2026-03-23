@@ -31,4 +31,48 @@ export class RoshSummary extends BaseAssessmentPage {
     r10_6StaffCustody = new Element.Select<RiskLevel>(this.page, '#itm_SUM6_4_2')
     r10_6PrisonersCustody = new Element.Select<RiskLevel>(this.page, '#itm_SUM6_5_2')
     details = new Element.Textbox(this.page, '#textarea_SUM8')
+
+
+    async specificRiskLevel(risk: RiskLevel) {
+
+        lib.log(`RoSH summary - ${risk} risk`)
+        await this.goto(true)
+
+        await this.r10_1.setValue('R10.1 details')
+        await this.r10_2.setValue('R10.2 details')
+        await this.riskFactorAnslysis.setValue('Risk factor analysis')
+        await this.r10_5.setValue('R10.5 details')
+        await this.r10_3.setValue('R10.3 details')
+        await this.r10_6ChildrenCommunity.setValue(risk)
+        await this.r10_6ChildrenCustody.setValue(risk)
+        await this.r10_6PublicCommunity.setValue(risk)
+        await this.r10_6PublicCustody.setValue(risk)
+        await this.r10_6AdultCommunity.setValue(risk)
+        await this.r10_6AdultCustody.setValue(risk)
+        await this.r10_6StaffCommunity.setValue(risk)
+        await this.r10_6StaffCustody.setValue(risk)
+        await this.r10_6PrisonersCustody.setValue(risk)
+    }
+
+    async fullyPopulated(maxStrings: boolean = false) {
+
+        lib.log('Fully populated RoSH summary')
+        await this.goto(true)
+
+        await this.r10_1.setValue(maxStrings ? lib.oasysString(4000) : 'R10.1 details')
+        await this.r10_2.setValue(maxStrings ? lib.oasysString(4000) : 'R10.2 details')
+        await this.riskFactorAnslysis.setValue(maxStrings ? lib.oasysString(4000) : 'Risk factor analysis')
+        await this.r10_5.setValue(maxStrings ? lib.oasysString(4000) : 'R10.5 details')
+        await this.r10_3.setValue(maxStrings ? lib.oasysString(4000) : 'R10.3 details')
+        await this.r10_6ChildrenCommunity.setValue('Low')
+        await this.r10_6ChildrenCustody.setValue('High')
+        await this.r10_6PublicCommunity.setValue('Medium')
+        await this.r10_6PublicCustody.setValue('Low')
+        await this.r10_6AdultCommunity.setValue('High')
+        await this.r10_6AdultCustody.setValue('Medium')
+        await this.r10_6StaffCommunity.setValue('Low')
+        await this.r10_6StaffCustody.setValue('Very High')
+        await this.r10_6PrisonersCustody.setValue('High')
+        await this.details.setValue(maxStrings ? lib.oasysString(4000) : 'Some details about documents and reports')
+    }
 }

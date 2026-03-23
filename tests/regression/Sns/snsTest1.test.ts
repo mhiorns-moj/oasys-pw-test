@@ -11,7 +11,7 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
         const offender1 = await offender.createProb(offender.offenders.Probation.Male.burglary)
 
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-        await assessment.populateMinimal({ layer: 'Layer 3', populate6_11: 'No', newSp: true })
+        await assessment.populateMinimal({ layer: 'Layer 3', populate6_11: 'No', sentencePlan: 'SpService' })
 
         // Sign assessment, then check SNS messages
         await assessment.signing.signAndLock({ expectRsrWarning: true })
@@ -48,7 +48,7 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
 
         // Set to Medium risk to get countersigner
         await assessment.risk.populateWithSpecificRiskLevel('High')
-        await assessment.sentencePlan.populateMinimal({ newSp: true })
+        await assessment.sentencePlan.populateMinimal({ sentencePlan: 'SpService' })
 
         // Sign assessment and send for countersigning, then check SNS messages
         await assessment.signing.signAndLock({ expectRsrWarning: true, expectCountersigner: true, countersigner: oasys.users.probSpHeadPdu })

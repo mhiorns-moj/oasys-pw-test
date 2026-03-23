@@ -2,6 +2,8 @@ import { Page, expect } from '@playwright/test'
 
 import * as pages from './pages'
 import { Oasys } from 'fixtures/oasys/oasys'
+import * as lib from 'lib'
+
 
 export class SpService {
 
@@ -36,28 +38,28 @@ export class SpService {
     async populateMinimal() {
 
         await this.sentencePlan.createGoal.click()
-        
+
         const createGoal = new pages.CreateGoal(this.page)
         await createGoal.goal.setValue('Score a goal')
         await createGoal.related.setValue('no')
         await createGoal.startNow.setValue('yes')
         await createGoal.targetDate.setValue('3months')
         await createGoal.addSteps.click()
-        
+
         await this.steps.who.setValue('probation_practitioner')
         await this.steps.step.setValue('Do some stuff')
         await this.steps.saveAndContinue.click()
-        
+
         await this.sentencePlan.agreePlan.click()
         await this.page.getByRole('radio', { name: 'Yes, I agree' }).check()
         await this.page.getByRole('button', { name: 'Save' }).click()
-        
+
         await this.returnToOasys()
     }
 
-    async populateTwoGoals(page: Page, sentencePlan: pages.SentencePlan) {
+    async populateTwoGoals() {
 
-        await sentencePlan.createGoal.click()
+        await this.sentencePlan.createGoal.click()
 
         const createGoal = new pages.CreateGoal(this.page)
         await createGoal.goal.setValue('Score a goal')
@@ -70,7 +72,7 @@ export class SpService {
         await this.page.getByRole('textbox', { name: 'What should they do to' }).fill('Do stuff')
         await this.page.getByRole('button', { name: 'Save and continue' }).click()
 
-        await sentencePlan.createGoal.click()
+        await this.sentencePlan.createGoal.click()
 
         await createGoal.goal.setValue('Do something else')
         await createGoal.related.setValue('no')
@@ -87,26 +89,30 @@ export class SpService {
         await this.page.getByRole('button', { name: 'Save' }).click()
     }
 
-    // async checkReadOnly(sentencePlan: pages.SentencePlan): Promise<string> {
+    async checkReadOnly() {
 
-    //     const createGoalStatus = await sentencePlan.createGoal.checkStatus()
-    //     return createGoalStatus == 'enabled' ? 'Sentence plan is not readonly' : null
-    // }
+        await this.goToSpService('assessment', true)
+        const createGoalStatus = await this.sentencePlan.createGoal.getStatus()
+        expect(createGoalStatus).not.toBe('enabled')
+        await this.returnToOasys()
+    }
 
-    // async checkGoalCount(sentencePlan: pages.SentencePlan, expectedCurrent: number, expectedFuture: number): Promise<string> {
+    async checkGoalCount(expectedCurrent: number, expectedFuture: number, from: 'assessment' | 'offender' = 'assessment', readonly: boolean = false) {
 
-    //     const currentText = await sentencePlan.currentGoalCount.getFullText()
-    //     const futureText = await sentencePlan.futureGoalCount.getFullText()
+        lib.log(`Checking SP goal count: ${expectedCurrent}, ${expectedFuture}`)
+        await this.goToSpService(from, readonly)
+        const currentText = await this.sentencePlan.currentGoalCount.getFullText()
+        const futureText = await this.sentencePlan.futureGoalCount.getFullText()
 
-    //     const actualCurrent = findGoalCount(currentText)
-    //     const actualFuture = findGoalCount(futureText)
+        const actualCurrent = this.findGoalCount(currentText)
+        const actualFuture = this.findGoalCount(futureText)
 
-    //     const failed = actualCurrent != expectedCurrent || actualFuture != expectedFuture
+        expect(actualCurrent).toBe(expectedCurrent)
+        expect(actualFuture).toBe(expectedFuture)
+        await this.returnToOasys()
+    }
 
-    //     return failed ? `Current: expected ${expectedCurrent}, found ${actualCurrent}.  Future: expected ${expectedFuture}, found ${actualFuture}` : null
-    // }
-
-    findGoalCount(linkText: string): number {
+    private findGoalCount(linkText: string): number {
 
         const openBracket = linkText.indexOf('(')
         const closeBracket = linkText.indexOf(')')

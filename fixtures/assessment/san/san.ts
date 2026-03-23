@@ -28,7 +28,7 @@ export class San {
     async populateMinimal() {
 
         await this.gotoSan()
-        await this.populateSanSections('Example test', exampleTest.minimal)
+        await this.populateSanSections('Minimally populate SAN sections', exampleTest.minimal, true)
         await this.returnToOASys()
     }
 
@@ -166,11 +166,14 @@ export class San {
      */
     async populateSanSections(name: string, script: SanPopulation, suppressLog: boolean = false) {
 
+        if (suppressLog) {  // Just log the name
+            lib.log('', name)
+        }
         for (let section of script) {
             if (section.section != 'Sentence plan') {
                 await this.goto(section.section, suppressLog)
             }
-            await this.runScenario(`${name} / ${section.section}`, section.steps, suppressLog = false)
+            await this.runScenario(`${name} / ${section.section}`, section.steps, suppressLog)
         }
     }
 
@@ -181,9 +184,11 @@ export class San {
      */
     async runScenario(name: string, steps: SanStep[], suppressLog = false) {
 
-        lib.log(' ', '')
-        lib.log('', `Scenario: ${name}`)
-        console.log(`Scenario: ${name}`)
+        if (!suppressLog) {
+            lib.log(' ', '')
+            lib.log('', `Scenario: ${name}`)
+            console.log(`Scenario: ${name}`)
+        }
         for (let step of steps) {
             await this.runStep(step, suppressLog)
         }
@@ -416,455 +421,24 @@ export class San {
     //     })
     // }
 
-    // /**
-    //  * Assuming you are in a SAN screen (not the section landing screen), checks that it is in edit mode (true) or readonly mode (false).  Test fails if not.
-    //  */
-    // async checkSanEditMode(expectEdit: boolean) {
+    /**
+     * Assuming you are in a SAN screen (not the section landing screen), checks that it is in edit mode (true) or readonly mode (false).  Test fails if not.
+     */
+    async checkSanEditMode(expectEdit: boolean) {
 
-    //     cy.get('#main-content').then((container) => {
-    //         const saveButtons = container.find('.govuk-button:contains("Save and continue"):visible').length
-    //         const changeLinks = container.find('.govuk-link:contains("Change"):visible').length
+        const saveButtons = await this.page.locator('.govuk-button').filter({ hasText: 'Save and continue' }).count()
+        const changeLinks = await this.page.locator('.govuk-link').filter({ hasText: 'Change' }).count()
 
-    //         if (expectEdit && saveButtons == 0 && changeLinks == 0) {
-    //             throw new Error(`Expected SAN to be in edit mode`)
-    //         }
-    //         if (!expectEdit && (saveButtons > 0 || changeLinks > 0)) {
-    //             throw new Error(`Expected SAN NOT to be in edit mode`)
-    //         }
-    //         cy.log(`Checked SAN edit mode: ${expectEdit}.`)
-    //     })
+        if (expectEdit && saveButtons == 0 && changeLinks == 0) {
+            throw new Error(`Expected SAN to be in edit mode`)
+        }
+        if (!expectEdit && (saveButtons > 0 || changeLinks > 0)) {
+            throw new Error(`Expected SAN NOT to be in edit mode`)
+        }
+        lib.log(`Checked SAN edit mode: ${expectEdit}.`)
+    }
 
-    // }
-
-
-
-    // /**
-    //  * Gets the time for the last API call of the specified type for a given PK, returned using an alias as a Temporal date/time object including milliseconds
-    //  */
-    // async getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREATE_ASSESSMENT' | 'SAN_LOCK_INCOMPLETE', resultAlias: string) {
-
-    //     const query = `select to_char(time_stamp, '${OasysDateTime.oracleTimestampFormatMs}') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
-    //     oasys.Db.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         let result: Temporal.PlainDateTime = null
-    //         if (clogData.length > 0) {
-    //             result = OasysDateTime.stringToTimestamp(clogData[0][0])
-    //         }
-
-    //         cy.wrap(result).as(resultAlias)
-    //     })
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following a createAssessment call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 201 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - previousPk: should be included for cloning, otherwise null
-    //  *  - expectedUser: OASys User Id for the user creating the assessment
-    //  *  - expected Provider: code for the area/establishment
-    //  *  - expectedPlanType: 'INITIAL' or 'REVIEW'
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number that should be returned by SAN for the Sentence Plan
-    //  */
-    // async checkSanCreateAssessmentCall(pk: number, previousPk: number, expectedUser: User, expectedProvider: string, expectedPlanType: 'INITIAL' | 'REVIEW') {
-
-    //     cy.log(`Check CreateAssessment API call for ${pk}, previous ${previousPk}`)
-    //     const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
-    //     oasys.Db.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         let failed = false
-
-    //         if (clogData.length != 2) {
-    //             cy.log(`Expected 2 rows in CLog, found ${clogData.length}`)
-    //             failed = true
-    //         } else {
-    //             const call = clogData[1][0].split('\n')
-    //             if (call[1].substring(call[1].length - 12) != 'oasys/create') {
-    //                 cy.log(`Expected call url to include 'oasys/create', found ${call[1]}`)
-    //                 failed = true
-    //             }
-    //             const callData = JSON.parse(call[3].substring(16))
-    //             if (callData['previousOasysAssessmentPk'] != previousPk) {
-    //                 cy.log(`Expected previous PK: ${previousPk}, found ${callData['previousOasysAssessmentPk']}`)
-    //                 failed = true
-    //             }
-    //             if (callData['regionPrisonCode'] != expectedProvider) {
-    //                 cy.log(`Expected provider: ${expectedProvider}, found ${callData['regionPrisonCode']}`)
-    //                 failed = true
-    //             }
-    //             if (callData['userDetails']['id'] != expectedUser.username) {
-    //                 cy.log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
-    //                 failed = true
-    //             }
-    //             if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
-    //                 cy.log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
-    //                 failed = true
-    //             }
-    //             if (callData['planType'] != expectedPlanType) {
-    //                 cy.log(`Expected sentence plan type: ${expectedPlanType}, found ${callData['planType']}`)
-    //                 failed = true
-    //             }
-
-    //             const response = clogData[0][0].split('\n')
-    //             if (response[2].substring(response[2].length - 3) != '201') {
-    //                 cy.log(`Expected 201 response, found ${response[2]} `)
-    //                 failed = true
-    //             }
-    //         }
-
-    //         cy.then(() => {
-    //             if (failed) {
-    //                 throw new Error('Error checking Create API call')
-    //             }
-    //         })
-    //     })
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following a countersigning call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user countersigning the assessment
-    //  *  - outcome: countersigning action expected - 'COUNTERSIGNED', 'AWAITING_DOUBLE_COUNTERSIGN', 'DOUBLE_COUNTERSIGNED' or 'REJECTED'
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanCountersigningCall(pk: number, expectedUser: User, outcome: 'COUNTERSIGNED' | 'AWAITING_DOUBLE_COUNTERSIGN' | 'DOUBLE_COUNTERSIGNED' | 'REJECTED',
-    //     expectedVersion: number, expectedSpVersion: number) {
-
-    //     checkSanCall('Countersigning', 'COUNTERSIGN', 'counter-sign', pk, expectedUser, { outcome: outcome })
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following a signing call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user signing the assessment
-    //  *  - signingType: signing action expected - 'SELF' or 'COUNTERSIGN'
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanSigningCall(pk: number, expectedUser: User, signingType: 'SELF' | 'COUNTERSIGN') {
-
-    //     checkSanCall('Signing', 'SIGN', 'sign', pk, expectedUser, { signingType: signingType })
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following a lockIncomplete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user locking the assessment
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanLockIncompleteCall(pk: number, expectedUser: User) {
-
-    //     checkSanCall('Lock Incomplete', 'LOCK_INCOMPLETE', 'lock', pk, expectedUser)
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following a delete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user deleting the assessment
-    //  */
-    // async checkSanDeleteCall(pk: number, expectedUser: User) {
-
-    //     checkSanCall('Delete', 'SOFT_DELETE', 'soft-delete', pk, expectedUser)
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following an undelete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user undeleting the assessment
-    //  */
-    // async checkSanUndeleteCall(pk: number, expectedUser: User) {
-
-    //     checkSanCall('Undelete', 'UNDELETE', 'undelete', pk, expectedUser)
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following a rollback call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user rolling back the assessment
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanRollbackCall(pk: number, expectedUser: User) {
-
-    //     checkSanCall('Rollback', 'ROLLBACK', 'rollback', pk, expectedUser)
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following an OTL call to SAN, to confirm that the correct values are passed to SAN and the status 200 response is received.
-    //  * The test will fail if anything is not as expected.
-    //  * 
-    //  * Expected details for the Subject, User and Needs are provided as objects with properties such as the examples shown below; any properties listed will be checked against
-    //  * the parameters generated by OASys and recorded in cLog.
-    //  * 
-    //  *  Parameters are:
-    //  *  - pk
-    //  *  - expectedSubjectDetails: can include crn, pnc, nomisId, givenName, familyName, dateOfBirth, gender, location, sexuallyMotivatedOffenceHistory
-    //  *  - expectedUserDetails: can include displayName, accessMode (READ_ONLY or READ_WRITE)
-    //  *  - callType: 'san' or 'sp'
-    //  *  - version: version number for either SAN or SP as appropriate (can be null)
-    //  *  - expectedNeedsDetails: can include any of the relevant needs data, section by section
-    //  */
-    // async checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: string]: string | OasysDate }, expectedUserDetails: { [keys: string]: string },
-    //     callType: 'san' | 'sp', version: number, expectedNeedsDetails?: { [keys: string]: { [keys: string]: string } }) {
-
-    //     cy.log(`Checking OTL call for ${pk}`)
-    //     if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
-    //         expectedSubjectDetails['dateOfBirth'] = OasysDateTime.oasysDateAsDbString(expectedSubjectDetails['dateOfBirth'])
-    //     }
-
-    //     const query = `select log_text from eor.clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`
-    //     oasys.Db.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-
-    //         let failed = false
-    //         if (clogData.length != 2) {
-    //             cy.log(`Expected 2 rows in CLog, found ${clogData.length}`)
-    //             failed = true
-    //         } else {
-    //             const call = clogData[1][0].split('\n')
-    //             if (call[1].substring(call[1].length - 8) != 'handover') {
-    //                 cy.log(`Expected call url to include 'handover', found ${call[1]}`)
-    //                 failed = true
-    //             }
-    //             const callData = JSON.parse(call[3].substring(16))
-
-    //             Object.keys(expectedSubjectDetails).forEach((key) => {
-    //                 if (callData['subjectDetails'][key] != expectedSubjectDetails[key]) {
-    //                     cy.log(`Expected value for ${key}: ${expectedSubjectDetails[key]}, found ${callData['subjectDetails'][key]}`)
-    //                     failed = true
-    //                 }
-    //             })
-    //             Object.keys(expectedUserDetails).forEach((key) => {
-    //                 if (callData['user'][key] != expectedUserDetails[key]) {
-    //                     cy.log(`Expected value for ${key}: ${expectedUserDetails[key]}, found ${callData['user'][key]}`)
-    //                     failed = true
-    //                 }
-    //             })
-    //             if (expectedNeedsDetails) {
-    //                 Object.keys(expectedNeedsDetails).forEach((section) => {
-    //                     Object.keys(expectedNeedsDetails[section]).forEach((key) => {
-    //                         if (callData['criminogenicNeedsData'][section][key] != expectedNeedsDetails[section][key]) {
-    //                             cy.log(`Expected value for ${section}/${key}: ${expectedNeedsDetails[section][key]}, found ${callData['criminogenicNeedsData'][section][key]}`)
-    //                             failed = true
-    //                         }
-    //                     })
-    //                 })
-    //             }
-    //             const assessmentVersion = callType == 'san' ? version : undefined
-    //             const spVersion = callType == 'sp' ? version : undefined
-    //             if (callData['assessmentVersion'] != assessmentVersion) {
-    //                 cy.log(`Expected assessment version: ${assessmentVersion}, found ${callData['assessmentVersion']}`)
-    //                 failed = true
-    //             }
-    //             // if (callData['sentencePlanVersion'] != spVersion) {
-    //             //     cy.log(`Expected sentence plan version: ${spVersion}, found ${callData['sentencePlanVersion']}`)
-    //             //     failed = true
-    //             // }  // TODO
-
-    //             const response = clogData[0][0].split('\n')
-    //             if (response[2].substring(response[2].length - 3) != '200') {
-    //                 cy.log(`Expected 200 response, found ${response[2]} `)
-    //                 failed = true
-    //             }
-    //         }
-
-    //         cy.then(() => {
-    //             if (failed) {
-    //                 throw new Error('Error checking OTL API call')
-    //             }
-    //         })
-    //     })
-    // }
-
-    // /**
-    //  * Checks cLog for expected entries following a merge call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - expectedUser: OASys User Id for the user rolling back the assessment
-    //  *  - pkPairs: an array of \{ old: number, new: number \}, each pair contains expected values for the old and new assessment PKs.
-    //  */
-    // async checkSanMergeCall(expectedUser: User, pkPairs: number) {
-
-    //     cy.log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
-    //     const query = `select log_text from eor.clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
-    //     oasys.Db.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         let failed = false
-
-    //         if (clogData.length != 2) {
-    //             cy.log(`Expected 2 rows in CLog, found ${clogData.length}`)
-    //             failed = true
-    //         } else {
-    //             const call = clogData[1][0].split('\n')
-    //             if (call[1].substring(call[1].length - 11) != `oasys/merge`) {
-    //                 cy.log(`Expected call url to include 'oasys/merge', found ${call[1].substring(call[1].length - 11)}`)
-    //                 failed = true
-    //             }
-
-    //             const jsonStart = clogData[1][0].search('p_json') + 16
-    //             const jsonEnd = clogData[1][0].search('p_token') - 1
-    //             const callData = JSON.parse(clogData[1][0].substring(jsonStart, jsonEnd))
-
-    //             const mergeData = callData['merge']
-    //             mergeData.sort(arraySort)
-
-    //             if (mergeData.length != pkPairs) {
-    //                 cy.log(`Expected ${pkPairs} pairs, found ${mergeData.length}`)
-    //                 failed = true
-    //             }
-
-    //             if (callData['userDetails']['id'] != expectedUser.username) {
-    //                 cy.log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
-    //                 failed = true
-    //             }
-    //             if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
-    //                 cy.log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
-    //                 failed = true
-    //             }
-
-    //             const response = clogData[0][0].split('\n')
-    //             if (response[2].substring(response[2].length - 3) != '200') {
-    //                 cy.log(`Expected 200 response, found ${response[2]} `)
-    //                 failed = true
-    //             }
-    //         }
-
-    //         cy.then(() => {
-    //             if (failed) {
-    //                 throw new Error('Error checking Merge API call')
-    //             }
-    //         })
-    //     })
-    // }
-
-
-
-    // /**
-    //  * Confirms that there is nothing in cLog relating to any SAN API calls for the given PK
-    //  */
-    // async checkNoSanCall(pk: number) {
-
-    //     const query = `select log_text from eor.clog where log_source like '%${pk}%' and log_text <> 'lv_previous_layer [LAYER3_1] || lv_current_layer [LAYER3_1]'`
-    //     oasys.Db.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         if (clogData && clogData.length > 0) {
-    //             throw new Error(`Found unexpected clog entries for PK ${pk}`)
-    //         }
-    //     })
-    // }
-
-    // /**
-    //  * Checks that the expected number of questions has a non-null answer for the given pk and OASys section.  Fails the test if there is a mismatch.
-    //  */
-    // async checkCountOfQuestionsInSection(pk: number, section: string, expectedCount: number) {
-    //     const sanSectionQuery = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
-    //                             where st.oasys_set_pk = s.oasys_set_pk
-    //                             and s.oasys_section_pk = q.oasys_section_pk
-    //                             and q.oasys_question_pk = a.oasys_question_pk(+)
-    //                             and s.ref_section_code = '${section}' 
-    //                             and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
-    //                             and st.oasys_set_pk = ${pk}`
-    //     oasys.Db.selectCount(sanSectionQuery, 'result')
-    //     cy.get<number>('@result').then((count) => {
-    //         expect(count).equal(expectedCount)
-    //     })
-    // }
-
-    // /**
-    //  * Gets the SAN update tiem from clog, then checks the SAN update details in oasys_set
-    //  */
-    // async getSanApiTimeAndCheckDbValues(pk: number, linkedInd: 'Y' | 'N', clonedPk: number, sanVersion: number, spVersion: number = null) {
-
-    //     oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-    //     cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((sanDataTime) => {
-    //         oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-    //             SAN_ASSESSMENT_LINKED_IND: linkedInd,
-    //             CLONED_FROM_PREV_OASYS_SAN_PK: clonedPk?.toString() ?? null,
-    //             SAN_ASSESSMENT_VERSION_NO: sanVersion?.toString() ?? null,
-    //             SSP_PLAN_VERSION_NO: sanVersion?.toString() ?? null,
-    //             LASTUPD_FROM_SAN: sanDataTime
-    //         })
-    //     })
-    // }
-    // /**
-    //  * 
-    //  */
-    // async checkSanLockIncompleteTimestamp(pk: number) {
-
-    //     oasys.San.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-    //     oasys.San.getSanApiTime(pk, 'SAN_LOCK_INCOMPLETE', 'lockIncompleteTime')
-    //     cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((getSanDataTime) => {
-    //         cy.get<Temporal.PlainDateTime>('@lockIncompleteTime').then((lockIncompleteTime) => {
-    //             expect(oasys.OasysDateTime.timestampDiff(getSanDataTime, lockIncompleteTime)).gt(0)
-    //         })
-    //     })
-    // }
-
-    //  checkSanCall(name: string, sourceFilter: string, url: string, pk: number, expectedUser: User,
-    //     otherChecks?: { signingType?: 'SELF' | 'COUNTERSIGN', outcome?: string }) {
-
-    //     cy.log(`Checking ${name} call for ${pk}`)
-
-    //     const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_${sourceFilter}%' order by time_stamp desc`
-    //     oasys.Db.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         let failed = false
-
-    //         if (clogData.length < 2) {
-    //             cy.log(`Expected 2 rows in CLog per event, found ${clogData.length}`)
-    //             failed = true
-    //         } else {
-    //             const call = clogData[1][0].split('\n')
-    //             const start = 7 + url.length
-    //             if (call[1].substring(call[1].length - (start + pk.toString().length)) != `oasys/${pk}/${url}`) {
-    //                 cy.log(`Expected call url to include 'oasys/${pk}/${url}', found ${call[1].substring(call[1].length - (start + pk.toString().length))}`)
-    //                 failed = true
-    //             }
-    //             const callData = JSON.parse(call[3].substring(16))
-    //             if (callData['userDetails']['id'] != expectedUser.username) {
-    //                 cy.log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
-    //                 failed = true
-    //             }
-    //             if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
-    //                 cy.log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
-    //                 failed = true
-    //             }
-    //             if (otherChecks?.signingType) {
-    //                 if (callData['signType'] != otherChecks.signingType) {
-    //                     cy.log(`Expected signing type: ${otherChecks.signingType}, found ${callData['signType']}`)
-    //                     failed = true
-    //                 }
-    //             }
-    //             if (otherChecks?.outcome) {
-    //                 if (callData['outcome'] != otherChecks.outcome) {
-    //                     cy.log(`Expected outcome: ${otherChecks.outcome}, found ${callData['outcome']}`)
-    //                     failed = true
-    //                 }
-    //             }
-    //             const response = clogData[0][0].split('\n')
-    //             if (response[2].substring(response[2].length - 3) != '200') {
-    //                 cy.log(`Expected 200 response, found ${response[2]} `)
-    //                 failed = true
-    //             }
-
-    //         }
-
-    //         cy.then(() => {
-    //             if (failed) {
-    //                 throw new Error(`Error checking ${name} API call`)
-    //             }
-    //         })
-    //     })
-    // }
 }
-
 function arraySort(a: object, b: object): number {
 
     const aString = concatObject(a)

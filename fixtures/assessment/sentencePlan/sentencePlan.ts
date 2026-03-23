@@ -16,7 +16,7 @@ export class SentencePlan {
 
     async populateMinimal(params?: PopulateAssessmentParams, from: 'assessment' | 'offender' = 'assessment') {
 
-        if (params?.newSp || params?.layer == 'Layer 3V2') {
+        if (params?.sentencePlan == 'SpService' || params?.layer == 'Layer 3V2') {
 
             await this.spService.goToSpService(from)
             await this.spService.populateMinimal()

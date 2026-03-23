@@ -2,7 +2,7 @@
 
 export class MarkAssessmentHistoric extends OasysPage {
 
-    name = 'MarkAssessmenthis.pagetoric'
+    name = 'MarkAssessmenHistoric'
     title = 'Administration Functions - Mark Assessment Historic'
     menu: Menu = { type: 'Main', level1: 'Admin', level2: 'Mark Assessments as Historic' }
 

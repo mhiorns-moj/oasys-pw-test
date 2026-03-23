@@ -1,3 +1,6 @@
+import { Temporal } from '@js-temporal/polyfill'
+import { expect } from '@playwright/test'
+
 import * as lib from 'lib'
 import { OasysDateTime } from 'lib/dateTime'
 import { OasysDb } from './oasysDb'
@@ -85,7 +88,6 @@ export class OasysDataQueries {
         return failed
     }
 
-
     async checkVictims(assessmentPk: number, expectedVictims: Victim[], suppressLog = false): Promise<boolean> {
 
         let failed = false
@@ -127,6 +129,70 @@ export class OasysDataQueries {
         }
         return failed
     }
+    /**
+     * Checks a set of values against the result of a single-row database query, test fails if there are any mismatches.  Parameters are:
+     *   - table name
+     *   - where clause
+     *   - object containing pairs of column names and expected values.  Expected values can be string or date (Temporal PlainDateTime) types.
+     * 
+     * e.g. `checkDbValues('oasys_set', 'oasys_set_pk = 123456', { family_name: 'Smith', forename_1: 'John' })`
+     * 
+     * Fails if more than one row is returned.
+     */
+    async checkDbValues(table: string, where: string, values: { [keys: string]: string | Temporal.PlainDateTime }) {
+
+        var query = 'select '
+        var firstCol = true
+        const columnNames: string[] = []
+        const expectedValues: (string | Temporal.PlainDateTime)[] = []
+        var failed = false
+
+        Object.keys(values).forEach(name => {
+            if (firstCol) {
+                firstCol = false
+            } else {
+                query += ', '
+            }
+            const stringType = !values[name] || typeof values[name] == 'string'
+            query += stringType ? name : `to_char(${name}, '${OasysDateTime.oracleTimestampFormat}')`
+            columnNames.push(name)
+            expectedValues.push(values[name])
+        })
+
+        query += ` from eor.${table} where ${where}`
+
+        const data = await this.oasysDb.getData(query)
+        lib.log('', `Checking database values`)
+        lib.log(`Table: ${table}, where: ${where}`)
+        lib.log(`Expected values: ${JSON.stringify(values)}`)
+
+        if (data.length != 1) {
+            lib.log(`Error in query - expected 1 row, got ${data.length}`)
+            failed = true
+        } else if (data[0].length != expectedValues.length) {
+            lib.log(`Error in query - expected ${expectedValues.length} columns, got ${data[0].length}`)
+            failed = true
+        } else {
+            for (let col = 0; col < expectedValues.length; col++) {
+                if (!expectedValues[col] || typeof expectedValues[col] == 'string') {
+                    const actual = data[0][col]
+                    const expected = expectedValues[col]
+                    if (actual != expected) {
+                        lib.log(`Expected ${columnNames[col]} to be '${expected}', got '${actual}'`)
+                        failed = true
+                    }
+                } else {
+                    const actual = OasysDateTime.stringToTimestamp(data[0][col])
+                    if (Math.abs(OasysDateTime.timestampDiff(actual, expectedValues[col] as Temporal.PlainDateTime)) > 15000) {
+                        lib.log(`Expected ${columnNames[col]} to be ${expectedValues[col].toLocaleString()}, got ${actual}`)
+                        failed = true
+                    }
+                }
+            }
+        }
+
+        expect(failed).toBeFalsy()
+    }
 
     /**
      * Checks that a set of OASys sections (string[] of section refs) have been cloned from one assessment to another, fails if there are any mismatches in any of the sections.
@@ -167,22 +233,22 @@ export class OasysDataQueries {
     //                     throw new Error(result.error)
     //                 } else {
     //                     const oldData = result.data as string[][]
-    //                     cy.groupedLogStart(`Checking cloning for new PK ${newPk}, old PK ${oldPk}, section ${section}`)
+    //                     lib.logStart(`Checking cloning for new PK ${newPk}, old PK ${oldPk}, section ${section}`)
     //                     if (newData.length != oldData.length) {
-    //                         cy.groupedLog(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0}`)
+    //                         lib.log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0}`)
     //                         failed = true
     //                     } else {
     //                         for (let i = 0; i < newData.length; i++) {
     //                             const newQ = JSON.stringify(newData[i])
     //                             const oldQ = JSON.stringify(oldData[i])
     //                             if (newQ != oldQ) {
-    //                                 cy.groupedLog(`New question: ${newQ}, old question: ${oldQ}`)
+    //                                 lib.log(`New question: ${newQ}, old question: ${oldQ}`)
     //                                 failed = true
     //                             }
     //                         }
     //                     }
 
-    //                     cy.groupedLogEnd()
+    //                     lib.logEnd()
 
     //                     cy.get<boolean>(`@${resultAlias}`).then((aliasValue) => {  // Need to refresh the alias even if not changing to indicate completion
     //                         const newValue = failed ? true : aliasValue

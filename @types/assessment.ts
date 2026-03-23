@@ -65,7 +65,7 @@ declare type RiskLevel = 'Low' | 'Medium' | 'High' | 'Very High' | ''
 declare type FrameworkRole = 'Legacy - Unapproved PSO & unapproved PQiP' | 'Legacy - Approved PSO, approved PQiP, NQO or unapproved PO' | 'Legacy - Approved PO' | 'Legacy - SPO' | 'Legacy - Head of PDU' |
     'Unapproved Prison POM & unapproved PQiP' | 'Approved Prison POM, approved PQiP, NQO or unapproved Probation POM' | 'Approved Probation POM' | 'HOMDs'
 
-declare type SentencePlan = 'Initial' | 'Review' | 'PSR Outline' | 'Basic'
+declare type SentencePlan = 'Initial' | 'Review' | 'PSR Outline' | 'Basic' | 'SpService'
 
 declare type MenuStatus = { container: boolean, level1: string, level2: string, complete: boolean }
 
@@ -120,7 +120,6 @@ declare type PopulateAssessmentParams = {
     r1_30PrePopulated?: boolean,
     r1_41PrePopulated?: boolean,
     populate6_11?: 'Yes' | 'No',
-    newSp?: boolean,
 }
 
 declare type SigningPage = 'basic' | 'isp' | 'rsp' | 'spService' | 'rmp' | 'riskScreening'

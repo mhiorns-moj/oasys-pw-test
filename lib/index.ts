@@ -8,6 +8,7 @@ export { expect } from '@playwright/test'
 // export * as Sns from './lib/sns'
 // export * as Task from './lib/task'
 export { OasysDateTime } from './dateTime'
+export * from './utils'
 
 
 export const oasysLog: Log[] = []

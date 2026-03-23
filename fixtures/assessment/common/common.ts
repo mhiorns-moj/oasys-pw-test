@@ -9,6 +9,7 @@ export class Common {
 
     constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys) { }
 
+    readonly offenderInformation = new pages.OffenderInformation(this.page)
     readonly offendingInformation = new pages.OffendingInformation(this.page)
     readonly predictors = new pages.Predictors(this.page)
     readonly selfAssessmentForm = new pages.SelfAssessmentForm(this.page)
