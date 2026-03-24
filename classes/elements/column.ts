@@ -39,12 +39,11 @@ export class Column {
     /**
      * Clicks the first row of a column element.
      */
-    // clickNthRow(n: number) {
+    async clickNthRow(n: number) {
 
-    //     this.getColumnHeaderId().then(($id) => {
-    //         cy.get(`[headers="${$id}"]`).eq(n - 1).click()
-    //     })
-    // }
+        const id = await this.getColumnHeaderId()
+        await this.page.locator(`[headers="${id}"]`).nth(n - 1).click()
+    }
 
     async getColumnHeaderId(): Promise<string> {
 

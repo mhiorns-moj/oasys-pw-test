@@ -1,1 +1,0 @@
-export * as Male from './male'

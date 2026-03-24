@@ -22,6 +22,7 @@ export class Layer3 {
     readonly section12 = new pages.Section12(this.page)
     readonly section13 = new pages.Section13(this.page)
     readonly summarySheet = new pages.SummarySheet(this.page)
+    readonly fastReview = new pages.FastReview(this.page)
 
     async sections2To13NoIssues(params?: PopulateAssessmentParams) {
 
@@ -36,7 +37,6 @@ export class Layer3 {
         await this.section10.populateNoIssues(true)
         await this.section11.populateNoIssues(true)
         await this.section12.populateNoIssues(true)
-
     }
 
 // export function sections2To13FullyPopulated(params: PopulateAssessmentParams) {

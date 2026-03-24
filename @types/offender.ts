@@ -42,6 +42,8 @@ declare type OffenderDef = {
     dischargeTelephoneNumber?: string,
     event?: CmsEvent,
     aliases?: Alias | Alias[],
+
+    pk?: number,
 }
 
 declare type CmsEvent = {
@@ -90,3 +92,5 @@ declare type Alias = {
 }
 
 declare type Provider = 'prob' | 'pris'
+
+declare type OffenderLibParams = { gender?: Gender, forename1?: string, type?: 'burglary' | 'sexual' | 'twoOffences' }

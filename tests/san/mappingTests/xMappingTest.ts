@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra'
 import { expect } from '@playwright/test'
 
-import { Oasys, Offender, Assessment } from 'fixtures'
+import { Oasys, Offender, Assessment, San } from 'fixtures'
 
 import * as lib from 'lib'
 
@@ -11,13 +11,7 @@ import * as lib from 'lib'
 
 export const mappingTestOffenderFile = 'tests/data/local/mappingTestsOffender.txt'
 
-export async function mappingTest(oasys: Oasys, offender: Offender, assessment: Assessment, script: SanScript, reset130: boolean = false) {
-
-    // Occasional error in SAN 'Cannot read properties of null (reading 'postMessage')'.  Need to workaround it with the following:
-    // Cypress.on('uncaught:exception', () => {
-    //     cy.log('Cypress Exception')
-    //     return false
-    // })
+export async function mappingTest(oasys: Oasys, offender: Offender, assessment: Assessment, san: San, script: SanScript, reset130: boolean = false) {
 
     const offenderDetails = await fs.readFile(mappingTestOffenderFile)
     const mappingTestOffender = JSON.parse(offenderDetails.toString()) as OffenderDef
@@ -32,7 +26,7 @@ export async function mappingTest(oasys: Oasys, offender: Offender, assessment: 
 
     const assessmentPk = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-    const failed = await assessment.san.runScript(assessmentPk, script, reset130)
+    const failed = await san.runScript(assessmentPk, script, reset130, assessment.predictors)
     expect(failed).toBeFalsy()
 
     await oasys.logout()

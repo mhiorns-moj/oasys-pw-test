@@ -9,19 +9,26 @@ import { SpService } from './spService/spService'
 export class SentencePlan {
 
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys) { }
+    constructor(private readonly page: Page, private readonly oasys: Oasys) { }
 
     readonly basicSentencePlan = new pages.BasicSentencePlan(this.page)
     readonly spService = new SpService(this.page, this.oasys)
 
-    async populateMinimal(params?: PopulateAssessmentParams, from: 'assessment' | 'offender' = 'assessment') {
+    /**
+     * Navigate to the sentence plan and populate the sentence plan with the minimum required to allow sign and lock.
+     * 
+     * - sentencePlan: defaults to spService
+     * - from: defaults to assessment, allows opening spService from the offender details page (not applicable for other SP types)
+     */
+    async populateMinimal(sentencePlan: SpType = 'spService', from: 'assessment' | 'offender' = 'assessment') {
 
-        if (params?.sentencePlan == 'SpService' || params?.layer == 'Layer 3V2') {
+        if (sentencePlan == 'spService') { // TODO others
 
             await this.spService.goToSpService(from)
             await this.spService.populateMinimal()
         }
     }
+
 
     async goto(planType: SpType, suppressLog = false) {
 

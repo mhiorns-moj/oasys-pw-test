@@ -261,6 +261,35 @@ export class OasysDataQueries {
     // }
 
 
+    /**
+     * Checks that the given OASYS_SET pk is deleted (i.e. deleted_date is not null)
+     */
+    // async checkDeleted(pk: number) {
+
+    //     checkIfDeleted(pk, true)
+    // }
+
+    /**
+     * Checks that the given OASYS_SET pk is NOT deleted (i.e. deleted_date is null)
+     */
+    // async checkNotDeleted(pk: number) {
+
+    //     checkIfDeleted(pk, false)
+    // }
+
+    // async checkIfDeleted(pk: number, expectDeleted: boolean) {
+
+    //     this.oasys.Db.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'data')
+    //     cy.get<string[][]>('@data').then((data) => {
+    //         if (expectDeleted) {
+    //             expect(data[0][0]).to.not.be.null
+    //             lib.log(`Checked that assessment ${pk} has been deleted`)
+    //         } else {
+    //             expect(data[0][0]).to.be.null
+    //             lib.log(`Checked that assessment ${pk} is NOT deleted`)
+    //         }
+    //     })
+    // }
 }
 
 

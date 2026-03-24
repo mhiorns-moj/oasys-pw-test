@@ -5,60 +5,42 @@ import { test } from 'fixtures'
     New FEMALE Probation Offender in SAN Area - check functionality when say 'No' to cloning from an Historic OASys-SAN assessment.
  */
 
-const off1: OffenderDef = {
-
-    forename1: 'TestRefFourteen',
-    gender: 'Female',
-    dateOfBirth: { years: -32 },
-    event: {
-        eventDetails: {
-            sentenceType: 'Fine',
-            sentenceDate: { months: -6 },
-        },
-        offences:
-        {
-            offence: '028',
-            subcode: '01',
-        },
-    },
-}
-
-test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasysDb }) => {
+test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasysDb, san, signing, sentencePlan, risk }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)
-    const offender1 = await offender.createProb(off1)
+    const offender1 = await offender.createProbFromStandardOffender({ gender: 'Female', forename1: 'TestRefFourteen' })
 
     lib.log(`For the first assessment, create a new OASys-SAN assessment (3.2) that now includes a SAN Sentence Plan
             Complete the SAN Assessment part AND complete the SAN Sentence Plan (doesn't matter what you select, just need to get a completed 3.2).`, 'Test step')
 
     const pk1 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
-    await assessment.san.populateMinimal()
-    await assessment.sentencePlan.populateMinimal({ sentencePlan: 'SpService' })
+    await san.populateMinimal()
+    await sentencePlan.populateMinimal()
 
     lib.log(`Complete the OASys part of the assessment invoking a full analysis by saying 'Yes' to something in the RoSH Screening.
             Fully sign and lock and countersign (if applicable) the 3.2 assessment.`, 'Test step')
 
     // Complete section 1
-    await assessment.common.offendingInformation.populateMinimal()
+    await assessment.offendingInformation.populateMinimal()
 
-    await assessment.common.predictors.goto(true)
-    await assessment.common.predictors.dateFirstSanction.setValue({ years: -2 })
-    await assessment.common.predictors.o1_32.setValue(2)
-    await assessment.common.predictors.o1_40.setValue(0)
-    await assessment.common.predictors.o1_29.setValue({ months: -1 })
-    await assessment.common.predictors.o1_30.setValue('No')
-    await assessment.common.predictors.o1_38.setValue({})
+    await assessment.predictors.goto(true)
+    await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
+    await assessment.predictors.o1_32.setValue(2)
+    await assessment.predictors.o1_40.setValue(0)
+    await assessment.predictors.o1_29.setValue({ months: -1 })
+    await assessment.predictors.o1_30.setValue('No')
+    await assessment.predictors.o1_38.setValue({})
 
-    await assessment.risk.populateMinimal()
-    await assessment.risk.roshScreeningSection5.goto()
-    await assessment.risk.roshScreeningSection5.r5_1.setValue('Yes')
-    await assessment.risk.roshScreeningSection5.r5_1t.setValue('Want to do a full analysis')
+    await risk.populateMinimal()
+    await risk.screeningSection5.goto()
+    await risk.screeningSection5.r5_1.setValue('Yes')
+    await risk.screeningSection5.r5_1t.setValue('Want to do a full analysis')
     await oasys.clickButton('Save')
-    await assessment.risk.roshSummary.fullyPopulated()
-    await assessment.risk.riskManagementPlan.minimalWithTextFields()
+    await risk.summary.fullyPopulated()
+    await risk.riskManagementPlan.minimalWithTextFields()
 
-    await assessment.signing.signAndLock({ page: 'spService' })
+    await signing.signAndLock({ page: 'spService' })
 
     lib.log(`Open up the completed 3.2 and from the Admin Menu select 'Mark all assessments as historic'`, 'Test step')
 
@@ -72,8 +54,8 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
             - check the OTL plan accessmode parameter
             Return back to the OASys assessment`, 'Test step')
 
-    await assessment.san.gotoSanReadOnly()
-    await oasysDb.sanQueries.checkSanOtlCall(pk1,
+    await san.gotoSanReadOnly()
+    await san.queries.checkSanOtlCall(pk1,
         {
             'crn': offender1.probationCrn,
             'pnc': offender1.pnc,
@@ -89,14 +71,14 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
             'displayName': oasys.users.probSanHeadPdu.forenameSurname,
             'accessMode': 'READ_ONLY',
         },
-        'san',
+        'san', 'assessment'
     )
 
-    await assessment.san.checkSanEditMode(false)
-    await assessment.san.returnToOASys()
+    await san.checkSanEditMode(false)
+    await san.returnToOASys()
 
-    await assessment.sentencePlan.spService.checkReadOnly()
-    await oasysDb.sanQueries.checkSanOtlCall(pk1,
+    await sentencePlan.spService.checkReadOnly()
+    await san.queries.checkSanOtlCall(pk1,
         {
             'crn': offender1.probationCrn,
             'pnc': offender1.pnc,
@@ -112,7 +94,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
             'displayName': oasys.users.probSanHeadPdu.forenameSurname,
             'planAccessMode': 'READ_ONLY',
         },
-        'sp'
+        'sp', 'assessment'
     )
 
     await oasys.clickButton('Close')
@@ -126,12 +108,12 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
 
     const pk2 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' }, 'No')
 
-    await oasysDb.sanQueries.checkSanCreateAssessmentCall(pk2, null, oasys.users.probSanHeadPdu, oasys.users.probationSanCode, 'INITIAL')
+    await san.queries.checkSanCreateAssessmentCall(pk2, null, oasys.users.probSanHeadPdu, oasys.users.probationSanCode, 'INITIAL')
     // Check values in OASYS_SET
-    await oasysDb.sanQueries.getSanApiTimeAndCheckDbValues(pk2, 'Y', null)
+    await san.queries.getSanApiTimeAndCheckDbValues(pk2, 'Y', null)
 
-    await assessment.risk.riskManagementPlan.checkMenuVisibility(false)
-    await assessment.sentencePlan.spService.checkGoalCount(0, 0)
+    await risk.riskManagementPlan.checkMenuVisibility(false)
+    await sentencePlan.spService.checkGoalCount(0, 0)
 
     await oasys.logout()
 

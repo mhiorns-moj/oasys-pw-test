@@ -35,6 +35,12 @@ export class SpService {
         await this.oasys.clickButton('Return to OASys')
     }
 
+    async openAndReturn(from: 'offender' | 'assessment', readonly: boolean = false) {
+
+        await this.goToSpService(from, readonly)
+        await this.returnToOasys()
+    }
+
     async populateMinimal() {
 
         await this.sentencePlan.createGoal.click()
@@ -89,9 +95,9 @@ export class SpService {
         await this.page.getByRole('button', { name: 'Save' }).click()
     }
 
-    async checkReadOnly() {
+    async checkReadOnly(from:  'assessment' | 'offender' = 'assessment') {
 
-        await this.goToSpService('assessment', true)
+        await this.goToSpService(from, true)
         const createGoalStatus = await this.sentencePlan.createGoal.getStatus()
         expect(createGoalStatus).not.toBe('enabled')
         await this.returnToOasys()

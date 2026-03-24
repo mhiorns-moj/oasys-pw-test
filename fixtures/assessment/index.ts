@@ -1,10 +1,2 @@
-export { BaseAssessmentPage } from '../../classes/baseAssessmentPage'
-
-export { Assessment } from './assessment'
-export { Common } from './common/common'
-export { Risk } from './risk/risk'
 export { Layer1 } from './layer1/layer1'
 export { Layer3 } from './layer3/layer3'
-export { San } from './san/san'
-export { Signing } from './signing/signing'
-export { SentencePlan } from './sentencePlan/sentencePlan'

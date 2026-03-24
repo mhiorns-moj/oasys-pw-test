@@ -3,7 +3,7 @@ import { Page, TestInfo } from '@playwright/test'
 import * as lib from 'lib'
 import { Oasys, Cms, OasysDb } from 'fixtures'
 import * as pages from './pages'
-import * as offenders from './offenders'
+import * as offenders from './offenderLib'
 
 
 export class Offender {
@@ -14,7 +14,7 @@ export class Offender {
     readonly offenderDetails = new pages.OffenderDetails(this.page)
     readonly rfi = new pages.Rfi(this.page)
 
-    readonly offenders = offenders
+    private readonly offenders = offenders
 
     /**
      * Create a probation offender using the details provided in an Offender type object.
@@ -35,10 +35,39 @@ export class Offender {
      * > &nbsp;&nbsp;&nbsp;&nbsp;`oasys.log(offender.probationCrn)`  
      * > `})`
      */
-    async createProb(source: OffenderDef): Promise<OffenderDef> {
+
+    getStandardOffenderDef(provider: Provider, params?: OffenderLibParams): OffenderDef {
+
+        const offenderSet = provider == 'pris' ? offenders.prison : offenders.probation
+        const offenderDef = params?.type == 'twoOffences' ? offenderSet.twooffences
+            : params?.type == 'sexual' ? offenderSet.sexual
+                : offenderSet.burglary
 
         // Get a copy of the offender data (to avoid changing it for other offenders in the same test based on the same source offender),
-        let offender = JSON.parse(JSON.stringify(source)) as OffenderDef
+        const offender = JSON.parse(JSON.stringify(offenderDef)) as OffenderDef
+        if (params?.gender) {
+            offender.gender = params.gender
+        }
+        if (params?.forename1) {
+            offender.forename1 = params.forename1
+        }
+
+        return offender
+    }
+
+    async createProbFromStandardOffender(params?: OffenderLibParams): Promise<OffenderDef> {
+
+        const offender = this.getStandardOffenderDef('prob', params)
+        return await this.createProb(offender)
+    }
+
+    async createPrisFromStandardOffender(params?: OffenderLibParams): Promise<OffenderDef> {
+
+        const offender = this.getStandardOffenderDef('pris', params)
+        return await this.createPris(offender)
+    }
+
+    async createProb(offender: OffenderDef): Promise<OffenderDef> {
 
         // Populate any null key fields (PNC, CRN, NOMIS ID and Surname).
         await this.oasysDb.populateAutoData(offender)
@@ -68,6 +97,8 @@ export class Offender {
         if (nomisId != undefined) {
             offender.nomisId = nomisId
         }
+
+        await this.addOffenderPk(offender)
         return offender
     }
 
@@ -114,7 +145,16 @@ export class Offender {
         if (probationCrn != undefined) {
             offender.probationCrn = probationCrn
         }
+
+        await this.addOffenderPk(offender)
         return offender
+    }
+
+    private async addOffenderPk(offender: OffenderDef) {
+
+        const query = `select offender_pk from eor.offender where pnc = '${offender.pnc}'`
+        const pk = await this.oasysDb.getSingleNumericValue(query)
+        offender.pk = pk
     }
 
     /**

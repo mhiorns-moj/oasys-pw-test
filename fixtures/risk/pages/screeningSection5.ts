@@ -1,7 +1,7 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
 import * as lib from 'lib'
 
-export class RoshScreeningSection5 extends BaseAssessmentPage {
+export class ScreeningSection5 extends BaseAssessmentPage {
 
     name = 'RoshScreeningSection5'
     title = 'Risk of Serious Harm Screening'

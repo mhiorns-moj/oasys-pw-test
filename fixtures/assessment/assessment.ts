@@ -1,15 +1,17 @@
 import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
-import { Oasys, Cms, Offender, OasysDb, Tasks } from 'fixtures'
-import { BaseAssessmentPage, Common, Layer1, Layer3, San, Risk, Signing, SentencePlan } from 'fixtures/assessment'
+import { Oasys, Cms, Offender, OasysDb, Tasks, San, Risk, Signing, SentencePlan } from 'fixtures'
+import { Layer1, Layer3 } from '.'
 import * as pages from './pages'
+import { BaseAssessmentPage } from 'classes'
 
 
 export class Assessment {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly cms: Cms,
-        readonly offender: Offender, readonly oasysDb: OasysDb, readonly tasks: Tasks) { }
+    constructor(private readonly page: Page, private readonly testInfo: TestInfo, private readonly oasys: Oasys, private readonly cms: Cms,
+        private readonly offender: Offender, private readonly oasysDb: OasysDb, private readonly tasks: Tasks, private readonly san: San,
+        private readonly risk: Risk, private readonly sentencePlan: SentencePlan, private readonly signing: Signing) { }
 
     assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
@@ -18,15 +20,14 @@ export class Assessment {
     readonly assessmentsTab = new pages.AssessmentsTab(this.page)
     readonly deleteAssessment = new pages.DeleteAssessment(this.page)
     readonly rfis = new pages.Rfis(this.page)
-    readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
+    readonly offenderInformation = new pages.OffenderInformation(this.page)
+    readonly offendingInformation = new pages.OffendingInformation(this.page)
+    readonly predictors = new pages.Predictors(this.page)
+    readonly selfAssessmentForm = new pages.SelfAssessmentForm(this.page)
+    private readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
 
-    readonly common = new Common(this.page, this.testInfo, this.oasys)
     readonly layer1 = new Layer1(this.page, this.testInfo, this.oasys)
     readonly layer3 = new Layer3(this.page, this.testInfo, this.oasys)
-    readonly san = new San(this.page, this.testInfo, this.oasys, this, this.oasysDb)
-    readonly risk = new Risk(this.page, this.testInfo, this.oasys)
-    readonly signing = new Signing(this.page, this.testInfo, this.oasys, this, this.tasks)
-    readonly sentencePlan = new SentencePlan(this.page, this.testInfo, this.oasys)
 
     /**
      * Create a probation assessment with the details provided for the Create Assessment page. Assumes you are starting on the Offender Details page.
@@ -105,7 +106,11 @@ export class Assessment {
 
     async populateMinimal(params?: PopulateAssessmentParams) {
 
-        await this.common.populateMinimal(params)
+        await this.offendingInformation.populateMinimal()
+        await this.predictors.populateMinimal()
+        if (params?.layer != 'Layer 3V2') {
+            await this.selfAssessmentForm.populateMinimal()
+        }
 
         switch (params?.layer) {
             case 'Layer 1':
@@ -121,7 +126,7 @@ export class Assessment {
                 break
         }
         await this.risk.populateMinimal(params)
-        await this.sentencePlan.populateMinimal(params)
+        await this.sentencePlan.populateMinimal(params?.sentencePlan)
     }
 
     // export function fullyPopulated(params: PopulateAssessmentParams) {
@@ -203,35 +208,6 @@ export class Assessment {
     //     lib.log(`Deleted latest assessment`)
     // }
 
-    /**
-     * Checks that the given OASYS_SET pk is deleted (i.e. deleted_date is not null)
-     */
-    // async checkDeleted(pk: number) {
-
-    //     checkIfDeleted(pk, true)
-    // }
-
-    /**
-     * Checks that the given OASYS_SET pk is NOT deleted (i.e. deleted_date is null)
-     */
-    // async checkNotDeleted(pk: number) {
-
-    //     checkIfDeleted(pk, false)
-    // }
-
-    // async checkIfDeleted(pk: number, expectDeleted: boolean) {
-
-    //     this.oasys.Db.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'data')
-    //     cy.get<string[][]>('@data').then((data) => {
-    //         if (expectDeleted) {
-    //             expect(data[0][0]).to.not.be.null
-    //             lib.log(`Checked that assessment ${pk} has been deleted`)
-    //         } else {
-    //             expect(data[0][0]).to.be.null
-    //             lib.log(`Checked that assessment ${pk} is NOT deleted`)
-    //         }
-    //     })
-    // }
 
 
     /**
@@ -276,20 +252,20 @@ export class Assessment {
     /**
      * Open the latest assessment, assuming you have the assessments tab showing.
      */
-    // async openLatest() {
+    async openLatest() {
 
-    //     new this.oasys.Pages.Offender.AssessmentsTab().assessments.clickFirstRow()
-    //     lib.log('Opened latest assessment')
-    // }
+        await this.assessmentsTab.assessments.clickFirstRow()
+        lib.log('Opened latest assessment')
+    }
 
     /**
      * Open an assessment selected by the row number in the table (1 at the top), assuming you have the assessments tab showing.
      */
-    // async open(row: number) {
+    async open(row: number) {
 
-    //     new this.oasys.Pages.Offender.AssessmentsTab().assessments.clickNthRow(row)
-    //     lib.log('Opened latest assessment')
-    // }
+        await this.assessmentsTab.assessments.clickNthRow(row)
+        lib.log(`Opened assessment ${row}`)
+    }
 
     /**
      * Assuming you have the offender details open with assessment tab showing, clicks the Lock Incomplete button,

@@ -9,7 +9,7 @@ import { checkOgrs4CalcsPk } from 'lib/ogrs'
 export class Signing {
 
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly assessment: Assessment, readonly tasks: Tasks) { }
+    constructor(private readonly page: Page, private readonly oasys: Oasys, private readonly tasks: Tasks) { }
 
 
     readonly signingStatus = new pages.SigningStatus(this.page)
@@ -32,6 +32,7 @@ export class Signing {
      *   - countersigner: either a predefined User object, or a string to enter as the countersigner
      *   - countersignComment: countersigner comment (a generic comment will be entered if this is not specified)
      *   - offender: an OffenderDef object, if specified the OGRS4 calculations will be checked
+     *   - pk: if provided, the OGRS4 scores will be checked
      */
     async signAndLock(
         params?: {
@@ -40,10 +41,7 @@ export class Signing {
         }) {
 
         lib.log(`Sign & lock assessment`)
-        await this.gotoSigningPage(params?.page)
-
-        // Grab the PNC to find the oasys_set in the database for OGRS4 testing
-        const pnc = await this.assessment.baseAssessmentPage.getPncFromScreenContext()
+        await this.oasys.gotoSigningPage(params?.page)
 
         await this.oasys.clickButton('Sign & Lock', true)
 
@@ -75,8 +73,7 @@ export class Signing {
         }
 
         // Check the OGRS4 calculations
-        const pk = await this.assessment.getLatestSetPkByPnc(pnc)
-        // checkOgrs4CalcsPk(pk) // TODO
+        // checkOgrs4CalcsPk(params.pk) // TODO
 
         // Check for unwanted countersigning
         if (!params?.countersignCancel) {
@@ -104,7 +101,7 @@ export class Signing {
             await this.oasys.clickButton('Return to Assessment')
         }
 
-        await this.gotoSigningPage(params?.page)
+        await this.oasys.gotoSigningPage(params?.page)
 
         await this.oasys.clickButton('Countersign')
         await this.countersigning.selectAction.setValue('Countersign')
@@ -131,18 +128,5 @@ export class Signing {
     //     })
     // }
 
-    async gotoSigningPage(signingPage: SigningPage) {
-
-        // TODO complete this
-        switch (signingPage) {
-            case 'basic':
-                await this.assessment.sentencePlan.basicSentencePlan.goto(true)
-                break
-            case 'spService':
-                await this.assessment.sentencePlan.spService.sentencePlanService.goto(true)
-                break
-        }
-
-    }
 
 }

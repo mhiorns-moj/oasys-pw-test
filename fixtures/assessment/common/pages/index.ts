@@ -1,6 +1,0 @@
-﻿export { OffenderInformation } from './offenderInformation'
-export { OffendingInformation } from './offendingInformation'
-export { Predictors } from './predictors'
-export { SelfAssessmentForm } from './selfAssessmentForm'
-export { SourcesOfInformation } from './sourcesOfInformation'
-export { Victim } from './victim'

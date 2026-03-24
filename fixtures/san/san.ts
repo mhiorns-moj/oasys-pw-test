@@ -11,19 +11,23 @@ import { Page, TestInfo } from '@playwright/test'
 
 import * as lib from 'lib'
 import { User, Element } from 'classes'
-import { Oasys, Assessment, OasysDb } from 'fixtures'
+import { Oasys, OasysDb } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
 import { OasysDateTime } from 'lib'
 import * as exampleTest from './exampleTest'
+import { Queries } from './queries'
+import { Predictors } from 'fixtures/assessment/pages/predictors'
 
 
 export class San {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys, readonly assessment: Assessment, readonly oasysDb: OasysDb) { }
+    constructor(private readonly page: Page, private readonly oasys: Oasys, private readonly oasysDb: OasysDb) { }
 
     readonly sanSections = new pages.SanSections(this.page)
     readonly landingPage = new pages.LandingPage(this.page)
+
+    readonly queries = new Queries(this.oasysDb)
 
     async populateMinimal() {
 
@@ -50,11 +54,13 @@ export class San {
         }
     }
 
-    async gotoSanFromOffender() {
+    async gotoSanFromOffender(readonly = false) {
 
         await this.oasys.clickButton('Open S&N')
-        await this.landingPage.confirmCheck.setValue(true)
-        await this.landingPage.confirm.click()
+        if (!readonly) {
+            await this.landingPage.confirmCheck.setValue(true)
+            await this.landingPage.confirm.click()
+        }
     }
     /**
      * Navigates to the SAN assessment in readonly mode (no landingPage), assuming you are somewhere in the OASys assessment.
@@ -127,7 +133,7 @@ export class San {
      *   - a result alias to return a boolean status - true if the script failed on one or more of the OASys values
      *   - reset130 (optional) - if true, the value of question 1.30 on the Predictors page will be reset between scenarios.
      */
-    async runScript(assessmentPk: number, script: SanScript, reset130: boolean = false): Promise<boolean> {
+    async runScript(assessmentPk: number, script: SanScript, reset130: boolean = false, predictors?: Predictors): Promise<boolean> {
 
         let failed = false
 
@@ -138,8 +144,8 @@ export class San {
             await this.returnToOASys()
             await this.oasys.clickButton('Previous', true)
 
-            const updateTimeFailed = await this.oasysDb.sanQueries.checkLastUpdateTime(assessmentPk)
-            const getAssessmentCallFailed = await this.oasysDb.sanQueries.checkSanGetAssessmentCall(assessmentPk, 0, true)
+            const updateTimeFailed = await this.queries.checkLastUpdateTime(assessmentPk)
+            const getAssessmentCallFailed = await this.queries.checkSanGetAssessmentCall(assessmentPk, 0, true)
             const answersFailed = await this.oasysDb.oasysDataQueries.checkAnswers(assessmentPk, scenario.oasysAnswers, true)
 
             if (updateTimeFailed || getAssessmentCallFailed || answersFailed) {
@@ -151,8 +157,8 @@ export class San {
                 await this.gotoSan()
                 await this.populateSanSections('Reset 1.30', reset)  // Change OA details to allow 1.30 to be editable
                 await this.returnToOASys()
-                await this.assessment.common.predictors.goto()
-                await this.assessment.common.predictors.o1_30.setValue('')
+                await predictors.goto()
+                await predictors.o1_30.setValue('')
             }
         }
 

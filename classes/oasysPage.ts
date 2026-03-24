@@ -20,7 +20,7 @@ export abstract class OasysPage {
 
     floatingMenu = this.page.locator('#leftmenuul')
 
-    static async waitForPageUpdate(page: Page) {
+    static async waitForPageUpdate(page: Page, initialDelay = 200) {
 
         let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
 
@@ -209,7 +209,7 @@ export abstract class OasysPage {
         }
     }
 
-    async checkMenuVisibility(expectVisible: boolean): Promise<boolean> {
+    async checkMenuVisibility(expectVisible: boolean) {
 
         if (this.menu == null) {
             throw new Error(`Invalid menu check for page ${this.name}`)

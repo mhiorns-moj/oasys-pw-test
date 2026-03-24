@@ -1,20 +1,23 @@
 import { Locator, expect, Page } from '@playwright/test'
+import { OasysPage } from 'classes/oasysPage'
 
 import * as lib from 'lib'
 
 export class Select<T extends string> {
 
-    selector: Locator
+    private selector: Locator
+    private roSelector: Locator
 
-    constructor(page: Page, selector: string) {
+    constructor(private readonly page: Page, selector: string) {
 
         this.selector = page.locator(selector)
+        this.roSelector = page.locator(`#XI_${selector.substring(1)}`)
     }
 
-    async setValue(value: T): Promise<void> {
+    async setValue(value: T) {
 
         await this.selector.selectOption(value as string)
-        return null
+        await OasysPage.waitForPageUpdate(this.page, 10)
     }
 
     async setValueByIndex(index: number) {
@@ -22,16 +25,11 @@ export class Select<T extends string> {
         await this.selector.selectOption({ index: index })
     }
 
-    // checkValue(value: T) {
+    async checkValue(value: T) {
 
-    //     let textValue = value as string
-    //     this.getStatusAndValue('result')
-    //     cy.get<ElementStatusAndValue>('@result').then((result) => {
-    //         if (textValue != result.value.trim()) {
-    //             throw new Error(`Incorrect value for ${this.selector}: expected ${textValue}, found ${result.value.trim()}`)
-    //         }
-    //     })
-    // }
+        const statusAndValue = await this.getStatusAndValue()
+        expect(statusAndValue.value).toBe(value as string)
+    }
 
     async getValue(): Promise<string> {
 
@@ -43,7 +41,7 @@ export class Select<T extends string> {
     //     this.getStatusAndValue('result')
     //     cy.get<ElementStatusAndValue>('@result').then((result) => {
     //         if (status != result.status) {
-    //             throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
+    //             throw new Error(`Incorrect status for ${ this.selector }: expected ${ status }, found ${ result.status } `)
     //         }
     //     })
     // }
@@ -67,70 +65,63 @@ export class Select<T extends string> {
     //             actualOptions.push(elements[i].text)
     //         }
     //         if (actualOptions.length != expectedOptions.length) {
-    //             throw new Error(`${this.selector}: expected ${JSON.stringify(expectedOptions)}, actual: ${JSON.stringify(actualOptions)}`)
+    //             throw new Error(`${ this.selector }: expected ${ JSON.stringify(expectedOptions) }, actual: ${ JSON.stringify(actualOptions) } `)
     //         }
     //         for (let i = 0; i < actualOptions.length; i++) {
     //             if (!expectedOptions.includes(actualOptions[i])) {
-    //                 throw new Error(`${this.selector}: expected ${JSON.stringify(expectedOptions)}, actual: ${JSON.stringify(actualOptions)}`)
+    //                 throw new Error(`${ this.selector }: expected ${ JSON.stringify(expectedOptions) }, actual: ${ JSON.stringify(actualOptions) } `)
     //             }
     //         }
     //     })
     // }
 
-    // checkOptionNotAvailable(option: T) {
+    async checkOptionNotAvailable(option: T) {
 
-    // cy.get(this.selector).children('option').then((elements) => {
-    //     const actualOptions: string[] = []
-    //     for (let i = 0; i < elements.length; i++) {
-    //         actualOptions.push(elements[i].text)
-    //     }
-    //     if (actualOptions.includes(option)) {
-    //         throw new Error(`${this.selector}: includes unexpected option ${option}`)
-    //     }
-    // })
-    // }
+        const options = await this.getOptions()
+        expect (options).not.toContain(option as string)
+    }
 
     /**
      * Gets the current status and value of a select element, assumes it exists
-     * Parameter is a Cypress alias which can then be used to access the return value.
+     * 
      * The return value is an ElementStatusAndValue object, containing status and value properties.
      */
-    // getStatusAndValue(alias: string) {
+    async getStatusAndValue(): Promise<ElementStatusAndValue> {
 
-    // let result: ElementStatusAndValue = { status: 'notVisible', value: '' }
+        const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
+        const count = await this.selector.count()
 
-    // cy.get('#content').then((containerDiv) => {
+        if (count > 0) { // If element exists in the DOM
 
-    //     let element = containerDiv.find(this.selector)
+            const visible = await this.selector.isVisible()
+            if (visible) {
+                result.status = 'enabled'
+                result.value = await this.selector.evaluate((sel: HTMLSelectElement) => sel.options[sel.options.selectedIndex].textContent)
 
-    //     if (element.length > 0) { // If element exists in the DOM
+                let readonly = await this.selector.isEditable()
+                if (readonly) {
+                    result.status = 'readonly'
+                }
+            } else {
+                // If the select is not visible, check for the related read-only text box
+                const roCount = await this.roSelector.count()
+                if (roCount > 0) {
+                    const roVisible = await this.roSelector.isVisible()
+                    if (roVisible) {
+                        result.status = 'readonly'
+                        result.value = await this.roSelector.textContent()
+                    }
+                }
+            }
 
-    //         if (element.is(':visible')) {
+        }
+        return result
+    }
 
-    //             result.status = 'enabled'
+    async getOptions(): Promise<string[]> {
 
-    //             this.getValue('val')
-    //             cy.get('@val').then((val) => result.value = val.toString())
-
-    //             if (!element.is(':enabled')) {
-    //                 result.status = 'readonly'
-    //             }
-
-    //         } else {
-    //             // If the select is not visible, check for the related read-only text box
-    //             let roSelector = `#XI_${this.selector.substring(1)}`
-
-    //             if (containerDiv.find(roSelector).length > 0 && containerDiv.find(roSelector).is(':visible')) {
-    //                 result.status = 'readonly'
-    //                 cy.get(roSelector).invoke('val').then((val: string) => result.value = val)
-    //             }
-    //         }
-    //     }
-
-    // })
-    // cy.wrap(result).as(alias)
-    // }
-
+        return await this.selector.locator('option').allTextContents()
+    }
 
     /**
      * Select an item in a combo box.  Parameters are:

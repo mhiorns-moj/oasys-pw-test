@@ -11,7 +11,7 @@ test('SAN integration - RFI test', async ({ oasys, offender, assessment }) => {
 
     await oasys.login(oasys.users.probSanUnappr)
 
-    await offender.createProb(offender.offenders.Probation.Male.burglary)
+    await offender.createProbFromStandardOffender()
 
     // Create RFI
     await offender.rfi.goto()

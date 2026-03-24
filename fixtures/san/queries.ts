@@ -3,7 +3,7 @@ import { Temporal } from '@js-temporal/polyfill'
 
 import * as lib from 'lib'
 import { OasysDateTime } from 'lib/dateTime'
-import { OasysDb } from './oasysDb'
+import { OasysDb } from '../oasysDb/oasysDb'
 import { User } from 'classes'
 
 type OasysSetSanData = {
@@ -14,7 +14,7 @@ type OasysSetSanData = {
     spVersion: number,
 }
 
-export class SanQueries {
+export class Queries {
 
     constructor(readonly db: OasysDb) { }
 
@@ -34,6 +34,20 @@ export class SanQueries {
             sanVersion: lib.getInteger(oasysSetData[0][3]),
             spVersion: lib.getInteger(oasysSetData[0][4]),
         }
+    }
+
+    async checkNoSanSections(pk: number) {
+
+        const query = `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`
+        const count = await this.db.selectCount(query)
+        expect(count).toBe(0)
+    }
+
+    async checkNoSanSectionScores(pk: number) {
+
+        const query = `select count(*) from eor.oasys_section where san_crim_need_score is not null and oasys_set_pk = ${pk}`
+        const count = await this.db.selectCount(query)
+        expect(count).toBe(0)
     }
 
     /**
@@ -253,7 +267,7 @@ export class SanQueries {
      *  - expectedNeedsDetails: can include any of the relevant needs data, section by section
      */
     async checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: string]: string | OasysDate }, expectedUserDetails: { [keys: string]: string },
-        callType: 'san' | 'sp', expectedNeedsDetails?: { [keys: string]: { [keys: string]: string } }) {
+        callType: 'san' | 'sp', from: 'assessment' | 'offender', expectedNeedsDetails?: { [keys: string]: { [keys: string]: string } }) {
 
         lib.log('', `Checking OTL call for ${pk}`)
         if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
@@ -299,8 +313,8 @@ export class SanQueries {
                     })
                 })
             }
-            const assessmentVersion = callType == 'san' ? oasysSetSanData.sanVersion : undefined
-            const spVersion = callType == 'sp' ? oasysSetSanData.spVersion : undefined
+            const assessmentVersion = callType == 'sp' ? undefined : from == 'offender' ? null : oasysSetSanData.sanVersion
+            const spVersion = callType == 'san' ? undefined : from == 'offender' ? null : oasysSetSanData.spVersion
             if (callData['assessmentVersion'] != assessmentVersion) {
                 lib.log(`Expected assessment version: ${assessmentVersion}, found ${callData['assessmentVersion']}`)
                 failed = true

@@ -30,28 +30,30 @@ export class Textbox<T> {
         }
     }
 
-    // checkValue(value: T, partial: boolean = false) {
+    async checkValue(value: T, partial: boolean = false) {
 
-    //     let textValue = value as string
-    //     if (value == null) {
-    //         textValue = ''
-    //     } else if (typeof value == 'number') {
-    //         textValue = value == 0 ? '0' : value.toString()
-    //     } else if (typeof value != 'string') {
-    //         textValue = oasys.OasysDateTime.oasysDateAsString(value as OasysDate)
-    //     }
-    //     this.getStatusAndValue('result')
-    //     cy.get<ElementStatusAndValue>('@result').then((result) => {
-    //         if ((textValue != result.value && !partial) || ((!result.value.includes(textValue) && partial))) {
-    //             throw new Error(`Incorrect value for ${this.selector}: expected ${textValue}, found ${result.value}`)
-    //         }
-    //     })
-    // }
+        let textValue = value as string
+        if (value == null) {
+            textValue = ''
+        } else if (typeof value == 'number') {
+            textValue = value == 0 ? '0' : value.toString()
+        } else if (typeof value != 'string') {
+            textValue = lib.OasysDateTime.oasysDateAsString(value as OasysDate)
+        }
 
-    // getValue(alias: string) {
+        const statusAndValue = await this.getStatusAndValue()
+        if (partial) {
+            expect(statusAndValue.value).toContain(value)
+        } else {
+            expect(statusAndValue.value).toBe(textValue)
+        }
+    }
 
-    //     cy.get(this.selector).invoke('val').as(alias)
-    // }
+    async getValue(): Promise<string> {
+
+        const statusAndValue = await this.getStatusAndValue()
+        return statusAndValue.value
+    }
 
     // checkStatus(status: ElementStatus) {
 
@@ -75,51 +77,37 @@ export class Textbox<T> {
 
     /**
      * Gets the current status and value of a text element, assumes it exists
-     * Parameter is a Cypress alias which can then be used to access the return value.
+     * 
      * The return value is an ElementStatusAndValue object, containing status and value properties.
      */
-    // getStatusAndValue(alias: string) {
+    async getStatusAndValue(): Promise<ElementStatusAndValue> {
 
-    //     let result: ElementStatusAndValue = { status: 'notVisible', value: '' }
+        const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
+        const count = await this.selector.count()
 
-    //     cy.get('#content').then((containerDiv) => {
+        if (count > 0) { // If element exists in the DOM
 
-    //         let element = containerDiv.find(this.selector)
+            const visible = await this.selector.isVisible()
+            if (visible) {
+                result.status = 'enabled'
+                result.value = await this.selector.textContent()
 
-    //         if (element.length > 0) { // If element exists in the DOM
+                let readonly = await this.selector.isEditable()
+                if (readonly) {
+                    result.status = 'readonly'
+                } else {
+                    readonly = (await this.selector.getAttribute('input_readonly')) == 'true' ||
+                        (await this.selector.getAttribute('readonly')) == 'true' ||
+                        (await this.selector.getAttribute('mimic_readonly')) == 'true'
+                    if (readonly) {
+                        result.status = 'readonly'
+                    }
+                }
+            }
 
-    //             if (element.is(':visible')) {
-
-    //                 result.status = 'enabled'
-
-    //                 this.getValue('val')
-    //                 cy.get('@val').then((val) => result.value = val.toString())
-
-    //                 if (!element.is(':enabled')) {
-    //                     result.status = 'readonly'
-    //                 } else {
-    //                     cy.get(this.selector).invoke('attr', 'input_readonly').then((res) => {
-    //                         if (res == 'true') {
-    //                             result.status = 'readonly'
-    //                         }
-    //                     })
-    //                     cy.get(this.selector).invoke('attr', 'readonly').then((res) => {
-    //                         if (res == 'readonly') {
-    //                             result.status = 'readonly'
-    //                         }
-    //                     })
-    //                     cy.get(this.selector).invoke('attr', 'data-mimic_readonly').then((res) => {
-    //                         if (res == 'true') {
-    //                             result.status = 'readonly'
-    //                         }
-    //                     })
-    //                 }
-    //             }
-    //         }
-
-    //     })
-    //     cy.wrap(result).as(alias)
-    // }
+        }
+        return result
+    }
 
 
     /**

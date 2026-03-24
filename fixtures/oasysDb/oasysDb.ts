@@ -23,7 +23,7 @@
 import { expect } from '@playwright/test'
 import { Temporal } from '@js-temporal/polyfill'
 import { OasysDateTime } from 'lib'
-import { SanQueries } from './sanQueries'
+import { Queries } from '../san/queries'
 import { Db } from './data/db'
 import { userSuffix } from 'localSettings'
 import { OasysDataQueries } from './oasysDataQueries'
@@ -34,7 +34,6 @@ export class OasysDb {
     private lastElogTimeAtStart: string = null
     private unprocEventTimeAtStart: string = null
 
-    readonly sanQueries = new SanQueries(this)
     readonly oasysDataQueries = new OasysDataQueries(this)
 
     /**
@@ -235,7 +234,7 @@ export class OasysDb {
     // }
 
     /**
-     * Runs a count query and returns the count in the specified result alias.
+     * Runs a count query and returns the count.
      */
     async selectCount(query: string): Promise<number> {
 
@@ -245,6 +244,16 @@ export class OasysDb {
         return result.data as number
     }
 
+    /**
+     * Runs a query and returns the single return value as a number
+     */
+    async getSingleNumericValue(query: string): Promise<number> {
+
+        const result = await this.db.selectSingleValue(query)
+
+        expect(result.error).toBeNull()
+        return result.data as number
+    }
 
     /** 
      * Get the application config items and offence codes.  Returns an AppConfig object

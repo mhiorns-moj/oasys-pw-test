@@ -6,11 +6,13 @@ import * as pages from './pages'
 import { testEnvironment } from 'localSettings'
 import { OasysPage, User } from 'classes'
 import * as users from './users'
+import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan'
+import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
 
 
 export class Oasys {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo) { }
+    constructor(private readonly page: Page, private readonly testInfo: TestInfo) { }
 
     appConfig: AppConfig
     readonly users = users.Users
@@ -128,6 +130,31 @@ export class Oasys {
         await OasysPage.waitForPageUpdate(this.page)
 
         return null
+    }
+
+    async gotoSigningPage(signingPage: SigningPage) {
+
+        // TODO complete this
+        switch (signingPage) {
+            case 'basic':
+                await new BasicSentencePlan(this.page).goto(true)
+                break
+            case 'spService':
+                await new SentencePlanService(this.page).goto(true)
+                break
+        }
+
+
+    }
+
+    /**
+     * Check for errors on screen in the standard OASys format
+     */
+    async checkErrorMessage(message: string) {
+
+        await expect(this.page.getByText('Error(s) have occurred')).toBeVisible()
+        const errors = await this.page.locator('.a-Notification-list').getByRole('listitem').allTextContents()
+        expect(errors).toContain(message)
     }
 
     /**

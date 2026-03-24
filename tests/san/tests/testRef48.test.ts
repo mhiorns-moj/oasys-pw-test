@@ -7,35 +7,17 @@ import { test } from 'fixtures'
     Assessor creates a 3.2 assessment - does NOT get asked whether they wish to clone section 3 to 13 and sentence plan question (improved cloning)
  */
 
-const off1: OffenderDef = {
-
-    forename1: 'TestRefFortyEight',
-    gender: 'Male',
-    dateOfBirth: { years: -20 },
-    event: {
-        eventDetails: {
-            sentenceType: 'Fine',
-            sentenceDate: { months: -6 },
-        },
-        offences:
-        {
-            offence: '028',
-            subcode: '01',
-        },
-    },
-}
-
-test('SAN integration - test ref 48', async ({ oasys, offender, assessment }) => {
+test('SAN integration - test ref 48', async ({ oasys, offender, assessment, signing }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)
-    const offender1 = await offender.createProb(off1)
+    const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefFortyEight' })
 
     lib.log(`Offender has a previous historic period of supervision where latest assessment is a 3.1 classic OASys`, 'Test step')
 
     // Create and complete layer 3
     await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'No' })
-    await assessment.populateMinimal({ layer: 'Layer 3', populate6_11: 'No', sentencePlan: 'SpService' })
-    await assessment.signing.signAndLock({ expectRsrWarning: true })
+    await assessment.populateMinimal({ layer: 'Layer 3', populate6_11: 'No' })
+    await signing.signAndLock({ expectRsrWarning: true })
 
     // Make historic
     await oasys.history()
@@ -46,8 +28,8 @@ test('SAN integration - test ref 48', async ({ oasys, offender, assessment }) =>
 
     await oasys.clickButton('Close')
     await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' }, 'No')
-    await assessment.populateMinimal({ layer: 'Layer 1', sentencePlan: 'SpService' })
-    await assessment.signing.signAndLock()
+    await assessment.populateMinimal({ layer: 'Layer 1' })
+    await signing.signAndLock()
 
     lib.log(`Assessor creates a 3.2 assessment - does NOT get asked whether they wish to clone section 3 to 13 and sentence plan question (improved cloning)`, 'Test step')
 
@@ -55,7 +37,7 @@ test('SAN integration - test ref 48', async ({ oasys, offender, assessment }) =>
     await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
     // Check that the assessment has created without an additional prompt
-    await assessment.common.offenderInformation.checkCurrent()
+    await assessment.offenderInformation.checkCurrent()
 
     await oasys.logout()
 })

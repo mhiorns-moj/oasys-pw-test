@@ -98,14 +98,16 @@ export class Table {
      * Click the first row in a table
      */
     async clickFirstRow() {
+
         await this.firstColumn().clickFirstRow()
     }
 
     /**
      * Click the nth row in a table (top row is number 1)
      */
-    clickNthRow(n: number) {
-        this.firstColumn().clickNthRow(n)
+    async clickNthRow(n: number) {
+
+        await this.firstColumn().clickNthRow(n)
     }
 
     firstColumn(): Column {
