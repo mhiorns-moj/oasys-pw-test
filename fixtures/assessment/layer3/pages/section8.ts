@@ -71,7 +71,7 @@ export class Section8 extends BaseAssessmentPage {
 
     async populateNoIssues(suppressLog: boolean = false) {
 
-        if (!suppressLog) lib.log('Populating section 8 - no issues')
+        if (!suppressLog) log('Populating section 8 - no issues')
         await this.goto(true)
         await this.o8_1.setValue('No')
     }

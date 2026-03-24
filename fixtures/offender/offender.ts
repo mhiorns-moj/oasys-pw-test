@@ -32,7 +32,7 @@ export class Offender {
      * 
      * > `cy.get('@offender1').then((result:object) => {`  
      * > &nbsp;&nbsp;&nbsp;&nbsp;`let offender = result as lib.Offender`  
-     * > &nbsp;&nbsp;&nbsp;&nbsp;`oasys.log(offender.probationCrn)`  
+     * > &nbsp;&nbsp;&nbsp;&nbsp;`log(offender.probationCrn)`  
      * > `})`
      */
 
@@ -91,7 +91,7 @@ export class Offender {
 
         await this.cms.cmsOffenderSearch()
 
-        lib.log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', CRN: ${offender.probationCrn}, date of birth: ${offender.dateOfBirth}`)
+        log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', CRN: ${offender.probationCrn}, date of birth: ${offender.dateOfBirth}`)
 
         // Reinstate the NOMIS ID on the offender object
         if (nomisId != undefined) {
@@ -117,7 +117,7 @@ export class Offender {
      * where the values are only available within a `cy.get().then()` structure (note the `@` symbol):
      * 
      * > `cy.get<Offender>('@offender1').then((offender) => {`  
-     * > &nbsp;&nbsp;&nbsp;&nbsp;`oasys.log(offender.probationCrn)`  
+     * > &nbsp;&nbsp;&nbsp;&nbsp;`log(offender.probationCrn)`  
      * > `})`
      */
     async createPris(source: OffenderDef): Promise<OffenderDef> {
@@ -139,7 +139,7 @@ export class Offender {
         await this.cms.enterPrisonStubDetailsAndCreateReceptionEvent(offender)
         await this.searchAndSelectByNomisId(offender.nomisId, true)
 
-        lib.log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', NOMISId: ${offender.nomisId}, date of birth: ${offender.dateOfBirth}`, 'Offender')
+        log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', NOMISId: ${offender.nomisId}, date of birth: ${offender.dateOfBirth}`, 'Offender')
 
         // Reinstate the probation CRN on the offender object
         if (probationCrn != undefined) {
@@ -244,7 +244,7 @@ export class Offender {
         await this.offenderSearch.search.click()
         await this.offenderSearch.surnameColumn.clickFirstRow()
 
-        if (!suppressLog) lib.log(`Search and select offender: ${JSON.stringify(data)}`)
+        if (!suppressLog) log(`Search and select offender: ${JSON.stringify(data)}`)
     }
 
     /**
@@ -268,6 +268,6 @@ export class Offender {
     //     stub.mappa.setValue(mappa)
 
     //     stub.add.click()
-    //     oasys.log(`Added offender to IOM stub - CRN: ${probationCrn}, IOM: ${isIom}, number of records: ${records}, error code: ${error}, mappa: ${mappa}`)
+    //     log(`Added offender to IOM stub - CRN: ${probationCrn}, IOM: ${isIom}, number of records: ${records}, error code: ${error}, mappa: ${mappa}`)
     // }
 }

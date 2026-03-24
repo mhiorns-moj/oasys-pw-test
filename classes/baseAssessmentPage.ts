@@ -19,46 +19,41 @@ export class BaseAssessmentPage extends OasysPage {
     /**
      * Navigate to the page, click on Mark as Complete, and then check that the section is marked complete.
      */
-    // markCompleteAndCheck() {
+    async markCompleteAndCheck() {
 
-    //     this.goto()
-    //     this.markAsComplete.click()
-    //     this.checkCompletionStatus(true)
-    // }
+        await this.goto()
+        await this.markAsComplete.click()
+        await this.checkCompletionStatus(true)
+    }
 
     /**
      * Checks that a section has the expected completion status on the floating menu.  Parameter is true if expected to be complete.
      */
-    // checkCompletionStatus(expectedStatus: boolean): typeof this.page {
+    async checkCompletionStatus(expectedStatus: boolean) {
 
-    //     if (this.page.menu.level2 === undefined) {
-    //         cy.get(`#leftmenuul li:contains("${this.page.menu.level1}") img`).invoke('attr', 'title').then((imageTitle) => {
-    //             const complete = imageTitle == 'Section Complete'
-    //             if (complete != expectedStatus) {
-    //                 throw new Error(`${this.page.name} - expected completion status ${expectedStatus}, actual ${complete}.`)
-    //             }
-    //             cy.log(`${this.page.name} - completion status: ${complete}.`)
-    //         })
-    //     } else {
-    //         cy.get(`#leftmenuul li:contains("${this.page.menu.level1}") ul li:contains("${this.page.menu.level2}")`).children().then((menuItem) => {
+        let imageTitle: string
+        await this.waitForAnimation(this.floatingMenu)
 
-    //             let complete = false
-    //             for (let i = 0; i < menuItem.length; i++) {
-    //                 if (menuItem[i].textContent == this.page.menu.level2) {
-    //                     if (i > 0 && menuItem[i - 1].textContent == '') {
-    //                         complete = true
-    //                         break
-    //                     }
-    //                 }
-    //             }
-    //             if (complete != expectedStatus) {
-    //                 throw new Error(`${this.page.name} - expected completion status ${expectedStatus}, actual ${complete}.`)
-    //             }
-    //             cy.log(`${this.page.name} - completion status: ${complete}.`)
-    //         })
-    //     }
-    //     return this.page
-    // }
+        if (this.menu.level2 === undefined) {
+            imageTitle = await this.floatingMenu.locator(`li:has-text('${this.menu.level1}') img`).getAttribute('title')
+
+        } else {
+            // two levels: check if first level is expanded already, if not then click on the first
+            const level1LinkExpanded = this.page.locator('.active.expanded').filter({ hasText: this.menu.level1 })
+            const level1Expanded = await level1LinkExpanded.isVisible()
+
+            if (!level1Expanded) {
+                await this.floatingMenu.locator('.expandable').filter({ hasText: this.menu.level1 }).click()
+                await this.waitForAnimation(this.floatingMenu)
+            }
+            imageTitle = await this.floatingMenu.locator(`li:has-text('${this.menu.level1}') img`).getAttribute('title')
+        }
+
+        const complete = imageTitle == 'Section Complete'
+
+        expect(complete).toBe(expectedStatus)
+        log(`${this.name} - completion status: ${complete}.`)
+    }
 
     async getPncFromScreenContext(): Promise<string> {
 

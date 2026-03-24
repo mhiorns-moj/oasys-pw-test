@@ -24,7 +24,7 @@ export abstract class OasysPage {
 
         let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
 
-        await page.waitForTimeout(200)
+        await page.waitForTimeout(initialDelay)
         let pleaseWaitCount = await updatingElement.count()
         while (pleaseWaitCount > 0) {
             pleaseWaitCount = await updatingElement.count()
@@ -50,7 +50,7 @@ export abstract class OasysPage {
             await element.setValue(elementValues[elementName])
         }
 
-        if (!suppressLog) oasys.log(`Set values on ${this.name} page: ${JSON.stringify(elementValues)} `)
+        if (!suppressLog) log(`Set values on ${this.name} page: ${JSON.stringify(elementValues)} `)
         return this
     }
 
@@ -73,7 +73,7 @@ export abstract class OasysPage {
     //         element.checkValue(elementValues[elementName].toString())
     //     })
 
-    //     if (!suppressLog) cy.log(`Checked values on ${this.name} page: ${JSON.stringify(elementValues)} `)
+    //     if (!suppressLog) log(`Checked values on ${this.name} page: ${JSON.stringify(elementValues)} `)
     //     return this
     // }
 
@@ -173,7 +173,7 @@ export abstract class OasysPage {
         if (this.menu.type != 'San') {
             await this.checkCurrent(suppressLog)
         }
-        if (!suppressLog) oasys.log(`Go to page: ${this.name} `)
+        if (!suppressLog) log(`Go to page: ${this.name} `)
     }
 
     /**
@@ -187,7 +187,7 @@ export abstract class OasysPage {
         let title = await this.page.title()
 
         oasys.expect(title).toContain(this.title)
-        if (!suppressLog) oasys.log(`Check current page: ${this.name} `)
+        if (!suppressLog) log(`Check current page: ${this.name} `)
         return this
     }
 
@@ -258,31 +258,5 @@ export abstract class OasysPage {
             expect(visible).toBe(expectVisible)
         }
     }
-
-    // /**
-    //  * Get the completion status of a section on the floating menu, using a result alias.
-    //  */
-    // getStatus(resultAlias: string) {
-
-    //     let result = false
-    //     if (this.menu?.type != 'Floating') {
-    //         throw new Error(`Invalid menu check for page ${this.name}`)
-    //     }
-    //     if (this.menu.level2 === undefined) {
-    //         cy.get(`#leftmenuul li:contains("${this.menu.level1}") img`).invoke('attr', 'title').then((imageTitle) => {
-    //             if (imageTitle == 'Section Complete') {
-    //                 result = true
-    //             }
-    //         }).then(() => {
-    //             cy.wrap(result).as(resultAlias)
-    //         })
-    //     } else {
-    //         cy.get(`#leftmenuul li:contains("${this.menu.level1}") ul li:contains("${this.menu.level2}")`).children().then((menuItem) => {
-    //             result = menuItem.length == 2
-    //         }).then(() => {
-    //             cy.wrap(result).as(resultAlias)
-    //         })
-    //     }
-    // }
 
 }

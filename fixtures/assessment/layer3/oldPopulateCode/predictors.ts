@@ -2,7 +2,7 @@ import * as oasys from 'lib'
 
 export function minimal() {
 
-    cy.log('Minimally populating predictors page')
+    log('Minimally populating predictors page')
     const page = new oasys.Pages.Assessment.Predictors().goto(true)
     page.dateFirstSanction.setValue({ years: -2 })
     page.o1_32.setValue(2)
@@ -11,7 +11,7 @@ export function minimal() {
 
 export function fullyPopulated(params: PopulateAssessmentParams) {
 
-    cy.log(`Fully populating Predictors page, parameters = ${JSON.stringify(params)}`)
+    log(`Fully populating Predictors page, parameters = ${JSON.stringify(params)}`)
     const page = new oasys.Pages.Assessment.Predictors().goto(true)
     page.dateFirstSanction.setValue({ years: -3 })
     page.o1_32.setValue(2)

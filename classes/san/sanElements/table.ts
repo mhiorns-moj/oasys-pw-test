@@ -79,7 +79,7 @@ export class Table {
      */
     checkCount(expectedRows: number) {
 
-        cy.log(`Checking table row count, expected count = ${expectedRows}`)
+        log(`Checking table row count, expected count = ${expectedRows}`)
         this.firstColumn().checkCount(expectedRows)  // Get first column property to check the row count
     }
 

@@ -23,7 +23,7 @@ export class Section3 extends BaseAssessmentPage {
 
     async populateNoIssues(suppressLog: boolean = false) {
 
-        if (!suppressLog) lib.log('Populating section 3 - no issues')
+        if (!suppressLog) log('Populating section 3 - no issues')
         await this.goto(true)
         await this.noIssues.click()
         await this.identifyIssues.setValue('Section 3 no issues')

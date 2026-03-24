@@ -11,31 +11,31 @@ describe('SAN integration - test ref 17 part 3', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            cy.log(`Navigate to the 'Strengths and Needs Sections' screen - 
+            log(`Navigate to the 'Strengths and Needs Sections' screen - 
                 Click on the button <Open Strengths and Needs> - launches into the SAN Assessment.  Ensure you can navigate through the SAN Assessment and it is ALL read only.
                 Return back to the assessment via the button/link - SAN assessment disappears and returned to the 'Strengths and Needs Sections' screen in the same browser tab`)
 
             oasys.login(oasys.Users.probSanPo)
             oasys.Nav.history()
-            oasys.San.gotoSanReadOnly('Accommodation','information')
+            oasys.San.gotoSanReadOnly('Accommodation', 'information')
             oasys.San.checkSanEditMode(false)
             oasys.San.returnToOASys()
 
-            cy.log(`Navigate to the only screen of the Initial Sentence Plan - Countersign button is available
+            log(`Navigate to the only screen of the Initial Sentence Plan - Countersign button is available
                     Continue to countersign the assessment - check that a 'Countersign API' has been posted to the SAN Service and the contents are correct, including the
                         'outcome' being 'COUNTERSIGNED' along with the countersigners ID and name
                     Check that on the SNS_MESSAGE table there are records for OGRS, RSR, OPD and AssSumm (with URL asssummsan)`)
 
             oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Countersigning test ref 17' })
             // TODO restore OPD check (needs IOM stub) oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OPD'])    // Others checked at signing
-            oasys.Sns.testSnsMessageData(offender.probationCrn,'assessment',['AssSumm'])
+            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
                 oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGNED')
 
-                cy.log(`Open up the Offender record
+                log(`Open up the Offender record
                             Ensure the latest completed assessment shows an 'S&N/SSP' icon next to it
                             Ensure the Offender record shows the new buttons called <Open S&N'> and <Open SPP> next to the <RSR> button`)
 
@@ -45,7 +45,7 @@ describe('SAN integration - test ref 17 part 3', () => {
                 off.openSan.checkStatus('enabled')
                 off.openSp.checkStatus('enabled')
 
-                cy.log(`Check the OASYS_SET record.  Ensure the fields 'LASTUPD_FROM_SAN', 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' remain the same as noted above
+                log(`Check the OASYS_SET record.  Ensure the fields 'LASTUPD_FROM_SAN', 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' remain the same as noted above
                             Ensure the OASys database for this assessment has questions in Sections 2 to 12 from the SAN Assessment
                             Ensure that the new SAN section has questions in it from the SAN assessment`)
 
@@ -62,7 +62,7 @@ describe('SAN integration - test ref 17 part 3', () => {
                         expect(answerCheck).equal(false)
                     })
 
-                    cy.log(`Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13, SAQ and Skills Checker
+                    log(`Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13, SAQ and Skills Checker
                     Select to print 'All Assessment Sections' - ensure the printout has NOT included sections 2 to 13, SAQ and Skills Checker.  
                         Revisions made to existing screens MUST be included in the printout`)
 

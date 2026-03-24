@@ -12,7 +12,7 @@ describe('SAN integration - test ref 10', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`Log in as the same assessor as that in Test Ref 9
+            log(`Log in as the same assessor as that in Test Ref 9
                     Open up the offender record from Test Ref 9
                     As a SAN User, Create a new 3.2 'review' assessment with RSP, electing to use the SAN which has defaulted to 'Yes'.
                     Check that a CreateAssessment API post was sent off with the correct details in it (has the OASYS_SET_PK of the newly created record, the parameter for previous PK
@@ -40,7 +40,7 @@ describe('SAN integration - test ref 10', () => {
                     '1', '3', '4', '5', '6', 'SKILLSCHECKER'     // These sections were modified in the offender record prior to creating this assessment, so will not match the previous one 
                 ])
 
-                cy.log(`Check the OASYS_SET record.  The SAN_ASSESSMENT_LINKED_IND field is set to 'Y'. 
+                log(`Check the OASYS_SET record.  The SAN_ASSESSMENT_LINKED_IND field is set to 'Y'. 
                         The CLONED_FROM_PREV_OASYS_SAN_PK field is set to the previous OASys-SAN assessment.The SAN_ASSESSMENT_VERSION_NO field is blank.
                         The LASTUPD_FROM_SAN is set from the getAssessment API that has been called directly after creating this new 'Review' assessment.
                         There is NO full analysis showing.
@@ -60,7 +60,7 @@ describe('SAN integration - test ref 10', () => {
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
                 const san = new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
 
-                cy.log(`Go to the SAN assessment, change data in the ''accommodation' and 'thinking, behaviours and attitudes' sections to state 
+                log(`Go to the SAN assessment, change data in the ''accommodation' and 'thinking, behaviours and attitudes' sections to state 
                         they are linked to risk of serious harm (ensure the data is validated).
                         Return to OASys, a Full analysis is now showing with sections 6.1 and 6.2 in it.  
                         The 'Strengths and Needs Sections' menu option remains showing with a green tick`)
@@ -69,10 +69,10 @@ describe('SAN integration - test ref 10', () => {
                 oasys.San.populateSanSections('TestRef10 modify SAN', testData.modifySan)
                 oasys.San.returnToOASys()
                 san.next.click()
-                r62.checkIsOnMenu()
+                r62.checkMenuVisibility(true)
                 san.checkCompletionStatus(true)
 
-                cy.log(`Go to the first screen of the Risk of Serious Harm Screening and ensure it shows the TWO ARNS sections at R1.1
+                log(`Go to the first screen of the Risk of Serious Harm Screening and ensure it shows the TWO ARNS sections at R1.1
                         Complete the full analysis flagging the offender as 'Medium' risk
                         Check the Risk Management Plan screen - ensure the checklist shows 'Accommodation' and 'Thinking, behaviours and attitudes' 
                         The Key Information field contains the sentence 'They have accommodation and Thinking, behaviours and attitudes linked to risk.' 
@@ -98,7 +98,7 @@ describe('SAN integration - test ref 10', () => {
                 })
                 oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields()
 
-                cy.log(`Complete the review sentence plan
+                log(`Complete the review sentence plan
                         Mark as Complete all sections of the Review assessment (not applicable for Case ID and SAN menu option already ticked)
                         Sign and Lock the assessment (if it requires a countersigner that countersign it)
                         Check the database has the correct section data in it.  Then log out.`)
@@ -123,7 +123,7 @@ describe('SAN integration - test ref 10', () => {
                 // Check that the correct number of sections have been completed
                 const sectionQuery = `select count(*) from eor.oasys_section 
                                     where oasys_set_pk = ${pk} and section_status_elm = 'COMPLETE_LOCKED'`
-                cy.log(sectionQuery)
+                log(sectionQuery)
                 oasys.Db.selectCount(sectionQuery, 'sectionCount')
                 cy.get<number>('@sectionCount').then((sectionCount) => {
                     expect(sectionCount).equal(22)

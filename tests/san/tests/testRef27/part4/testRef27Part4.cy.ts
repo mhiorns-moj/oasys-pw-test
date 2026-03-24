@@ -5,12 +5,12 @@ describe('SAN integration - test ref 27', () => {
 
     it('Part 4', () => {
 
-        cy.log(`Lock Incomplete a prison OASys-SAN assessment when creating a new assessment where the internal transfer has stalled`)
+        log(`Lock Incomplete a prison OASys-SAN assessment when creating a new assessment where the internal transfer has stalled`)
 
         // Get offender details
         cy.task('retrieveValue', 'offender').then((offenderData) => {
 
-            cy.log(`Create PRISON offender in a SAN PILOT Prison area whose latest assessment is a WIP OASys-SAN assessment (not signed and locked) and does NOT have a SARA.
+            log(`Create PRISON offender in a SAN PILOT Prison area whose latest assessment is a WIP OASys-SAN assessment (not signed and locked) and does NOT have a SARA.
                 ALL the SAN data has been validated and the sentence plan has been agreed`)
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
@@ -36,7 +36,7 @@ describe('SAN integration - test ref 27', () => {
 
                 oasys.Db.checkSingleAnswer(pk, '9', '9.2', 'refAnswer', '0')  // above population sets binge drinking to no
 
-                cy.log(`Open up the offender record
+                log(`Open up the offender record
                     From the offender record click on the <Open S&N> button - taken into the SAN Assessment in EDIT mode
                     Change or enter more data that will affect OASys into the SAN Assessment.  
                     Take screenshots of your input but do not click on <Save and Continue> - just navigate to a different screen - we need 'unvalidated' data
@@ -50,14 +50,14 @@ describe('SAN integration - test ref 27', () => {
                 oasys.San.populateSanSections('Test 27 part 4 SAN Alcohol', testData.test4ModifyAlcohol)
                 oasys.San.returnToOASys()
 
-                cy.log(`From the offender record click on the <Open SSP> button - taken into the Sentence Plan Service in EDIT mode
+                log(`From the offender record click on the <Open SSP> button - taken into the Sentence Plan Service in EDIT mode
                     Change or enter more data that changes the sentence plan e.g. add an objective.  Take screenshots of your input but do not agree the plan
                     Return back to the Offender record`)
 
                 oasys.ArnsSp.runScript('addGoal', { openFromOffender: true })
                 oasys.logout()
 
-                cy.log(`Using the CMS stub submit an internal reception event to a NON SAN PILOT Prison area
+                log(`Using the CMS stub submit an internal reception event to a NON SAN PILOT Prison area
                      - the transfer will stall due to the WIP OASys assessment, the new prison will be noted in the 'Awaiting prison' field on the Offender Management tab
                     Now log in as a user to the 'awaiting' NON SAN PILOT prison area.  
                     Search for and open up the Offender record currently owned by the SAN Pilot probation area - will have 'full' access to the offender record`)
@@ -70,7 +70,7 @@ describe('SAN integration - test ref 27', () => {
                 offenderDetails.offenderManagementTab.click()
                 new oasys.Pages.Offender.OffenderManagementTab().awaitingPrisonOwner.checkValue(oasys.Users.prisonNonSan)
 
-                cy.log(`Click on the <Create Assessment> button - shown 'Work In Progress Assessment at another Establishment…. Recording (Work in Progress)….' message
+                log(`Click on the <Create Assessment> button - shown 'Work In Progress Assessment at another Establishment…. Recording (Work in Progress)….' message
                     Click on the <Lock Incomplete> button - returns back to the Offender record
                     The user now has full access to the offender and the assessment is showing as Locked Incomplete
                     The controlling owner is now set to the Awaiting Prison Owner`)
@@ -79,7 +79,7 @@ describe('SAN integration - test ref 27', () => {
                 oasys.Nav.clickButton('Lock Incomplete')
                 offenderDetails.controllingOwner.checkValue(oasys.Users.prisonNonSan)
 
-                cy.log(`Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'
+                log(`Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'
                     Check that Get Assessment has occurred BEFORE locking incomplete
                     A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                     Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' populate by the return API response
@@ -124,7 +124,7 @@ describe('SAN integration - test ref 27', () => {
                         })
                         oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
-                        cy.log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
+                        log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
                         Click on the 'Open Strengths and Needs' button
                         Taken into the SAN Service - ensure the assessment is shown all in READ ONLY format and that the SAN part of the assessment 
                             shows correctly including the 'unvalidated' data that was captured in screenshots above (this proves that the SAN service ARE 
@@ -148,7 +148,7 @@ describe('SAN integration - test ref 27', () => {
 
                         oasys.Nav.clickButton('Close')
 
-                        cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
+                        log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                              and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
                         oasys.Db.getData(questionsQuery, 'questions2')

@@ -16,7 +16,7 @@ describe('SAN integration - test ref 15 part 2', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
 
-                cy.log(`Navigate out to S&N section - check the OTL parameters (should go across as READ ONLY).  Check you cannot edit anything in the SAN Assessment
+                log(`Navigate out to S&N section - check the OTL parameters (should go across as READ ONLY).  Check you cannot edit anything in the SAN Assessment
                     Return back to the OASys assessment.
                     Navigate out to Sentence Plan section - check the OTL parameters (should go across as READ ONLY).  Check you cannot edit anything in the Sentence Plan
                     Return back to the OASys assessment.`)
@@ -60,7 +60,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'sp', null
                 )
 
-                cy.log(`Log out and log back in again as the actual Assessor of the OASys-SAN assessment.  This assessor needs to have a framework role of 
+                log(`Log out and log back in again as the actual Assessor of the OASys-SAN assessment.  This assessor needs to have a framework role of 
                         'Unapproved' with a default countersigner that has 'Approved Prison POM, approved PQiP, NQO or unapproved Probation POM' 
                         (can sign up to Medium risk with exceptions).
                     Navigate out to the 'Strengths and Needs Sections' - complete ALL of the SAN assessment with anything you like but say Yes to Drugs
@@ -86,7 +86,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     expect(answerCheck).equal(false)
                 })
 
-                cy.log(`Complete the remaining sections in the OASys assessment and invoke a full analysis.  Complete the full analysis and set the offender as 'HIGH' risk.`)
+                log(`Complete the remaining sections in the OASys assessment and invoke a full analysis.  Complete the full analysis and set the offender as 'HIGH' risk.`)
 
                 const rosh1 = new oasys.Pages.Rosh.RoshScreeningSection1().goto()
                 rosh1.mark1_2AsNo.click()
@@ -108,7 +108,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                 oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields(true)
                 new oasys.Pages.Assessment.SummarySheet().goto()
 
-                cy.log(`Navigate out to the 'Sentence Plan Service' 
+                log(`Navigate out to the 'Sentence Plan Service' 
                     Ensure that the OTL sends the correct data for the new 'criminogenicNeedsData' parameter (check to the Summary Sheet in OASys)
                     Complete the sentence plan with at least one goal/steps and ensure you 'agree the plan' which will give a 'COMPLETE' status back.  
                         Do not change the sentence plan type.
@@ -133,7 +133,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'sp', null, testData.otlCrimNeeds
                 )
 
-                cy.log(`For each of the OASys assessment sections, apart from Case ID and Summary Sheet, click on the 'Mark as Complete' flag.
+                log(`For each of the OASys assessment sections, apart from Case ID and Summary Sheet, click on the 'Mark as Complete' flag.
                     Sign and lock the assessment`)
 
                 rosh1.markCompleteAndCheck()

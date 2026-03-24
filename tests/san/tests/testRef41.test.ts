@@ -27,7 +27,7 @@ test('SAN integration - RFI test', async ({ oasys, offender, assessment }) => {
     await assessment.rfis.rfiTable.checkCount(1)
     await assessment.rfis.rfiTable.clickFirstRow()
     await offender.rfi.save.checkStatus('notVisible')
-    lib.log('Checked readonly (save button not visible)')
+    log('Checked readonly (save button not visible)')
     await oasys.clickButton('Close')
     await oasys.clickButton('Close')
 

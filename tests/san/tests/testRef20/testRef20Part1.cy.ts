@@ -8,7 +8,7 @@ describe('SAN integration - test ref 20', () => {
         // Get offender details
         cy.task('retrieveValue', 'offender').then((offenderData) => {
 
-            cy.log(`Create a new OASys-SAN assessment - Non-statutory with ISP	
+            log(`Create a new OASys-SAN assessment - Non-statutory with ISP	
                 Complete Case ID and Section 1 ensuring the offence is a SEXUAL one.	
                 Navigate out to the SAN Assessment 	
                 Check the OTL API parameters - ensure they are correct and that 1.30 has passed as YES`)
@@ -67,7 +67,7 @@ describe('SAN integration - test ref 20', () => {
                     'san', null
                 )
 
-                cy.log(`Complete the SAN Assessment questions as below to be used for the SARA in OASys:	
+                log(`Complete the SAN Assessment questions as below to be used for the SARA in OASys:	
                             - in the Offence Analysis section select 'Yes' to 'Is there any evidence of domestic abuse?' and 'perpetrator - against intimate partner' 
                                 and then 'Yes' at 'linked to risk of serious harm'
                             - in the Employment & Education section, at 'What is ? current employment?' select 'Unemployed actively looking for work' and at
@@ -94,7 +94,7 @@ describe('SAN integration - test ref 20', () => {
 
                 oasys.San.populateSanSections('TestRef20 complete SAN', testData.sanPopulation)
 
-                cy.log(`Return back to the OASys assessment - the 'Strengths and Needs' has a green tick against it	
+                log(`Return back to the OASys assessment - the 'Strengths and Needs' has a green tick against it	
                     Need to navigate away for the data to be picked up from SAN	
                     A full analysis has been invoked with sections 6.1, 6.2, RoSH Summary and Risk Management Plan	
                     Navigate to RoSH Screening Section 1 - R1.1 'Area of Concern' is showing 'Offence analysis'	
@@ -105,16 +105,16 @@ describe('SAN integration - test ref 20', () => {
                 oasys.San.checkSanGetAssessmentCall(pk, 0)
                 oasys.Nav.clickButton('Next')
                 new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
-                new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
-                new oasys.Pages.Rosh.RoshSummary().checkIsOnMenu()
-                new oasys.Pages.Rosh.RiskManagementPlan().checkIsOnMenu()
+                new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
+                new oasys.Pages.Rosh.RoshSummary().checkMenuVisibility(true)
+                new oasys.Pages.Rosh.RiskManagementPlan().checkMenuVisibility(true)
 
                 new oasys.Pages.Rosh.RoshScreeningSection1().areasOfConcern.checkValuesInclude('Offence analysis')
 
                 oasys.Nav.clickButton('Next')
                 oasys.Nav.clickButton('Create')
 
-                cy.log(`Go to the SARA  - check the hints being shown as as follows:	
+                log(`Go to the SARA  - check the hints being shown as as follows:	
                         - at Q5 hints are '4.2 Is the person unemployed, or will be unemployed on release - YES' and '4.3 Employment history scored 2'
                         - at Q6 hints are '6.3 Experience of childhood scored 1'
                         - at Q7 hints are 'Section 8 - Drug misuse scored 7' and 'Section 9 - Alcohol misuse scored 3'
@@ -126,7 +126,7 @@ describe('SAN integration - test ref 20', () => {
                             indicates evidence of current or previous domestic abuse'
                             Complete entry of the SARA questions and then S&L it.`)
 
-                oasys.Populate.Sara.sara('Low','Low')
+                oasys.Populate.Sara.sara('Low', 'Low')
 
                 const sara = new oasys.Pages.Sara.Sara()
                 sara.s5Hints.checkValue('4.2 Is the person unemployed, or will be unemployed on release - YES', true)
@@ -149,7 +149,7 @@ describe('SAN integration - test ref 20', () => {
                 sara.signAndLock.click()
                 sara.confirmSignAndLock.click()
 
-                cy.log(`Complete entry of the OASys assessment questions flagging the offender's overall risk level as 'High' and in the RMP set 
+                log(`Complete entry of the OASys assessment questions flagging the offender's overall risk level as 'High' and in the RMP set 
                     R11.1 Has this case been referred for Multi Agency Public Protection Arrangement management: 'MAPPA Level 2 management' = Yes`)
 
                 oasys.Nav.history(offender, 'Non-statutory')
@@ -159,18 +159,18 @@ describe('SAN integration - test ref 20', () => {
                 oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields()
                 oasys.Nav.clickButton('Save')
 
-                cy.log(`Navigate out to the 'Sentence Plan Service' - complete entry with 2 goals/steps and ensure you 'Agree the Plan'	
+                log(`Navigate out to the 'Sentence Plan Service' - complete entry with 2 goals/steps and ensure you 'Agree the Plan'	
                     Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen	
                     Navigate to Section 5.2 to 8 - complete entry of the three fields on the screen for Public Protection conference`)
 
                 oasys.ArnsSp.runScript('populateTwoGoals')
 
-                cy.log(`Click on S&L - get the complete sections alert	
+                log(`Click on S&L - get the complete sections alert	
                     Continue to S&L - asks for a Countersigner, accept the default and enter a comment`)
 
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Sending test ref 20 for countersigning' })
 
-                cy.log(`OASys assessment now signed and locked, awaiting countersignature - ensure SIGN API has gone off to SAN and that the parameters are correct 
+                log(`OASys assessment now signed and locked, awaiting countersignature - ensure SIGN API has gone off to SAN and that the parameters are correct 
                         including the 'signType' being set to 'COUNTERSIGN' along with users ID and name	
                     In the database ensure the field OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SSP_PLAN_VERSION_NO have been populated`)
 
@@ -180,7 +180,7 @@ describe('SAN integration - test ref 20', () => {
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                 })
 
-                cy.log(`Log out and log back in as the Countersigner	
+                log(`Log out and log back in as the Countersigner	
                     Open the assessment and go to the Countersigner Overview screen
                     Countersigner Overview screen shown and has the following:	
                         Assessor's Comments:  <comments from the task as entered above>
@@ -204,7 +204,7 @@ describe('SAN integration - test ref 20', () => {
 
                 countersigningOverview.returnToAssessment.click()
 
-                cy.log(`Return to Assessment - last screen of the ISP section	
+                log(`Return to Assessment - last screen of the ISP section	
                     Reject the countersigning entering in a comment	
                     Ensure a COUNTERSIGN API has been posted to the SAN service and that the parameters are correct including the 'outcome' which is set to 'REJECTED' 
                         along with the countersigners ID and name	
@@ -223,7 +223,7 @@ describe('SAN integration - test ref 20', () => {
                     SSP_PLAN_VERSION_NO: null,
                 })
 
-                cy.log(`Log out and log back in as the Assessor	
+                log(`Log out and log back in as the Assessor	
                     Don't bother changing anything - just needed to test out countersign rejection.	
                     Go straight to the sentence plan screen and S&L the assessment again leaving the default countersigner and adding a comment
                      - ensure SIGN API has gone off to SAN and that the parameters are correct including the 'signType' being set to 'COUNTERSIGN' along with the users ID and name	`)
@@ -235,7 +235,7 @@ describe('SAN integration - test ref 20', () => {
                 oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Second attempt' })
                 oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGN')
 
-                cy.log(`Log out and log back in as the Countersigner	
+                log(`Log out and log back in as the Countersigner	
                     Open the assessment and go to the Countersigner Overview screen	
                     Countersigner Overview screen shown and has the following:	
                         Countersigner's Previous Rejection Comments: <countersigner rejection reasons from the rejection signing record>
@@ -260,7 +260,7 @@ describe('SAN integration - test ref 20', () => {
                 countersigningOverview.returnToAssessment.click()
                 oasys.Assessment.countersign()
 
-                cy.log(`Assessment is fully completed -ensure a COUNTERSIGN API has been posted to the SAN service and that the parameters are correct including 
+                log(`Assessment is fully completed -ensure a COUNTERSIGN API has been posted to the SAN service and that the parameters are correct including 
                         the 'outcome' which is set to 'COUNTERSIGNED' along with the countersigners ID and name	
                     In the database ensure the field OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SSP_PLAN_VERSION_NO have been populated BUT
                         that would have been by the initial assessor signing again	

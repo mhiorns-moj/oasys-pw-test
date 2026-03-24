@@ -34,7 +34,7 @@ export class FastReview extends BaseAssessmentPage {
 
     async populateNoChanges(suppressLog: boolean = false) {
 
-        if (!suppressLog) lib.log('Populating fast review - no changes')
+        if (!suppressLog) log('Populating fast review - no changes')
         await this.goto(true)
 
         await this.section2.setValue('No')

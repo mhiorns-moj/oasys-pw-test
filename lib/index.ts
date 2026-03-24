@@ -6,10 +6,3 @@ export { expect } from '@playwright/test'
 export { OasysDateTime } from './dateTime'
 export * from './utils'
 
-
-export const oasysLog: Log[] = []
-
-export function log(logtext: string, type?: string) {
-
-    oasysLog.push({ logText: logtext, type: type })
-}

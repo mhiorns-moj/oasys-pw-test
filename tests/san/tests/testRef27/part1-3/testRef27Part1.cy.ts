@@ -5,16 +5,16 @@ describe('SAN integration - test ref 27', () => {
     it('Part 1', () => {
 
         Cypress.on('uncaught:exception', () => {
-            cy.log('Cypress Exception')
+            log('Cypress Exception')
             return false
         })
 
-        cy.log(`Lock Incomplete OASys-SAN assessment (no SARA) from the Offender's Assessments Tab - SAN Data Validated, Sentence Plan has been agreed`)
+        log(`Lock Incomplete OASys-SAN assessment (no SARA) from the Offender's Assessments Tab - SAN Data Validated, Sentence Plan has been agreed`)
 
         // Get offender details
         cy.task('retrieveValue', 'offender').then((offenderData) => {
 
-            cy.log(`Create an offender whose latest assessment is a WIP OASys-SAN assessment without a SARA.
+            log(`Create an offender whose latest assessment is a WIP OASys-SAN assessment without a SARA.
                 ALL the SAN data has been validated, sentence plan has been agreed.`)
 
             const offender = JSON.parse(offenderData as string)
@@ -31,7 +31,7 @@ describe('SAN integration - test ref 27', () => {
                 oasys.San.returnToOASys()
                 oasys.ArnsSp.runScript('populateMinimal')
 
-                cy.log(`Open up the offender record
+                log(`Open up the offender record
                     Click on the <Lock Incomplete> button and then click <OK> to confirm the action
                     Assessment now showing as locked incomplete
                     Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`)
@@ -45,7 +45,7 @@ describe('SAN integration - test ref 27', () => {
                     const lastUpdFromSan = oasys.OasysDateTime.stringToTimestamp(initialData[0][0])
                     const lastUpdDate = oasys.OasysDateTime.stringToTimestamp(initialData[0][1])
 
-                    cy.log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
+                    log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                         Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' populated by the return API response
                         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
@@ -75,7 +75,7 @@ describe('SAN integration - test ref 27', () => {
 
                     oasys.Db.getData(questionsQuery, 'questions1')
 
-                    cy.log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
+                    log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
                         Click on the 'Open Strengths and Needs' button
                         Taken into the SAN Service - ensure the assessment is shown all in READ ONLY format and that the SAN part of the assessment shows correctly
                         Return back to the OASys part of the assessment
@@ -92,7 +92,7 @@ describe('SAN integration - test ref 27', () => {
 
                     oasys.Nav.clickButton('Close')
 
-                    cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
+                    log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                             and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
                     oasys.Db.getData(questionsQuery, 'questions2')
@@ -110,7 +110,7 @@ describe('SAN integration - test ref 27', () => {
                                 expect(oasys.OasysDateTime.timestampDiff(lastUpdFromSan, lastUpdFromSan2)).lte(0)
                                 expect(oasys.OasysDateTime.timestampDiff(lastUpdDate, lastUpdDate2)).lte(0)
 
-                                cy.log(`Rollback the locked incomplete assessment
+                                log(`Rollback the locked incomplete assessment
                                         Ensure the SAN service respond with a 200
                                         Lock incomplete the assessment again without any changes - ensure the SAN Service respond accordingly with a 200`)
 

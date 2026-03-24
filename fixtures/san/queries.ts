@@ -64,7 +64,7 @@ export class Queries {
         const diff = OasysDateTime.timestampDiffString(updateTimes[0][0], updateTimes[0][1])  // ms
 
         if (diff > 10000) {  // 10 seconds - allows time from updating SAN, returning to OASys and updating the db.
-            lib.log(`FAILED - SAN update time mismatch in oasys_set- expected: ${updateTimes[0][0]}, updated: ${updateTimes[0][1]}`)
+            log(`FAILED - SAN update time mismatch in oasys_set- expected: ${updateTimes[0][0]}, updated: ${updateTimes[0][1]}`)
             return true
         }
         return false
@@ -76,23 +76,23 @@ export class Queries {
     async checkSanGetAssessmentCall(pk: number, expectedVersion: number, suppressLog = false): Promise<boolean> {
 
         if (!suppressLog) {
-            lib.log(`Checking GetAssessment call for ${pk}`)
+            log(`Checking GetAssessment call for ${pk}`)
         }
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_GET_ASS%' order by time_stamp desc fetch first 2 rows only`
         const clogData = await this.db.getData(query)
         let failed = false
 
         if (clogData.length != 2) {
-            lib.log(`GetAssessment call FAILED - Expected 2 rows in CLog, found ${clogData.length}`)
+            log(`GetAssessment call FAILED - Expected 2 rows in CLog, found ${clogData.length}`)
             failed = true
         } else {
             if (clogData[1][0].search(pk.toString()) < 0) {
-                lib.log(`GetAssessment call FAILED - ${pk} not found in GetAssessment call`)
+                log(`GetAssessment call FAILED - ${pk} not found in GetAssessment call`)
                 failed = true
             }
             const sanVersionNumber = findSanVersion(clogData[0][0])
             if (sanVersionNumber != expectedVersion) {
-                lib.log(`GetAssessment call FAILED - Expected version: ${expectedVersion}, found ${sanVersionNumber}`)
+                log(`GetAssessment call FAILED - Expected version: ${expectedVersion}, found ${sanVersionNumber}`)
                 failed = true
             }
         }
@@ -128,45 +128,45 @@ export class Queries {
      */
     async checkSanCreateAssessmentCall(pk: number, previousPk: number, expectedUser: User, expectedProvider: string, expectedPlanType: 'INITIAL' | 'REVIEW') {
 
-        lib.log(`Check CreateAssessment API call for ${pk}, previous ${previousPk}`)
+        log(`Check CreateAssessment API call for ${pk}, previous ${previousPk}`)
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
         const clogData = await this.db.getData(query)
         let failed = false
 
         if (clogData.length != 2) {
-            lib.log(`Expected 2 rows in CLog, found ${clogData.length}`)
+            log(`Expected 2 rows in CLog, found ${clogData.length}`)
             failed = true
         } else {
             const call = clogData[1][0].split('\n')
             if (call[1].substring(call[1].length - 12) != 'oasys/create') {
-                lib.log(`Expected call url to include 'oasys/create', found ${call[1]}`)
+                log(`Expected call url to include 'oasys/create', found ${call[1]}`)
                 failed = true
             }
             const callData = JSON.parse(call[3].substring(16))
             if (callData['previousOasysAssessmentPk'] != previousPk) {
-                lib.log(`Expected previous PK: ${previousPk}, found ${callData['previousOasysAssessmentPk']}`)
+                log(`Expected previous PK: ${previousPk}, found ${callData['previousOasysAssessmentPk']}`)
                 failed = true
             }
             if (callData['regionPrisonCode'] != expectedProvider) {
-                lib.log(`Expected provider: ${expectedProvider}, found ${callData['regionPrisonCode']}`)
+                log(`Expected provider: ${expectedProvider}, found ${callData['regionPrisonCode']}`)
                 failed = true
             }
             if (callData['userDetails']['id'] != expectedUser.username) {
-                lib.log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
+                log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
                 failed = true
             }
             if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
-                lib.log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
+                log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
                 failed = true
             }
             if (callData['planType'] != expectedPlanType) {
-                lib.log(`Expected sentence plan type: ${expectedPlanType}, found ${callData['planType']}`)
+                log(`Expected sentence plan type: ${expectedPlanType}, found ${callData['planType']}`)
                 failed = true
             }
 
             const response = clogData[0][0].split('\n')
             if (response[2].substring(response[2].length - 3) != '201') {
-                lib.log(`Expected 201 response, found ${response[2]} `)
+                log(`Expected 201 response, found ${response[2]} `)
                 failed = true
             }
         }
@@ -269,7 +269,7 @@ export class Queries {
     async checkSanOtlCall(pk: number, expectedSubjectDetails: { [keys: string]: string | OasysDate }, expectedUserDetails: { [keys: string]: string },
         callType: 'san' | 'sp', from: 'assessment' | 'offender', expectedNeedsDetails?: { [keys: string]: { [keys: string]: string } }) {
 
-        lib.log('', `Checking OTL call for ${pk}`)
+        log('', `Checking OTL call for ${pk}`)
         if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
             expectedSubjectDetails['dateOfBirth'] = OasysDateTime.oasysDateAsDbString(expectedSubjectDetails['dateOfBirth'])
         }
@@ -281,25 +281,25 @@ export class Queries {
 
         let failed = false
         if (clogData.length != 2) {
-            lib.log(`Expected 2 rows in CLog, found ${clogData.length}`)
+            log(`Expected 2 rows in CLog, found ${clogData.length}`)
             failed = true
         } else {
             const call = clogData[1][0].split('\n')
             if (call[1].substring(call[1].length - 8) != 'handover') {
-                lib.log(`Expected call url to include 'handover', found ${call[1]}`)
+                log(`Expected call url to include 'handover', found ${call[1]}`)
                 failed = true
             }
             const callData = JSON.parse(call[3].substring(16))
 
             Object.keys(expectedSubjectDetails).forEach((key) => {
                 if (callData['subjectDetails'][key] != expectedSubjectDetails[key]) {
-                    lib.log(`Expected value for ${key}: ${expectedSubjectDetails[key]}, found ${callData['subjectDetails'][key]}`)
+                    log(`Expected value for ${key}: ${expectedSubjectDetails[key]}, found ${callData['subjectDetails'][key]}`)
                     failed = true
                 }
             })
             Object.keys(expectedUserDetails).forEach((key) => {
                 if (callData['user'][key] != expectedUserDetails[key]) {
-                    lib.log(`Expected value for ${key}: ${expectedUserDetails[key]}, found ${callData['user'][key]}`)
+                    log(`Expected value for ${key}: ${expectedUserDetails[key]}, found ${callData['user'][key]}`)
                     failed = true
                 }
             })
@@ -307,7 +307,7 @@ export class Queries {
                 Object.keys(expectedNeedsDetails).forEach((section) => {
                     Object.keys(expectedNeedsDetails[section]).forEach((key) => {
                         if (callData['criminogenicNeedsData'][section][key] != expectedNeedsDetails[section][key]) {
-                            lib.log(`Expected value for ${section}/${key}: ${expectedNeedsDetails[section][key]}, found ${callData['criminogenicNeedsData'][section][key]}`)
+                            log(`Expected value for ${section}/${key}: ${expectedNeedsDetails[section][key]}, found ${callData['criminogenicNeedsData'][section][key]}`)
                             failed = true
                         }
                     })
@@ -316,17 +316,17 @@ export class Queries {
             const assessmentVersion = callType == 'sp' ? undefined : from == 'offender' ? null : oasysSetSanData.sanVersion
             const spVersion = callType == 'san' ? undefined : from == 'offender' ? null : oasysSetSanData.spVersion
             if (callData['assessmentVersion'] != assessmentVersion) {
-                lib.log(`Expected assessment version: ${assessmentVersion}, found ${callData['assessmentVersion']}`)
+                log(`Expected assessment version: ${assessmentVersion}, found ${callData['assessmentVersion']}`)
                 failed = true
             }
             if (callData['sentencePlanVersion'] != spVersion) {
-                lib.log(`Expected sentence plan version: ${spVersion}, found ${callData['sentencePlanVersion']}`)
+                log(`Expected sentence plan version: ${spVersion}, found ${callData['sentencePlanVersion']}`)
                 failed = true
             }
 
             const response = clogData[0][0].split('\n')
             if (response[2].substring(response[2].length - 3) != '200') {
-                lib.log(`Expected 200 response, found ${response[2]} `)
+                log(`Expected 200 response, found ${response[2]} `)
                 failed = true
             }
         }
@@ -342,19 +342,19 @@ export class Queries {
     //  */
     // async checkSanMergeCall(expectedUser: User, pkPairs: number) {
 
-    //     lib.log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
+    //     log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
     //     const query = `select log_text from eor.clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
     //     oasys.Db.getData(query, 'clogData')
     //     cy.get<string[][]>('@clogData').then((clogData) => {
     //         let failed = false
 
     //         if (clogData.length != 2) {
-    //             lib.log(`Expected 2 rows in CLog, found ${clogData.length}`)
+    //             log(`Expected 2 rows in CLog, found ${clogData.length}`)
     //             failed = true
     //         } else {
     //             const call = clogData[1][0].split('\n')
     //             if (call[1].substring(call[1].length - 11) != `oasys/merge`) {
-    //                 lib.log(`Expected call url to include 'oasys/merge', found ${call[1].substring(call[1].length - 11)}`)
+    //                 log(`Expected call url to include 'oasys/merge', found ${call[1].substring(call[1].length - 11)}`)
     //                 failed = true
     //             }
 
@@ -366,22 +366,22 @@ export class Queries {
     //             mergeData.sort(arraySort)
 
     //             if (mergeData.length != pkPairs) {
-    //                 lib.log(`Expected ${pkPairs} pairs, found ${mergeData.length}`)
+    //                 log(`Expected ${pkPairs} pairs, found ${mergeData.length}`)
     //                 failed = true
     //             }
 
     //             if (callData['userDetails']['id'] != expectedUser.username) {
-    //                 lib.log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
+    //                 log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
     //                 failed = true
     //             }
     //             if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
-    //                 lib.log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
+    //                 log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
     //                 failed = true
     //             }
 
     //             const response = clogData[0][0].split('\n')
     //             if (response[2].substring(response[2].length - 3) != '200') {
-    //                 lib.log(`Expected 200 response, found ${response[2]} `)
+    //                 log(`Expected 200 response, found ${response[2]} `)
     //                 failed = true
     //             }
     //         }
@@ -457,7 +457,7 @@ export class Queries {
     async checkSanCall(name: string, sourceFilter: string, url: string, pk: number, expectedUser: User,
         otherChecks?: { signingType?: 'SELF' | 'COUNTERSIGN', outcome?: string }) {
 
-        lib.log(`Checking ${name} call for ${pk}`)
+        log(`Checking ${name} call for ${pk}`)
 
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_${sourceFilter}%' order by time_stamp desc`
         const clogData = await this.db.getData(query)
@@ -466,46 +466,46 @@ export class Queries {
         let failed = false
 
         if (clogData.length < 2) {
-            lib.log(`Expected 2 rows in CLog per event, found ${clogData.length}`)
+            log(`Expected 2 rows in CLog per event, found ${clogData.length}`)
             failed = true
         } else {
             const call = clogData[1][0].split('\n')
             const start = 7 + url.length
             if (call[1].substring(call[1].length - (start + pk.toString().length)) != `oasys/${pk}/${url}`) {
-                lib.log(`Expected call url to include 'oasys/${pk}/${url}', found ${call[1].substring(call[1].length - (start + pk.toString().length))}`)
+                log(`Expected call url to include 'oasys/${pk}/${url}', found ${call[1].substring(call[1].length - (start + pk.toString().length))}`)
                 failed = true
             }
             const callData = JSON.parse(call[3].substring(16))
             if (callData['userDetails']['id'] != expectedUser.username) {
-                lib.log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
+                log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
                 failed = true
             }
             if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
-                lib.log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
+                log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
                 failed = true
             }
             if (otherChecks?.signingType) {
                 if (callData['signType'] != otherChecks.signingType) {
-                    lib.log(`Expected signing type: ${otherChecks.signingType}, found ${callData['signType']}`)
+                    log(`Expected signing type: ${otherChecks.signingType}, found ${callData['signType']}`)
                     failed = true
                 }
             }
             if (otherChecks?.outcome) {
                 if (callData['outcome'] != otherChecks.outcome) {
-                    lib.log(`Expected outcome: ${otherChecks.outcome}, found ${callData['outcome']}`)
+                    log(`Expected outcome: ${otherChecks.outcome}, found ${callData['outcome']}`)
                     failed = true
                 }
             }
             const response = clogData[0][0].split('\n')
             if (response[2].substring(response[2].length - 3) != '200') {
-                lib.log(`Expected 200 response, found ${response[2]} `)
+                log(`Expected 200 response, found ${response[2]} `)
                 failed = true
             }
 
             if (oasysSetSanData.sanVersion) {
                 const sanVersionNumber = findSanVersion(clogData[0][0])
                 if (sanVersionNumber != oasysSetSanData.sanVersion) {
-                    lib.log(`Expected version: ${oasysSetSanData.sanVersion}, found ${sanVersionNumber}`)
+                    log(`Expected version: ${oasysSetSanData.sanVersion}, found ${sanVersionNumber}`)
                     failed = true
                 }
             }
@@ -513,7 +513,7 @@ export class Queries {
             if (oasysSetSanData.spVersion) {
                 const spVersionNumber = findSpVersion(clogData[0][0])
                 if (spVersionNumber != oasysSetSanData.spVersion) {
-                    lib.log(`Expected SP version: ${oasysSetSanData.spVersion}, found ${spVersionNumber}`)
+                    log(`Expected SP version: ${oasysSetSanData.spVersion}, found ${spVersionNumber}`)
                     failed = true
                 }
             }

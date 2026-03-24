@@ -25,13 +25,13 @@ export class Sns {
         let failed = false
         const actualSnsMessages: DbSns[] = []
 
-        lib.log('', `Testing SNS messages for latest ${type} for offender ${crn}`)
+        log('', `Testing SNS messages for latest ${type} for offender ${crn}`)
 
         // Get latest assessment or RSR from the database and build the expected SNS messages.
         const assessment = await this.getAssessment(crn, type)
 
         if (assessment == null) {
-            lib.log(`No ${type} found`)
+            log(`No ${type} found`)
             failed = true
         } else {
             // For RoSHA assessments - check if risk assessment has been completed.
@@ -63,36 +63,36 @@ export class Sns {
                     })
                 }
                 if (failed) {
-                    lib.log(`Expecting ${JSON.stringify(expectingMessages)} messages, data suggested ${JSON.stringify(dbExpectedMessages)} should be expected.`)
+                    log(`Expecting ${JSON.stringify(expectingMessages)} messages, data suggested ${JSON.stringify(dbExpectedMessages)} should be expected.`)
                 }
             }
 
             for (let expectedSnsMessage of expectedSnsMessages) {
-                
+
                 const actualSnsMessage = this.getLastActualSnsMessage(actualSnsMessages, expectedSnsMessage.messageType)
                 if (actualSnsMessage == null) {
                     failed = true
-                    lib.log(`FAILED - Expected ${expectedSnsMessage.messageType} message not found`)
+                    log(`FAILED - Expected ${expectedSnsMessage.messageType} message not found`)
                 } else if (actualSnsMessage.messageSubject != expectedSnsMessage.messageSubject) {
                     failed = true
-                    lib.log(`FAILED - Expected subject: ${expectedSnsMessage.messageSubject}, got: ${actualSnsMessage.messageSubject}`)
+                    log(`FAILED - Expected subject: ${expectedSnsMessage.messageSubject}, got: ${actualSnsMessage.messageSubject}`)
                 } else {
                     if (this.validateSNS(expectedSnsMessage, actualSnsMessage)) {
-                        lib.log(`FAILED - ${expectedSnsMessage.messageType}`)
-                        lib.log(JSON.stringify(actualSnsMessage))
+                        log(`FAILED - ${expectedSnsMessage.messageType}`)
+                        log(JSON.stringify(actualSnsMessage))
                         failed = true
                     }
                     else {
-                        lib.log(`* ${expectedSnsMessage.messageType} - passed`)
+                        log(`* ${expectedSnsMessage.messageType} - passed`)
                     }
                 }
-                lib.log('')
+                log('')
 
                 // Check for unexpected messages in the database
                 actualSnsMessages.forEach((actualSnsMessage) => {
                     if (expectedSnsMessages.filter(m => m.messageType == actualSnsMessage.messageType).length == 0) {
                         failed = true
-                        lib.log(`FAILED - Found ${actualSnsMessage.messageType} message not expected`)
+                        log(`FAILED - Found ${actualSnsMessage.messageType} message not expected`)
                     }
                 })
             }
@@ -159,12 +159,12 @@ export class Sns {
         Object.keys(expectedElements).forEach((key) => {
             if (Object.keys(actualElements).includes(key)) {
                 if (key != 'messageData.occurredAt' && expectedElements[key] != actualElements[key]) {
-                    lib.log(`Incorrect value for ${key}: expected '${expectedElements[key]}', received '${actualElements[key]}'`)
+                    log(`Incorrect value for ${key}: expected '${expectedElements[key]}', received '${actualElements[key]}'`)
                     failed = true
                 }
             }
             else {
-                lib.log(`Expected element not received: ${key} with value '${expectedElements[key]}'`)
+                log(`Expected element not received: ${key} with value '${expectedElements[key]}'`)
                 failed = true
             }
         })
@@ -172,7 +172,7 @@ export class Sns {
         // Check that there are no extra elements received
         Object.keys(actualElements).forEach((key) => {
             if (!Object.keys(expectedElements).includes(key)) {
-                lib.log(`Received element not expected: ${key} with value '${actualElements[key]}'`)
+                log(`Received element not expected: ${key} with value '${actualElements[key]}'`)
                 failed = true
             }
         })

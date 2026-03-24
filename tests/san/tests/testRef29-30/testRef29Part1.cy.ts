@@ -11,7 +11,7 @@ describe('SAN integration - test ref 29/30', () => {
 
             oasys.login(oasys.Users.probSanHeadPdu)
 
-            cy.log(`Create an offender whose latest assessment is a fully completed OASYS-SAN`)
+            log(`Create an offender whose latest assessment is a fully completed OASYS-SAN`)
 
             oasys.Offender.searchAndSelectByPnc(offender1.pnc)
 
@@ -45,7 +45,7 @@ describe('SAN integration - test ref 29/30', () => {
 
                 oasys.logout()
 
-                cy.log(`Log into the SAN Pilot area as an Administrator
+                log(`Log into the SAN Pilot area as an Administrator
                     Search for the offender and open up the readonly OASys-SAN assessment
                     From the Admin menu select 'Delete assessment' - enter in a reason for the deletion and then click on OK
                     The OASYS_SET record for the OASys-SAN assessment has the field DELETED_DATE set to system date and time the deletion took place
@@ -59,7 +59,7 @@ describe('SAN integration - test ref 29/30', () => {
                 oasys.Assessment.checkSigningRecord(pk, ['ASSMT_DEL_SIGNING', 'SIGNING'])
                 oasys.San.checkSanDeleteCall(pk, oasys.Users.admin)
 
-                cy.log(`Test ref 30 - reverse deletion test`)
+                log(`Test ref 30 - reverse deletion test`)
                 oasys.Assessment.reverseDeletion(offender1, 'Assessment', 'Start of Community Order', 'Test ref 30 part 1 deletion reversal')
 
                 oasys.Assessment.checkNotDeleted(pk)

@@ -12,7 +12,7 @@ describe('SAN integration - test ref 08 part 1', () => {
             oasys.login(oasys.Users.probSanUnappr)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
-            cy.log(`Create a new assessment - defaults to PSR-SDR, Layer 3, PSR Outline Plan with SDR court report
+            log(`Create a new assessment - defaults to PSR-SDR, Layer 3, PSR Outline Plan with SDR court report
                     Ensure the new SAN question is not showing on the screen (cannot do SAN with a PSR type assessment)`)
 
             oasys.Assessment.getToCreateAssessmentPage()
@@ -21,7 +21,7 @@ describe('SAN integration - test ref 08 part 1', () => {
             createAssessmentPage.assessmentLayer.checkValue('Full (Layer 3)')
             createAssessmentPage.includeSanSections.checkStatus('notVisible')
 
-            cy.log(`Change the POA to 'Start of Community Order' with an ISP
+            log(`Change the POA to 'Start of Community Order' with an ISP
                     Ensure the new SAN question 'Include strengths and needs sections' is shown with a default setting of 'Yes'
                     Drop downs on this new question are null, No and Yes
                     Set the anwer to null, and click on the <Create> button
@@ -42,7 +42,7 @@ describe('SAN integration - test ref 08 part 1', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<Number>('@result').then((pk) => {
 
-                cy.log(`A normal Layer 3 Version 1 assessment is created showing the Case ID Offender Information screen 
+                log(`A normal Layer 3 Version 1 assessment is created showing the Case ID Offender Information screen 
                         Do NOT change any data or navigate anywhere
                         Ensure the left hand navigation menu shows +Section 2 to 13 AND Self Assessment Form
                         Ensure there is no navigation option for 'Strengths and Needs Sections'
@@ -60,7 +60,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                 oasys.Errors.checkSignAndLockErrorsNotVisible('sanSectionsIncomplete')
                 new oasys.Pages.Signing.SigningStatus().returnToAssessment.click()
 
-                cy.log(`Continue to complete the Layer 3 Version 1, doesn't matter what data you put in BUT make it a SEXUAL offence so that 1.30 = Yes and is read only.  Fully complete it by signing and locking, countersigning if necessary
+                log(`Continue to complete the Layer 3 Version 1, doesn't matter what data you put in BUT make it a SEXUAL offence so that 1.30 = Yes and is read only.  Fully complete it by signing and locking, countersigning if necessary
                         Offender now has 1 completed Layer 3 Version 1 assessment
                         Check the database, ensure the OASYS_SET record still have the new field 'SAN_ASSESSMENT_LINKED_IND' set to 'N' AND there is NO section associated to it called 'SAN'
                         Check that on the SNS_MESSAGE table there are records for OGRS, RSR and AssSumm`)

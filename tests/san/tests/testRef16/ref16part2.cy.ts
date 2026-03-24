@@ -11,7 +11,7 @@ describe('SAN integration - test ref 16 part 2', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`Log out and log back in as the newly assigned assessor.
+            log(`Log out and log back in as the newly assigned assessor.
                         Open up the Offender record and open the WIP OASys-SAN assessment - ensure the assessment is in full edit mode
                         Navigate to the RoSH screening Section 1 and set R1.2 'Aggravated Burglary' Previous column to 'Yes' - this will invoke a full analysis`)
 
@@ -24,7 +24,7 @@ describe('SAN integration - test ref 16 part 2', () => {
 
             new oasys.Pages.Rosh.RoshScreeningSection1().goto().r1_2_6P.setValue('Yes')
 
-            cy.log(`Navigate to the Summary Sheet screen 
+            log(`Navigate to the Summary Sheet screen 
                 The Learning Screening Tool states 'Not enough items have been scored to identify whether this individual has a learning disability and/or learning challenges.'
                 The OPD section states 'It was not possible to identify whether this individual has met criteria for the OPD pathway as not enough items were answered.'`)
 
@@ -32,7 +32,7 @@ describe('SAN integration - test ref 16 part 2', () => {
             summarySheet.learningScreeningTool.checkValue('Not enough items have been scored to identify whether this individual has a learning disability and/or learning challenges.', true)
             summarySheet.opd.checkValue('It was not possible to identify whether this individual has met criteria for the OPD pathway as not enough items were answered.', true)
 
-            cy.log(`Navigate back to Section 1 Offending Information and complete the screen selecting a 'SEXUAL' offence
+            log(`Navigate back to Section 1 Offending Information and complete the screen selecting a 'SEXUAL' offence
                 Navigate to the RoSH Summary screen and set 10.6 PUBLIC risk to 'High'
                 Navigate back to Section 1 Predictors screen and answer the questions making sure 1.8 works out to be >18`)
 
@@ -57,7 +57,7 @@ describe('SAN integration - test ref 16 part 2', () => {
             predictors.o1_37.setValue(0)
             predictors.o1_38.setValue({ months: -1 })
 
-            cy.log(`Navigate to the Summary Sheet screen - ensure that the OPD section has changed to 'This individual does not meet the criteria for the OPD pathway.'
+            log(`Navigate to the Summary Sheet screen - ensure that the OPD section has changed to 'This individual does not meet the criteria for the OPD pathway.'
                 and the screen override field has defaulted to 'No'
                 Now navigate out to the Strengths and Needs sections via the OASys screen`)
 
@@ -65,12 +65,12 @@ describe('SAN integration - test ref 16 part 2', () => {
             summarySheet.opdOverride.checkValue('No')
             // Workaround for uncaught javascript error in SAN
             Cypress.on('uncaught:exception', () => {
-                cy.log('Cypress Exception')
+                log('Cypress Exception')
                 return false
             })
             oasys.San.gotoSan()
 
-            cy.log(`In the SAN Assessment answer the following questions as defined below:	
+            log(`In the SAN Assessment answer the following questions as defined below:	
                 The following set of SAN questions are for the Learning Screening Tool:
                     In Accommodation 'What is ? current accommodation?' - select 'No accommodation'
                     In Emplyment and Education 'Select highest level of academic qualification ? has completed' - select 'Entry level…'
@@ -89,7 +89,7 @@ describe('SAN integration - test ref 16 part 2', () => {
 
             oasys.San.populateSanSections('Test ref 16', testData.sanPopulation)
 
-            cy.log(`Return back to the OASys Assessment - goes back to the 'Open Strengths and Needs' screen
+            log(`Return back to the OASys Assessment - goes back to the 'Open Strengths and Needs' screen
                     Navigate to the Summary Sheet screen
                     Ensure that the Learning Screening Tool section has changed to 'This individual may have a learning disability and/or learning challenges. 
                     Further assessment may be needed to determine the support required. Consideration for referral for specialised assessment should be given, if appropriate.'

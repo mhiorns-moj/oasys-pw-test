@@ -89,7 +89,7 @@ export class Cms {
     //     cy.get<OffenderDef>(offenderAlias).then((offender) => {
 
     //         enterPrisonStubDetailsAndCreateReceptionEvent(offender)
-    //         oasys.log(`Created reception event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
+    //         log(`Created reception event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
     //     })
     // }
 
@@ -121,7 +121,7 @@ export class Cms {
             await this.maintainCmsStub.sentenceTypeColumn.clickFirstRow()
 
             await this.cmsStubEvent.setValues(offender.event.eventDetails, true)
-            lib.log(JSON.stringify(offender.event.eventDetails))
+            log(JSON.stringify(offender.event.eventDetails))
             await this.cmsStubEvent.save.click()
 
             if (offender.event.sentenceDetails != null) {
@@ -176,7 +176,7 @@ export class Cms {
     //     cy.contains('p', 'Are you sure you want to generate a release event for this stub?')
     //     cy.get('#apexConfirmBtn').click()
 
-    //     oasys.log(`Created discharge event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
+    //     log(`Created discharge event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
     // }
 
     /**
@@ -189,7 +189,7 @@ export class Cms {
         this.cmsStub.search.click()
         this.cmsStub.nomisIdColumn.clickFirstRow()
 
-        lib.log(`Opened stub record for ${nomisId}`)
+        log(`Opened stub record for ${nomisId}`)
     }
 
     /**
@@ -216,7 +216,7 @@ export class Cms {
     //     maintainCmsStub.save.click()
     //     maintainCmsStub.close.click()
 
-    //     oasys.log(`Added offender ${JSON.stringify(offender)} to stub`)
+    //     log(`Added offender ${JSON.stringify(offender)} to stub`)
     // }
 
     async enterSentenceDetails(sentenceDetails: SentenceDetails | SentenceDetails[]) {

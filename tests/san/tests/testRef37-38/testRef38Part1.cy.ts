@@ -72,7 +72,7 @@ describe('SAN integration - test ref 38 part 1', () => {
                 oasys.San.populateSanSections('TestRef38 modify SAN', testData.modifySan)
                 oasys.San.returnToOASys()
                 oasys.Nav.clickButton('Next')
-                rmp.checkIsOnMenu()
+                rmp.checkMenuVisibility(true)
                 oasys.San.checkSanGetAssessmentCall(pks[0], 1)
 
                 oasys.logout()

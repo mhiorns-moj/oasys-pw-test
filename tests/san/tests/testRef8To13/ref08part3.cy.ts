@@ -15,7 +15,7 @@ describe('SAN integration - test ref 08 part 3', () => {
 
             oasys.Assessment.openLatest()
 
-            cy.log(`Now go back to the 'Strengths and Needs Sections' screen
+            log(`Now go back to the 'Strengths and Needs Sections' screen
                     Click on the button <Open Strengths and Needs> - launches into the SAN Assessment.  Answer all questions with whatever you like BUT at all the 'Is this area linked to risk of serious harm?' answer 'No'
                     As you go through take screenshots of those SAN section screens that show the 'risk', 'reoffending', 'strengths/protective factors' and 'risk not related' questions (for checking against our Summary Screen later on)
                     When you have fully completed the SAN Assessment, return back to the OASys part of the assessment via the button/link
@@ -30,7 +30,7 @@ describe('SAN integration - test ref 08 part 3', () => {
             new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
             new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
 
-            cy.log(`Go to the Summary Sheet screen
+            log(`Go to the Summary Sheet screen
                     There is NO <Summary Sheet> button BUT there is a <Print > button.
                     There is NO 3.1 'Criminogenic Needs Summary and Section Scores', NO 'Low scoring areas that may need attention in the sentence plan' and NO 'Reasons for Low Scoring Areas 
                         needing attention in the sentence plan'
@@ -81,7 +81,7 @@ describe('SAN integration - test ref 08 part 3', () => {
             ]
             summarySheet.predictorsTable.checkData(expectedPredictorsValues)
 
-            cy.log(`There is NO 'weighted scores' section
+            log(`There is NO 'weighted scores' section
                     There is a 'Likelihood of serious harm to others' section - ensure it states that 'There is no risk information to be displayed as the RoSH Screening does not indicate a Risk of Serious Harm, and a Full Analysis has not been undertaken.'
                     There is a 'Concerns' section which lists no concerns
                     There is a 'Learning Screening Tool' section which will list the outcome.  I cannot predict what it will be but the sentence will start with 'This individual….'.  If it starts with 'Not enough items….' then something is wrong because the entire assessment has been completed so it must be able to work it out.
@@ -96,7 +96,7 @@ describe('SAN integration - test ref 08 part 3', () => {
             summarySheet.opdOverrideMessage.checkValue('This individual does not meet the criteria for the OPD pathway.')
             summarySheet.dateCompleted.checkValue('\nDate Assessment Completed: \n')
 
-            cy.log(`Click on the <Sign & Lock> button - no outstanding questions/warnings are given
+            log(`Click on the <Sign & Lock> button - no outstanding questions/warnings are given
                     User is given the 'Incomplete Sections Alert' - it is NOT showing Sections 2 to 13 and the Self Assessment Form.
                     It does NOT show the 'Strengths and Needs Sections' as this has a green tick and will always have to have that before it can be signed off.
                     Ensure that what is showing is: 1-Predictors, Initial Sentence Plan, Risk of Serious Harm Screening

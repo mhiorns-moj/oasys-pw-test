@@ -27,7 +27,7 @@ export class Shuttle {
             this.findAndSelect('left', item)
         })
 
-        cy.log(`Added items to ${this.selector}: ${JSON.stringify(items)}`)
+        log(`Added items to ${this.selector}: ${JSON.stringify(items)}`)
     }
 
     setFilter(side: 'left' | 'right', filter: string) {

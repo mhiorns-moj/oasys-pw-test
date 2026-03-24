@@ -5,12 +5,12 @@ describe('SAN integration - test ref 27', () => {
 
     it('Part 2', () => {
 
-        cy.log(`Lock Incomplete OASys-SAN assessment (no SARA) from the Offender's Assessments Tab - SAN Data Unvalidated, Sentence Plan NOT agreed`)
+        log(`Lock Incomplete OASys-SAN assessment (no SARA) from the Offender's Assessments Tab - SAN Data Unvalidated, Sentence Plan NOT agreed`)
 
         // Get offender details
         cy.task('retrieveValue', 'offender').then((offenderData) => {
 
-            cy.log(`Create an offender whose latest assessment is a WIP OASys-SAN assessment without a SARA.  
+            log(`Create an offender whose latest assessment is a WIP OASys-SAN assessment without a SARA.  
                 The SAN data is unvalidated and the sentence plan is NOT agreed`)
 
             const offender = JSON.parse(offenderData as string)
@@ -23,7 +23,7 @@ describe('SAN integration - test ref 27', () => {
 
             cy.get<number>('@result').then((pk) => {
 
-                cy.log(`Open up the offender record
+                log(`Open up the offender record
                     From the offender record click on the <Open S&N> button - taken into the SAN Assessment in EDIT mode
                     Change or enter more data that will affect OASys into the SAN Assessment. 
                     Take screenshots of your input but do not click on <Save and Continue> - just navigate to a different screen - we need 'unvalidated' data
@@ -38,13 +38,13 @@ describe('SAN integration - test ref 27', () => {
                 oasys.San.populateSanSections('Test 27 part 2 SAN Alcohol', testData.test2SanAlcohol)
                 oasys.San.returnToOASys()
 
-                cy.log(`From the offender record click on the <Open SSP> button - taken into the Sentence Plan Service in EDIT mode
+                log(`From the offender record click on the <Open SSP> button - taken into the Sentence Plan Service in EDIT mode
                     Change or enter more data that changes the sentence plan e.g. add an objective.  Take screenshots of your input but do not agree the plan
                     Return back to the Offender record`)
 
                 oasys.ArnsSp.runScript('addGoal', { openFromOffender: true })
 
-                cy.log(`In the Assessments tab, click on the <Lock Incomplete> button and then click <OK> to confirm the action
+                log(`In the Assessments tab, click on the <Lock Incomplete> button and then click <OK> to confirm the action
                     Assessment now showing as locked incomplete
                     Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`)
 
@@ -65,7 +65,7 @@ describe('SAN integration - test ref 27', () => {
                         const lastUpdDate1 = oasys.OasysDateTime.stringToTimestamp(initialData[0][1])
                         const latestQuestionUpdDate1 = oasys.OasysDateTime.stringToTimestamp(questions1[0][0])
 
-                        cy.log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
+                        log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                         Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' populated by the return API response
                         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
@@ -85,7 +85,7 @@ describe('SAN integration - test ref 27', () => {
                         })
                         oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
-                        cy.log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
+                        log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
                         Click on the 'Open Strengths and Needs' button
                         Taken into the SAN Service - ensure the assessment is shown all in READ ONLY format and that the SAN part of the assessment shows correctly including the 'unvalidated' data that was captured in screenshots above (this proves that the SAN service ARE creating versions of the SAN assessment with unvalidated data in it)
                         Return back to the OASys part of the assessment
@@ -102,7 +102,7 @@ describe('SAN integration - test ref 27', () => {
 
                         oasys.Nav.clickButton('Close')
 
-                        cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
+                        log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                          and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
                         oasys.Db.getData(questionsQuery, 'questions2')

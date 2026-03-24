@@ -13,7 +13,7 @@ describe('SAN integration - test ref 13 part 3', () => {
             oasys.login(oasys.Users.probSanUnappr)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
-            cy.log(`Now create a new 3.2 OASys-SAN Assessment, the new SAN question defaults to 'Yes' and during the Create process say 'Yes' to cloning from the historic assessment.
+            log(`Now create a new 3.2 OASys-SAN Assessment, the new SAN question defaults to 'Yes' and during the Create process say 'Yes' to cloning from the historic assessment.
                     Check the CreateAssessment API to ensure that it posts TWO PKs across to the SAN service and the user ID and name.
                     Check the OASYS_SET record; field CLONED_FROM_PREV_OASYS_SAN_PK has been set to the PK of of the last historic OASys-SAN assessment, fields SAN_ASSESSMENT_LINKED_IND = 'Y', 
                     LASTUPD_FROM_SAN is set to a date and time as we have retrieved the data but SAN_ASSESSMENT_VERSION_NO is NULL.`)
@@ -30,7 +30,7 @@ describe('SAN integration - test ref 13 part 3', () => {
 
                 oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
 
-                cy.log(`Check Section 1 of the assessment - ONLY 1.8 has cloned through.  
+                log(`Check Section 1 of the assessment - ONLY 1.8 has cloned through.  
                         The offence will not have cloned through unless it has been setup on the CMS stub and it gets copied from there.
                         Data will have been copied through from the 'living' SAN assessment as we said 'Yes' to cloning.
                         Leave the 3.2 OASys-SAN assessment as WIP.  This test proves the cloning through from a 'historic' 3.2 assessment.`)

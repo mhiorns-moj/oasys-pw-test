@@ -1,9 +1,9 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
 import * as lib from 'lib'
 
-export class RiskManagementPlan extends BaseAssessmentPage {
+export class Rmp extends BaseAssessmentPage {
 
-    name = 'RiskManagementPlan'
+    name = 'RMP'
     title = 'Risk Management Plan'
     menu: Menu = { type: 'Floating', level1: 'Risk Management Plan' }
 
@@ -60,7 +60,7 @@ export class RiskManagementPlan extends BaseAssessmentPage {
 
     async minimal(earlyAllocation: boolean = false) {
 
-        lib.log('Minimally populating Risk Management Plan')
+        log('Minimally populating Risk Management Plan')
         await this.goto(true)
 
         await this.r11_1a.setValue('Yes')

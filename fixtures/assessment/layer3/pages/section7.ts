@@ -18,13 +18,13 @@ export class Section7 extends BaseAssessmentPage {
     linkedToBehaviour = new Element.Select(this.page, '#itm_7_99')
 
 
-        async populateNoIssues(suppressLog: boolean = false) {
-    
-            if (!suppressLog) lib.log('Populating section 7 - no issues')
-            await this.goto(true)
-            await this.noIssues.click()
-            await this.identifyIssues.setValue('Section 7 no issues')
-        }
+    async populateNoIssues(suppressLog: boolean = false) {
+
+        if (!suppressLog) log('Populating section 7 - no issues')
+        await this.goto(true)
+        await this.noIssues.click()
+        await this.identifyIssues.setValue('Section 7 no issues')
+    }
 }
 
 

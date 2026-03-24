@@ -12,7 +12,7 @@ describe('SAN integration - test ref 09', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`Log in as the same assessor as that in Test Ref 8
+            log(`Log in as the same assessor as that in Test Ref 8
                     Open up the offender record from Test Ref 8
                     Ensure there is a button showing called <Open Strengths and Needs> - should be visible as the user can view the assessments and there is a non-deleted OASys-SAN assessment. 
                     Click on that button - OASys disappears and SAN Assessment appears (check OTL parameters, accessMode should be 'EDIT')
@@ -46,7 +46,7 @@ describe('SAN integration - test ref 09', () => {
                 oasys.San.checkSanSectionsCompletionStatus(9)
                 oasys.San.returnToOASys()
 
-                cy.log(`Open up the latest fully completed OASys-SAN assessment - navigate to the 'Open Strengths and Needs'  section and link out to the SAN Service
+                log(`Open up the latest fully completed OASys-SAN assessment - navigate to the 'Open Strengths and Needs'  section and link out to the SAN Service
                     Ensure the SAN Assessment opens up in READ ONLY MODE (can we check the OTL API to ensure correct parameters passed across) and the data mappings that were changed above ARE NOT showing in the SAN Assessment as that should ONLY be showing the SAN Assessment version that was saved at the time of S&L.
                     Return back to OASys.
                     Log out.`)

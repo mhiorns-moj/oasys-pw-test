@@ -12,7 +12,7 @@ export class Errors {
      */
     async checkSignAndLockErrorsVisible(errorFile: string) {
 
-        cy.log(`Checking for errors listed in data/errorText/${errorFile}`)
+        log(`Checking for errors listed in data/errorText/${errorFile}`)
         cy.fixture<string[]>(`errorText/${errorFile}`).then((errors) => {
             errors.forEach((error) => {
                 cy.contains('td', error).should('be.visible')
@@ -27,7 +27,7 @@ export class Errors {
      */
     async checkSignAndLockErrorsNotVisible(errorFile: string) {
 
-        cy.log(`Checking for errors listed in data/errorText/${errorFile}`)
+        log(`Checking for errors listed in data/errorText/${errorFile}`)
         cy.fixture<string[]>(`errorText/${errorFile}`).then((errors) => {
             errors.forEach((error) => {
                 cy.contains('td', error).should('not.exist')

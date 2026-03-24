@@ -8,7 +8,7 @@ describe('SAN integration - test ref 21 part 2', () => {
         // Get offender details
         cy.task('retrieveValue', 'offender2').then((offenderData) => {
 
-            cy.log(`Create these assessments in this order, doesn't matter what data is used, just need to get the assessments	
+            log(`Create these assessments in this order, doesn't matter what data is used, just need to get the assessments	
                 FIRST - LAYER 1 V1 - oasys_set.cloned_from_previous_san_pk is NULL	
                 SECOND - LAYER 3 v1 - oasys_set.cloned_from_previous_san_pk is NULL	
                 THIRD - LAYER 3 v2 - oasys_set.cloned_from_previous_san_pk is NULL	

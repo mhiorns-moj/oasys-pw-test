@@ -37,7 +37,7 @@ export class Section2 extends BaseAssessmentPage {
 
     async populateMinimal() {
 
-        lib.log('Minimally populating layer 1 section 2')
+        log('Minimally populating layer 1 section 2')
         await this.goto(true)
         await this.o2_2Weapon.setValue('No')
         await this.o2_2Violence.setValue('No')

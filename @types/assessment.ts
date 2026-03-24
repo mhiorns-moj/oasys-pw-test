@@ -53,7 +53,7 @@ declare type CreateAssessmentDetails = {
     purposeOfAssessment: PurposeOfAssessment
     otherPleaseSpecify?: string
     assessmentLayer?: AssessmentLayer
-    sentencePlanType?: SpType
+    sentencePlanType?: SpSelectionType
     includeCourtReportTemplate?: string
     includeSanSections?: YesNoAnswer
     selectTeam?: string

@@ -11,7 +11,7 @@ describe('SAN integration - test ref 11', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`Log in as an Assessor from a Non-Pilot probation area
+            log(`Log in as an Assessor from a Non-Pilot probation area
                     Find the offender used in Test Ref 10
                     Carry out a 'transfer' so that the probation owner and controlling owner transfers to the non-pilot area.`)
 
@@ -30,7 +30,7 @@ describe('SAN integration - test ref 11', () => {
 
             oasys.login(oasys.Users.probHeadPdu)
 
-            cy.log(`Create a new 'Review' Layer 3 version 1 assessment - opens at the Case ID screen.  3.1 assessment includes a full analysis with sections 6.1 and 6.2.  
+            log(`Create a new 'Review' Layer 3 version 1 assessment - opens at the Case ID screen.  3.1 assessment includes a full analysis with sections 6.1 and 6.2.  
                     Sections 2 to 13 and the SAQ are showing in the navigation menu.  'Open Strengths and Needs' is NOT shown in the navigation menu.
                     Part of create will go and retrieve the latest validated set of SAN data.
                     Check the OASYS_SET record; field CLONED_FROM_PREV_OASYS_SAN_PK has been set to the PK of of the last OASys-SAN assessment, 
@@ -43,7 +43,7 @@ describe('SAN integration - test ref 11', () => {
             oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
 
             oasys.San.checkLayer3Menu(false, true)
-            new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
+            new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
@@ -57,7 +57,7 @@ describe('SAN integration - test ref 11', () => {
                     expect(failed).equal(false)
                 })
 
-                cy.log(`Go to the RoSH Screening Section 1 and check that at R1.1 it has area of concern set to '3 - Accommodation', 
+                log(`Go to the RoSH Screening Section 1 and check that at R1.1 it has area of concern set to '3 - Accommodation', 
                             '7 - Lifestyle and Associates', '11 - Thinking and Behaviour', '12 - Attitudes'
                         Carry on to fully complete the 3.1 assessment in OASys ensuring at S&L the Assessor DOES NOT receive any errors relating to the SAN service.`)
 

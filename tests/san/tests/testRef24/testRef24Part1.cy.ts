@@ -11,7 +11,7 @@ describe('SAN integration - test ref 24', () => {
 
             oasys.login(oasys.Users.probSanHeadPdu)
 
-            cy.log(`Open up the Offender record - assessor has full editable rights to the offender
+            log(`Open up the Offender record - assessor has full editable rights to the offender
                 At this point there is NO button on the banner for 'Open S&N'
                 At this point there is NO button on the banner for 'Open SP'`)
 
@@ -21,7 +21,7 @@ describe('SAN integration - test ref 24', () => {
             offenderDetails.openSan.checkStatus('notVisible')
             offenderDetails.openSp.checkStatus('notVisible')
 
-            cy.log(`Create a new OASys-SAN assessment (3.2) - this will push a CreateAssessment API to the SAN Service
+            log(`Create a new OASys-SAN assessment (3.2) - this will push a CreateAssessment API to the SAN Service
                 Close out of the assessment, reverts back to the Offender record - now there is a button for 'Open S&N' and 'Open SP'`)
 
             oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
@@ -33,7 +33,7 @@ describe('SAN integration - test ref 24', () => {
                 offenderDetails.openSan.checkStatus('enabled')
                 offenderDetails.openSp.checkStatus('enabled')
 
-                cy.log(`Click on the <Open S&N> button from the offender record - uses the OTL to open up the SAN Assessment
+                log(`Click on the <Open S&N> button from the offender record - uses the OTL to open up the SAN Assessment
                     Complete entry of the SAN assessment with whatever you want
                     Return back to the Offender record`)
 
@@ -41,17 +41,17 @@ describe('SAN integration - test ref 24', () => {
                 oasys.San.populateSanSections('Test ref 24', oasys.Populate.San.ExampleTest.sanPopulation1)
                 oasys.San.returnToOASys()
 
-                cy.log(`Click on the <Open SSP> button from the offender record - uses the OTL to open up the Sentence Plan Service
+                log(`Click on the <Open SSP> button from the offender record - uses the OTL to open up the Sentence Plan Service
                     Complete entry of the Sentence Plan with whatever you want but ensure you agree the plan
                     Return back to the Offender record`)
 
                 oasys.ArnsSp.runScript('populateMinimal', { openFromOffender: true })
 
-                cy.log(`Check the database for the OASys-SAN assessment - at this point there will be nothing in it from the SAN assessment`)
+                log(`Check the database for the OASys-SAN assessment - at this point there will be nothing in it from the SAN assessment`)
 
                 oasys.San.checkNoQuestionsCreated(pk)
 
-                cy.log(`Open up the OASys - SAN assessment - keep on the Case ID landing page - check the database, now data has been populated from the SAN assessment
+                log(`Open up the OASys - SAN assessment - keep on the Case ID landing page - check the database, now data has been populated from the SAN assessment
                     Complete entry of the remaining non - populated OASys questions.If a full analysis has been invoked complete it.
                     Sign and lock the OASys - SAN assessment including countersigning if required - check the relevant APIs have gone to the SAN Service
                     Log out`)

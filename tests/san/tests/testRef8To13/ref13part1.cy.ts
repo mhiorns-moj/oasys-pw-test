@@ -15,7 +15,7 @@ describe('SAN integration - test ref 13 part 1', () => {
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.openLatest()
 
-            cy.log(`It will clone from the previous 3.1 assessment BUT then clear out all section 2 to 13 and SAQ data as it has been obtained from the living SAN assessment.
+            log(`It will clone from the previous 3.1 assessment BUT then clear out all section 2 to 13 and SAQ data as it has been obtained from the living SAN assessment.
                 Check the OASYS_SET record; field CLONED_FROM_PREV_OASYS_SAN_PK has been cloned through from the 3.1 assessment, fields SAN_ASSESSMENT_LINKED_IND = 'Y',
                     LASTUPD_FROM_SAN is set from having obtained the SAN data and SAN_ASSESSMENT_VERSION_NO is NULL.`)
 
@@ -29,7 +29,7 @@ describe('SAN integration - test ref 13 part 1', () => {
                     expect(answerCheck).equal(false)
                 })
 
-                cy.log(`Fully complete the 3.2 OASys, you may want to go into the SAN Assessment and change some data and then ensure the SAN assessment is
+                log(`Fully complete the 3.2 OASys, you may want to go into the SAN Assessment and change some data and then ensure the SAN assessment is
                         fully marked as complete for all sections.`)
                 oasys.San.gotoSan()
                 oasys.San.populateSanSections('TestRef13 modify SAN', testData.modifySan)

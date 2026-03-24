@@ -47,8 +47,8 @@ export function checkOgrs4CalcsPk(assessmentPk: number, resultAlias = null) {
 
             cy.groupedLogEnd().then(() => {
                 if (failed) {
-                    cy.log(JSON.stringify(calculatorParams))
-                    cy.log(JSON.stringify(calcResult))
+                    log(JSON.stringify(calculatorParams))
+                    log(JSON.stringify(calcResult))
                 }
                 expect(failed).to.be.false
                 if (resultAlias) {

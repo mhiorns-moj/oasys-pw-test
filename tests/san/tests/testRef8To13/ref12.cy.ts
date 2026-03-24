@@ -10,7 +10,7 @@ describe('SAN integration - test ref 12', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`Log in as an Assessor from a Non-Pilot probation area
+            log(`Log in as an Assessor from a Non-Pilot probation area
                     Find the offender used in Test Ref 11 - last assessment is a fully completed 3.1 OASys 
                     Create a new 3.1 OASys 'Review' assessment.`)
 
@@ -19,7 +19,7 @@ describe('SAN integration - test ref 12', () => {
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
 
-            cy.log(`It does NOT call for any SAN data.
+            log(`It does NOT call for any SAN data.
                     Check the OASYS_SET record; field CLONED_FROM_PREV_OASYS_SAN_PK has been set to the PK of of the last OASys-SAN assessment,
                     fields SAN_ASSESSMENT_LINKED_IND, LASTUPD_FROM_SAN and SAN_ASSESSMENT_VERSION_NO are all NULL.
                     NOTE: the field CLONED_FROM_PREV_OASYS_SAN_PK is kept in the 3.1 assessment so that during the period of supervision continuity is kept with the living SAN assessment,

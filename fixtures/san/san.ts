@@ -103,7 +103,7 @@ export class San {
     //     cy.get('#main-content').then((container) => {
     //         const div = container.find(`.govuk-summary-list__row:contains('${label}')`)
     //         expect(div[0].innerHTML.search(value)).gt(0)
-    //         cy.log(`Checked value for ${label}`)
+    //         log(`Checked value for ${label}`)
     //     })
     // }
 
@@ -150,7 +150,7 @@ export class San {
 
             if (updateTimeFailed || getAssessmentCallFailed || answersFailed) {
                 failed = true
-                lib.log('', `Scenario ${scenario.name} FAILED`)
+                log('', `Scenario ${scenario.name} FAILED`)
             }
 
             if (reset130) {  // OA testing requires 1.30 to be reset between scenarios because a YES will not be overwritten
@@ -173,7 +173,7 @@ export class San {
     async populateSanSections(name: string, script: SanPopulation, suppressLog: boolean = false) {
 
         if (suppressLog) {  // Just log the name
-            lib.log('', name)
+            log('', name)
         }
         for (let section of script) {
             if (section.section != 'Sentence plan') {
@@ -191,8 +191,8 @@ export class San {
     async runScenario(name: string, steps: SanStep[], suppressLog = false) {
 
         if (!suppressLog) {
-            lib.log(' ', '')
-            lib.log('', `Scenario: ${name}`)
+            log(' ', '')
+            log('', `Scenario: ${name}`)
             console.log(`Scenario: ${name}`)
         }
         for (let step of steps) {
@@ -212,35 +212,35 @@ export class San {
         switch (stepItem.type) {
             case 'radio':
                 await Element.Radiogroup.sanSetValue(this.page, stepItem, step.value)
-                if (!suppressLog) lib.log(`Radio: ${step.item} - '${step.value}'`)
+                if (!suppressLog) log(`Radio: ${step.item} - '${step.value}'`)
                 break
             case 'checkbox':
                 await Element.Checkbox.sanSetValue(this.page, stepItem, step.value)
-                if (!suppressLog) lib.log(`Checkbox: ${step.item} - '${step.value}'`)
+                if (!suppressLog) log(`Checkbox: ${step.item} - '${step.value}'`)
                 break
             case 'textbox':
                 await Element.Textbox.sanSetValue(this.page, stepItem, step.value)
-                if (!suppressLog) lib.log(`Textbox: ${step.item} - '${step.value.length > 50 ? step.value.substring(0, 50) + '...' : step.value}'`)
+                if (!suppressLog) log(`Textbox: ${step.item} - '${step.value.length > 50 ? step.value.substring(0, 50) + '...' : step.value}'`)
                 break
             case 'combo':
                 await Element.Combo.sanSetValue(this.page, stepItem, step.value)
-                if (!suppressLog) lib.log(`Combo: ${step.item} - '${step.value}'`)
+                if (!suppressLog) log(`Combo: ${step.item} - '${step.value}'`)
                 break
             case 'select':
                 await Element.Select.sanSetValue(this.page, stepItem, step.value)
-                if (!suppressLog) lib.log(`Select: ${step.item} - '${step.value}'`)
+                if (!suppressLog) log(`Select: ${step.item} - '${step.value}'`)
                 break
             case 'date':
                 // await this.enterDate(stepItem, step.value)
-                // lib.log(`Date: ${step.item} - '${step.value}'`)
+                // log(`Date: ${step.item} - '${step.value}'`)
                 break
             case 'action':
                 await this.action(step.item)
-                if (!suppressLog) lib.log(`Action: ${step.item}`)
+                if (!suppressLog) log(`Action: ${step.item}`)
                 break
             case 'button':
                 await Element.Button.sanClick(this.page, stepItem)
-                if (!suppressLog) lib.log(`Button: ${step.item}`)
+                if (!suppressLog) log(`Button: ${step.item}`)
                 break
         }
     }
@@ -312,22 +312,22 @@ export class San {
     //         new oasys.Pages.Assessment.Section12().checkIsNotOnMenu()
     //         new oasys.Pages.Assessment.Section13().checkIsNotOnMenu()
     //         new oasys.Pages.Assessment.SelfAssessmentForm().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.SanSections().checkIsOnMenu()
-    //         new oasys.Pages.SentencePlan.SentencePlanService().checkIsOnMenu()
+    //         new oasys.Pages.Assessment.SanSections().checkMenuVisibility(true)
+    //         new oasys.Pages.SentencePlan.SentencePlanService().checkMenuVisibility(true)
     //     } else {
-    //         new oasys.Pages.Assessment.Section2().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section3().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section4().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section5().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section6().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section7().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section8().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section9().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section10().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section11().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section12().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.Section13().checkIsOnMenu()
-    //         new oasys.Pages.Assessment.SelfAssessmentForm().checkIsOnMenu()
+    //         new oasys.Pages.Assessment.Section2().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section3().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section4().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section5().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section6().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section7().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section8().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section9().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section10().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section11().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section12().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.Section13().checkMenuVisibility(true)
+    //         new oasys.Pages.Assessment.SelfAssessmentForm().checkMenuVisibility(true)
     //         new oasys.Pages.Assessment.SanSections().checkIsNotOnMenu()
     //         new oasys.Pages.SentencePlan.SentencePlanService().checkIsNotOnMenu()
     //     }
@@ -346,10 +346,10 @@ export class San {
     //                 and s.ref_section_code in ('2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'SAQ')
     //                 and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
     //                 and st.oasys_set_pk = ${pk}`
-    //     cy.log(query)
+    //     log(query)
     //     oasys.Db.selectCount(query, 'count')
     //     cy.get<number>('@count').then((count) => {
-    //         cy.log(count.toString())
+    //         log(count.toString())
     //         if (count > 3) {    // Expect 3 questions to be populated by getAssessment (8.4, 8.5 and 8.6)
     //             throw new Error(`${count - 3} unexpected questions/answers found for assessment ${pk}`)
     //         }
@@ -423,7 +423,7 @@ export class San {
     //         if (ticks != expectComplete) {
     //             throw new Error(`Expected ${expectComplete} sections to be complete, found ${ticks}`)
     //         }
-    //         cy.log(`Checked SAN sections completion status: ${expectComplete} sections complete.`)
+    //         log(`Checked SAN sections completion status: ${expectComplete} sections complete.`)
     //     })
     // }
 
@@ -441,7 +441,7 @@ export class San {
         if (!expectEdit && (saveButtons > 0 || changeLinks > 0)) {
             throw new Error(`Expected SAN NOT to be in edit mode`)
         }
-        lib.log(`Checked SAN edit mode: ${expectEdit}.`)
+        log(`Checked SAN edit mode: ${expectEdit}.`)
     }
 
 }

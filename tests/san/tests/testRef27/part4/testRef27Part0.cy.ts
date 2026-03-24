@@ -11,7 +11,7 @@ describe('SAN integration - test ref 27', () => {
 
     it('Test ref 27 part 4 - create offender', () => {
 
-        cy.log(`Check 'Lock Incomplete' - using the OASys application, different ways sends a notification to the SAN Service`)
+        log(`Check 'Lock Incomplete' - using the OASys application, different ways sends a notification to the SAN Service`)
 
         oasys.login(oasys.Users.prisSanUnappr)
 

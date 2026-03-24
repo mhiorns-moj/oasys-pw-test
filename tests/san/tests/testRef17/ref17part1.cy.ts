@@ -13,7 +13,7 @@ describe('SAN integration - test ref 17 part 1', () => {
             oasys.login(oasys.Users.probSanPso)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
-            cy.log(`Create a Start of Community Order, layer 3, initial sentence plan.  
+            log(`Create a Start of Community Order, layer 3, initial sentence plan.  
                     The SAN question appears asking if they want to 'Include strengths and needs sections' which has defaulted to 'Yes' 
                     Create the assessment - navigation menu does not show section 2 to 13 or the SAQ.  There is a menu option for 'Strengths and Needs Sections'
                     Check the database - ensure the OASYS_SET.SAN_ASSESSMENT_LINKED_IND = 'Y'
@@ -49,7 +49,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                 predictors.o1_30.setValue('No')
                 predictors.o1_38.setValue({ months: -1 })
 
-                cy.log(`Navigate out to the 'Strengths and Needs Sections' - complete the following questions in the SAN assessment that relate to Female OPD scoring.		
+                log(`Navigate out to the 'Strengths and Needs Sections' - complete the following questions in the SAN assessment that relate to Female OPD scoring.		
                         The following set of SAN questions are for the FEMALE OPD score:	
                             In Offence Analysis 'Did the offence involve 'Violence or threat of violence / coercion' - select Yes	
                             In Offence Analysis 'Did the offence involve 'Excessive violence or sadistic violence' - select Yes	
@@ -72,11 +72,11 @@ describe('SAN integration - test ref 17 part 1', () => {
                 oasys.San.returnToOASys()
                 oasys.Nav.clickButton('Next')
                 new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
-                new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsOnMenu()
-                new oasys.Pages.Rosh.RoshSummary().checkIsOnMenu()
-                new oasys.Pages.Rosh.RiskManagementPlan().checkIsOnMenu()
+                new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
+                new oasys.Pages.Rosh.RoshSummary().checkMenuVisibility(true)
+                new oasys.Pages.Rosh.RiskManagementPlan().checkMenuVisibility(true)
 
-                cy.log(`Navigate to the RoSH Screening Section 1 - at R1.2 Arson - select 'Yes' in the Current column, at R1.2 Any offence involving possession and / or 
+                log(`Navigate to the RoSH Screening Section 1 - at R1.2 Arson - select 'Yes' in the Current column, at R1.2 Any offence involving possession and / or 
                         use of weapons - select 'Yes' in the current column
                     Ensure ALL other question on this screen are answered as 'No'
                     Click on <Next> to go to Section 2 to 4 of the RoSH Screening -  ensure the 'Factors to consider for Child Wellbeing' include 'violent behaviours' 
@@ -119,7 +119,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                 oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Low')
                 roshSummary.r10_6ChildrenCommunity.setValue('Medium')
 
-                cy.log(`Navigate to the Risk Management screen - ensure the checklist of items are 'Use of weapons', 'Arson', 'Accommodation', 
+                log(`Navigate to the Risk Management screen - ensure the checklist of items are 'Use of weapons', 'Arson', 'Accommodation', 
                                 'Personal relationships and commnity', 'Health and wellbeing', 'Thinking, behaviours and attitudes',
                                 'Risk to Children, ' 
                             Note: there maybe others depending on what has been answered in the SAN assessment
@@ -145,7 +145,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                     expect(keyInformation).includes(`${offender.forename1} ${offender.surname} has been assessed as medium risk to children.`)
                 })
 
-                cy.log(`Navigate to the Summary Sheet screen: in particular check that the 'Offender Personality Disorder' section states 
+                log(`Navigate to the Summary Sheet screen: in particular check that the 'Offender Personality Disorder' section states 
                             'This individual meets the criteria for the OPD Pathway'.
                         Check the database and the OASYS_SET record - ensure field OPD_SCORE = 14 and OPD_RESULT = 'SCREEN_IN'`)
 
@@ -158,7 +158,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                 //     OPD_RESULT: 'SCREEN IN',
                 // })
 
-                cy.log(`Navigate out to the 'Sentence Plan Service'
+                log(`Navigate out to the 'Sentence Plan Service'
                         Check the OTL is sending the correct criminogenic needs data according to the Summary Screen
                         Complete entry of the sentence plan with 2 goals/steps and ensure you 'Agree the Plan'
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen`)
@@ -245,7 +245,7 @@ describe('SAN integration - test ref 17 part 1', () => {
 
                     })
 
-                cy.log(`Navigate to Section 5.2 to 8 - green tick on the Sentence Plan Service menu option. Complete entry of the three fields on the screen for
+                log(`Navigate to Section 5.2 to 8 - green tick on the Sentence Plan Service menu option. Complete entry of the three fields on the screen for
                             Public Protection conference
                         Click on <Sign and Lock> -  get incomplete sections alert.
                         Continue to sign and lock, asks for a countersigner, leave default countersigner, add a comment

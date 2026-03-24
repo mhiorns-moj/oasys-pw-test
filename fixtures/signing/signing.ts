@@ -40,7 +40,7 @@ export class Signing {
             expectCountersigner?: boolean, countersignCancel?: boolean, countersigner?: any, countersignComment?: string
         }) {
 
-        lib.log(`Sign & lock assessment`)
+        log(`Sign & lock assessment`)
         await this.oasys.gotoSigningPage(params?.page)
 
         await this.oasys.clickButton('Sign & Lock', true)
@@ -94,7 +94,7 @@ export class Signing {
      */
     async countersign(params?: { page?: SigningPage, offender?: OffenderDef, comment?: string }) {
 
-        lib.log(`Countersign assessment`)
+        log(`Countersign assessment`)
 
         if (params?.offender) {
             await this.tasks.openAssessmentFromCountersigningTask(params.offender)
@@ -119,7 +119,7 @@ export class Signing {
     //     this.oasys.Db.getData(`select signing_action_elm from eor.oasys_signing where oasys_set_pk = ${pk} order by create_date desc`, 'data')
     //     cy.get<string[][]>('@data').then((data) => {
 
-    //         lib.log(`Checking OASYS_SIGNING actions for ${pk}: ${JSON.stringify(data)} `)
+    //         log(`Checking OASYS_SIGNING actions for ${pk}: ${JSON.stringify(data)} `)
 
     //         expect(data.length).eq(expectedActions.length)
     //         for (let i = 0; i < expectedActions.length; i++) {

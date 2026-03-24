@@ -10,7 +10,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
     await oasys.login(oasys.users.probSanHeadPdu)
     const offender1 = await offender.createProbFromStandardOffender({ gender: 'Female', forename1: 'TestRefFourteen' })
 
-    lib.log(`For the first assessment, create a new OASys-SAN assessment (3.2) that now includes a SAN Sentence Plan
+    log(`For the first assessment, create a new OASys-SAN assessment (3.2) that now includes a SAN Sentence Plan
             Complete the SAN Assessment part AND complete the SAN Sentence Plan (doesn't matter what you select, just need to get a completed 3.2).`, 'Test step')
 
     const pk1 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
@@ -18,7 +18,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
     await san.populateMinimal()
     await sentencePlan.populateMinimal()
 
-    lib.log(`Complete the OASys part of the assessment invoking a full analysis by saying 'Yes' to something in the RoSH Screening.
+    log(`Complete the OASys part of the assessment invoking a full analysis by saying 'Yes' to something in the RoSH Screening.
             Fully sign and lock and countersign (if applicable) the 3.2 assessment.`, 'Test step')
 
     // Complete section 1
@@ -42,12 +42,12 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
 
     await signing.signAndLock({ page: 'spService' })
 
-    lib.log(`Open up the completed 3.2 and from the Admin Menu select 'Mark all assessments as historic'`, 'Test step')
+    log(`Open up the completed 3.2 and from the Admin Menu select 'Mark all assessments as historic'`, 'Test step')
 
     await oasys.history()
     await assessment.markHistoric()
 
-    lib.log(`As the assessor click on the <Open S&N> button - navigates out to the SAN Assessment where everything is shown in READ ONLY mode
+    log(`As the assessor click on the <Open S&N> button - navigates out to the SAN Assessment where everything is shown in READ ONLY mode
             - check the OTL accessmode parameter
             Return back to the OASys assessment
             As the assessor click on the <Open SP> button - navigates out to the Sentence Plan where everything is shown in READ ONLY mode
@@ -99,7 +99,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
 
     await oasys.clickButton('Close')
 
-    lib.log(`Now create a new 3.2 OASys-SAN Assessment (not PSR), the new SAN question defaults to 'Yes' and during the Create process say 'No' to cloning from the historic assessment.
+    log(`Now create a new 3.2 OASys-SAN Assessment (not PSR), the new SAN question defaults to 'Yes' and during the Create process say 'No' to cloning from the historic assessment.
                 Check the CreateAssessment API to ensure that it posts just the ONE current PK across to the SAN service and the offender details.
                 Check the OASYS_SET record; field CLONED_FROM_PREV_OASYS_SAN_PK is NULL, fields SAN_ASSESSMENT_LINKED_IND = 'Y', LASTUPD_FROM_SAN is set 
                 to a date and time as we have retrieved the data but SAN_ASSESSMENT_VERSION_NO AND SSP_PLAN_VERSION_NO are NULL.

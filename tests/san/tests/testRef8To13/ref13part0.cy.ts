@@ -10,7 +10,7 @@ describe('SAN integration - test ref 13 part 0', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`Log in as an Assessor that has the SAN function to the PILOT probation area
+            log(`Log in as an Assessor that has the SAN function to the PILOT probation area
                     Open up the offender record from Test Ref 12.  Transfer the offender back to the SAN PILOT probation area.
                     Create a new 'review' assessment electing to use the SAN which has defaulted to NULL.`)
 

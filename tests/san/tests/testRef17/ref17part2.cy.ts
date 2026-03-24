@@ -10,7 +10,7 @@ describe('SAN integration - test ref 17 part 2', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            cy.log(`Log out and log back in as the countersigner to the probation area	
+            log(`Log out and log back in as the countersigner to the probation area	
                         Take a note of what is in the OASYS_SET record for fields 'LASTUPD_FROM_SAN', 'SAN_ASSESSMENT_VERSION_NO' and
                          'SSP_PLAN_VERSION_NO' (should have been set from the response to the SIGN API)	
                         Open up the countersigning task and then open up the assessment	

@@ -10,7 +10,7 @@ describe('SAN integration - test ref 13 part 2', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`With the latest assessment being a completed 3.2, open it up and use the Admin option 'Mark assessments as historic'.
+            log(`With the latest assessment being a completed 3.2, open it up and use the Admin option 'Mark assessments as historic'.
                     The offender record is showing the <Open Strengths and Needs> button.  Click on it.  
                     The Assessor is taken into the SAN Service and sees the latest SAN Assessment BUT it is in READ ONLY mode 
                     (this is because the latest OASys-SAN assessment is now historic).  
@@ -27,7 +27,7 @@ describe('SAN integration - test ref 13 part 2', () => {
 
             oasys.Assessment.openLatest()
 
-            oasys.San.gotoSanReadOnly('Accommodation','information')
+            oasys.San.gotoSanReadOnly('Accommodation', 'information')
             oasys.San.checkSanEditMode(false)
             oasys.San.returnToOASys()
             oasys.Nav.clickButton('Close')

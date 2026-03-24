@@ -12,7 +12,7 @@ describe('SAN integration - test ref 35', () => {
 
             oasys.login(oasys.Users.probSanHeadPdu)
 
-            cy.log(`Carry out a 3.2 assessment ensuring questions are set in SAN to produce a low maturity outcome`)
+            log(`Carry out a 3.2 assessment ensuring questions are set in SAN to produce a low maturity outcome`)
 
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
@@ -57,7 +57,7 @@ describe('SAN integration - test ref 35', () => {
                     expect(failed).eq(false)
                 })
 
-                cy.log(`Then create a standalone RSR changing some data for the section 1 parameters and R1.2 fields.  
+                log(`Then create a standalone RSR changing some data for the section 1 parameters and R1.2 fields.  
                     Say Yes to Interview and answer the dynamic questions differently`)
 
                 oasys.Nav.history(offender)
@@ -97,7 +97,7 @@ describe('SAN integration - test ref 35', () => {
 
                 rsr.calculateScores.click()
 
-                cy.log(`Now create a new 3.2 assessment, will overclone with the standalone RSR
+                log(`Now create a new 3.2 assessment, will overclone with the standalone RSR
                     However, it will then get the data from the SAN assessment
                     Check in the database that the dynamic questions are now showing as from SAN
                     However, the Section 1 questions and the R1.2 fields are showing as cloned from the standalone RSR (this proves that cloning from the standalone RSR still works)`)

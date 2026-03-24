@@ -16,7 +16,7 @@ describe('SAN integration - test ref 33', () => {
             oasys.login(oasys.Users.probSanHeadPdu)
             oasys.Nav.history(offender)
 
-            cy.log(`Go to Create a new Assessment
+            log(`Go to Create a new Assessment
                 Check that the 'Purpose of Assessment' field does NOT include 'Fast Review' in the drop downs`)
 
             oasys.Assessment.getToCreateAssessmentPage()

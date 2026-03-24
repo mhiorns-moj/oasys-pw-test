@@ -47,7 +47,7 @@ export class Oasys {
         }
 
         const loginDetails = await this.page.locator('#bannerbarrightrnd').textContent()
-        lib.log(`${loginDetails.replace(/[\n\r\t]/gm, '')}  (${username})`, 'User')
+        log(`${loginDetails.replace(/[\n\r\t]/gm, '')}  (${username})`, 'User')
     }
 
     /**
@@ -66,13 +66,13 @@ export class Oasys {
 
         await this.clickButton('Logout', true)
         await new pages.Login(this.page).checkCurrent(true)
-        lib.log('Logged out', 'User')
+        log('Logged out', 'User')
     }
 
     async clickButton(label: string, suppressLog: Boolean = false) {
 
         await this.page.getByRole('button', { name: label }).first().click()
-        if (!suppressLog) lib.log(`Click button: ${label}`)
+        if (!suppressLog) log(`Click button: ${label}`)
     }
 
     /**
@@ -99,7 +99,7 @@ export class Oasys {
 
         if (p1 === undefined) {
             await this.page.locator('#history_1').click()
-            lib.log('First item', 'History menu')
+            log('First item', 'History menu')
             await OasysPage.waitForPageUpdate(this.page)
             return null
         }
@@ -126,7 +126,7 @@ export class Oasys {
 
         const menuText = assessment == undefined ? `Offender - ${forename} ${surname}` : `${assessment} - ${forename} ${surname}`
         await this.page.getByText(menuText).click()
-        lib.log(menuText, 'History menu')
+        log(menuText, 'History menu')
         await OasysPage.waitForPageUpdate(this.page)
 
         return null

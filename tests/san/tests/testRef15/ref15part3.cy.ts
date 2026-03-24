@@ -14,7 +14,7 @@ describe('SAN integration - test ref 15 part 3', () => {
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.openLatest()
 
-            cy.log(`Countersign the assessment - Check that the countersigning option NO LONGER include 'Send for sentence board comments' 
+            log(`Countersign the assessment - Check that the countersigning option NO LONGER include 'Send for sentence board comments' 
                 Continue to countersign - asks for a second countersign - accept default and continue to countersign - check that the COUNTERSIGN API has been posted 
                     with contents correct (outcome = 'AWAITING_DOUBLE_COUNTERSIGN' along with first countersigners ID and name)`)
 
@@ -37,7 +37,7 @@ describe('SAN integration - test ref 15 part 3', () => {
 
                 oasys.logout()
 
-                cy.log(`Log in as the second countersigner - countersign the assessment, is now fully completed - check the COUNTERSIGN API has been posted with 
+                log(`Log in as the second countersigner - countersign the assessment, is now fully completed - check the COUNTERSIGN API has been posted with 
                     contents correct (outcome = 'DOUBLE_COUNTERSIGNED' along with second countersigners ID and  name)
                     OASys-SAN assessment now in read only mode - Print the whole of the assessment.  Ensure the printout is correct to the screens.`)
 

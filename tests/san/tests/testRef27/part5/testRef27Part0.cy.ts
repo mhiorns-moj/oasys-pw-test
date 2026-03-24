@@ -24,7 +24,7 @@ describe('SAN integration - test ref 27', () => {
 
     it('Test ref 27 part 5 - create offender', () => {
 
-        cy.log(`Lock Incomplete a prison OASys-SAN assessment when the Offender has been discharged from Prison (WIP guillotines immediately)`)
+        log(`Lock Incomplete a prison OASys-SAN assessment when the Offender has been discharged from Prison (WIP guillotines immediately)`)
 
         oasys.login(oasys.Users.probHeadPdu)
 

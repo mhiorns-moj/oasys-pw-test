@@ -64,7 +64,7 @@ export class Section2 extends BaseAssessmentPage {
 
     async populateNoIssues(suppressLog: boolean = false) {
 
-        if (!suppressLog) lib.log('Populating section 2 - no issues')
+        if (!suppressLog) log('Populating section 2 - no issues')
         await this.goto(true)
         await this.o2_2Weapon.setValue('No')
         await this.o2_2Violence.setValue('No')

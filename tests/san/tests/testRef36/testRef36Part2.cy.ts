@@ -21,7 +21,7 @@ describe('SAN integration - test ref 36', () => {
             oasys.login(oasys.Users.probSanUnappr)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
-            cy.log('Create second assessment and check SAN call')
+            log('Create second assessment and check SAN call')
             oasys.Assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result')

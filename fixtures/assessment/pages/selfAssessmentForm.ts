@@ -72,7 +72,7 @@ export class SelfAssessmentForm extends BaseAssessmentPage {
 
     async populateMinimal() {
 
-        lib.log('Minimally populating self assessment page')
+        log('Minimally populating self assessment page')
         await this.goto(true)
         await this.whyNotCompleted.setValue(`Didn't want to`)
     }

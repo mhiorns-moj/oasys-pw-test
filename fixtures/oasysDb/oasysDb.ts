@@ -11,7 +11,7 @@
  * 
  *  > `oasys.Db.selectCount(``select count(*) from eor.offender where family_name = '${surname}'``, 'count')`  
  *  > `cy.get<number>('@count').then((count) => {`  
- *  > &nbsp;&nbsp;&nbsp;&nbsp;`cy.log(count.toString())`  
+ *  > &nbsp;&nbsp;&nbsp;&nbsp;`log(count.toString())`  
  *  > &nbsp;&nbsp;&nbsp;&nbsp;`if (count > 1) {`  
  *  > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`....`  
  *  > &nbsp;&nbsp;&nbsp;&nbsp;`}`  
@@ -180,7 +180,7 @@ export class OasysDb {
 
     //     cy.task('setPassword', { username: username, password: password }).then((result: DbResponse) => {
     //         if (result.error != null) {
-    //             cy.log(result.error)
+    //             log(result.error)
     //         }
     //     })
     // }
@@ -216,7 +216,7 @@ export class OasysDb {
     //             const actualResult = data.length == 0 ? '' : data[0][0]
     //             const failureMessage = actualResult == expectedResult ? '' : ' *** FAILED ***'
     //             if (logText == null) {
-    //                 cy.log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
+    //                 log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
     //             } else if (actualResult != expectedResult) {
     //                 logText.push(`Test case ${testCase}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
     //             }

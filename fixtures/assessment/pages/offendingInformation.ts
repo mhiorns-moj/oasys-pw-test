@@ -105,7 +105,7 @@ export class OffendingInformation extends BaseAssessmentPage {
 
     async populateMinimal() {
 
-        lib.log('Minimally populating offending information page')
+        log('Minimally populating offending information page')
         await this.goto(true)
         await this.count.setValue(1)
     }

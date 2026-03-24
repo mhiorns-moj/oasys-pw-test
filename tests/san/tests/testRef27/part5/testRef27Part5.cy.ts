@@ -4,12 +4,12 @@ describe('SAN integration - test ref 27', () => {
 
     it('Part 5', () => {
 
-        cy.log(`Lock Incomplete a prison OASys-SAN assessment when the Offender has been discharged from Prison (WIP guillotines immediately)`)
+        log(`Lock Incomplete a prison OASys-SAN assessment when the Offender has been discharged from Prison (WIP guillotines immediately)`)
 
         // Get offender details
         cy.task('retrieveValue', 'offender').then((offenderData) => {
 
-            cy.log(`a PRISON offender in a SAN PILOT Prison area whose latest assessment is a PRISON WIP OASys-SAN assessment (not signed and locked).  
+            log(`a PRISON offender in a SAN PILOT Prison area whose latest assessment is a PRISON WIP OASys-SAN assessment (not signed and locked).  
                 ALL the SAN data has been validated and the sentence plan has been agreed
                 The offender also has a Probation owner (NON SAN Pilot area).`)
 
@@ -30,14 +30,14 @@ describe('SAN integration - test ref 27', () => {
                 new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
                 new oasys.Pages.SentencePlan.SentencePlanService().checkCompletionStatus(true)
 
-                cy.log(`Open up the offender record
+                log(`Open up the offender record
                     Using the CMS stub submit a 'discharge' message for the offender
                     The offender has now been released from prison - controlling owner is the Probation area and the WIP assessment is now showing as 'locked incomplete'`)
 
                 oasys.Nav.clickButton('Close')
                 oasys.Offender.createDischargeEventForOffenderObject(offender)
 
-                cy.log(`Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'
+                log(`Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'
                     Check that Get Assessment has occurred BEFORE locking incomplete
                     A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                     Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' populated by the return API response
@@ -83,7 +83,7 @@ describe('SAN integration - test ref 27', () => {
                             values: ['Locked Incomplete Assessment', 'Locked Incomplete Assessment']
                         }])
 
-                        cy.log(`Log in as a User in the Probation area.
+                        log(`Log in as a User in the Probation area.
                         Search for and open up the now read only locked incomplete assessment, navigate to the 'Strengths and Needs' screen
                         Click on the 'Open Strengths and Needs' button
                         Taken into the SAN Service - ensure the assessment is shown all in READ ONLY format and that the SAN part of the assessment shows correctly
@@ -101,7 +101,7 @@ describe('SAN integration - test ref 27', () => {
 
                         oasys.Nav.clickButton('Close')
 
-                        cy.log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
+                        log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                                 and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
                         oasys.Db.getData(questionsQuery, 'questions')

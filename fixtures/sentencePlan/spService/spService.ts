@@ -95,7 +95,7 @@ export class SpService {
         await this.page.getByRole('button', { name: 'Save' }).click()
     }
 
-    async checkReadOnly(from:  'assessment' | 'offender' = 'assessment') {
+    async checkReadOnly(from: 'assessment' | 'offender' = 'assessment') {
 
         await this.goToSpService(from, true)
         const createGoalStatus = await this.sentencePlan.createGoal.getStatus()
@@ -105,7 +105,7 @@ export class SpService {
 
     async checkGoalCount(expectedCurrent: number, expectedFuture: number, from: 'assessment' | 'offender' = 'assessment', readonly: boolean = false) {
 
-        lib.log(`Checking SP goal count: ${expectedCurrent}, ${expectedFuture}`)
+        log(`Checking SP goal count: ${expectedCurrent}, ${expectedFuture}`)
         await this.goToSpService(from, readonly)
         const currentText = await this.sentencePlan.currentGoalCount.getFullText()
         const futureText = await this.sentencePlan.futureGoalCount.getFullText()

@@ -23,7 +23,7 @@ export class ScreeningSection2to4 extends BaseAssessmentPage {
 
     async populateMinimal(withRationale: boolean = false) {
 
-        lib.log('RoSH screening section 2 - no risks')
+        log('RoSH screening section 2 - no risks')
         await this.goto(true)
         await this.r2_3.setValue('No')
         if (withRationale) {

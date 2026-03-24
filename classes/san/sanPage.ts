@@ -37,7 +37,7 @@ export abstract class SanPage {
             element.setValue(elementValues[elementName])
         })
 
-        if (!suppressLog) cy.log(`Set values on ${this.name} page: ${JSON.stringify(elementValues)} `)
+        if (!suppressLog) log(`Set values on ${this.name} page: ${JSON.stringify(elementValues)} `)
         return this
     }
 
@@ -60,7 +60,7 @@ export abstract class SanPage {
             element.checkValue(elementValues[elementName].toString())
         })
 
-        if (!suppressLog) cy.log(`Checked values on ${this.name} page: ${JSON.stringify(elementValues)} `)
+        if (!suppressLog) log(`Checked values on ${this.name} page: ${JSON.stringify(elementValues)} `)
         return this
     }
 
@@ -117,7 +117,7 @@ export abstract class SanPage {
             throw new Error(`Invalid menu type for page ${this.name}`)
         }
 
-        if (!suppressLog) cy.log(`Go to page: ${this.name} `)
+        if (!suppressLog) log(`Go to page: ${this.name} `)
         return this
     }
 
@@ -128,7 +128,7 @@ export abstract class SanPage {
      */
     checkCurrent(suppressLog: Boolean = false): typeof this {
         cy.title().should('contain', this.title)
-        if (!suppressLog) cy.log(`Check current page: ${this.title} `)
+        if (!suppressLog) log(`Check current page: ${this.title} `)
         return this
     }
 
@@ -162,5 +162,5 @@ export abstract class SanPage {
 
 // Interface allows SanPage classes to be passed as parameters
 export interface ISanPage {
-    new(): SanPage;
+    new(): SanPage
 }

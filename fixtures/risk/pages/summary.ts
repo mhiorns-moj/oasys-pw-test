@@ -35,7 +35,7 @@ export class Summary extends BaseAssessmentPage {
 
     async specificRiskLevel(risk: RiskLevel) {
 
-        lib.log(`RoSH summary - ${risk} risk`)
+        log(`RoSH summary - ${risk} risk`)
         await this.goto(true)
 
         await this.r10_1.setValue('R10.1 details')
@@ -56,7 +56,7 @@ export class Summary extends BaseAssessmentPage {
 
     async fullyPopulated(maxStrings: boolean = false) {
 
-        lib.log('Fully populated RoSH summary')
+        log('Fully populated RoSH summary')
         await this.goto(true)
 
         await this.r10_1.setValue(maxStrings ? lib.oasysString(4000) : 'R10.1 details')

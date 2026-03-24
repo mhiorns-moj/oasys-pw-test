@@ -7,7 +7,7 @@ describe('SAN integration - test ref 21 part 1', () => {
         // Get offender details
         cy.task('retrieveValue', 'offender1').then((offenderData) => {
 
-            cy.log(`SET UP OFFENDER 1 - is in a NON SAN pilot probation area - PNC is set to UNKNOWN PNC
+            log(`SET UP OFFENDER 1 - is in a NON SAN pilot probation area - PNC is set to UNKNOWN PNC
                 Offender has just one assessment
                 FIRST - LAYER 3 v1 - oasys_set.cloned_from_previous_san_pk is NULL`)
 

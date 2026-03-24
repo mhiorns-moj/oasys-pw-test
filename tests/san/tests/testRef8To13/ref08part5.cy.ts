@@ -10,7 +10,7 @@ describe('SAN integration - test ref 08 part 5', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            cy.log(`Log out and log back in as the countersigner to the probation area
+            log(`Log out and log back in as the countersigner to the probation area
                 Take a note of what is in the OASYS_SET record for fields 'LASTUPD_FROM_SAN' and 'SAN_ASSESSMENT_VERSION_NO' (should have been set from the response to the SIGN API)
                 Open up the countersigning task and then open up the assessment
                 Countersigner shown the correct 'Countersigning Overview' screen
@@ -26,7 +26,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                     oasys.Offender.searchAndSelectByPnc(offender.pnc)
                     oasys.Assessment.openLatest()
 
-                    cy.log(`Navigate to the 'Strengths and Needs Sections' screen - 
+                    log(`Navigate to the 'Strengths and Needs Sections' screen - 
                         Click on the button <Open Strengths and Needs> - launches into the SAN Assessment.  Ensure you can navigate through the SAN Assessment and it is ALL read only.
                         Return back to the assessment via the button/link - SAN assessment disappears and returned to the 'Strengths and Needs Sections' screen in the same browser tab
                         Navigate to the first screen of the Initial Sentence Plan - Countersign button is available
@@ -43,7 +43,7 @@ describe('SAN integration - test ref 08 part 5', () => {
 
                     oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
 
-                    cy.log(`Open up the Offender record
+                    log(`Open up the Offender record
                         Ensure the latest completed assessment shows an 'S&N' icon next to it
                         Ensure the Offender record shows the new button called <Open S&N'> next to the <RSR> button`)
 
@@ -55,7 +55,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                     })
                     new oasys.Pages.Offender.OffenderDetails().openSan.checkStatus('enabled')
 
-                    cy.log(`Check the OASYS_SET record.  Ensure the fields 'LASTUPD_FROM_SAN' and 'SAN_ASSESSMENT_VERSION_NO' remain the same as noted above
+                    log(`Check the OASYS_SET record.  Ensure the fields 'LASTUPD_FROM_SAN' and 'SAN_ASSESSMENT_VERSION_NO' remain the same as noted above
                         Ensure the OASys database for this assessment has questions in Sections 2 to 12 from the SAN Assessment
                         Ensure there is no Section 13
                         Ensure that the new SAN section has questions in it from the SAN assessment`)
@@ -71,7 +71,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                     oasys.San.checkCountOfQuestionsInSection(pk, '13', 0)
                     oasys.San.checkCountOfQuestionsInSection(pk, 'SAN', 12)
 
-                    cy.log(`Open up the completed OASys-SAN asessment - now shows all READ ONLY.  
+                    log(`Open up the completed OASys-SAN asessment - now shows all READ ONLY.  
                         Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13 and the SAQ
                         Select to print 'All Assessment Sections' - ensure the printout has NOT included sections 2 to 13 or the SAQ.  Revisions made to existing screens MUST be included in the printout`)
 

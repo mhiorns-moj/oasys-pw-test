@@ -38,3 +38,5 @@ declare type ArnsSpParams = {
 }
 
 declare type SpType = 'isp' | 'rsp' | 'spService' | 'basic' | 'psrOutline'
+
+declare type SpSelectionType = 'Initial' | 'Review' | 'PSR Outline'

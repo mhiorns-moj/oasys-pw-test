@@ -12,7 +12,7 @@ describe('SAN integration - test ref 15 part 1', () => {
             oasys.login(oasys.Users.prisSanCAdm)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
-            cy.log(`Log in as a prison user who has the Case Admin role but DOES NOT have the SAN function.
+            log(`Log in as a prison user who has the Case Admin role but DOES NOT have the SAN function.
                 Open up the offender record.
                 Create a Start Custody, layer 3, initial sentence plan.  At select Assessor select an Assessor who does have the SAN function and has the framework role 
                 'Unpproved' with a default csigner who has the 'Approved Prison POM….' role.
@@ -41,21 +41,21 @@ describe('SAN integration - test ref 15 part 1', () => {
                     SSP_PLAN_VERSION_NO: null,
                 })
 
-                cy.log(`Complete sections Case ID and Section 1 with a non-sexual offence`)
+                log(`Complete sections Case ID and Section 1 with a non-sexual offence`)
 
                 new oasys.Pages.Assessment.OffendingInformation().goto().count.setValue(1)
                 const predictors = new oasys.Pages.Assessment.Predictors().goto()
                 predictors.dateFirstSanction.setValue({ years: -3 })
-            predictors.o1_32.setValue(2)
-            predictors.o1_40.setValue(0)
-            predictors.o1_29.setValue({ months: -6 })
-            predictors.o1_30.setValue('No')
-            predictors.o1_38.setValue({ months: -1 })
-            predictors.markCompleteAndCheck()
+                predictors.o1_32.setValue(2)
+                predictors.o1_40.setValue(0)
+                predictors.o1_29.setValue({ months: -6 })
+                predictors.o1_30.setValue('No')
+                predictors.o1_38.setValue({ months: -1 })
+                predictors.markCompleteAndCheck()
 
-            oasys.logout()
+                oasys.logout()
 
+            })
         })
     })
-})
 })

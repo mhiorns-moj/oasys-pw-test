@@ -1,5 +1,6 @@
-﻿import { BaseAssessmentPage, Element } from 'classes'
-import * as lib from 'lib'
+﻿import { Page, expect } from '@playwright/test'
+
+import { BaseAssessmentPage, Element } from 'classes'
 
 export class ScreeningSection1 extends BaseAssessmentPage {
 
@@ -10,7 +11,7 @@ export class ScreeningSection1 extends BaseAssessmentPage {
     createSARA = new Element.Button(this.page, 'Create SARA')
     cancelSARA = new Element.Button(this.page, 'Cancel')
     goToSARA = new Element.Button(this.page, 'Go to SARA')
-    areasOfConcern = new AreasOfConcern()
+    areasOfConcern = new AreasOfConcern(this.page)
     mark1_2AsNo = new Element.Button(this.page, 'input[onclick*="P2_BT_NO"]')
     r1_2_1P = new Element.Select(this.page, '#itm_R1_2_1_2_V2')        // Murder / attempted murder / threat or conspiracy to murder / manslaughter
     r1_2_2P = new Element.Select(this.page, '#itm_R1_2_2_2_V2')        // Wounding / GBH(Sections 18 / 20 Offences Against the Person Act 1861)
@@ -68,7 +69,7 @@ export class ScreeningSection1 extends BaseAssessmentPage {
 
     async populateMinimal() {
 
-        lib.log('RoSH screening section 1 - no risks')
+        log('RoSH screening section 1 - no risks')
         await this.goto(true)
         await this.mark1_2AsNo.click()
         await this.mark1_3AsNo.click()
@@ -78,39 +79,33 @@ export class ScreeningSection1 extends BaseAssessmentPage {
 
 class AreasOfConcern {
 
+    constructor(readonly page: Page) { }
+
     selector = 'table[summary="Areas with cause for concern in the context of harm"]'
 
     /**
      * Gets areas of concern listed on the page as a string array and returns them using the specified alias.
      */
-    // getValues(resultAlias: string) {
+    async getValues(): Promise<string[]> {
 
-    //     const result: string[] = []
-    //     cy.get(this.page.selector).then((container) => {
-    //         const rows = container.find('tr')
-    //         if (rows.length > 1) {
-    //             for (let r = 1; r < rows.length; r++) {  // first row is heading, ignore it
-    //                 result.push(rows[r].textContent)
-    //             }
-    //         }
-    //         cy.wrap(result).as(resultAlias)
-    //     })
-    // }
+        const result: string[] = []
+
+        const rows = await this.page.locator(this.selector).locator('tr').allTextContents()
+        if (rows.length > 1) {
+            for (let r = 1; r < rows.length; r++) {  // first row is heading, ignore it
+                result.push(rows[r])
+            }
+        }
+        return result
+    }
     /**
      * Checks the areas of concern for a specific item
      */
-    // checkValuesInclude(value: string) {
+    async checkValuesInclude(value: string) {
 
-    //     cy.log(`Checking that areas of concern includes ${value}`)
-    //     const result: string[] = []
-    //     cy.get(this.page.selector).then((container) => {
-    //         const rows = container.find('tr')
-    //         if (rows.length > 1) {
-    //             for (let r = 1; r < rows.length; r++) {  // first row is heading, ignore it
-    //                 result.push(rows[r].textContent)
-    //             }
-    //         }
-    //         expect(result.includes(value)).eq(true)
-    //     })
-    // }
+        log(`Checking that areas of concern includes ${value}`)
+
+        const result = await this.getValues()
+        expect(result).toContain(value)
+    }
 }

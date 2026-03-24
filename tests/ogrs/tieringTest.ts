@@ -18,9 +18,9 @@ describe('Tier calculations test', () => {
 
         let failed = false
         cy.task('tieringTest', testParams, { timeout: timeout }).then((result: TieringTestResult) => {
-            
-            cy.log(`Passed: ${result.passed}, failed: ${result.failed}`)
-            
+
+            log(`Passed: ${result.passed}, failed: ${result.failed}`)
+
             cy.groupedLogStart(` `)
             result.logText.forEach((log) => {
                 cy.groupedLog(log)

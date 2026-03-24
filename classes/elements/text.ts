@@ -39,7 +39,7 @@ export class Text {
     async logValue(desc: string = null) {
 
         const statusAndValue = await this.getStatusAndValue()
-        lib.log(`${desc || this.selector}: ${statusAndValue.value}`)
+        log(`${desc || this.selector}: ${statusAndValue.value}`)
     }
 
     /**

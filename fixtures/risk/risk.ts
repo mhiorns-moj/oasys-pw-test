@@ -12,8 +12,12 @@ export class Risk {
     readonly screeningSection1 = new pages.ScreeningSection1(this.page)
     readonly screeningSection2to4 = new pages.ScreeningSection2to4(this.page)
     readonly screeningSection5 = new pages.ScreeningSection5(this.page)
+    readonly fullAnalysisSection62 = new pages.FullAnalysisSection62(this.page)
+    readonly fullAnalysisSection7 = new pages.FullAnalysisSection7(this.page)
+    readonly fullAnalysisSection8 = new pages.FullAnalysisSection8(this.page)
+    readonly fullAnalysisSection9 = new pages.FullAnalysisSection9(this.page)
     readonly summary = new pages.Summary(this.page)
-    readonly riskManagementPlan = new pages.RiskManagementPlan(this.page)
+    readonly rmp = new pages.Rmp(this.page)
 
     async populateMinimal(params?: PopulateAssessmentParams) {
 
@@ -33,7 +37,7 @@ export class Risk {
         await this.summary.specificRiskLevel(risk)
 
         if (risk != 'Low') {
-            await this.riskManagementPlan.minimalWithTextFields()
+            await this.rmp.minimalWithTextFields()
         }
     }
 

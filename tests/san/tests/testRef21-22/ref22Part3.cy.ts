@@ -47,7 +47,7 @@ describe('SAN integration - test ref 22 part 3', () => {
 
 function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: number, spVersion: number, accommodation: string) {
 
-    cy.log(`Checking assessment pk ${pk}`)
+    log(`Checking assessment pk ${pk}`)
     oasys.San.gotoSanReadOnly('Accommodation', 'information')
     oasys.San.checkSanOtlCall(pk,
         {

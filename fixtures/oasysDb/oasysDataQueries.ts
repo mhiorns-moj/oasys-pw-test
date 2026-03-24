@@ -53,7 +53,7 @@ export class OasysDataQueries {
     async checkSectionAnswers(assessmentPk: number, section: string, expectedAnswers: OasysAnswer[], suppressLog = false): Promise<boolean> {
 
         let failed = false
-        lib.log('', `Checking section ${section} answers`)
+        log('', `Checking section ${section} answers`)
 
         const data = await this.oasysDb.getData(sectionQuery(assessmentPk, section))
 
@@ -77,7 +77,7 @@ export class OasysDataQueries {
             const expDisplayString = expectedAnswer == null ? '' : expectedAnswer.length > 50 ? expectedAnswer.substring(0, 50) + '...' : expectedAnswer
             const actDisplayString = actualResult == null ? '' : actualResult.length > 50 ? actualResult.substring(0, 50) + '...' : actualResult
             if (!match || !suppressLog) {
-                lib.log(`    ${failureMessage}${answerToCheck.q} - expected '${expDisplayString}', actual '${actDisplayString}'`)
+                log(`    ${failureMessage}${answerToCheck.q} - expected '${expDisplayString}', actual '${actDisplayString}'`)
             }
             if (!match) { failed = true }
         }
@@ -95,14 +95,14 @@ export class OasysDataQueries {
         const data = await this.oasysDb.getData(query)
 
         if (!suppressLog || expectedVictims.length > 0) {
-            lib.log('', `Checking victims`)
+            log('', `Checking victims`)
         }
 
         if (expectedVictims.length == 0 && data.length == 0) {
             return false
         }
         if (expectedVictims.length != data.length) {
-            lib.log(`Victims FAILED - Expected ${expectedVictims.length} victims, found ${data.length}`)
+            log(`Victims FAILED - Expected ${expectedVictims.length} victims, found ${data.length}`)
             failed = true
         } else {
             let expectedVictimsConcatenated: string[] = []
@@ -118,7 +118,7 @@ export class OasysDataQueries {
                 const match = expectedVictimsConcatenated[i] == actualVictimsConcatenated[i]
                 const failureMessage = match ? '          ' : 'FAILED    '
                 if (!match || !suppressLog) {
-                    lib.log(`    ${failureMessage}Expected '${expectedVictimsConcatenated[i]}', actual '${actualVictimsConcatenated[i]}'`)
+                    log(`    ${failureMessage}Expected '${expectedVictimsConcatenated[i]}', actual '${actualVictimsConcatenated[i]}'`)
                 }
                 if (!match) { failed = true }
             }
@@ -162,15 +162,15 @@ export class OasysDataQueries {
         query += ` from eor.${table} where ${where}`
 
         const data = await this.oasysDb.getData(query)
-        lib.log('', `Checking database values`)
-        lib.log(`Table: ${table}, where: ${where}`)
-        lib.log(`Expected values: ${JSON.stringify(values)}`)
+        log('', `Checking database values`)
+        log(`Table: ${table}, where: ${where}`)
+        log(`Expected values: ${JSON.stringify(values)}`)
 
         if (data.length != 1) {
-            lib.log(`Error in query - expected 1 row, got ${data.length}`)
+            log(`Error in query - expected 1 row, got ${data.length}`)
             failed = true
         } else if (data[0].length != expectedValues.length) {
-            lib.log(`Error in query - expected ${expectedValues.length} columns, got ${data[0].length}`)
+            log(`Error in query - expected ${expectedValues.length} columns, got ${data[0].length}`)
             failed = true
         } else {
             for (let col = 0; col < expectedValues.length; col++) {
@@ -178,13 +178,13 @@ export class OasysDataQueries {
                     const actual = data[0][col]
                     const expected = expectedValues[col]
                     if (actual != expected) {
-                        lib.log(`Expected ${columnNames[col]} to be '${expected}', got '${actual}'`)
+                        log(`Expected ${columnNames[col]} to be '${expected}', got '${actual}'`)
                         failed = true
                     }
                 } else {
                     const actual = OasysDateTime.stringToTimestamp(data[0][col])
                     if (Math.abs(OasysDateTime.timestampDiff(actual, expectedValues[col] as Temporal.PlainDateTime)) > 15000) {
-                        lib.log(`Expected ${columnNames[col]} to be ${expectedValues[col].toLocaleString()}, got ${actual}`)
+                        log(`Expected ${columnNames[col]} to be ${expectedValues[col].toLocaleString()}, got ${actual}`)
                         failed = true
                     }
                 }
@@ -199,7 +199,7 @@ export class OasysDataQueries {
      */
     // async checkCloning(newPk: number, oldPk: number, sections: string[]) {
 
-    //     cy.log(`Checking cloning from ${oldPk} to ${newPk}`)
+    //     log(`Checking cloning from ${oldPk} to ${newPk}`)
     //     cy.wrap(false).as('failed')
     //     sections.forEach((section) => {
     //         checkSectionCloning(newPk, oldPk, section, 'failed')
@@ -212,7 +212,7 @@ export class OasysDataQueries {
     //  */
     // async checkCloningExpectMismatch(newPk: number, oldPk: number, sections: string[]) {
 
-    //     cy.log(`Checking cloning from ${oldPk} to ${newPk}`)
+    //     log(`Checking cloning from ${oldPk} to ${newPk}`)
     //     sections.forEach((section) => {
     //         cy.wrap(false).as('failed')
     //         checkSectionCloning(newPk, oldPk, section, 'failed')
@@ -235,14 +235,14 @@ export class OasysDataQueries {
     //                     const oldData = result.data as string[][]
     //                     lib.logStart(`Checking cloning for new PK ${newPk}, old PK ${oldPk}, section ${section}`)
     //                     if (newData.length != oldData.length) {
-    //                         lib.log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0}`)
+    //                         log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0}`)
     //                         failed = true
     //                     } else {
     //                         for (let i = 0; i < newData.length; i++) {
     //                             const newQ = JSON.stringify(newData[i])
     //                             const oldQ = JSON.stringify(oldData[i])
     //                             if (newQ != oldQ) {
-    //                                 lib.log(`New question: ${newQ}, old question: ${oldQ}`)
+    //                                 log(`New question: ${newQ}, old question: ${oldQ}`)
     //                                 failed = true
     //                             }
     //                         }
@@ -283,10 +283,10 @@ export class OasysDataQueries {
     //     cy.get<string[][]>('@data').then((data) => {
     //         if (expectDeleted) {
     //             expect(data[0][0]).to.not.be.null
-    //             lib.log(`Checked that assessment ${pk} has been deleted`)
+    //             log(`Checked that assessment ${pk} has been deleted`)
     //         } else {
     //             expect(data[0][0]).to.be.null
-    //             lib.log(`Checked that assessment ${pk} is NOT deleted`)
+    //             log(`Checked that assessment ${pk} is NOT deleted`)
     //         }
     //     })
     // }

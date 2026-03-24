@@ -5,7 +5,7 @@ import * as oasys from 'lib'
  */
 export function screeningNoRisks(withRationale: boolean = false) {
 
-    cy.log(`Populating screening no risks, withRationale = ${withRationale}`)
+    log(`Populating screening no risks, withRationale = ${withRationale}`)
     oasys.Populate.RoshPages.RoshScreeningSection1.noRisks()
     oasys.Populate.RoshPages.RoshScreeningSection2to4.noRisks(withRationale)
     oasys.Populate.RoshPages.RoshScreeningSection5.noRisks()

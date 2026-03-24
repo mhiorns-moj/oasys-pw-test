@@ -10,7 +10,7 @@ describe('SAN integration - test ref 45', () => {
         // Get offender details
         cy.task('retrieveValue', 'offender').then((offenderData) => {
 
-            cy.log(`Find an offender whose latest assessment is a fully completed 3.2`)
+            log(`Find an offender whose latest assessment is a fully completed 3.2`)
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
@@ -27,7 +27,7 @@ describe('SAN integration - test ref 45', () => {
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 oasys.Assessment.signAndLock()
 
-                cy.log(`As the assessor create a new assessment BUT make it a classic 3.1 assessment, say 'No' to the SAN question
+                log(`As the assessor create a new assessment BUT make it a classic 3.1 assessment, say 'No' to the SAN question
                         Close the WIP 3.1`)
 
                 oasys.Nav.history(offender)
@@ -35,7 +35,7 @@ describe('SAN integration - test ref 45', () => {
 
                 oasys.Nav.clickButton('Close')
 
-                cy.log(`From the offender record click on the <Open S&N> button
+                log(`From the offender record click on the <Open S&N> button
                     Navigates out to the SAN Assessment which should be shown in READ ONLY mode - check the OTL access mode parameter for SAN
                     Return back to OASys`)
 
@@ -61,7 +61,7 @@ describe('SAN integration - test ref 45', () => {
 
                 oasys.San.returnToOASys()
 
-                cy.log(`From the offender record click on the <Open SP> button
+                log(`From the offender record click on the <Open SP> button
                     Navigates out to the Sentence Plan which should be shown in READ WRITE mode - check the OTL access mode parameter for SP
                     Return back to OASys`)
 

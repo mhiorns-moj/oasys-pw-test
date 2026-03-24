@@ -27,7 +27,7 @@ describe('SAN integration - test ref 21 part 4', () => {
                 const assessmentsTab = new oasys.Pages.Offender.AssessmentsTab()
                 assessmentsTab.assessments.checkCount(7)
 
-                cy.log(`Check each of the 3.2 assessments - ensure you can open them up (READ ONLY) and navigate out to the SAN Service which opens that 
+                log(`Check each of the 3.2 assessments - ensure you can open them up (READ ONLY) and navigate out to the SAN Service which opens that 
                     version of the SAN assessment in READ ONLY MODE`)
 
                 // 4th assessment (3rd from offender 2)
@@ -53,7 +53,7 @@ describe('SAN integration - test ref 21 part 4', () => {
 
 function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: number, spVersion: number) {
 
-    cy.log(`Checking assessment pk ${pk}`)
+    log(`Checking assessment pk ${pk}`)
     oasys.San.gotoSanReadOnly('Accommodation', 'information')
     oasys.San.checkSanOtlCall(pk,
         {

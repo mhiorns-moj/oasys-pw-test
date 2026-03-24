@@ -12,7 +12,7 @@ describe('SAN integration - test ref 08 part 2', () => {
             oasys.login(oasys.Users.probSanUnappr)
             oasys.Offender.searchAndSelectByPnc(offender.pnc)
 
-            cy.log(`Create another assessment - defaults to Review
+            log(`Create another assessment - defaults to Review
                         The new SAN question is NOT shown on the screen due to the default of PSR with 'PSR Outline' plan
                         Change the POA to 'Start of Community Order', Layer 3 with ISP and the new SAN question shows with a NULL default setting 
                         Set the SAN question answer to 'Yes'
@@ -31,7 +31,7 @@ describe('SAN integration - test ref 08 part 2', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
 
-                cy.log(`An OASys-SAN assessment (3.2) is created showing the Case ID Offender Information screen
+                log(`An OASys-SAN assessment (3.2) is created showing the Case ID Offender Information screen
                         Do NOT change any data or navigate anywhere
                         Ensure the left hand navigation menu DOES NOT show +Section 2 to 13 AND Self Assessment Form
                         Ensure THERE IS a navigation option for 'Strengths and Needs Sections' showing between + Section 1 and + RoSH Screening
@@ -39,15 +39,15 @@ describe('SAN integration - test ref 08 part 2', () => {
 
                 new oasys.Pages.Assessment.OffenderInformation().checkCurrent()
                 oasys.San.checkLayer3Menu(true)
-                new oasys.Pages.Assessment.SourcesOfInformation().checkIsOnMenu()
-                new oasys.Pages.Assessment.OffendingInformation().checkIsOnMenu()
-                new oasys.Pages.Assessment.Predictors().checkIsOnMenu()
-                new oasys.Pages.Rosh.RoshScreeningSection1().checkIsOnMenu()
-                new oasys.Pages.Rosh.RoshScreeningSection2to4().checkIsOnMenu()
-                new oasys.Pages.Rosh.RoshScreeningSection5().checkIsOnMenu()
+                new oasys.Pages.Assessment.SourcesOfInformation().checkMenuVisibility(true)
+                new oasys.Pages.Assessment.OffendingInformation().checkMenuVisibility(true)
+                new oasys.Pages.Assessment.Predictors().checkMenuVisibility(true)
+                new oasys.Pages.Rosh.RoshScreeningSection1().checkMenuVisibility(true)
+                new oasys.Pages.Rosh.RoshScreeningSection2to4().checkMenuVisibility(true)
+                new oasys.Pages.Rosh.RoshScreeningSection5().checkMenuVisibility(true)
                 new oasys.Pages.SentencePlan.IspSection52to8().checkIsNotOnMenu()
 
-                cy.log(`Check the OASYS_SET record has new field 'SAN_ASSESSMENT_LINKED_IND' is SET to 'Y' and 'CLONED_FROM_PREV_OASYS_SAN_PK' is NULL
+                log(`Check the OASYS_SET record has new field 'SAN_ASSESSMENT_LINKED_IND' is SET to 'Y' and 'CLONED_FROM_PREV_OASYS_SAN_PK' is NULL
                         Check that a CreateAssessment API post was sent off with the correct details in it (the OASYS_SET_PK of the newly created record,
                                 the parameter for previous PK is null, and the User detail fields are correct i.e User ID and User Name)
                         Check that we get a '200' response back from the API - the response may contain parameters back
@@ -65,7 +65,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 oasys.San.checkNoIspQuestions1Or2(pk)
                 oasys.San.checkSanAssessmentCompletionStatus(false)
 
-                cy.log(`Click on 'Sign and Lock'
+                log(`Click on 'Sign and Lock'
                         Ensure the errors reported are consistent with being a 3.2 assessment: 
                         There is NO <Mark 1 to 9 as Missing> button showing and there is NO <Continue with Signing> button
                         There is a <Return to Assessment> button showing
@@ -90,7 +90,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 signingStatus.continueWithSigning.checkStatus('notVisible')
 
 
-                cy.log(`Return back to the assessment and change some of the data in the Case ID sections and Section 1 screens but leave as a SEXUAL offence (will have cloned from previous 3.1 assessment)
+                log(`Return back to the assessment and change some of the data in the Case ID sections and Section 1 screens but leave as a SEXUAL offence (will have cloned from previous 3.1 assessment)
                         Check that question 1.46 has the wording 'Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences' (changed in the 6.50 release), remain on Section 1 Predictors screen after clicking <Save>
                         Now click on <Next>, navigates to the new 'Strengths and Needs Sections' screen
                         Ensure the buttons <Close>, <Next> and <Previous> are available (no other buttons should be showing)
@@ -123,7 +123,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 sanSections.openSanLabel.checkStatus('visible')
                 oasys.San.gotoSan()
 
-                cy.log(`Within the SAME browser tab the OASys screen closes and is replaced by the first screen in the SAN Assessment
+                log(`Within the SAME browser tab the OASys screen closes and is replaced by the first screen in the SAN Assessment
                          - get evidence here of the One-Time link API so we can check the parameters going out
                         Do not enter anything into the SAN Assessment - there should be a visible button/link to return to the OASys assessment
                         Click on that button/link - Within the SAME browser tab the SAN Assessment screen closes and is replaced with the OASys 'Strengths and Needs Sections'

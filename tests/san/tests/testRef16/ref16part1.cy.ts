@@ -10,7 +10,7 @@ describe('SAN integration - test ref 16 part 1', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            cy.log(`Log in an Assessor who can complete SAN assessments.
+            log(`Log in an Assessor who can complete SAN assessments.
                 Open up the Offender record, create a new OASys-SAN assessment
                 Close out of the OASys-SAN assessment and navigate to the Task Manager`)
 
@@ -21,7 +21,7 @@ describe('SAN integration - test ref 16 part 1', () => {
             oasys.Nav.clickButton('Close')
             new oasys.Pages.Tasks.TaskManager().goto()
 
-            cy.log(`Open up the Assessment WIP task for this assessment
+            log(`Open up the Assessment WIP task for this assessment
                 Click on the <Reassign to User> drop down field
                 Ensure that ALL the users SHOWN HAVE the 'Use SAN Service' function in their role(s).
                 You should NOT be able to reassign this assessment to a NON SAN service user.

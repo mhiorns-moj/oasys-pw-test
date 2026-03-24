@@ -9,7 +9,7 @@ import { BaseAssessmentPage } from 'classes'
 
 export class Assessment {
 
-    constructor(private readonly page: Page, private readonly testInfo: TestInfo, private readonly oasys: Oasys, private readonly cms: Cms,
+    constructor(private readonly page: Page, private readonly oasys: Oasys, private readonly cms: Cms,
         private readonly offender: Offender, private readonly oasysDb: OasysDb, private readonly tasks: Tasks, private readonly san: San,
         private readonly risk: Risk, private readonly sentencePlan: SentencePlan, private readonly signing: Signing) { }
 
@@ -26,8 +26,8 @@ export class Assessment {
     readonly selfAssessmentForm = new pages.SelfAssessmentForm(this.page)
     private readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
 
-    readonly layer1 = new Layer1(this.page, this.testInfo, this.oasys)
-    readonly layer3 = new Layer3(this.page, this.testInfo, this.oasys)
+    readonly layer1 = new Layer1(this.page, this.oasys)
+    readonly layer3 = new Layer3(this.page, this.oasys)
 
     /**
      * Create a probation assessment with the details provided for the Create Assessment page. Assumes you are starting on the Offender Details page.
@@ -59,7 +59,7 @@ export class Assessment {
         const pnc = await this.baseAssessmentPage.getPncFromScreenContext()
         const pk = await this.getLatestSetPkByPnc(pnc)
 
-        lib.log(`Created assessment PK ${pk}: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
+        log(`Created assessment PK ${pk}: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
         return pk
     }
 
@@ -86,7 +86,7 @@ export class Assessment {
         const pnc = await this.baseAssessmentPage.getPncFromScreenContext()
         const pk = await this.getLatestSetPkByPnc(pnc)
 
-        lib.log(`Created assessment PK ${pk}: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
+        log(`Created assessment PK ${pk}: ${JSON.stringify(assessmentDetails)}`, 'Assessment')
         return pk
 
     }
@@ -101,7 +101,7 @@ export class Assessment {
             await this.cms.cmsAssessmentSearch()
         }
 
-        if (!suppressLog) lib.log('Navigated to CreateAssessment page')
+        if (!suppressLog) log('Navigated to CreateAssessment page')
     }
 
     async populateMinimal(params?: PopulateAssessmentParams) {
@@ -171,7 +171,7 @@ export class Assessment {
     //             break
     //     }
 
-    //     cy.log(`Fully populated assessment: ${JSON.stringify(params)}`)
+    //     log(`Fully populated assessment: ${JSON.stringify(params)}`)
     // }
 
 
@@ -189,7 +189,7 @@ export class Assessment {
             await this.deleteAssessment.ok.click()
             await this.oasys.history(surname, forename)
         }
-        lib.log(`Deleted ${count} assessment(s)`)
+        log(`Deleted ${count} assessment(s)`)
     }
 
     /**
@@ -205,7 +205,7 @@ export class Assessment {
     //     deleteAssessment.reasonForDeletion.setValue('Testing')
     //     deleteAssessment.ok.click()
 
-    //     lib.log(`Deleted latest assessment`)
+    //     log(`Deleted latest assessment`)
     // }
 
 
@@ -225,7 +225,7 @@ export class Assessment {
     //     rev.ok.click()
     //     rev.ok.click()
     //     new this.oasys.Pages.Tasks.TaskManager().checkCurrent()
-    //     lib.log(`Reversed deletion for ${offender.pnc}, ${type}, ${assessment} `)
+    //     log(`Reversed deletion for ${offender.pnc}, ${type}, ${assessment} `)
     // }
 
     /**
@@ -238,7 +238,7 @@ export class Assessment {
     //     rollback.enterAComment.setValue(comment ?? 'Rollback test comment')
     //     rollback.ok.click()
 
-    //     lib.log('Rolled back assessment')
+    //     log('Rolled back assessment')
     // }
 
     /**
@@ -255,7 +255,7 @@ export class Assessment {
     async openLatest() {
 
         await this.assessmentsTab.assessments.clickFirstRow()
-        lib.log('Opened latest assessment')
+        log('Opened latest assessment')
     }
 
     /**
@@ -264,7 +264,7 @@ export class Assessment {
     async open(row: number) {
 
         await this.assessmentsTab.assessments.clickNthRow(row)
-        lib.log(`Opened assessment ${row}`)
+        log(`Opened assessment ${row}`)
     }
 
     /**
@@ -286,7 +286,7 @@ export class Assessment {
     //             checkOgrs4CalcsPk(pk)
 
     //             this.oasys.Nav.clickButton('Lock Incomplete', true)
-    //             lib.log('Locked assessment incomplete')
+    //             log('Locked assessment incomplete')
     //         })
     //     })
     // }

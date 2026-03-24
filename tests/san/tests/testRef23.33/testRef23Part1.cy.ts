@@ -12,7 +12,7 @@ describe('SAN integration - test ref 23', () => {
 
             oasys.login(oasys.Users.probSanHeadPdu)
 
-            cy.log(`For the first assessment, create a new OASys-SAN assessment (3.2)	
+            log(`For the first assessment, create a new OASys-SAN assessment (3.2)	
                 Ensure the Create Assessment API is sent to the SAN service and the parameters are correct	
                 Complete the SAN Assessment part: 	
                     - in the Alcohol section say 'Yes' to question 'Has ? ever drunk alcohol' and then complete any other alcohol questions shown on screen
@@ -42,7 +42,7 @@ describe('SAN integration - test ref 23', () => {
 
                 oasys.Populate.Rosh.screeningNoRisks(true)
 
-                cy.log(`Check in the database to see what questions have been set for section 9 - interested to know how SAN have treated an Offender who is NOT male or female
+                log(`Check in the database to see what questions have been set for section 9 - interested to know how SAN have treated an Offender who is NOT male or female
                         for the alcohol questions
                     Check that OGRS, OGP and OVP have NOT calculated because of the offender's gender
                     In the Predictors screen check that for RSR it hasn't calculated due to 'RSR can't be calculated on gender other than Male or Female'`)
@@ -73,7 +73,7 @@ describe('SAN integration - test ref 23', () => {
 
                 predictors.goto().rsrScore.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
 
-                cy.log(`Check that the Summary screen is showing the correct information for the Criminogenic Needs and threshold section and that in the Predictors Scores % 
+                log(`Check that the Summary screen is showing the correct information for the Criminogenic Needs and threshold section and that in the Predictors Scores % 
                     and Risk Category OGRS, OGP and OVP just show dashes, both OSP rows show N/A,  the RSR row shows N/A and then two dashes`)
 
                 const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
@@ -110,7 +110,7 @@ describe('SAN integration - test ref 23', () => {
                 ]
                 summarySheet.predictorsTable.checkData(expectedPredictorsValues)
 
-                cy.log(`Navigate out to the 'Sentence Plan Service' - complete entry with 1 goal/step and ensure you 'Agree the Plan'
+                log(`Navigate out to the 'Sentence Plan Service' - complete entry with 1 goal/step and ensure you 'Agree the Plan'
                     Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen
                     Navigate to Sentence Plan screen - complete entry of the three fields on the screen for Public Protection conference
                     Sign and lock the assessment - no countersigner required.
@@ -121,12 +121,12 @@ describe('SAN integration - test ref 23', () => {
                 oasys.ArnsSp.runScript('populateMinimal')
 
                 const isp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
-  
+
                 oasys.Assessment.signAndLock() // OGRS warning, requires same action as the RSR warning
                 oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
-                cy.log(`Still logged in as the Assessor open up the SAN Assessment from the offender records 'Open S&N' button.
+                log(`Still logged in as the Assessor open up the SAN Assessment from the offender records 'Open S&N' button.
                     This should have invoked a new version of the SAN Assessment in their database - Change some of the data and set a couple of the section
                         'Linked to risk of serious harm…' questions to 'Yes'
                     Save the SAN data ensuring it is fully complete and then return back to the OASys Offender record screen`)
@@ -137,7 +137,7 @@ describe('SAN integration - test ref 23', () => {
                 oasys.San.populateSanSections('Test ref 23 modification', testData.modifySan)
                 oasys.San.returnToOASys()
 
-                cy.log(`Now open up the Sentence Plan from the offender records 'Open SP' button
+                log(`Now open up the Sentence Plan from the offender records 'Open SP' button
                     This should have invoked a new version of the Sentence Plan in their database - Add another goal/steps to the sentence plan 
                     Return back to the OASys Offender record screen`)
 

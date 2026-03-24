@@ -53,7 +53,7 @@ export class Predictors extends BaseAssessmentPage {
 
     async populateMinimal() {
 
-        lib.log('Minimally populating predictors page')
+        log('Minimally populating predictors page')
         await this.goto(true)
         await this.dateFirstSanction.setValue({ years: -2 })
         await this.o1_32.setValue(2)

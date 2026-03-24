@@ -26,7 +26,7 @@ export class Tasks {
         await this.taskManager.taskList.clickFirstRow()
 
         await this.oasys.clickButton('Open Assessment')
-        lib.log(`Opened assessment from countersigning task for ${offender.forename1} ${offender.surname}`)
+        log(`Opened assessment from countersigning task for ${offender.forename1} ${offender.surname}`)
     }
 
     /**
@@ -39,7 +39,7 @@ export class Tasks {
         await this.taskManager.taskList.clickFirstRow()
 
         await this.oasys.clickButton('Open Assessment')
-        lib.log(`Opened assessment from countersigning task for ${surname}`)
+        log(`Opened assessment from countersigning task for ${surname}`)
     }
 
     /**
@@ -73,7 +73,7 @@ export class Tasks {
     async selectFirstTask() {
 
         await this.taskManager.taskList.clickFirstRow()
-        lib.log('Selected first task')
+        log('Selected first task')
     }
 
     /**
@@ -87,6 +87,6 @@ export class Tasks {
     //     page.taskList.clickFirstRow()
 
     //     oasys.Nav.clickButton('Grant but Retain Ownership')
-    //     cy.log(`Granted merge for ${surname}`)
+    //     log(`Granted merge for ${surname}`)
     // }
 }

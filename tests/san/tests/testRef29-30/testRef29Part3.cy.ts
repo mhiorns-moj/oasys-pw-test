@@ -8,7 +8,7 @@ describe('SAN integration - test ref 29/30', () => {
         // Get offender details
         cy.task('retrieveValue', 'offender2').then((offenderData) => {
 
-            cy.log(`Find an offender who already has at least one OASys assessment in the latest period of supervision
+            log(`Find an offender who already has at least one OASys assessment in the latest period of supervision
                 Ensure the latest assessment is a completed OASYS-SAN with a SARA also completed`)
 
             const offender2 = JSON.parse(offenderData as string)
@@ -42,7 +42,7 @@ describe('SAN integration - test ref 29/30', () => {
             oasys.Nav.clickButton('Next')
             oasys.Nav.clickButton('Create')
 
-            oasys.Populate.Sara.sara('Low','Low')
+            oasys.Populate.Sara.sara('Low', 'Low')
             const sara = new oasys.Pages.Sara.Sara()
             sara.signAndLock.click()
             sara.confirmSignAndLock.click()
@@ -65,7 +65,7 @@ describe('SAN integration - test ref 29/30', () => {
             oasys.Assessment.countersign({ offender: offender2 })
             oasys.logout()
 
-            cy.log(`Log into the SAN Pilot area as an Administrator
+            log(`Log into the SAN Pilot area as an Administrator
                     Search for the offender and open up the SARA
                     From the Admin menu select 'Delete SARA - enter in a reason for the deletion and then click on OK
                     Check that a Delete API has NOT been sent to the SAN Service`)
@@ -77,7 +77,7 @@ describe('SAN integration - test ref 29/30', () => {
                 oasys.Db.getData(`select oasys_set_pk from eor.oasys_set where parent_oasys_set_pk = ${pk}`, 'saraData')
                 cy.get<string[][]>('@saraData').then((saraData) => {
                     const saraPk = Number.parseInt(saraData[0][0])
-                    cy.log(`SARA PK: ${saraPk}`)
+                    log(`SARA PK: ${saraPk}`)
 
                     oasys.login(oasys.Users.admin, oasys.Users.probationSan)
                     oasys.Offender.searchAndSelectByPnc(offender2.pnc)
@@ -90,7 +90,7 @@ describe('SAN integration - test ref 29/30', () => {
                     oasys.Assessment.checkSigningRecord(saraPk, ['SARA_DEL_SIGNING', 'SARA_SIGNING'])
                     oasys.San.checkNoSanCall(saraPk)
 
-                    cy.log(`Now open up the OASys-SAN assessment
+                    log(`Now open up the OASys-SAN assessment
                     From the Admin menu select 'Delete assessment' - enter in a reason for the deletion and then click on OK
                         The OASYS_SET record for the OASys-SAN assessment has the field DELETED_DATE set to system date and time the deletion took place
                         An OASYS_SIGNING record has been created for the deletion 'ASSMT_DEL_SIGNING'
@@ -103,7 +103,7 @@ describe('SAN integration - test ref 29/30', () => {
                     oasys.Assessment.checkSigningRecord(pk, ['ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
 
 
-                    cy.log(`Test ref 30 - reverse deletion test`)
+                    log(`Test ref 30 - reverse deletion test`)
                     oasys.Assessment.reverseDeletion(offender2, 'Assessment', 'Start', 'Test ref 30 part 3 deletion reversal')
 
                     oasys.Assessment.checkNotDeleted(pk)

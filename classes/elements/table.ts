@@ -82,7 +82,7 @@ export class Table {
      */
     async checkCount(expectedRows: number) {
 
-        lib.log(`Checking table row count, expected count = ${expectedRows}`)
+        log(`Checking table row count, expected count = ${expectedRows}`)
         await this.firstColumn().checkCount(expectedRows)  // Get first column property to check the row count
     }
 

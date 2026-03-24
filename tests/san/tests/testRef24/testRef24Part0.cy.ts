@@ -42,7 +42,7 @@ describe('SAN integration - test ref 24', () => {
             lao.setLaoStatus.setValue('Yes')
             lao.laoReaders.addItemUsingFilter(oasys.Users.probSanHeadPdu.username) // No countersigning for this test
             lao.save.click()
-            cy.log('Set LAO reader')
+            log('Set LAO reader')
             lao.close.click()
             oasys.logout()
         })

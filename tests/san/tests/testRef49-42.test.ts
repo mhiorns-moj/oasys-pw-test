@@ -1,4 +1,3 @@
-import * as lib from 'lib'
 import { test } from 'fixtures'
 
 /**
@@ -35,10 +34,10 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     await oasys.history()
     await assessment.markHistoric()
 
-    lib.log(`Open up the offender record
-                    Click on the <Open S&N> button - SAN opens in READ ONLY mode
-                    Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is NULL
-                    Return to OASys`, 'Test step')
+    log(`Open up the offender record
+        Click on the <Open S&N> button - SAN opens in READ ONLY mode
+        Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is NULL
+        Return to OASys`, 'Test step')
 
     await oasys.history(offender1)
     await san.gotoSanFromOffender(true)
@@ -58,13 +57,13 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     )
     await san.returnToOASys()
 
-    lib.log(`Open the historic 3.2 assessment
-                    Navigate out to the SAN Service via the screen - SAN opens in READ ONLY mode
-                    Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is 0 (or whatever number is held on the OASYS_SET record)
-                    Return to OASys
-                    Navigate out to the Sentence Plan Service via the screen - Sentence Plan opens in READ ONLY mode
-                    Ensure the OTL passes across READ_ONLY for the accessMode and the sentence plan version number is 0 (or whatever number is held on the OASYS_SET record)
-                    Return to OASys`, 'Test step')
+    log(`Open the historic 3.2 assessment
+        Navigate out to the SAN Service via the screen - SAN opens in READ ONLY mode
+        Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is 0 (or whatever number is held on the OASYS_SET record)
+        Return to OASys
+        Navigate out to the Sentence Plan Service via the screen - Sentence Plan opens in READ ONLY mode
+        Ensure the OTL passes across READ_ONLY for the accessMode and the sentence plan version number is 0 (or whatever number is held on the OASYS_SET record)
+        Return to OASys`, 'Test step')
 
     await assessment.openLatest()
 
@@ -105,26 +104,26 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     await oasys.clickButton('Close')
 
 
-    lib.log(`For the assessment in a new period of supervision create a classic 3.1 OASys assessment
-                    During the create process say 'Yes' to cloning from the historic 3.2 assessment`, 'Test step')
+    log(`For the assessment in a new period of supervision create a classic 3.1 OASys assessment
+        During the create process say 'Yes' to cloning from the historic 3.2 assessment`, 'Test step')
 
     const pk2 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'No' }, 'Yes')
 
-    lib.log(`Check the OASYS_SET record - field CLONED_FROM_PREV_OASYS_SAN_PK is set to the PK of the historic 3.2 assessment
-                        Check other OASYS_SET record fields; SAN_ASSESSMENT_LINKED_IND is N, LASTUPD_FROM_SAN is populated,  retrieved the data but SAN_ASSESSMENT_VERSION_NO
-                            AND SSP_PLAN_VERSION_NO are NULL.`, 'Test step')
+    log(`Check the OASYS_SET record - field CLONED_FROM_PREV_OASYS_SAN_PK is set to the PK of the historic 3.2 assessment
+        Check other OASYS_SET record fields; SAN_ASSESSMENT_LINKED_IND is N, LASTUPD_FROM_SAN is populated,  retrieved the data but SAN_ASSESSMENT_VERSION_NO
+            AND SSP_PLAN_VERSION_NO are NULL.`, 'Test step')
 
     await san.queries.getSanApiTimeAndCheckDbValues(pk2, 'N', pk1)
 
-    lib.log(`Check that there are NO OASYS_SECTION records for 'SAN'
-                        Check that on any cloned through OASYS_SECTION records the fields 'SAN_CRIM_NEED_SCORE' have been nulled out
-                        Check that the OASys sections has data cloned from the historic 3.2 assessment (confirmed by GetAssessment call and completion of some mandatory questions)`)
+    log(`Check that there are NO OASYS_SECTION records for 'SAN'
+        Check that on any cloned through OASYS_SECTION records the fields 'SAN_CRIM_NEED_SCORE' have been nulled out
+        Check that the OASys sections has data cloned from the historic 3.2 assessment (confirmed by GetAssessment call and completion of some mandatory questions)`)
 
     await san.queries.checkNoSanSections(pk2)
     await san.queries.checkNoSanSectionScores(pk2)
     await san.queries.checkSanGetAssessmentCall(pk1, 0)
 
-    lib.log(`Complete the 3.1 assessment and then fully sign and lock and countersign (if applicable) the 3.1 assessment.`)
+    log(`Complete the 3.1 assessment and then fully sign and lock and countersign (if applicable) the 3.1 assessment.`)
 
     await assessment.offendingInformation.goto()
     await assessment.offendingInformation.count.setValue(1)
@@ -144,11 +143,11 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     await sentencePlan.populateMinimal()
     await signing.signAndLock()
 
-    lib.log(`Now check the access to the SAN and Sentence Plan service again, now that we have a 3.1 assessment
-                        Open up the offender record
-                        Click on the <Open S&N> button - SAN opens in READ ONLY mode
-                        Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is NULL
-                        Return to OASys`, 'Test step')
+    log(`Now check the access to the SAN and Sentence Plan service again, now that we have a 3.1 assessment
+        Open up the offender record
+        Click on the <Open S&N> button - SAN opens in READ ONLY mode
+        Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is NULL
+        Return to OASys`, 'Test step')
 
     await oasys.history(offender1)
     await san.gotoSanFromOffender(true)
@@ -171,9 +170,9 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
 
     await san.returnToOASys()
 
-    lib.log(`Click on the <Open SP> button - Sentence Plan opens in READ/WRITE mode
-                        Ensure the OTL passes across READ_WRITE for the accessMode and the sentence plan version number is NULL
-                        Return to OASys`, 'Test step')
+    log(`Click on the <Open SP> button - Sentence Plan opens in READ/WRITE mode
+        Ensure the OTL passes across READ_WRITE for the accessMode and the sentence plan version number is NULL
+        Return to OASys`, 'Test step')
 
     await sentencePlan.spService.openAndReturn('offender')
 
@@ -192,13 +191,13 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
         'san', 'offender'
     )
 
-    lib.log(`Open the historic 3.2 assessment
-                        Navigate out to the SAN Service via the screen - SAN opens in READ ONLY mode
-                        Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is 0 (or whatever number is held on the OASYS_SET record)
-                        Return to OASys
-                        Navigate out to the Sentence Plan Service via the screen - Sentence Plan opens in READ ONLY mode
-                        Ensure the OTL passes across READ_ONLY for the accessMode and the sentence plan version number is 0 (or whatever number is held on the OASYS_SET record)
-                        Return to OASys`, 'Test step')
+    log(`Open the historic 3.2 assessment
+        Navigate out to the SAN Service via the screen - SAN opens in READ ONLY mode
+        Ensure the OTL passes across READ_ONLY for the accessMode and the assessment version number is 0 (or whatever number is held on the OASYS_SET record)
+        Return to OASys
+        Navigate out to the Sentence Plan Service via the screen - Sentence Plan opens in READ ONLY mode
+        Ensure the OTL passes across READ_ONLY for the accessMode and the sentence plan version number is 0 (or whatever number is held on the OASYS_SET record)
+        Return to OASys`, 'Test step')
 
     await assessment.open(2)  // Row 1 is the 3.1 assessment, row 2 is historic 3.2
 
@@ -248,43 +247,43 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
         Check functionality for the Fast Review POA 
     */
 
-    lib.log(`Find a probation offender in the SAN PILOT AREA whose latest assessment is a Layer 3 Version 1
-                Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page
-                Change the POA and select Fast Review`, 'Test step')
+    log(`Find a probation offender in the SAN PILOT AREA whose latest assessment is a Layer 3 Version 1
+        Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page
+        Change the POA and select Fast Review`, 'Test step')
 
     await assessment.getToCreateAssessmentPage()
     await assessment.createAssessmentPage.purposeOfAssessment.setValue('Fast Review')
 
-    lib.log(`Select 'No' at Include strengths and needs sections? - Fast Review remains
-                Change 'No' to 'Yes' screen refreshes and 'Fast Review' automatically changes to 'Review' - because you cannot action a FAST REVIEW for an OASys-SAN assessment`, 'Test step')
+    log(`Select 'No' at Include strengths and needs sections? - Fast Review remains
+        Change 'No' to 'Yes' screen refreshes and 'Fast Review' automatically changes to 'Review' - because you cannot action a FAST REVIEW for an OASys-SAN assessment`, 'Test step')
 
     await assessment.createAssessmentPage.includeSanSections.setValue('No')
     await assessment.createAssessmentPage.purposeOfAssessment.checkValue('Fast Review')
     await assessment.createAssessmentPage.includeSanSections.setValue('Yes')
     await assessment.createAssessmentPage.purposeOfAssessment.checkValue('Review')
 
-    lib.log(`Now change the POA to Fast Review - the question is nulled out
-                Try clicking on <Create> - get error msg`, 'Test step')
+    log(`Now change the POA to Fast Review - the question is nulled out
+        Try clicking on <Create> - get error msg`, 'Test step')
 
     await assessment.createAssessmentPage.purposeOfAssessment.setValue('Fast Review')
     await assessment.createAssessmentPage.includeSanSections.checkValue('')
     await assessment.createAssessmentPage.create.click()
     await oasys.checkErrorMessage('You must decide if you want to include strengths and needs before being able to create the assessment.')
 
-    lib.log(`Say No to the question. Click on <Create>`)
+    log(`Say No to the question. Click on <Create>`)
 
     await assessment.createAssessmentPage.includeSanSections.setValue('No')
     await assessment.createAssessmentPage.create.click()
 
-    lib.log(`Complete the Fast Review assessment`, 'Test step')
+    log(`Complete the Fast Review assessment`, 'Test step')
 
     await assessment.layer3.fastReview.populateNoChanges()
     await signing.signAndLock({ page: 'spService' })
 
-    lib.log(`Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page - defaults POA to Fast Review
-                Answer 'Yes' to the question - screen refreshes and changes 'Fast Review' to 'Review' and blanks out the question
-                Answer Yes to the question
-                Click on <Create> - now have an OASys-SAN assessment (3.2)`, 'Test step')
+    log(`Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page - defaults POA to Fast Review
+        Answer 'Yes' to the question - screen refreshes and changes 'Fast Review' to 'Review' and blanks out the question
+        Answer Yes to the question
+        Click on <Create> - now have an OASys-SAN assessment (3.2)`, 'Test step')
 
     await oasys.history(offender1)
     await assessment.getToCreateAssessmentPage()
@@ -295,9 +294,9 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     await assessment.createAssessmentPage.includeSanSections.setValue('Yes')
     await assessment.createAssessmentPage.create.click()
 
-    lib.log(`Complete the 3.2 assessment including sentence plan with whatever you like
-                Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page
-                Ensure that the POA drop down list does NOT contain FAST REVIEW`, 'Test step')
+    log(`Complete the 3.2 assessment including sentence plan with whatever you like
+        Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page
+        Ensure that the POA drop down list does NOT contain FAST REVIEW`, 'Test step')
 
     await signing.signAndLock({ page: 'spService' })
 
