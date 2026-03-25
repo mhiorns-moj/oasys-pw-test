@@ -1,19 +1,21 @@
 import { Dialog, expect, Page, TestInfo } from '@playwright/test'
 import { Temporal } from '@js-temporal/polyfill'
 
-import * as lib from 'lib'
 import * as pages from './pages'
 import { testEnvironment } from 'localSettings'
 import { OasysPage, User } from 'classes'
 import * as users from './users'
 import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan'
 import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
+import { Queries } from './queries'
 
 
 export class Oasys {
 
-    constructor(private readonly page: Page, private readonly testInfo: TestInfo) { }
+    constructor(private readonly page: Page, private readonly testInfo: TestInfo, private readonly oasysDb) { }
 
+
+    readonly queries = new Queries(this.oasysDb)
     appConfig: AppConfig
     readonly users = users.Users
     readonly loginPage = new pages.Login(this.page)

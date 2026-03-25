@@ -3,10 +3,10 @@ import { expect } from '@playwright/test'
 
 import * as lib from 'lib'
 import { OasysDateTime } from 'lib/dateTime'
-import { OasysDb } from './oasysDb'
+import { OasysDb } from '../oasysDb/oasysDb'
 
 
-export class OasysDataQueries {
+export class Queries {
 
     constructor(readonly oasysDb: OasysDb) { }
 

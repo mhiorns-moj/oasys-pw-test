@@ -7,7 +7,7 @@ import * as pages from './pages'
 
 export class Layer3 {
 
-    constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys) { }
+    constructor(private  readonly page: Page, private readonly oasys: Oasys) { }
 
     readonly section2 = new pages.Section2(this.page)
     readonly section3 = new pages.Section3(this.page)

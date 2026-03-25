@@ -93,6 +93,8 @@ export class SpService {
         await this.page.getByRole('button', { name: 'Agree plan' }).click()
         await this.page.getByRole('radio', { name: 'Yes, I agree' }).check()
         await this.page.getByRole('button', { name: 'Save' }).click()
+        
+        await this.returnToOasys()
     }
 
     async checkReadOnly(from: 'assessment' | 'offender' = 'assessment') {

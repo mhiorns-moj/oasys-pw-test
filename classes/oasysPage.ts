@@ -170,7 +170,8 @@ export abstract class OasysPage {
             }
         }
 
-        if (this.menu.type != 'San') {
+        await OasysPage.waitForPageUpdate(this.page)
+        if (this.menu.type == 'Main' || this.menu.type == 'Floating') {
             await this.checkCurrent(suppressLog)
         }
         if (!suppressLog) log(`Go to page: ${this.name} `)

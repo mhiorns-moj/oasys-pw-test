@@ -5,6 +5,7 @@ import * as lib from 'lib'
 import { OasysDateTime } from 'lib/dateTime'
 import { OasysDb } from '../oasysDb/oasysDb'
 import { User } from 'classes'
+import { Oasys } from 'fixtures'
 
 type OasysSetSanData = {
     sanIndicator: string,
@@ -16,7 +17,7 @@ type OasysSetSanData = {
 
 export class Queries {
 
-    constructor(readonly db: OasysDb) { }
+    constructor(readonly db: OasysDb, readonly oasys: Oasys) { }
 
 
     async getOasysSetSanData(pk: number): Promise<OasysSetSanData> {
@@ -174,82 +175,81 @@ export class Queries {
         expect(failed).toBeFalsy()
     }
 
-    // /**
-    //  * Checks cLog for expected entries following a countersigning call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user countersigning the assessment
-    //  *  - outcome: countersigning action expected - 'COUNTERSIGNED', 'AWAITING_DOUBLE_COUNTERSIGN', 'DOUBLE_COUNTERSIGNED' or 'REJECTED'
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanCountersigningCall(pk: number, expectedUser: User, outcome: 'COUNTERSIGNED' | 'AWAITING_DOUBLE_COUNTERSIGN' | 'DOUBLE_COUNTERSIGNED' | 'REJECTED',
-    //     expectedVersion: number, expectedSpVersion: number) {
+    /**
+     * Checks cLog for expected entries following a countersigning call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
+     * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
+     *  - pk
+     *  - expectedUser: OASys User Id for the user countersigning the assessment
+     *  - outcome: countersigning action expected - 'COUNTERSIGNED', 'AWAITING_DOUBLE_COUNTERSIGN', 'DOUBLE_COUNTERSIGNED' or 'REJECTED'
+     *  - expectedVersion: version number that should be returned by SAN
+     *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
+     */
+    async checkSanCountersigningCall(pk: number, expectedUser: User, outcome: 'COUNTERSIGNED' | 'AWAITING_DOUBLE_COUNTERSIGN' | 'DOUBLE_COUNTERSIGNED' | 'REJECTED') {
 
-    //     checkSanCall('Countersigning', 'COUNTERSIGN', 'counter-sign', pk, expectedUser, { outcome: outcome })
-    // }
+        await this.checkSanCall('Countersigning', 'COUNTERSIGN', 'counter-sign', pk, expectedUser, { outcome: outcome })
+    }
 
-    // /**
-    //  * Checks cLog for expected entries following a signing call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user signing the assessment
-    //  *  - signingType: signing action expected - 'SELF' or 'COUNTERSIGN'
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanSigningCall(pk: number, expectedUser: User, signingType: 'SELF' | 'COUNTERSIGN') {
+    /**
+     * Checks cLog for expected entries following a signing call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
+     * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
+     *  - pk
+     *  - expectedUser: OASys User Id for the user signing the assessment
+     *  - signingType: signing action expected - 'SELF' or 'COUNTERSIGN'
+     *  - expectedVersion: version number that should be returned by SAN
+     *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
+     */
+    async checkSanSigningCall(pk: number, expectedUser: User, signingType: 'SELF' | 'COUNTERSIGN') {
 
-    //     checkSanCall('Signing', 'SIGN', 'sign', pk, expectedUser, { signingType: signingType })
-    // }
+        await this.checkSanCall('Signing', 'SIGN', 'sign', pk, expectedUser, { signingType: signingType })
+    }
 
-    // /**
-    //  * Checks cLog for expected entries following a lockIncomplete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user locking the assessment
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanLockIncompleteCall(pk: number, expectedUser: User) {
+    /**
+     * Checks cLog for expected entries following a lockIncomplete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
+     * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
+     *  - pk
+     *  - expectedUser: OASys User Id for the user locking the assessment
+     *  - expectedVersion: version number that should be returned by SAN
+     *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
+     */
+    async checkSanLockIncompleteCall(pk: number, expectedUser: User) {
 
-    //     checkSanCall('Lock Incomplete', 'LOCK_INCOMPLETE', 'lock', pk, expectedUser)
-    // }
+        await this.checkSanCall('Lock Incomplete', 'LOCK_INCOMPLETE', 'lock', pk, expectedUser)
+    }
 
-    // /**
-    //  * Checks cLog for expected entries following a delete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user deleting the assessment
-    //  */
-    // async checkSanDeleteCall(pk: number, expectedUser: User) {
+    /**
+     * Checks cLog for expected entries following a delete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
+     * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
+     *  - pk
+     *  - expectedUser: OASys User Id for the user deleting the assessment
+     */
+    async checkSanDeleteCall(pk: number, expectedUser: User) {
 
-    //     checkSanCall('Delete', 'SOFT_DELETE', 'soft-delete', pk, expectedUser)
-    // }
+        await this.checkSanCall('Delete', 'SOFT_DELETE', 'soft-delete', pk, expectedUser)
+    }
 
-    // /**
-    //  * Checks cLog for expected entries following an undelete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user undeleting the assessment
-    //  */
-    // async checkSanUndeleteCall(pk: number, expectedUser: User) {
+    /**
+     * Checks cLog for expected entries following an undelete call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
+     * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
+     *  - pk
+     *  - expectedUser: OASys User Id for the user undeleting the assessment
+     */
+    async checkSanUndeleteCall(pk: number, expectedUser: User) {
 
-    //     checkSanCall('Undelete', 'UNDELETE', 'undelete', pk, expectedUser)
-    // }
+        await this.checkSanCall('Undelete', 'UNDELETE', 'undelete', pk, expectedUser)
+    }
 
-    // /**
-    //  * Checks cLog for expected entries following a rollback call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - pk
-    //  *  - expectedUser: OASys User Id for the user rolling back the assessment
-    //  *  - expectedVersion: version number that should be returned by SAN
-    //  *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
-    //  */
-    // async checkSanRollbackCall(pk: number, expectedUser: User) {
+    /**
+     * Checks cLog for expected entries following a rollback call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
+     * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
+     *  - pk
+     *  - expectedUser: OASys User Id for the user rolling back the assessment
+     *  - expectedVersion: version number that should be returned by SAN
+     *  - expectedSpVersion: version number for the sentence plan that should be returned by SAN
+     */
+    async checkSanRollbackCall(pk: number, expectedUser: User) {
 
-    //     checkSanCall('Rollback', 'ROLLBACK', 'rollback', pk, expectedUser)
-    // }
+        await this.checkSanCall('Rollback', 'ROLLBACK', 'rollback', pk, expectedUser)
+    }
 
     /**
      * Checks cLog for expected entries following an OTL call to SAN, to confirm that the correct values are passed to SAN and the status 200 response is received.
@@ -433,7 +433,7 @@ export class Queries {
     async getSanApiTimeAndCheckDbValues(pk: number, linkedInd: 'Y' | 'N', clonedPk: number) {
 
         const sanDataTime = await this.getSanApiTime(pk, 'SAN_GET_ASSESSMENT')
-        await this.db.oasysDataQueries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+        await this.oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
             SAN_ASSESSMENT_LINKED_IND: linkedInd,
             CLONED_FROM_PREV_OASYS_SAN_PK: clonedPk?.toString() ?? null,
             LASTUPD_FROM_SAN: sanDataTime
@@ -538,7 +538,7 @@ function findSanVersion(data: string): number {
 function findSpVersion(data: string): number {
 
     const vStart = data.search('sentencePlanVersion') + 21
-    let spVersionNumber = data.substring(vStart, vStart + 4)
+    let spVersionNumber = data.substring(vStart, data.length - 1)
     const vEnd = spVersionNumber.search('}')
     const number = parseInt(spVersionNumber.substring(0, vEnd))
     return number

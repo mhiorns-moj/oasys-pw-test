@@ -25,7 +25,7 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     await assessment.predictors.o1_38.setValue({})
 
     // Complete risk, sign and lock
-    await risk.populateMinimal()
+    await risk.screeningNoRisks()
     await oasys.clickButton('Save')
     await signing.signAndLock({ page: 'spService' })
 

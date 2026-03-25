@@ -125,7 +125,7 @@ export class Assessment {
                 await this.san.populateMinimal()
                 break
         }
-        await this.risk.populateMinimal(params)
+        await this.risk.screeningNoRisks()
         await this.sentencePlan.populateMinimal(params?.sentencePlan)
     }
 

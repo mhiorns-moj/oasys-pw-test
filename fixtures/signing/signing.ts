@@ -16,6 +16,7 @@ export class Signing {
     readonly rsrConfirm = new pages.RsrConfirm(this.page)
     readonly cPage = new pages.CountersignatureRequired(this.page)
     readonly countersigning = new pages.Countersigning(this.page)
+    readonly countersigningOverview = new pages.CountersigningOverview(this.page)
 
     /**
      * Sign and lock an assessment.  The optional parameter is an object with optional properties as listed below.
@@ -109,6 +110,43 @@ export class Signing {
         await this.countersigning.ok.click()
 
         await this.tasks.taskManager.checkCurrent(true)
+    }
+
+    /**
+     * Reject countersigning an assessment.  The optional parameter is a CountersignParams object which may contain:
+     * 
+     *   - page: an assessment page to select, e.g. this.oasys.pages.SentencePlan.IspSection52to8, assuming you are already in the assessment.
+     * OR
+     *   - offender: an Offender object; if this is provided, the assessment will be opened by searching for a countersigning task
+     * 
+     * If neither of the above are provided, you should already be on a page with the Countersigning button available.
+     * 
+     *   - comment: countersigning comment (a generic comment will be used if this is not provided)
+     */
+    async countersignReject(params?: { page?: SigningPage, offender?: OffenderDef, comment?: string }) {
+
+        log(`Rejected countersigning`)
+
+        if (params?.offender) {
+            await this.tasks.openAssessmentFromCountersigningTask(params.offender)
+            await this.oasys.clickButton('Return to Assessment')
+        }
+
+        await this.oasys.gotoSigningPage(params?.page)
+
+        await this.oasys.clickButton('Countersign')
+        await this.countersigning.selectAction.setValue('Reject for Rework')
+        await this.countersigning.comments.setValue(params?.comment ?? 'Rejecting the assessment')
+        await this.countersigning.ok.click()
+        await this.oasys.clickButton('Yes')
+
+        await this.tasks.taskManager.checkCurrent(true)
+    }
+
+    async gotoCountersignOverview(page: SigningPage) {
+
+        await this.oasys.gotoSigningPage(page)
+        await this.countersigningOverview.goto()
     }
 
     /**

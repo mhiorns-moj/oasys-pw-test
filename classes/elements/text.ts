@@ -1,10 +1,9 @@
 import { Locator, expect, Page } from '@playwright/test'
 
-import * as lib from 'lib'
 
 export class Text {
 
-    selector: Locator
+    private selector: Locator
 
     constructor(page: Page, selector: string) {
 
@@ -16,11 +15,11 @@ export class Text {
      */
     async checkValue(value: string, partial: boolean = false) {
 
-        const statusAndValue = await this.getStatusAndValue()
+        const actualValue = await this.selector.textContent()
         if (partial) {
-            expect(statusAndValue.value).toContain(value)
+            expect(actualValue).toContain(value)
         } else {
-            expect(statusAndValue.value).toEqual(value)
+            expect(actualValue).toEqual(value)
         }
     }
 
@@ -49,16 +48,13 @@ export class Text {
     async getStatusAndValue(): Promise<ElementStatusAndValue> {
 
         const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
-
         const count = await this.selector.count()
-
         if (count == 0) {
             return result
         }
         const visible = await this.selector.isVisible()
-        const disabled = await this.selector.isDisabled()
 
-        result.status = !visible ? 'notVisible' : disabled ? 'visible' : 'enabled'
+        result.status = visible ? 'visible' : 'notVisible'
         result.value = await this.selector.innerText()
 
         return result

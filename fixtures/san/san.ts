@@ -27,7 +27,7 @@ export class San {
     readonly sanSections = new pages.SanSections(this.page)
     readonly landingPage = new pages.LandingPage(this.page)
 
-    readonly queries = new Queries(this.oasysDb)
+    readonly queries = new Queries(this.oasysDb, this.oasys)
 
     async populateMinimal() {
 
@@ -146,7 +146,7 @@ export class San {
 
             const updateTimeFailed = await this.queries.checkLastUpdateTime(assessmentPk)
             const getAssessmentCallFailed = await this.queries.checkSanGetAssessmentCall(assessmentPk, 0, true)
-            const answersFailed = await this.oasysDb.oasysDataQueries.checkAnswers(assessmentPk, scenario.oasysAnswers, true)
+            const answersFailed = await this.oasys.queries.checkAnswers(assessmentPk, scenario.oasysAnswers, true)
 
             if (updateTimeFailed || getAssessmentCallFailed || answersFailed) {
                 failed = true

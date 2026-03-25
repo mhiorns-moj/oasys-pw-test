@@ -19,10 +19,10 @@ export class Risk {
     readonly summary = new pages.Summary(this.page)
     readonly rmp = new pages.Rmp(this.page)
 
-    async populateMinimal(params?: PopulateAssessmentParams) {
+    async screeningNoRisks(withRationale = false) {
 
         await this.screeningSection1.populateMinimal()
-        await this.screeningSection2to4.populateMinimal()
+        await this.screeningSection2to4.populateMinimal(withRationale)
     }
 
     /**

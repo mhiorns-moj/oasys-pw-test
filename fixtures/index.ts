@@ -38,7 +38,7 @@ globalThis.log = (logtext: string, type?: string) => {
 
 export const oasysDb = base.extend<{ oasysDb: OasysDb }>({
 
-    oasysDb: async ({ }, use: Function, testInfo: TestInfo) => {
+    oasysDb: async ({ }, use: Function) => {
 
         const oasysDb = new OasysDb()
         await use(oasysDb)
@@ -49,7 +49,7 @@ export const oasys = base.extend<{ oasys: Oasys, oasysDb: OasysDb }>({
 
     oasys: async ({ page, oasysDb }, use, testInfo) => {
 
-        const oasys = new Oasys(page, testInfo)
+        const oasys = new Oasys(page, testInfo, oasysDb)
 
         oasys.appConfig = await oasysDb.getAppConfig()
 

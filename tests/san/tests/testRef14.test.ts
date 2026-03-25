@@ -32,7 +32,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
     await assessment.predictors.o1_30.setValue('No')
     await assessment.predictors.o1_38.setValue({})
 
-    await risk.populateMinimal()
+    await risk.screeningNoRisks()
     await risk.screeningSection5.goto()
     await risk.screeningSection5.r5_1.setValue('Yes')
     await risk.screeningSection5.r5_1t.setValue('Want to do a full analysis')

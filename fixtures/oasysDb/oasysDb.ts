@@ -26,7 +26,6 @@ import { OasysDateTime } from 'lib'
 import { Queries } from '../san/queries'
 import { Db } from './data/db'
 import { userSuffix } from 'localSettings'
-import { OasysDataQueries } from './oasysDataQueries'
 
 export class OasysDb {
 
@@ -34,7 +33,6 @@ export class OasysDb {
     private lastElogTimeAtStart: string = null
     private unprocEventTimeAtStart: string = null
 
-    readonly oasysDataQueries = new OasysDataQueries(this)
 
     /**
      * Replaces null offender identifiers (surname, Probation CRN, Nomis ID and PNC) with generated unique values.
