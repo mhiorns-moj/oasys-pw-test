@@ -12,16 +12,16 @@ describe('SAN integration - test ref 37 part 3', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.admin, oasys.users.probationSan)
+            await offender.searchAndSelectByPnc(offender.pnc)
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
 
-                oasys.Assessment.openLatest()
+                await assessment.openLatest()
 
-                oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                oasys.San.checkSanOtlCall(pk, {
+                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -32,28 +32,28 @@ describe('SAN integration - test ref 37 part 3', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.admin.forenameSurname,
+                    'displayName': oasys.users.admin.forenameSurname,
                     'accessMode': 'READ_ONLY',
                 },
                     'san', 0
                 )
-                oasys.San.checkSanEditMode(false)
-                oasys.San.returnToOASys()
+                await san.checkSanEditMode(false)
+                await san.returnToOASys()
 
                 // Roll back the assessment
                 oasys.Assessment.rollBack('Test 37 part 3 rollback')
 
                 // Check OASYS_SET and API calls
-                oasys.San.checkSanRollbackCall(pk, oasys.Users.admin)
+                await san.checkSanRollbackCall(pk, oasys.users.admin)
                 oasys.logout()
 
                 // Sign and lock again, check API calls and OASYS_SET
-                oasys.login(oasys.Users.probSanUnappr)
+                oasys.login(oasys.users.probSanUnappr)
                 oasys.Nav.history()
 
                 // Check it's now read-write
-                oasys.San.gotoSan('Accommodation', 'information')
-                oasys.San.checkSanOtlCall(pk, {
+                await san.gotoSan('Accommodation', 'information')
+                await san.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -64,21 +64,21 @@ describe('SAN integration - test ref 37 part 3', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.probSanUnappr.forenameSurname,
+                    'displayName': oasys.users.probSanUnappr.forenameSurname,
                     'accessMode': 'READ_WRITE',
                 },
                     'san', null
                 )
-                oasys.San.checkSanEditMode(true)
-                oasys.San.returnToOASys()
-                oasys.Nav.clickButton('Next')
-                oasys.San.checkSanGetAssessmentCall(pk, 0)
+                await san.checkSanEditMode(true)
+                await san.returnToOASys()
+                await oasys.clickButton('Next')
+                await san.checkSanGetAssessmentCall(pk, 0)
 
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
-                oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Test 37 part 3 signing again' })
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanUnappr, 'COUNTERSIGN')
-                oasys.San.checkSanGetAssessmentCall(pk, 0)
+                await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: 'Test 37 part 3 signing again' })
+                await san.checkSanSigningCall(pk, oasys.users.probSanUnappr, 'COUNTERSIGN')
+                await san.checkSanGetAssessmentCall(pk, 0)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',

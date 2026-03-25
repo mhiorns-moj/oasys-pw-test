@@ -91,7 +91,7 @@ const assessmentColumns: Columns = {
     pOAssessment: { name: 'purpose_assessment_elm', type: 'string' },
     pOAssessmentDesc: { name: 'purpose_assmt_other_ftxt', type: 'string' },
     parentAssessmentPk: { name: 'parent_oasys_set_pk', type: 'integer' },
-    noSaraDate: {name: 'no_sara_date', type: 'string'},
+    noSaraDate: { name: 'no_sara_date', type: 'string' },
     signedDate: { name: 'assessor_signed_date', type: 'date' },
     sanIndicator: { name: 'san_assessment_linked_ind', type: 'string' },
     spIndicator: { name: 'arns_sp_only_linked_ind', type: 'string' },
@@ -133,7 +133,7 @@ export class DbAssessment extends DbAssessmentOrRsr {
 
         assignValues(this, assessmentColumns, assessmentData, 0)
         this.riskDetails = new DbRiskDetails(assessmentData, Object.keys(assessmentColumns).length, 'assessment')
-        this.appVersion = OasysDateTime.dateToVersion(this.initiationDate)
+        this.appVersion = oasysDateTime.dateToVersion(this.initiationDate)
     }
 
     static query(offenderPk: number): string {
@@ -205,7 +205,7 @@ export class DbRsr extends DbAssessmentOrRsr {
 
         assignValues(this, rsrColumns, assessmentData, 0)
         this.riskDetails = new DbRiskDetails(assessmentData, Object.keys(rsrColumns).length, 'rsr')
-        this.appVersion = OasysDateTime.dateToVersion(this.initiationDate)
+        this.appVersion = oasysDateTime.dateToVersion(this.initiationDate)
 
         this.cmsEventNumber = null
         this.assessmentType = 'STANDALONE'
@@ -508,7 +508,7 @@ export class DbObjective {
         this.objectivePk = objectiveData[0]
         this.objectiveCode = objectiveData[4]
         this.objectiveCodeDesc = objectiveData[1]
-        this.objectiveDesc = jsonString(objectiveData[5], {removeCrLf: true})
+        this.objectiveDesc = jsonString(objectiveData[5], { removeCrLf: true })
         this.objectiveStatus = objectiveData[2]
         this.objectiveStatusDesc = objectiveData[6]
         this.objectiveSequence = Number.parseInt(objectiveData[3])

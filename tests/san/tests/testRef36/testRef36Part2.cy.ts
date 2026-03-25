@@ -18,26 +18,26 @@ describe('SAN integration - test ref 36', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             log('Create second assessment and check SAN call')
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result')
             cy.get<number[]>('@result').then((pks) => {
 
                 // Check OASYS_SET and API calls
-                oasys.San.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1])
+                await san.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1])
 
-                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
-                oasys.San.checkSanGetAssessmentCall(pks[0], 1)
+                await san.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
+                await san.checkSanGetAssessmentCall(pks[0], 1)
                 oasys.Db.checkCloning(pks[0], pks[1], ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
                     'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SKILLSCHECKER', 'SAN',])
 
                 // Modify SAN content
-                oasys.San.gotoSan()
-                oasys.San.checkSanOtlCall(pks[0], {
+                await san.gotoSan()
+                await san.checkSanOtlCall(pks[0], {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -48,14 +48,14 @@ describe('SAN integration - test ref 36', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.probSanUnappr.forenameSurname,
+                    'displayName': oasys.users.probSanUnappr.forenameSurname,
                     'accessMode': 'READ_WRITE',
                 },
                     'san', null
                 )
-                oasys.San.populateSanSections('TestRef36 modify SAN', testData.modifySan)
-                oasys.San.returnToOASys()
-                oasys.Nav.clickButton('Next')
+                await san.populateSanSections('TestRef36 modify SAN', testData.modifySan)
+                await san.returnToOASys()
+                await oasys.clickButton('Next')
 
                 // Check API calls and OASYS_SET
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
@@ -63,14 +63,14 @@ describe('SAN integration - test ref 36', () => {
                     CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),
                     SAN_ASSESSMENT_VERSION_NO: null
                 })
-                oasys.San.checkSanGetAssessmentCall(pks[0], 1)
+                await san.checkSanGetAssessmentCall(pks[0], 1)
                 oasys.logout()
 
                 // Delete the WIP assessment
-                oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-                oasys.Offender.searchAndSelectByPnc(offender.pnc)
+                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                await offender.searchAndSelectByPnc(offender.pnc)
                 oasys.Assessment.deleteLatest()
-                oasys.San.checkSanDeleteCall(pks[0], oasys.Users.admin)
+                await san.checkSanDeleteCall(pks[0], oasys.users.admin)
                 oasys.logout()
 
             })

@@ -13,15 +13,15 @@ describe('SAN integration - test ref 29/30', () => {
 
             const offender2 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanPo)
-            oasys.Offender.searchAndSelectByPnc(offender2.pnc)
+            oasys.login(oasys.users.probSanPo)
+            await offender.searchAndSelectByPnc(offender2.pnc)
 
             // Create and complete assessment and SARA
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
             // Complete section 1
             new oasys.Pages.Assessment.OffendingInformation().goto().count.setValue(1)
 
-            const predictors = new oasys.Pages.Assessment.Predictors().goto(true)
+            await assessment.predictors.goto(true)
             predictors.dateFirstSanction.setValue({ years: -2 })
             predictors.o1_30.setValue('Yes')
             predictors.o1_41.setValue('No')
@@ -35,12 +35,12 @@ describe('SAN integration - test ref 29/30', () => {
             predictors.o1_38.setValue({ months: -1 })
             predictors.o1_37.setValue(1)
 
-            oasys.San.gotoSan()
-            oasys.San.populateSanSections('TestRef29 complete SAN', testData.sanPopulation)
-            oasys.San.returnToOASys()
-            oasys.Nav.clickButton('Next')
-            oasys.Nav.clickButton('Next')
-            oasys.Nav.clickButton('Create')
+            await san.gotoSan()
+            await san.populateSanSections('TestRef29 complete SAN', testData.sanPopulation)
+            await san.returnToOASys()
+            await oasys.clickButton('Next')
+            await oasys.clickButton('Next')
+            await oasys.clickButton('Create')
 
             oasys.Populate.Sara.sara('Low', 'Low')
             const sara = new oasys.Pages.Sara.Sara()
@@ -50,18 +50,18 @@ describe('SAN integration - test ref 29/30', () => {
             oasys.Nav.history(offender2, 'Start of Community Order')
             oasys.Populate.RoshPages.RoshScreeningSection1.noRisks()
             oasys.Populate.RoshPages.RoshScreeningSection2to4.noRisks(true)
-            oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('High')
+            await risk.populateWithSpecificRiskLevel('High')
             oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields()
-            oasys.Nav.clickButton('Save')
+            await oasys.clickButton('Save')
 
             oasys.ArnsSp.runScript('populateTwoGoals')
 
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
-            oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Sending test ref 20 for countersigning' })
+            await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: 'Sending test ref 20 for countersigning' })
 
             // Countersign
             oasys.logout()
-            oasys.login(oasys.Users.probSanHeadPdu)
+            oasys.login(oasys.users.probSanHeadPdu)
             oasys.Assessment.countersign({ offender: offender2 })
             oasys.logout()
 
@@ -79,8 +79,8 @@ describe('SAN integration - test ref 29/30', () => {
                     const saraPk = Number.parseInt(saraData[0][0])
                     log(`SARA PK: ${saraPk}`)
 
-                    oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-                    oasys.Offender.searchAndSelectByPnc(offender2.pnc)
+                    oasys.login(oasys.users.admin, oasys.users.probationSan)
+                    await offender.searchAndSelectByPnc(offender2.pnc)
                     oasys.Assessment.open(2)  // SARA is second on the list
                     const deleteSara = new oasys.Pages.Sara.DeleteSara().goto(true)
                     deleteSara.reasonForDeletion.setValue('Testing')
@@ -88,7 +88,7 @@ describe('SAN integration - test ref 29/30', () => {
 
                     oasys.Assessment.checkDeleted(saraPk)
                     oasys.Assessment.checkSigningRecord(saraPk, ['SARA_DEL_SIGNING', 'SARA_SIGNING'])
-                    oasys.San.checkNoSanCall(saraPk)
+                    await san.checkNoSanCall(saraPk)
 
                     log(`Now open up the OASys-SAN assessment
                     From the Admin menu select 'Delete assessment' - enter in a reason for the deletion and then click on OK
@@ -98,7 +98,7 @@ describe('SAN integration - test ref 29/30', () => {
 
                     oasys.Nav.history(offender2)
                     oasys.Assessment.deleteLatest()
-                    oasys.San.checkSanDeleteCall(pk, oasys.Users.admin)
+                    await san.checkSanDeleteCall(pk, oasys.users.admin)
                     oasys.Assessment.checkDeleted(pk)
                     oasys.Assessment.checkSigningRecord(pk, ['ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
 
@@ -108,10 +108,10 @@ describe('SAN integration - test ref 29/30', () => {
 
                     oasys.Assessment.checkNotDeleted(pk)
                     oasys.Assessment.checkSigningRecord(pk, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
-                    oasys.San.checkSanUndeleteCall(pk, oasys.Users.admin)
+                    await san.checkSanUndeleteCall(pk, oasys.users.admin)
                     oasys.Assessment.checkNotDeleted(saraPk)
                     oasys.Assessment.checkSigningRecord(saraPk, ['SARA_DEL_RESTORE', 'SARA_DEL_SIGNING', 'SARA_SIGNING'])
-                    oasys.San.checkNoSanCall(saraPk)
+                    await san.checkNoSanCall(saraPk)
 
                     oasys.logout()
                 })

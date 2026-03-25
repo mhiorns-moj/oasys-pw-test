@@ -1,5 +1,4 @@
-﻿import { expect } from '@playwright/test'
-import { OasysPage, Element } from 'classes'
+﻿import { OasysPage, Element } from 'classes'
 
 /**
  * this.page is a base class for assessment pages that contain the standard navigation buttons

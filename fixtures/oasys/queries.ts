@@ -1,8 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
-import { expect } from '@playwright/test'
 
-import * as lib from 'lib'
-import { OasysDateTime } from 'lib/dateTime'
 import { OasysDb } from '../oasysDb/oasysDb'
 
 
@@ -154,7 +151,7 @@ export class Queries {
                 query += ', '
             }
             const stringType = !values[name] || typeof values[name] == 'string'
-            query += stringType ? name : `to_char(${name}, '${OasysDateTime.oracleTimestampFormat}')`
+            query += stringType ? name : `to_char(${name}, '${oasysDateTime.oracleTimestampFormat}')`
             columnNames.push(name)
             expectedValues.push(values[name])
         })
@@ -182,8 +179,8 @@ export class Queries {
                         failed = true
                     }
                 } else {
-                    const actual = OasysDateTime.stringToTimestamp(data[0][col])
-                    if (Math.abs(OasysDateTime.timestampDiff(actual, expectedValues[col] as Temporal.PlainDateTime)) > 15000) {
+                    const actual = oasysDateTime.stringToTimestamp(data[0][col])
+                    if (Math.abs(oasysDateTime.timestampDiff(actual, expectedValues[col] as Temporal.PlainDateTime)) > 15000) {
                         log(`Expected ${columnNames[col]} to be ${expectedValues[col].toLocaleString()}, got ${actual}`)
                         failed = true
                     }

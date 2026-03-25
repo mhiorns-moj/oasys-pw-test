@@ -16,7 +16,7 @@ export class SpService {
     readonly agreePlan = new pages.AgreePlan(this.page)
 
 
-    async goToSpService(from: 'offender' | 'assessment', readonly: boolean = false) {
+    async gotoSpService(from: 'offender' | 'assessment', readonly: boolean = false) {
 
         if (from == 'offender') {
             await this.oasys.clickButton('Open SP')
@@ -37,7 +37,7 @@ export class SpService {
 
     async openAndReturn(from: 'offender' | 'assessment', readonly: boolean = false) {
 
-        await this.goToSpService(from, readonly)
+        await this.gotoSpService(from, readonly)
         await this.returnToOasys()
     }
 
@@ -93,13 +93,13 @@ export class SpService {
         await this.page.getByRole('button', { name: 'Agree plan' }).click()
         await this.page.getByRole('radio', { name: 'Yes, I agree' }).check()
         await this.page.getByRole('button', { name: 'Save' }).click()
-        
+
         await this.returnToOasys()
     }
 
     async checkReadOnly(from: 'assessment' | 'offender' = 'assessment') {
 
-        await this.goToSpService(from, true)
+        await this.gotoSpService(from, true)
         const createGoalStatus = await this.sentencePlan.createGoal.getStatus()
         expect(createGoalStatus).not.toBe('enabled')
         await this.returnToOasys()
@@ -108,7 +108,7 @@ export class SpService {
     async checkGoalCount(expectedCurrent: number, expectedFuture: number, from: 'assessment' | 'offender' = 'assessment', readonly: boolean = false) {
 
         log(`Checking SP goal count: ${expectedCurrent}, ${expectedFuture}`)
-        await this.goToSpService(from, readonly)
+        await this.gotoSpService(from, readonly)
         const currentText = await this.sentencePlan.currentGoalCount.getFullText()
         const futureText = await this.sentencePlan.futureGoalCount.getFullText()
 

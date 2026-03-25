@@ -1,15 +1,15 @@
 import { TestCaseParameters, OgrsOffenceCat } from './types'
 import { offenceCats } from './data/offences'
 import { lookupString } from 'lib/utils'
-import { OasysDateTime } from 'lib/dateTime'
+import { OasysDateTime } from 'lib/oasysDateTime'
 
 export function addCalculatedInputParameters(p: TestCaseParameters, offences: {}) {
 
     p.effectiveAssessmentDate = p.COMMUNITY_DATE == null ? p.LAST_SANCTION_DATE : p.COMMUNITY_DATE
-    p.age = OasysDateTime.dateDiff(p.DOB, p.effectiveAssessmentDate, 'year')
-    p.ageAtLastSanction = OasysDateTime.dateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
-    p.ageAtLastSanctionSexual = OasysDateTime.dateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
-    p.ofm = OasysDateTime.dateDiff(p.effectiveAssessmentDate, p.ASSESSMENT_DATE, 'month', true)
+    p.age = oasysDateTime.dateDiff(p.DOB, p.effectiveAssessmentDate, 'year')
+    p.ageAtLastSanction = oasysDateTime.dateDiff(p.DOB, p.LAST_SANCTION_DATE, 'year')
+    p.ageAtLastSanctionSexual = oasysDateTime.dateDiff(p.DOB, p.DATE_RECENT_SEXUAL_OFFENCE, 'year')
+    p.ofm = oasysDateTime.dateDiff(p.effectiveAssessmentDate, p.ASSESSMENT_DATE, 'month', true)
     p.offenceCat = getOffenceCat(p.OFFENCE_CODE, offences)
     p.firstSanction = p.TOTAL_SANCTIONS_COUNT == 1
     p.secondSanction = p.TOTAL_SANCTIONS_COUNT == 2
@@ -18,11 +18,11 @@ export function addCalculatedInputParameters(p: TestCaseParameters, offences: {}
     p.onceViolent = p.TOTAL_VIOLENT_SANCTIONS == 1
     p.male = p.GENDER == 'M'
     p.female = p.GENDER == 'F'
-    p.out5Years = OasysDateTime.dateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'year') >= 5
+    p.out5Years = oasysDateTime.dateDiff(p.COMMUNITY_DATE, p.ASSESSMENT_DATE, 'year') >= 5
 
-    const offenceInLast5Years = OasysDateTime.dateDiff(p.MOST_RECENT_OFFENCE, p.ASSESSMENT_DATE, 'year')
+    const offenceInLast5Years = oasysDateTime.dateDiff(p.MOST_RECENT_OFFENCE, p.ASSESSMENT_DATE, 'year')
     p.offenceInLast5Years = offenceInLast5Years == null ? false : offenceInLast5Years < 5
-    const sexualOffenceInLast5Years = OasysDateTime.dateDiff(p.DATE_RECENT_SEXUAL_OFFENCE, p.ASSESSMENT_DATE, 'year')
+    const sexualOffenceInLast5Years = oasysDateTime.dateDiff(p.DATE_RECENT_SEXUAL_OFFENCE, p.ASSESSMENT_DATE, 'year')
     p.sexualOffenceInLast5Years = sexualOffenceInLast5Years == null ? false : sexualOffenceInLast5Years < 5
 
     p.zeroSexualSanctions = p.CONTACT_ADULT_SANCTIONS == 0 && p.CONTACT_CHILD_SANCTIONS == 0 && p.INDECENT_IMAGE_SANCTIONS == 0 && p.PARAPHILIA_SANCTIONS == 0

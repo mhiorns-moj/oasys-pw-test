@@ -1,4 +1,3 @@
-import { OasysDateTime } from 'lib'
 
 /**
  * This module contains the classes used to extract data from the OASys database.
@@ -60,7 +59,7 @@ export class DbAssessmentOrRsr {
 
     constructor(assessmentData: string[], type: AssessmentOrRsr) {
 
-        const tzOffset = OasysDateTime.timeZoneOffset()
+        const tzOffset = oasysDateTime.timeZoneOffset()
 
         this.type = type
         this.pk = Number.parseInt(assessmentData[0])
@@ -130,14 +129,14 @@ export class DbAssessmentOrRsr {
     static assessmentQuery(crn: string): string {
 
         return `select s.oasys_set_pk, s.assessment_status_elm, o.cms_event_number, 
-                    to_char(s.initiation_date, '${OasysDateTime.oracleTimestampFormat}'), to_char(s.date_completed, '${OasysDateTime.oracleTimestampFormat}'), 
+                    to_char(s.initiation_date, '${oasysDateTime.oracleTimestampFormat}'), to_char(s.date_completed, '${oasysDateTime.oracleTimestampFormat}'), 
                     s.ogrs3_1year, s.ogrs3_2year, 
                     s.rsr_percentage_score, s.rsr_risk_recon_elm, s.rsr_static_or_dynamic, 
                     s.osp_i_percentage_score, s.osp_c_percentage_score, s.osp_i_risk_recon_elm, s.osp_c_risk_recon_elm,
                     s.osp_iic_percentage_score, s.osp_iic_risk_recon_elm, s.osp_dc_percentage_score, s.osp_dc_risk_recon_elm , 
                     s.opd_result, s.opd_screen_out_override, 
-                    to_char(s.assessor_signed_date, '${OasysDateTime.oracleTimestampFormat}'), s.ref_ass_version_code, r.ref_element_desc,
-                    to_char(s.countersigner_signed_date, '${OasysDateTime.oracleTimestampFormat}'), s.san_assessment_linked_ind, 
+                    to_char(s.assessor_signed_date, '${oasysDateTime.oracleTimestampFormat}'), s.ref_ass_version_code, r.ref_element_desc,
+                    to_char(s.countersigner_signed_date, '${oasysDateTime.oracleTimestampFormat}'), s.san_assessment_linked_ind, 
                     s.ogrs4g_percentage_2yr, s.ogrs4g_band_risk_recon_elm, 
                     s.ogrs4v_percentage_2yr, s.ogrs4v_band_risk_recon_elm,
                     s.ogp2_percentage_2yr, s.ogp2_band_risk_recon_elm, 
@@ -164,7 +163,7 @@ export class DbAssessmentOrRsr {
     static rsrQuery(crn: string): string {
 
         return `select r.offender_rsr_scores_pk, r.rsr_status, o.cms_event_number, 
-                    to_char(r.initiation_date, '${OasysDateTime.oracleTimestampFormat}'), to_char(r.date_completed, '${OasysDateTime.oracleTimestampFormat}'), 
+                    to_char(r.initiation_date, '${oasysDateTime.oracleTimestampFormat}'), to_char(r.date_completed, '${oasysDateTime.oracleTimestampFormat}'), 
                     r.ogrs3_1year, r.ogrs3_2year,
                     r.rsr_percentage_score, r.rsr_risk_recon_elm, r.rsr_static_or_dynamic, 
                     r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm, 

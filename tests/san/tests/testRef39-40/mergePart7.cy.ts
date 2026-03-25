@@ -17,30 +17,30 @@ describe('SAN integration - tests 39-40', () => {
         cy.task('retrieveValue', 'offender2').then((offenderData) => {
             const offender2 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)
+            oasys.login(oasys.users.probSanHeadPdu)
 
-            oasys.Offender.searchAndSelectByCrn(offender2.probationCrn)
+            await offender.searchAndSelectByCrn(offender2.probationCrn)
             const assesmentTab = new oasys.Pages.Offender.AssessmentsTab()
             assesmentTab.assessments.checkData([{ name: 'purposeOfAssessment', values: ['Review (Full) ', 'Start of Suspended Sentence Order (Full) '] }])
 
             // Check first assessment
             assesmentTab.assessments.purposeOfAssessment.clickRowContaining('Start of Suspended Sentence Order (Full) ')
-            oasys.San.gotoSanReadOnly('Offence analysis')
-            oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for offender 2')
-            oasys.San.returnToOASys()
-            oasys.Nav.clickButton('Close')
+            await san.gotoSanReadOnly('Offence analysis')
+            await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for offender 2')
+            await san.returnToOASys()
+            await oasys.clickButton('Close')
 
             // Check second assessment
-            oasys.Assessment.openLatest()
-            oasys.San.gotoSanReadOnly('Offence analysis')
-            oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
-            oasys.San.returnToOASys()
-            oasys.Nav.clickButton('Close')
+            await assessment.openLatest()
+            await san.gotoSanReadOnly('Offence analysis')
+            await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
+            await san.returnToOASys()
+            await oasys.clickButton('Close')
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
-            oasys.San.gotoSan('Offence analysis')
-            oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
-            oasys.San.returnToOASys()
+            await assessment.createProb({ purposeOfAssessment: 'Review' })
+            await san.gotoSan('Offence analysis')
+            await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
+            await san.returnToOASys()
             oasys.logout()
         })
     })

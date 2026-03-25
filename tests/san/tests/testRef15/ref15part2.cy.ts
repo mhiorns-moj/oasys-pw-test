@@ -10,7 +10,7 @@ describe('SAN integration - test ref 15 part 2', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.prisSanCAdm)
+            oasys.login(oasys.users.prisSanCAdm)
             oasys.Nav.history()
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
@@ -21,10 +21,10 @@ describe('SAN integration - test ref 15 part 2', () => {
                     Navigate out to Sentence Plan section - check the OTL parameters (should go across as READ ONLY).  Check you cannot edit anything in the Sentence Plan
                     Return back to the OASys assessment.`)
 
-                oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                oasys.San.checkSanEditMode(false)
-                oasys.San.returnToOASys()
-                oasys.San.checkSanOtlCall(pk, {
+                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.checkSanEditMode(false)
+                await san.returnToOASys()
+                await san.checkSanOtlCall(pk, {
                     'crn': null,
                     'pnc': offender.pnc,
                     'nomisId': offender.nomisId,
@@ -35,7 +35,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'location': 'PRISON',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.prisSanCAdm.forenameSurname,
+                    'displayName': oasys.users.prisSanCAdm.forenameSurname,
                     'accessMode': 'READ_ONLY',
                 },
                     'san', null
@@ -43,7 +43,7 @@ describe('SAN integration - test ref 15 part 2', () => {
 
                 oasys.ArnsSp.runScript('checkReadOnly')
 
-                oasys.San.checkSanOtlCall(pk, {
+                await san.checkSanOtlCall(pk, {
                     'crn': null,
                     'pnc': offender.pnc,
                     'nomisId': offender.nomisId,
@@ -54,7 +54,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'location': 'PRISON',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.prisSanCAdm.forenameSurname,
+                    'displayName': oasys.users.prisSanCAdm.forenameSurname,
                     'planAccessMode': 'READ_ONLY',
                 },
                     'sp', null
@@ -70,15 +70,15 @@ describe('SAN integration - test ref 15 part 2', () => {
                     The 'Strengths and Needs Sections' menu item has a green tick against it`)
 
                 oasys.logout()
-                oasys.login(oasys.Users.prisSanUnappr)
-                oasys.Offender.searchAndSelectByPnc(offender.pnc)
-                oasys.Assessment.openLatest()
+                oasys.login(oasys.users.prisSanUnappr)
+                await offender.searchAndSelectByPnc(offender.pnc)
+                await assessment.openLatest()
 
 
-                oasys.San.gotoSan()
-                oasys.San.populateSanSections('Test ref 15', testData.sanPopulation)
-                oasys.San.returnToOASys()
-                oasys.Nav.clickButton('Next')
+                await san.gotoSan()
+                await san.populateSanSections('Test ref 15', testData.sanPopulation)
+                await san.returnToOASys()
+                await oasys.clickButton('Next')
 
                 oasys.Db.checkAnswers(pk, testData.dataFromSan, 'answerCheck', true)
                 new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
@@ -104,7 +104,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                 rosh2.r4_6.setValue('No')
                 rosh2.r4_4.setValue('No')
 
-                oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('High')
+                await risk.populateWithSpecificRiskLevel('High')
                 oasys.Populate.RoshPages.RiskManagementPlan.minimalWithTextFields(true)
                 new oasys.Pages.Assessment.SummarySheet().goto()
 
@@ -116,7 +116,7 @@ describe('SAN integration - test ref 15 part 2', () => {
 
                 oasys.ArnsSp.runScript('populateMinimal')
 
-                oasys.San.checkSanOtlCall(pk, {
+                await san.checkSanOtlCall(pk, {
                     'crn': null,
                     'pnc': offender.pnc,
                     'nomisId': offender.nomisId,
@@ -127,7 +127,7 @@ describe('SAN integration - test ref 15 part 2', () => {
                     'location': 'PRISON',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.prisSanUnappr.forenameSurname,
+                    'displayName': oasys.users.prisSanUnappr.forenameSurname,
                     'planAccessMode': 'READ_WRITE',
                 },
                     'sp', null, testData.otlCrimNeeds
@@ -143,7 +143,7 @@ describe('SAN integration - test ref 15 part 2', () => {
 
                 const isp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
-                oasys.Assessment.signAndLock({ expectCountersigner: true, countersignComment: 'Signing test 15' })
+                await signing.signAndLock({ expectCountersigner: true, countersignComment: 'Signing test 15' })
 
                 oasys.logout()
             })

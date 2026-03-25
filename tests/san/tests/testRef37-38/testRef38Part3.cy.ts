@@ -21,16 +21,16 @@ describe('SAN integration - test ref 38 part 3', () => {
             cy.get<number[]>('@[pks]').then((pks) => {  // [0] = the second deleted assessment, [1] = the first one that will be rolled back
 
                 // Open the assessment and check status
-                oasys.login(oasys.Users.probSanUnappr)
-                oasys.Offender.searchAndSelectByPnc(offender.pnc)
-                oasys.Assessment.openLatest()
+                oasys.login(oasys.users.probSanUnappr)
+                await offender.searchAndSelectByPnc(offender.pnc)
+                await assessment.openLatest()
 
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan()
                 rmp.checkIsNotOnMenu()  // Shouldn't be there
 
                 // Check it's now read-write
-                oasys.San.gotoSan('Accommodation','information')
-                oasys.San.checkSanOtlCall(pks[1], {
+                await san.gotoSan('Accommodation', 'information')
+                await san.checkSanOtlCall(pks[1], {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -41,25 +41,25 @@ describe('SAN integration - test ref 38 part 3', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.probSanUnappr.forenameSurname,
+                    'displayName': oasys.users.probSanUnappr.forenameSurname,
                     'accessMode': 'READ_WRITE',
                 },
                     'san', null
                 )
-                oasys.San.checkSanEditMode(true)
-                oasys.San.populateSanSections('Test ref 38 part 2', testData.modifySan2)
-                oasys.San.returnToOASys()
-                oasys.Nav.clickButton('Next')
-                oasys.San.checkSanGetAssessmentCall(pks[1], 2)
+                await san.checkSanEditMode(true)
+                await san.populateSanSections('Test ref 38 part 2', testData.modifySan2)
+                await san.returnToOASys()
+                await oasys.clickButton('Next')
+                await san.checkSanGetAssessmentCall(pks[1], 2)
 
                 rmp.checkIsNotOnMenu()  // Shouldn't be there
 
                 // Sign and lock again, check API calls and OASYS_SET
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
-                oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: 'Signing for the third time' })
-                oasys.San.checkSanSigningCall(pks[1], oasys.Users.probSanUnappr, 'COUNTERSIGN')
-                oasys.San.checkSanGetAssessmentCall(pks[1], 2)
+                await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: 'Signing for the third time' })
+                await san.checkSanSigningCall(pks[1], oasys.users.probSanUnappr, 'COUNTERSIGN')
+                await san.checkSanGetAssessmentCall(pks[1], 2)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[1]}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',

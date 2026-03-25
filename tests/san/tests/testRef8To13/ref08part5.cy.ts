@@ -22,9 +22,9 @@ describe('SAN integration - test ref 08 part 5', () => {
                 oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
                 cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery1) => {
 
-                    oasys.login(oasys.Users.probSanHeadPdu)
-                    oasys.Offender.searchAndSelectByPnc(offender.pnc)
-                    oasys.Assessment.openLatest()
+                    oasys.login(oasys.users.probSanHeadPdu)
+                    await offender.searchAndSelectByPnc(offender.pnc)
+                    await assessment.openLatest()
 
                     log(`Navigate to the 'Strengths and Needs Sections' screen - 
                         Click on the button <Open Strengths and Needs> - launches into the SAN Assessment.  Ensure you can navigate through the SAN Assessment and it is ALL read only.
@@ -34,20 +34,20 @@ describe('SAN integration - test ref 08 part 5', () => {
                             (outcome passed is 'COUNTERSIGNED' along with countersigners ID and name)
                         Check that on the SNS_MESSAGE table there are records for OGRS, RSR and AssSumm`)
 
-                    oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                    oasys.San.checkSanEditMode(false)
-                    oasys.San.returnToOASys()
+                    await san.gotoSanReadOnly('Accommodation', 'information')
+                    await san.checkSanEditMode(false)
+                    await san.returnToOASys()
                     oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test comment' })
                     oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])  // Note AssSumm only at this stage, as others were sent on signing
                     new oasys.Pages.Tasks.TaskManager().checkCurrent()
 
-                    oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
+                    await san.checkSanCountersigningCall(pk, oasys.users.probSanHeadPdu, 'COUNTERSIGNED')
 
                     log(`Open up the Offender record
                         Ensure the latest completed assessment shows an 'S&N' icon next to it
                         Ensure the Offender record shows the new button called <Open S&N'> next to the <RSR> button`)
 
-                    oasys.Offender.searchAndSelectByCrn(offender.probationCrn)
+                    await offender.searchAndSelectByCrn(offender.probationCrn)
                     const assessmentsTab = new oasys.Pages.Offender.AssessmentsTab()
                     assessmentsTab.assessments.getData('assessmentTable')
                     cy.get<ColumnValues[]>('@assessmentTable').then((assessmentTable) => {
@@ -68,14 +68,14 @@ describe('SAN integration - test ref 08 part 5', () => {
                     cy.get<boolean>('@sectionAnswersResult').then((failed) => {
                         expect(failed).equal(false)
                     })
-                    oasys.San.checkCountOfQuestionsInSection(pk, '13', 0)
-                    oasys.San.checkCountOfQuestionsInSection(pk, 'SAN', 12)
+                    await san.checkCountOfQuestionsInSection(pk, '13', 0)
+                    await san.checkCountOfQuestionsInSection(pk, 'SAN', 12)
 
                     log(`Open up the completed OASys-SAN asessment - now shows all READ ONLY.  
                         Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13 and the SAQ
                         Select to print 'All Assessment Sections' - ensure the printout has NOT included sections 2 to 13 or the SAQ.  Revisions made to existing screens MUST be included in the printout`)
 
-                    oasys.Assessment.openLatest()
+                    await assessment.openLatest()
                     new oasys.Pages.Assessment.OffenderInformation().religion.checkStatus('readonly')
                     const predictors = new oasys.Pages.Assessment.Predictors().goto()
                     predictors.o1_32.checkStatus('readonly')

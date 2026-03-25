@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra'
-import { expect } from '@playwright/test'
 
 import { Oasys, Offender, Assessment, San } from 'fixtures'
 

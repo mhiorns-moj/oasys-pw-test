@@ -23,7 +23,7 @@ describe('SAN integration - test ref 17 part 2', () => {
                             • Integrated Offender Management (IOM)
                         Return back to the assessment - now on the last screen for the Initial Sentence Plan`)
 
-            oasys.login(oasys.Users.probSanPo)
+            oasys.login(oasys.users.probSanPo)
             oasys.Task.openAssessmentFromCountersigningTaskByName(offender.surname)
             const countersigningOverview = new oasys.Pages.Signing.CountersigningOverview()
             countersigningOverview.header.checkStatus('visible')

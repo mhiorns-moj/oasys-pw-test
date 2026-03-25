@@ -100,15 +100,15 @@ function drugTest(drugType: DrugType) {
         const mappingTestOffender = JSON.parse(offenderDetails) as OffenderDef
 
         // Delete previous assessments so no data gets cloned
-        oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-        oasys.Offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
+        oasys.login(oasys.users.admin, oasys.users.probationSan)
+        await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
         oasys.Assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
         oasys.logout()
 
         // Create a new SAN assessment
-        oasys.login(oasys.Users.probSanUnappr)
-        oasys.Offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
-        oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+        oasys.login(oasys.users.probSanUnappr)
+        await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
+        await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
         oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
         cy.get<number>('@assessmentPk').then((assessmentPk) => {
@@ -145,7 +145,7 @@ function drugTest(drugType: DrugType) {
             for (const test of testCases) {
                 if (injectableDrug(drugType) || (test.injectedLastSix == null && test.injectedMoreThanSix == null)) {  // skip injection tests for non-injectable drugs
                     // Get to the right starting screen
-                    oasys.San.gotoSan('Drug use', 'information', true)
+                    await san.gotoSan('Drug use', 'information', true)
                     if (firstRun) {
                         drugs1.everUsed.setValue('yes')
                         drugs1.saveAndContinue.click()
@@ -154,9 +154,9 @@ function drugTest(drugType: DrugType) {
                     }
                     // Set values on SAN, return to OASys and check the results
                     scenario(drugType, test)
-                    oasys.San.returnToOASys()
-                    oasys.Nav.clickButton('Previous', true)
-                    oasys.Nav.clickButton('Next', true)
+                    await san.returnToOASys()
+                    await oasys.clickButton('Previous', true)
+                    await oasys.clickButton('Next', true)
 
                     const failedAlias = `ref${test.ref}Alias`
                     cy.groupedLogStart(JSON.stringify(test)).then(() => {  // Force Cypress to wait before running the next bit

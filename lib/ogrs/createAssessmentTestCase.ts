@@ -3,13 +3,12 @@ import { OgrsAssessment } from '../../../cypress/support/ogrs/getTestData/dbClas
 import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q4_2Lookup, q88, yesNo1_0Lookup } from 'lib/ogrs/common'
 import { lookupString, lookupInteger, yesNoToYNLookup, genderNumberLookup } from 'lib/utils'
 import { TestCaseParameters } from './types'
-import { OasysDateTime } from 'lib'
 
 export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {}, versions: {},
     dateParam: string | Temporal.PlainDate = null): TestCaseParameters {
 
-    const after6_30 = OasysDateTime.checkIfAfterRelease(versions, '6.30', assessment.initiationDate)
-    const after6_35 = OasysDateTime.checkIfAfterRelease(versions, '6.35', assessment.initiationDate)
+    const after6_30 = oasysDateTime.checkIfAfterRelease(versions, '6.30', assessment.initiationDate)
+    const after6_35 = oasysDateTime.checkIfAfterRelease(versions, '6.35', assessment.initiationDate)
 
     const drugs = getDrugsUsage(assessment.qaData)
     const q81 = lookupString('8.1', assessment.qaData)
@@ -21,9 +20,9 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
         }
     }
 
-    let assessmentDate = OasysDateTime.testStartDate
+    let assessmentDate = oasysDateTime.testStartDate
     if (dateParam != null) {
-        assessmentDate = typeof dateParam == 'string' ? OasysDateTime.stringToDate(dateParam) : dateParam
+        assessmentDate = typeof dateParam == 'string' ? oasysDateTime.stringToDate(dateParam) : dateParam
     }
 
     const result = {
@@ -41,11 +40,11 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
         PARAPHILIA_SANCTIONS: lookupInteger('1.37', assessment.qaData),
         STRANGER_VICTIM: lookupString('1.44', assessment.qaData, yesNoToYNLookup),
         AGE_AT_FIRST_SANCTION: lookupInteger('1.8', assessment.qaData),
-        LAST_SANCTION_DATE: OasysDateTime.stringToDate(lookupString('1.29', assessment.qaData)),
-        DATE_RECENT_SEXUAL_OFFENCE: OasysDateTime.stringToDate(lookupString('1.33', assessment.qaData)),
+        LAST_SANCTION_DATE: oasysDateTime.stringToDate(lookupString('1.29', assessment.qaData)),
+        DATE_RECENT_SEXUAL_OFFENCE: oasysDateTime.stringToDate(lookupString('1.33', assessment.qaData)),
         CURR_SEX_OFF_MOTIVATION: q141(lookupString('1.30', assessment.qaData), lookupString('1.41', assessment.qaData), assessment.offence, offences),
-        MOST_RECENT_OFFENCE: OasysDateTime.stringToDate(lookupString('1.43', assessment.qaData)),
-        COMMUNITY_DATE: OasysDateTime.stringToDate(lookupString('1.38', assessment.qaData)),
+        MOST_RECENT_OFFENCE: oasysDateTime.stringToDate(lookupString('1.43', assessment.qaData)),
+        COMMUNITY_DATE: oasysDateTime.stringToDate(lookupString('1.38', assessment.qaData)),
         ONE_POINT_THIRTY: lookupString('1.30', assessment.qaData, yesNoToYNLookup),
         TWO_POINT_TWO: q22(lookupString('2.2_V2_WEAPON', assessment.qaData), lookupString('2.2', assessment.qaData), after6_35),
         THREE_POINT_FOUR: lookupInteger('3.4', assessment.qaData),

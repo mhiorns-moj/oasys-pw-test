@@ -106,7 +106,7 @@ export abstract class SanPage {
                 if (this.menu.level1.startsWith('#') || this.menu.level1.includes('[')) {
                     cy.get(this.menu.level1).eq(0).click()
                 } else {
-                    oasys.Nav.clickButton(this.menu.level1, true)
+                    await oasys.clickButton(this.menu.level1, true)
                 }
             }
         } else if (this.menu.type == 'San') {

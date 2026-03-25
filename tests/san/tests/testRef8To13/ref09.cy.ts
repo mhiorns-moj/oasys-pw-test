@@ -20,14 +20,14 @@ describe('SAN integration - test ref 09', () => {
                     DO NOT answer 'Yes' to any of the sections 'linked to risk' questions.  Ensure all sections are marked as complete.
                     Return back to OASys.`)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.San.gotoSanFromOffender()
-                oasys.San.checkSanOtlCall(pk, {
+                await san.gotoSanFromOffender()
+                await san.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -38,27 +38,27 @@ describe('SAN integration - test ref 09', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'YES',
                 }, {
-                    'displayName': oasys.Users.probSanUnappr.forenameSurname,
+                    'displayName': oasys.users.probSanUnappr.forenameSurname,
                     'accessMode': 'READ_WRITE',
                 }, 'san', null
                 )
-                oasys.San.populateSanSections('TestRef9 modify SAN', testData.modifySan)
-                oasys.San.checkSanSectionsCompletionStatus(9)
-                oasys.San.returnToOASys()
+                await san.populateSanSections('TestRef9 modify SAN', testData.modifySan)
+                await san.checkSanSectionsCompletionStatus(9)
+                await san.returnToOASys()
 
                 log(`Open up the latest fully completed OASys-SAN assessment - navigate to the 'Open Strengths and Needs'  section and link out to the SAN Service
                     Ensure the SAN Assessment opens up in READ ONLY MODE (can we check the OTL API to ensure correct parameters passed across) and the data mappings that were changed above ARE NOT showing in the SAN Assessment as that should ONLY be showing the SAN Assessment version that was saved at the time of S&L.
                     Return back to OASys.
                     Log out.`)
 
-                oasys.Assessment.openLatest()
-                oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                oasys.San.checkSanEditMode(false)
+                await assessment.openLatest()
+                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.checkSanEditMode(false)
                 cy.get('#main-content').then((container) => {
                     expect(container.find('.summary__answer:contains("Settled"):visible').length).equal(1)
                     expect(container.find('.summary__answer--secondary:contains("Living with friends or family"):visible').length).equal(1)
-                    oasys.San.returnToOASys()
-                    oasys.Nav.clickButton('Next')
+                    await san.returnToOASys()
+                    await oasys.clickButton('Next')
                     oasys.Db.checkSingleAnswer(pk, '5', '5.4', 'refAnswer', '2')  // Should be 2 in the assessment (source of income = offending only).  Change in offender record would return 1 if it impacted the assessment.
                     oasys.logout()
                 })

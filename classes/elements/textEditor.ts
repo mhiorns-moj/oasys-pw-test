@@ -1,6 +1,5 @@
-import { Locator, expect, Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 
-import * as lib from 'lib'
 
 export class TextEditor {
 

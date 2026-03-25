@@ -29,7 +29,7 @@ describe('SAN integration - test ref 21 part 3', () => {
 
                     // Change offender 1 PNC to trigger the merge
 
-                    oasys.login(oasys.Users.probHeadPdu)
+                    oasys.login(oasys.users.probHeadPdu)
                     oasys.Nav.history(offender1)
 
                     const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
@@ -39,7 +39,7 @@ describe('SAN integration - test ref 21 part 3', () => {
                     oasys.logout()
 
                     // Login to pilot area to grant the merge and retain ownership
-                    oasys.login(oasys.Users.probSanHeadPdu)
+                    oasys.login(oasys.users.probSanHeadPdu)
                     oasys.Task.grantMerge(offender2.surname)
 
                     // Get new assessment PKs and oasys_set data
@@ -58,7 +58,7 @@ describe('SAN integration - test ref 21 part 3', () => {
                             expect(mergedOasysSetData[5] == null) // Assessment 1
                             expect(mergedOasysSetData[6] == null) // Assessment on offender 1
 
-                            oasys.San.checkSanMergeCall(oasys.Users.probSanHeadPdu, 5)
+                            await san.checkSanMergeCall(oasys.users.probSanHeadPdu, 5)
 
                             oasys.logout()
                         })

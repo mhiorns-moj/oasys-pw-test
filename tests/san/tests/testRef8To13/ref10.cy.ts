@@ -20,16 +20,16 @@ describe('SAN integration - test ref 10', () => {
                     Check the cloning from 3.2 to 3.2 assessment.  Case ID, Section 1 (sexual offence), RoSH Screening cloned through.
                     Sections 2 to 13 and SAN exist in the background and have been updated with the data from the Updated SAN Assessment carried out in Test Ref 9.`)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })  // Assume SAN defaults to 'Yes'
+            await assessment.createProb({ purposeOfAssessment: 'Review' })  // Assume SAN defaults to 'Yes'
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevPk = pks[1]
-                oasys.San.checkSanCreateAssessmentCall(pk, prevPk, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
+                await san.checkSanCreateAssessmentCall(pk, prevPk, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
 
                 oasys.Db.checkCloning(pk, prevPk, [
                     '2', '7', '8', '9', '10', '11', '12', '13',
@@ -47,7 +47,7 @@ describe('SAN integration - test ref 10', () => {
                         RSR and OSP-IIC and OSP-DC are all calculated.
                         The SAN 'Strengths and Needs Sections' menu option has a green tick against it for the data being complete.`)
 
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk)
+                await san.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk)
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     RSR_PERCENTAGE_SCORE: '9.96',
                     RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
@@ -65,9 +65,9 @@ describe('SAN integration - test ref 10', () => {
                         Return to OASys, a Full analysis is now showing with sections 6.1 and 6.2 in it.  
                         The 'Strengths and Needs Sections' menu option remains showing with a green tick`)
 
-                oasys.San.gotoSan()
-                oasys.San.populateSanSections('TestRef10 modify SAN', testData.modifySan)
-                oasys.San.returnToOASys()
+                await san.gotoSan()
+                await san.populateSanSections('TestRef10 modify SAN', testData.modifySan)
+                await san.returnToOASys()
                 san.next.click()
                 r62.checkMenuVisibility(true)
                 san.checkCompletionStatus(true)
@@ -86,7 +86,7 @@ describe('SAN integration - test ref 10', () => {
                     expect(areas).includes('Thinking, behaviours and attitudes')
                 })
 
-                oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Medium')
+                await risk.populateWithSpecificRiskLevel('Medium')
                 rmp.goto()
                 rmp.accommodation.checkStatus('enabled')
                 rmp.thinking.checkStatus('notVisible')
@@ -112,11 +112,11 @@ describe('SAN integration - test ref 10', () => {
                 new oasys.Pages.Rosh.RiskManagementPlan().markCompleteAndCheck()
 
                 new oasys.Pages.SentencePlan.SentencePlanService().goto().checkCompletionStatus(true)
-                oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
+                await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
 
                 oasys.logout()
 
-                oasys.login(oasys.Users.probSanHeadPdu)
+                oasys.login(oasys.users.probSanHeadPdu)
                 oasys.Assessment.countersign({ offender: offender })
                 oasys.logout()
 

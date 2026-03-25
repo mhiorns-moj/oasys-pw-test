@@ -1,5 +1,4 @@
-import { stringToFloat, stringToInt } from 'lib/utils';
-import { OasysDateTime } from 'lib';
+import { stringToFloat, stringToInt } from 'lib/utils'
 
 
 export function buildQuery(columns: Columns, tables: Table[], whereCondition: string, orderBy: string): string {
@@ -41,7 +40,7 @@ function column(column: ColumnDef, defaultTable: string): string {
     let table = column.table ?? defaultTable
 
     return column.type == 'date'
-        ? `to_char(${table}.${column.name}, '${OasysDateTime.oracleTimestampFormat}'),`
+        ? `to_char(${table}.${column.name}, '${oasysDateTime.oracleTimestampFormat}'),`
         : `${table}.${column.name},`
 }
 

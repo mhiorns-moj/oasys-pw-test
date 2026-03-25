@@ -12,20 +12,20 @@ describe('SAN integration - test ref 37 part 4', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanHeadPdu)
+            await offender.searchAndSelectByPnc(offender.pnc)
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
 
-                oasys.Assessment.openLatest()
+                await assessment.openLatest()
 
                 // Open as countsigner
                 oasys.logout()
-                oasys.login(oasys.Users.probSanHeadPdu)
+                oasys.login(oasys.users.probSanHeadPdu)
                 oasys.Nav.history()
-                oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                oasys.San.checkSanOtlCall(pk, {
+                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -36,20 +36,20 @@ describe('SAN integration - test ref 37 part 4', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
+                    'displayName': oasys.users.probSanHeadPdu.forenameSurname,
                     'accessMode': 'READ_ONLY',
                 },
                     'san', 0
                 )
-                oasys.San.checkSanEditMode(false)
-                oasys.San.returnToOASys()
+                await san.checkSanEditMode(false)
+                await san.returnToOASys()
 
                 // Countersign the assessment
-                oasys.San.checkSanGetAssessmentCall(pk, 0)
+                await san.checkSanGetAssessmentCall(pk, 0)
                 oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test 37 part 4 countersign again' })
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanHeadPdu, 'COUNTERSIGNED')
-                oasys.San.checkSanGetAssessmentCall(pk, 0)
+                await san.checkSanCountersigningCall(pk, oasys.users.probSanHeadPdu, 'COUNTERSIGNED')
+                await san.checkSanGetAssessmentCall(pk, 0)
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
                 oasys.logout()
 

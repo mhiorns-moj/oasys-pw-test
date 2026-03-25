@@ -20,10 +20,7 @@
  * @module Database
 */
 
-import { expect } from '@playwright/test'
 import { Temporal } from '@js-temporal/polyfill'
-import { OasysDateTime } from 'lib'
-import { Queries } from '../san/queries'
 import { Db } from './data/db'
 import { userSuffix } from 'localSettings'
 
@@ -267,7 +264,7 @@ export class OasysDb {
 
         const configData = await this.db.selectSingleValue(`select system_parameter_value from eor.system_parameter_mv where system_parameter_code ='PROB_FORCE_CRN'`)
         const offencesData = await this.db.selectData('select offence_group_code || sub_code, rsr_category_desc from eor.ct_offence order by 1')
-        const versionData = await this.db.selectData(`select version_number, to_char(release_date, '${OasysDateTime.oracleTimestampFormat}')
+        const versionData = await this.db.selectData(`select version_number, to_char(release_date, '${oasysDateTime.oracleTimestampFormat}')
                                                 from eor.system_config where cm_release_type_elm = 'APPLICATION' order by release_date desc`)
 
         if (configData.error != null || offencesData.error != null || versionData.error != null) {
@@ -283,7 +280,7 @@ export class OasysDb {
 
         const versions = versionData.data as string[][]
         versions.forEach((version) => {
-            result.appVersions[version[0]] = OasysDateTime.stringToTimestamp(version[1])
+            result.appVersions[version[0]] = oasysDateTime.stringToTimestamp(version[1])
         })
         result.currentVersion = versions[0][0]
 

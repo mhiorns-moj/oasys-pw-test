@@ -6,15 +6,15 @@ export let currentVersion = ''
 
 export class OasysDateTime {
 
-    static testStartDate = Temporal.Now.plainDateISO()
-    static dateFormat = 'YYYY-MM-DD'                // RFC 9557 format for Temporal
-    static timestampFormat = 'YYYY-MM-DDTHH:mm:ss'
-    static oracleTimestampFormat = 'YYYY-MM-DD\"T\"HH24:MI:SS'
-    static oracleTimestampFormatMs = 'YYYY-MM-DD\"T\"HH24:MI:SS.FF3'
-    static timers: { [keys: string]: Temporal.PlainDateTime } = {}
+    testStartDate = Temporal.Now.plainDateISO()
+    dateFormat = 'YYYY-MM-DD'                // RFC 9557 format for Temporal
+    timestampFormat = 'YYYY-MM-DDTHH:mm:ss'
+    oracleTimestampFormat = 'YYYY-MM-DD\"T\"HH24:MI:SS'
+    oracleTimestampFormatMs = 'YYYY-MM-DD\"T\"HH24:MI:SS.FF3'
+    timers: { [keys: string]: Temporal.PlainDateTime } = {}
 
     // Convert date string to Temporal Plain date.  Might be in RFC9557 format, but also need to allow for DD/MM/YYYY in OASys string fields or DD-MM-YYYY from CSV loads
-    static stringToDate(param: string): Temporal.PlainDate {
+    stringToDate(param: string): Temporal.PlainDate {
 
         if (param == null || param == '' || param == 'null') {
             return null
@@ -30,23 +30,23 @@ export class OasysDateTime {
         }
     }
 
-    static stringToTimestamp(param: string): Temporal.PlainDateTime {
+    stringToTimestamp(param: string): Temporal.PlainDateTime {
 
         return !param ? null : Temporal.PlainDateTime.from(param)
     }
 
-    static dateParameterToString(param: Temporal.PlainDate): string {
+    dateParameterToString(param: Temporal.PlainDate): string {
 
         return param == null ? 'null' : `to_date('${param?.toLocaleString().replace('/', '-')}','DD-MM-YYYY')`
     }
 
-    static dateParameterToCsvOutputString(param: Temporal.PlainDate): string {
+    dateParameterToCsvOutputString(param: Temporal.PlainDate): string {
 
         return param == null ? 'null' : `${param.toLocaleString()}`
     }
 
     // Get difference between two date strings in days/months/years.  -ve result indicates that the first date is later than the second date
-    static dateDiffString(firstDate: string, secondDate: string, unit: 'day' | 'month' | 'year'): number {
+    dateDiffString(firstDate: string, secondDate: string, unit: 'day' | 'month' | 'year'): number {
 
         const date1 = this.stringToDate(firstDate)
         const date2 = this.stringToDate(secondDate)
@@ -55,7 +55,7 @@ export class OasysDateTime {
     }
 
     // Get difference between two dates (Temporal.PlainDate).  -ve result indicates that the first date is later than the second date
-    static dateDiff(firstDate: Temporal.PlainDate, secondDate: Temporal.PlainDate, unit: 'year' | 'month' | 'day', ofm: boolean = false): number {
+    dateDiff(firstDate: Temporal.PlainDate, secondDate: Temporal.PlainDate, unit: 'year' | 'month' | 'day', ofm: boolean = false): number {
 
         if (firstDate == null || secondDate == null) {
             return null
@@ -75,7 +75,7 @@ export class OasysDateTime {
         }
     }
 
-    static timestampDiffString(firstDate: string, secondDate: string): number {
+    timestampDiffString(firstDate: string, secondDate: string): number {
 
         const date1 = this.stringToTimestamp(firstDate)
         const date2 = this.stringToTimestamp(secondDate)
@@ -84,7 +84,7 @@ export class OasysDateTime {
     }
 
     // Get difference between two timestamps (Temporal.PlainDateTime) in milliseconds.  -ve result indicates that the first date is later than the second date
-    static timestampDiff(firstDate: Temporal.PlainDateTime, secondDate: Temporal.PlainDateTime): number {
+    timestampDiff(firstDate: Temporal.PlainDateTime, secondDate: Temporal.PlainDateTime): number {
 
         if (firstDate == null || secondDate == null) {
             return null
@@ -105,36 +105,36 @@ export class OasysDateTime {
      * 
      * If no values are specified (or no parameter at all), returns today's date.  If the parameter is a string, it is returned unchanged.
      */
-    static oasysDateAsString(offset?: OasysDate): string {
+    oasysDateAsString(offset?: OasysDate): string {
 
         if (typeof offset == 'string') {
             return offset
         }
 
-        return OasysDateTime.calculateOffsetDate(offset).toLocaleString()
+        return this.calculateOffsetDate(offset).toLocaleString()
     }
 
-    static oasysDateAsPlainDate(offset?: OasysDate): Temporal.PlainDate {
+    oasysDateAsPlainDate(offset?: OasysDate): Temporal.PlainDate {
 
         if (offset == null || typeof offset == 'string') {
             return null
         }
-        return OasysDateTime.calculateOffsetDate(offset)
+        return this.calculateOffsetDate(offset)
     }
 
-    static oasysDateAsDbString(offset?: OasysDate): string {
+    oasysDateAsDbString(offset?: OasysDate): string {
 
         if (typeof offset == 'string') {
             return this.stringToDate(offset).toString()     // Assume it's a standard date, reformat it to YYYY-MM-DD
         }
 
-        return OasysDateTime.calculateOffsetDate(offset).toString()
+        return this.calculateOffsetDate(offset).toString()
     }
 
-    static calculateOffsetDate(offset: OasysDate): Temporal.PlainDate {
+    calculateOffsetDate(offset: OasysDate): Temporal.PlainDate {
 
         const d = offset as { days?: number, weeks?: number, months?: number, years?: number }
-        let result = OasysDateTime.testStartDate
+        let result = this.testStartDate
 
         if (d?.days) result = result.add({ days: d.days })
         if (d?.months) result = result.add({ months: d.months })
@@ -143,35 +143,35 @@ export class OasysDateTime {
         return result
     }
 
-    static timeZoneOffset(): string {
+    timeZoneOffset(): string {
         return Temporal.Now.zonedDateTimeISO().offset
     }
 
-    static startTimer(name: string) {
+    startTimer(name: string) {
 
-        OasysDateTime.timers[name] = Temporal.Now.plainDateTimeISO()
+        this.timers[name] = Temporal.Now.plainDateTimeISO()
     }
 
     // Returns elapsed time in milliseconds
-    static elapsedTime(name: string): number {
+    elapsedTime(name: string): number {
 
-        return OasysDateTime.timestampDiff(OasysDateTime.timers[name], Temporal.Now.plainDateTimeISO())
+        return this.timestampDiff(this.timers[name], Temporal.Now.plainDateTimeISO())
     }
 
-    static checkIfAfterReleaseNode(version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
+    checkIfAfterReleaseNode(version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
 
         return checkIfAfter(version, date, appVersions)
     }
 
     // Generic version for use in code that could be called from either Cypress or Node
-    static checkIfAfterRelease(versions: {}, version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
+    checkIfAfterRelease(versions: {}, version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
 
         return checkIfAfter(version, date, versions)
     }
 
-    static dateToVersion(date: string | Temporal.PlainDateTime): string {
+    dateToVersion(date: string | Temporal.PlainDateTime): string {
 
-        const testDate = typeof date == 'string' ? OasysDateTime.stringToTimestamp(date) : date
+        const testDate = typeof date == 'string' ? this.stringToTimestamp(date) : date
 
         for (let key of Object.keys(appVersions)) {
             if (Temporal.PlainDateTime.compare(testDate, appVersions[key]) >= 0) {
@@ -185,7 +185,7 @@ export class OasysDateTime {
 function checkIfAfter(version: SignificantAppVersions, date: Temporal.PlainDateTime | string, appVersions: AppVersions): boolean {
 
     const versionDate = appVersions[versionLookup[version]]
-    const testDate = typeof date == 'string' ? OasysDateTime.stringToTimestamp(date) : date
+    const testDate = typeof date == 'string' ? this.stringToTimestamp(date) : date
     return versionDate ? Temporal.PlainDateTime.compare(testDate, versionDate) == 1 : null
 }
 

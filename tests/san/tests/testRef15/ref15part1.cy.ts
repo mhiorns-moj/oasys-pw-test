@@ -9,8 +9,8 @@ describe('SAN integration - test ref 15 part 1', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.prisSanCAdm)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.prisSanCAdm)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Log in as a prison user who has the Case Admin role but DOES NOT have the SAN function.
                 Open up the offender record.
@@ -26,13 +26,13 @@ describe('SAN integration - test ref 15 part 1', () => {
                 Check that we get a '200' response back from the API - the response contains parameters back and now includes sentence plan data
                 Ensure that we have NOT stored down any SAN version number OR Sentence Plan version number on the OASYS_SET record`)
 
-            oasys.Assessment.createPris({ purposeOfAssessment: 'Start custody', selectAssessor: oasys.Users.prisSanUnappr.lovLookup })
-            oasys.San.checkLayer3Menu(true)
+            await assessment.createPris({ purposeOfAssessment: 'Start custody', selectAssessor: oasys.users.prisSanUnappr.lovLookup })
+            await san.checkLayer3Menu(true)
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.prisSanCAdm, oasys.Users.prisonSanCode, 'INITIAL')
-                oasys.San.checkSanGetAssessmentCall(pk, 0)
+                await san.checkSanCreateAssessmentCall(pk, null, oasys.users.prisSanCAdm, oasys.users.prisonSanCode, 'INITIAL')
+                await san.checkSanGetAssessmentCall(pk, 0)
 
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',

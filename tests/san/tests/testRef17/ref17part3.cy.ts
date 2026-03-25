@@ -15,11 +15,11 @@ describe('SAN integration - test ref 17 part 3', () => {
                 Click on the button <Open Strengths and Needs> - launches into the SAN Assessment.  Ensure you can navigate through the SAN Assessment and it is ALL read only.
                 Return back to the assessment via the button/link - SAN assessment disappears and returned to the 'Strengths and Needs Sections' screen in the same browser tab`)
 
-            oasys.login(oasys.Users.probSanPo)
+            oasys.login(oasys.users.probSanPo)
             oasys.Nav.history()
-            oasys.San.gotoSanReadOnly('Accommodation', 'information')
-            oasys.San.checkSanEditMode(false)
-            oasys.San.returnToOASys()
+            await san.gotoSanReadOnly('Accommodation', 'information')
+            await san.checkSanEditMode(false)
+            await san.returnToOASys()
 
             log(`Navigate to the only screen of the Initial Sentence Plan - Countersign button is available
                     Continue to countersign the assessment - check that a 'Countersign API' has been posted to the SAN Service and the contents are correct, including the
@@ -33,13 +33,13 @@ describe('SAN integration - test ref 17 part 3', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.probSanPo, 'COUNTERSIGNED')
+                await san.checkSanCountersigningCall(pk, oasys.users.probSanPo, 'COUNTERSIGNED')
 
                 log(`Open up the Offender record
                             Ensure the latest completed assessment shows an 'S&N/SSP' icon next to it
                             Ensure the Offender record shows the new buttons called <Open S&N'> and <Open SPP> next to the <RSR> button`)
 
-                oasys.Offender.searchAndSelectByPnc(offender.pnc)
+                await offender.searchAndSelectByPnc(offender.pnc)
                 new oasys.Pages.Offender.AssessmentsTab().assessments.checkData([{ name: 'san', values: ['Includes Strengths and Needs / Sentence Plan Service'] }])
                 const off = new oasys.Pages.Offender.OffenderDetails()
                 off.openSan.checkStatus('enabled')
@@ -66,8 +66,8 @@ describe('SAN integration - test ref 17 part 3', () => {
                     Select to print 'All Assessment Sections' - ensure the printout has NOT included sections 2 to 13, SAQ and Skills Checker.  
                         Revisions made to existing screens MUST be included in the printout`)
 
-                    oasys.Assessment.openLatest()
-                    oasys.Nav.clickButton('Print')
+                    await assessment.openLatest()
+                    await oasys.clickButton('Print')
                     const print = new oasys.Pages.Assessment.Other.PrintAssessment()
                     print.section2.checkStatus('notVisible')
                     print.section3.checkStatus('notVisible')

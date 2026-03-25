@@ -42,7 +42,7 @@ export async function getRestData(parameters: EndpointParams): Promise<RestRespo
 
     try {
         await getTokenIfRequired()
-        OasysDateTime.startTimer('restResponse')
+        oasysDateTime.startTimer('restResponse')
         const response = await axios.request({
             baseURL: restConfig.baseUrl,
             url: url,
@@ -55,7 +55,7 @@ export async function getRestData(parameters: EndpointParams): Promise<RestRespo
         if (response.status != 200) {
             restResponse.message = response.data.message
         }
-        restResponse.responseTime = OasysDateTime.elapsedTime('restResponse')
+        restResponse.responseTime = oasysDateTime.elapsedTime('restResponse')
     }
     catch (err) {
         restResponse.statusCode = 'error'

@@ -1,9 +1,9 @@
 import { OasysPage, Element } from 'classes'
 
-export class StandaloneRsr extends OasysPage {
+export class StandaloneCsrp extends OasysPage {
 
-    name = 'StandaloneRsr'
-    title = 'RSR Predictor'
+    name = 'StandaloneCsrp'
+    title = ''
     menu: Menu = { type: 'Subform', level1: 'CSRP' }
 
     save = new Element.Button(this.page, 'Save')

@@ -13,7 +13,7 @@ declare type Menu = {
 }
 
 /**
- * Values that can be specified for the library function that searches for tasks (oasys.Task.search)
+ * Values that can be specified for the library function that searches for tasks (await tasks.search)
  */
 declare type TaskSearch = {
     localAdministrationUnit?: string,

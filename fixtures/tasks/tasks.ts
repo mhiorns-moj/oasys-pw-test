@@ -11,6 +11,7 @@ export class Tasks {
     constructor(public readonly page: Page, public readonly testInfo: TestInfo, readonly oasys: Oasys) { }
 
     readonly taskManager = new pages.TaskManager(this.page)
+    readonly assessmentWipTask = new pages.AssessmentWipTask(this.page)
     readonly countersignatureTask = new pages.CountersignatureTask(this.page)
 
 
@@ -86,7 +87,7 @@ export class Tasks {
     //     search({ taskName: 'Pending Merge - Decision Required', offenderName: surname })
     //     page.taskList.clickFirstRow()
 
-    //     oasys.Nav.clickButton('Grant but Retain Ownership')
+    //     await oasys.clickButton('Grant but Retain Ownership')
     //     log(`Granted merge for ${surname}`)
     // }
 }

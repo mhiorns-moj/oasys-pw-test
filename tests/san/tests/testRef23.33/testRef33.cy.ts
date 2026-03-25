@@ -13,7 +13,7 @@ describe('SAN integration - test ref 33', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)
+            oasys.login(oasys.users.probSanHeadPdu)
             oasys.Nav.history(offender)
 
             log(`Go to Create a new Assessment

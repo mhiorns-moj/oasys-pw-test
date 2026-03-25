@@ -20,17 +20,6 @@ export abstract class OasysPage {
 
     floatingMenu = this.page.locator('#leftmenuul')
 
-    static async waitForPageUpdate(page: Page, initialDelay = 200) {
-
-        let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
-
-        await page.waitForTimeout(initialDelay)
-        let pleaseWaitCount = await updatingElement.count()
-        while (pleaseWaitCount > 0) {
-            pleaseWaitCount = await updatingElement.count()
-        }
-    }
-
     /**
      * Sets the value of a multiple element on the pages, each identified by the element name
      * If you provide a PageData type (e.g. setValues<LoginData>(...)), Typescript provides a dropdown for the elements available.
@@ -170,7 +159,7 @@ export abstract class OasysPage {
             }
         }
 
-        await OasysPage.waitForPageUpdate(this.page)
+        await waitForPageUpdate(this.page)
         if (this.menu.type == 'Main' || this.menu.type == 'Floating') {
             await this.checkCurrent(suppressLog)
         }
@@ -184,7 +173,7 @@ export abstract class OasysPage {
      */
     async checkCurrent(suppressLog: Boolean = false): Promise<typeof this> {
 
-        await OasysPage.waitForPageUpdate(this.page)
+        await waitForPageUpdate(this.page)
         let title = await this.page.title()
 
         oasys.expect(title).toContain(this.title)

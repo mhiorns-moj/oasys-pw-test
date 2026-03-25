@@ -1,6 +1,5 @@
-import { Locator, expect, Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 
-import * as lib from 'lib'
 
 export class Textbox<T> {
 
@@ -19,7 +18,7 @@ export class Textbox<T> {
         } else if (typeof value == 'number') {
             textValue = value == 0 ? '0' : value.toString()
         } else if (typeof value != 'string') {
-            textValue = lib.OasysDateTime.oasysDateAsString(value as OasysDate)
+            textValue = oasysDateTime.oasysDateAsString(value as OasysDate)
         }
         if (this.slowType) {  // Handle date fields, the normal fill doesn't work for these
             await this.selector.click()
@@ -38,7 +37,7 @@ export class Textbox<T> {
         } else if (typeof value == 'number') {
             textValue = value == 0 ? '0' : value.toString()
         } else if (typeof value != 'string') {
-            textValue = lib.OasysDateTime.oasysDateAsString(value as OasysDate)
+            textValue = oasysDateTime.oasysDateAsString(value as OasysDate)
         }
 
         const statusAndValue = await this.getStatusAndValue()
@@ -55,15 +54,11 @@ export class Textbox<T> {
         return statusAndValue.value
     }
 
-    // checkStatus(status: ElementStatus) {
+    async checkStatus(status: ElementStatus) {
 
-    //     this.getStatusAndValue('result')
-    //     cy.get<ElementStatusAndValue>('@result').then((result) => {
-    //         if (status != result.status) {
-    //             throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
-    //         }
-    //     })
-    // }
+        const statusAndValue = await this.getStatusAndValue()
+        expect(statusAndValue.status).toBe(status)
+    }
 
     // checkLabel(label: string) {
 
@@ -84,28 +79,24 @@ export class Textbox<T> {
 
         const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
         const count = await this.selector.count()
-
         if (count > 0) { // If element exists in the DOM
 
             const visible = await this.selector.isVisible()
             if (visible) {
-                result.status = 'enabled'
-                result.value = await this.selector.textContent()
 
-                let readonly = await this.selector.isEditable()
-                if (readonly) {
-                    result.status = 'readonly'
-                } else {
-                    readonly = (await this.selector.getAttribute('input_readonly')) == 'true' ||
+                let editable = await this.selector.isEditable()
+                if (editable) {
+                    const oasysReadonly = (await this.selector.getAttribute('input_readonly')) == 'true' ||
                         (await this.selector.getAttribute('readonly')) == 'true' ||
                         (await this.selector.getAttribute('mimic_readonly')) == 'true'
-                    if (readonly) {
-                        result.status = 'readonly'
-                    }
+                    result.status = oasysReadonly ? 'readonly' : 'enabled'
+                } else {
+                    result.status = 'readonly'
                 }
             }
-
+            result.value = await this.selector.inputValue()
         }
+
         return result
     }
 

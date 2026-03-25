@@ -10,9 +10,9 @@ describe('SAN integration - test ref 15 part 3', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.prisSanPom)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Assessment.openLatest()
+            oasys.login(oasys.users.prisSanPom)
+            await offender.searchAndSelectByPnc(offender.pnc)
+            await assessment.openLatest()
 
             log(`Countersign the assessment - Check that the countersigning option NO LONGER include 'Send for sentence board comments' 
                 Continue to countersign - asks for a second countersign - accept default and continue to countersign - check that the COUNTERSIGN API has been posted 
@@ -33,7 +33,7 @@ describe('SAN integration - test ref 15 part 3', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.prisSanPom, 'AWAITING_DOUBLE_COUNTERSIGN')
+                await san.checkSanCountersigningCall(pk, oasys.users.prisSanPom, 'AWAITING_DOUBLE_COUNTERSIGN')
 
                 oasys.logout()
 
@@ -41,17 +41,17 @@ describe('SAN integration - test ref 15 part 3', () => {
                     contents correct (outcome = 'DOUBLE_COUNTERSIGNED' along with second countersigners ID and  name)
                     OASys-SAN assessment now in read only mode - Print the whole of the assessment.  Ensure the printout is correct to the screens.`)
 
-                oasys.login(oasys.Users.prisSanHomds)
-                oasys.Offender.searchAndSelectByPnc(offender.pnc)
-                oasys.Assessment.openLatest()
+                oasys.login(oasys.users.prisSanHomds)
+                await offender.searchAndSelectByPnc(offender.pnc)
+                await assessment.openLatest()
                 oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Countersigning test ref 15 second time' })
 
-                oasys.San.checkSanCountersigningCall(pk, oasys.Users.prisSanHomds, 'DOUBLE_COUNTERSIGNED')
+                await san.checkSanCountersigningCall(pk, oasys.users.prisSanHomds, 'DOUBLE_COUNTERSIGNED')
 
                 oasys.Nav.history()
-                oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                oasys.San.checkSanEditMode(false)
-                oasys.San.returnToOASys()
+                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.checkSanEditMode(false)
+                await san.returnToOASys()
 
                 oasys.ArnsSp.runScript('checkReadOnly')
 

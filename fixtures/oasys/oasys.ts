@@ -3,7 +3,7 @@ import { Temporal } from '@js-temporal/polyfill'
 
 import * as pages from './pages'
 import { testEnvironment } from 'localSettings'
-import { OasysPage, User } from 'classes'
+import { User } from 'classes'
 import * as users from './users'
 import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan'
 import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
@@ -102,7 +102,7 @@ export class Oasys {
         if (p1 === undefined) {
             await this.page.locator('#history_1').click()
             log('First item', 'History menu')
-            await OasysPage.waitForPageUpdate(this.page)
+            await waitForPageUpdate(this.page)
             return null
         }
 
@@ -129,7 +129,7 @@ export class Oasys {
         const menuText = assessment == undefined ? `Offender - ${forename} ${surname}` : `${assessment} - ${forename} ${surname}`
         await this.page.getByText(menuText).click()
         log(menuText, 'History menu')
-        await OasysPage.waitForPageUpdate(this.page)
+        await waitForPageUpdate(this.page)
 
         return null
     }

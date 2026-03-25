@@ -4,12 +4,12 @@ describe('Cloning test - standalone CSRP', () => {
 
     it('Cloning test - standalone CSRP', () => {
 
-        oasys.login(oasys.Users.probHeadPdu)
+        oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
             oasys.Populate.minimal({ layer: 'Layer 3', populate6_11: 'No' })
 
             const section2 = new oasys.Pages.Assessment.Section2().goto()
@@ -23,7 +23,7 @@ describe('Cloning test - standalone CSRP', () => {
             rosh2.r2_3.setValue('No')
             rosh2.rationale.setValue('Rationale')
 
-            oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.IspSection52to8, expectRsrWarning: true })
+            await signing.signAndLock({ page: oasys.Pages.SentencePlan.IspSection52to8, expectRsrWarning: true })
 
             oasys.Nav.history(offender)
             const rsr = new oasys.Pages.Offender.StandaloneRsr().goto()
@@ -42,7 +42,7 @@ describe('Cloning test - standalone CSRP', () => {
             cy.screenshot()
             rsr.close.click()
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
             const predictors = new oasys.Pages.Assessment.Predictors().goto()
             predictors.o1_32.checkValue(5)
             predictors.o1_40.checkValue(4)

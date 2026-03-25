@@ -10,8 +10,8 @@ describe('SAN integration - test ref 13 part 3', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Now create a new 3.2 OASys-SAN Assessment, the new SAN question defaults to 'Yes' and during the Create process say 'Yes' to cloning from the historic assessment.
                     Check the CreateAssessment API to ensure that it posts TWO PKs across to the SAN service and the user ID and name.
@@ -28,7 +28,7 @@ describe('SAN integration - test ref 13 part 3', () => {
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
 
-                oasys.San.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'REVIEW')
+                await san.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
 
                 log(`Check Section 1 of the assessment - ONLY 1.8 has cloned through.  
                         The offence will not have cloned through unless it has been setup on the CMS stub and it gets copied from there.

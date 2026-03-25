@@ -20,9 +20,9 @@ describe('SAN integration - test ref 23', () => {
                 After the call has been sent ensure that OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SSP_PLAN_VERSION_NO have been nulled out due to becoming editable again
                 Check that a new 'Assessment Work in Progress' task has been created`)
 
-            oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Assessment.openLatest()
+            oasys.login(oasys.users.admin, oasys.users.probationSan)
+            await offender.searchAndSelectByPnc(offender.pnc)
+            await assessment.openLatest()
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
 
@@ -30,7 +30,7 @@ describe('SAN integration - test ref 23', () => {
 
                 oasys.Assessment.rollBack()
                 oasys.Assessment.checkSigningRecord(pk, ['ROLLBACK', 'SIGNING'])
-                oasys.San.checkSanRollbackCall(pk, oasys.Users.admin)
+                await san.checkSanRollbackCall(pk, oasys.users.admin)
 
                 oasys.logout()
 
@@ -40,24 +40,24 @@ describe('SAN integration - test ref 23', () => {
                     Complete entry of the full analysis etc. in the OASys part of the assessment 
                     Sign and lock the assessment - no countersigner required.`)
 
-                oasys.login(oasys.Users.probSanHeadPdu)
+                oasys.login(oasys.users.probSanHeadPdu)
                 oasys.Nav.history(offender)
-                oasys.Assessment.openLatest()
+                await assessment.openLatest()
 
                 new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
-                oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Low')
+                await risk.populateWithSpecificRiskLevel('Low')
                 oasys.Populate.RoshPages.RiskManagementPlan.minimal()
 
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
-                oasys.Assessment.signAndLock()
+                await signing.signAndLock()
 
                 log(`Ensure the Sign API is sent to the SAN service and the parameters are correct
                     Ensure we get back a 200 response from the Sign API and that OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SPP_PLAN_VERSION_NO have been populated
                         and they differ from the version numbers logged at the time of the initial S&L
                     Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF')
+                await san.checkSanSigningCall(pk, oasys.users.probSanHeadPdu, 'SELF')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
             })
         })

@@ -10,7 +10,7 @@ describe('SAN integration - test ref 23', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)
+            oasys.login(oasys.users.probSanHeadPdu)
 
             log(`For the first assessment, create a new OASys-SAN assessment (3.2)	
                 Ensure the Create Assessment API is sent to the SAN service and the parameters are correct	
@@ -19,16 +19,16 @@ describe('SAN integration - test ref 23', () => {
                     - doesn't matter what else you answer in the remaining sections but DO NOT invoke a full analysis, just need to get a completed 3.2
                 Return back to the OASys part of the assessment and complete it BUT DO NOT invoke a full analysis`)
 
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
 
             cy.get<number>('@pk').then((pk) => {
 
-                oasys.San.gotoSan()
-                oasys.San.populateSanSections('Test ref 23', testData.sanPopulation1)
-                oasys.San.returnToOASys()
+                await san.gotoSan()
+                await san.populateSanSections('Test ref 23', testData.sanPopulation1)
+                await san.returnToOASys()
 
                 new oasys.Pages.Assessment.OffendingInformation().goto().count.setValue(1)
 
@@ -77,7 +77,7 @@ describe('SAN integration - test ref 23', () => {
                     and Risk Category OGRS, OGP and OVP just show dashes, both OSP rows show N/A,  the RSR row shows N/A and then two dashes`)
 
                 const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
-                oasys.Nav.clickButton('Save')  // TODO workaround for defect NOD-1165
+                await oasys.clickButton('Save')  // TODO workaround for defect NOD-1165
                 const expectedValues: ColumnValues[] = [
                     {
                         name: 'oasysSection',
@@ -122,8 +122,8 @@ describe('SAN integration - test ref 23', () => {
 
                 const isp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
 
-                oasys.Assessment.signAndLock() // OGRS warning, requires same action as the RSR warning
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanHeadPdu, 'SELF')
+                await signing.signAndLock() // OGRS warning, requires same action as the RSR warning
+                await san.checkSanSigningCall(pk, oasys.users.probSanHeadPdu, 'SELF')
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
                 log(`Still logged in as the Assessor open up the SAN Assessment from the offender records 'Open S&N' button.
@@ -133,9 +133,9 @@ describe('SAN integration - test ref 23', () => {
 
                 oasys.Nav.history(offender)
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
-                oasys.San.gotoSanFromOffender()
-                oasys.San.populateSanSections('Test ref 23 modification', testData.modifySan)
-                oasys.San.returnToOASys()
+                await san.gotoSanFromOffender()
+                await san.populateSanSections('Test ref 23 modification', testData.modifySan)
+                await san.returnToOASys()
 
                 log(`Now open up the Sentence Plan from the offender records 'Open SP' button
                     This should have invoked a new version of the Sentence Plan in their database - Add another goal/steps to the sentence plan 

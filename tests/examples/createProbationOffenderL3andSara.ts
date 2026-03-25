@@ -4,12 +4,12 @@ describe('Create a probation offender and a layer 3 assessment plus SARA', () =>
 
 
     it('Create offender and assessment', () => {
-        oasys.login(oasys.Users.probHeadPdu)
+        oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
         cy.get<OffenderDef>('@offender1').then((offender1) => {
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
             oasys.Populate.CommonPages.OffendingInformation.minimal()
             oasys.Populate.Layer3Pages.Predictors.minimal()
@@ -21,17 +21,17 @@ describe('Create a probation offender and a layer 3 assessment plus SARA', () =>
             section2.save.click()
 
             new oasys.Pages.Rosh.RoshScreeningSection5().goto()
-            oasys.Nav.clickButton('Next')
-            oasys.Nav.clickButton('Create')
+            await oasys.clickButton('Next')
+            await oasys.clickButton('Create')
 
-            oasys.Populate.Sara.sara('Low','Low')
-            oasys.Nav.clickButton('Save')
-            oasys.Nav.clickButton('Sign & lock')
-            oasys.Nav.clickButton('Confirm Sign & Lock')
+            oasys.Populate.Sara.sara('Low', 'Low')
+            await oasys.clickButton('Save')
+            await oasys.clickButton('Sign & lock')
+            await oasys.clickButton('Confirm Sign & Lock')
 
             oasys.Nav.history(offender1.surname, offender1.forename1, 'Start of Community Order')
             oasys.Populate.SentencePlanPages.IspSection52to8.minimal()
-            oasys.Assessment.signAndLock({ expectRsrWarning: true })
+            await signing.signAndLock({ expectRsrWarning: true })
 
             oasys.logout()
         })

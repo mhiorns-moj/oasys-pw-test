@@ -1,6 +1,4 @@
-import { Locator, expect, Page } from '@playwright/test'
-
-import * as lib from 'lib'
+import { Locator, Page } from '@playwright/test'
 
 
 export class Button {
@@ -10,8 +8,8 @@ export class Button {
     constructor(page: Page, selector: string) {
 
         this.selector = selector.startsWith('#') || selector.includes('[')
-            ? page.locator(selector)
-            : page.getByRole('button', { name: selector })
+            ? page.locator(selector).first()
+            : page.getByRole('button', { name: selector }).first()
     }
 
     async click() {

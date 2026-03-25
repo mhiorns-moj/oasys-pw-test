@@ -1,4 +1,4 @@
-import { test as base, mergeTests, TestInfo } from '@playwright/test'
+import { test as base, mergeTests, TestInfo, expect, Page } from '@playwright/test'
 
 import { OasysDb } from './oasysDb/oasysDb'
 import { testEnvironment } from 'localSettings'
@@ -13,6 +13,7 @@ import { Risk } from './risk/risk'
 import { SentencePlan } from './sentencePlan/sentencePlan'
 import { Signing } from './signing/signing'
 import { Sara } from './sara/sara'
+import { OasysDateTime } from 'lib/oasysDateTime'
 
 export { OasysDb } from './oasysDb/oasysDb'
 export { Oasys } from './oasys/oasys'
@@ -35,6 +36,19 @@ globalThis.log = (logtext: string, type?: string) => {
     oasysLog.push({ logText: logtext, type: type })
 }
 
+globalThis.oasysDateTime = new OasysDateTime()
+globalThis.expect = expect
+
+globalThis.waitForPageUpdate = async (page: Page) => {
+
+    let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
+
+    await page.waitForTimeout(250)
+    let pleaseWaitCount = await updatingElement.count()
+    while (pleaseWaitCount > 0) {
+        pleaseWaitCount = await updatingElement.count()
+    }
+}
 
 export const oasysDb = base.extend<{ oasysDb: OasysDb }>({
 

@@ -9,7 +9,7 @@ describe('NOD-1148 OGRS4 regression test ref 3', () => {
 
     it('Test ref 3 part 0 - create probation offender', () => {
 
-        oasys.login(oasys.Users.probHeadPdu)
+        oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {

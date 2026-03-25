@@ -16,7 +16,7 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
 
     // Database queries are (mostly) defined in the relevant class definitions
 
-    OasysDateTime.startTimer('getOffenderWithAssessments')
+    oasysDateTime.startTimer('getOffenderWithAssessments')
 
     // Get offender data
     const offenderData = await db.selectData(DbOffenderWithAssessments.query(crnSource, crn))
@@ -124,6 +124,6 @@ export async function getOffenderWithAssessments(crnSource: Provider, crn: strin
     dbOffender.assessments.sort((a, b) => (a.initiationDate > b.initiationDate) ? 1 : ((b.initiationDate > a.initiationDate) ? -1 : 0))
 
     // Record time elapsed in database load
-    dbOffender.dbElapsedTime = OasysDateTime.elapsedTime('getOffenderWithAssessments')
+    dbOffender.dbElapsedTime = oasysDateTime.elapsedTime('getOffenderWithAssessments')
     return dbOffender
 }

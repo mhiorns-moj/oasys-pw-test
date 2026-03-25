@@ -18,11 +18,11 @@ describe('SAN integration - tests 39-40', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)  // Senior user so no countersigning for this test
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanHeadPdu)  // Senior user so no countersigning for this test
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             // Create assessment
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
             // Complete section 1
@@ -34,7 +34,7 @@ describe('SAN integration - tests 39-40', () => {
             offendingInformation.sentence.setValue('Fine')
             offendingInformation.sentenceDate.setValue({ months: -1 })
 
-            const predictors = new oasys.Pages.Assessment.Predictors().goto(true)
+            await assessment.predictors.goto(true)
             predictors.dateFirstSanction.setValue({ years: -2 })
             predictors.o1_32.setValue(2)
             predictors.o1_40.setValue(0)
@@ -42,9 +42,9 @@ describe('SAN integration - tests 39-40', () => {
             predictors.o1_30.setValue('No')
             predictors.o1_38.setValue({})
 
-            oasys.San.gotoSan()
-            oasys.San.populateSanSections('Merge test', testData.sanPopulation)
-            oasys.San.returnToOASys()
+            await san.gotoSan()
+            await san.populateSanSections('Merge test', testData.sanPopulation)
+            await san.returnToOASys()
 
             oasys.Populate.Rosh.screeningNoRisks(true)
 
@@ -53,7 +53,7 @@ describe('SAN integration - tests 39-40', () => {
             oasys.ArnsSp.runScript('populateMinimal')
 
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
-            oasys.Assessment.signAndLock()
+            await signing.signAndLock()
             oasys.logout()
         })
     })

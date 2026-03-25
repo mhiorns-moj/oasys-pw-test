@@ -1,5 +1,4 @@
 import { jsonString, stringToFloat, stringToInt } from 'lib/utils'
-import { OasysDateTime } from 'lib'
 
 export class QaData {
 
@@ -18,7 +17,7 @@ export class QaData {
                     this[question] = null
                     break
                 case 'date':
-                    const date = OasysDateTime.stringToDate(q[1])
+                    const date = oasysDateTime.stringToDate(q[1])
                     this[question] = date == null ? '' : date.toString()
                     break
                 case 'text':

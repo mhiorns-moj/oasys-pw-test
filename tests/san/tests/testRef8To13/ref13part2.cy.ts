@@ -16,21 +16,21 @@ describe('SAN integration - test ref 13 part 2', () => {
                     (this is because the latest OASys-SAN assessment is now historic).  
                     Return back to the Offender record in OASys.`)
 
-            oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Assessment.openLatest()
+            oasys.login(oasys.users.admin, oasys.users.probationSan)
+            await offender.searchAndSelectByPnc(offender.pnc)
+            await assessment.openLatest()
             new oasys.Pages.Assessment.Other.MarkAssessmentHistoric().goto().ok.click()
             oasys.logout()
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Assessment.openLatest()
+            await assessment.openLatest()
 
-            oasys.San.gotoSanReadOnly('Accommodation', 'information')
-            oasys.San.checkSanEditMode(false)
-            oasys.San.returnToOASys()
-            oasys.Nav.clickButton('Close')
+            await san.gotoSanReadOnly('Accommodation', 'information')
+            await san.checkSanEditMode(false)
+            await san.returnToOASys()
+            await oasys.clickButton('Close')
             oasys.logout()
         })
     })

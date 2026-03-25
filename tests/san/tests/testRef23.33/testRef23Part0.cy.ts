@@ -26,7 +26,7 @@ describe('SAN integration - test ref 23', () => {
 
     it('Test ref 23 part 0 - create offender', () => {
 
-        oasys.login(oasys.Users.probSanHeadPdu)  // No countersigning for this test
+        oasys.login(oasys.users.probSanHeadPdu)  // No countersigning for this test
 
         oasys.Offender.createProb(offender, 'offender')
 

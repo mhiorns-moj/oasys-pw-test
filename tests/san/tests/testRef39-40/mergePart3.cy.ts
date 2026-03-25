@@ -21,8 +21,8 @@ describe('SAN integration - tests 39-40', () => {
                 // Get original assessment PKs
                 oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'oldPksOff1')
                 oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'oldPksOff2')
-                oasys.login(oasys.Users.probSanHeadPdu)
-                oasys.Offender.searchAndSelectByPnc(offender1.pnc)
+                oasys.login(oasys.users.probSanHeadPdu)
+                await offender.searchAndSelectByPnc(offender1.pnc)
 
                 // Set the PNC to trigger a merge
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
@@ -34,7 +34,7 @@ describe('SAN integration - tests 39-40', () => {
                 // Get new assessment PKs
                 oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'newPksOff1')
                 oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'newPksOff2')
-                oasys.San.checkSanMergeCall(oasys.Users.probSanHeadPdu, 3)
+                await san.checkSanMergeCall(oasys.users.probSanHeadPdu, 3)
                 oasys.logout()
             })
         })

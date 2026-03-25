@@ -15,16 +15,16 @@ describe('SAN integration - test ref 38 part 2', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.admin, oasys.users.probationSan)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, '[pks]')
             cy.get<number[]>('@[pks]').then((pks) => {  // [0] = the second deleted assessment, [1] = the first one that will be rolled back
 
-                oasys.Assessment.openLatest()
+                await assessment.openLatest()
 
-                oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                oasys.San.checkSanOtlCall(pks[1], {
+                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.checkSanOtlCall(pks[1], {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -35,20 +35,20 @@ describe('SAN integration - test ref 38 part 2', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.admin.forenameSurname,
+                    'displayName': oasys.users.admin.forenameSurname,
                     'accessMode': 'READ_ONLY',
                 },
                     'san', 0
                 )
-                oasys.San.checkSanEditMode(false)
-                oasys.San.returnToOASys()
+                await san.checkSanEditMode(false)
+                await san.returnToOASys()
 
                 // Roll back the assessment
                 oasys.Assessment.rollBack('Test 38 part 2 rolling back again, after deleting the second assessment')
 
 
                 // Check OASYS_SET and API calls
-                oasys.San.checkSanRollbackCall(pks[1], oasys.Users.admin)
+                await san.checkSanRollbackCall(pks[1], oasys.users.admin)
                 oasys.logout()
 
             })

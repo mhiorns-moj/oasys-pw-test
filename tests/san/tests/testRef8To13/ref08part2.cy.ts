@@ -9,8 +9,8 @@ describe('SAN integration - test ref 08 part 2', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Create another assessment - defaults to Review
                         The new SAN question is NOT shown on the screen due to the default of PSR with 'PSR Outline' plan
@@ -38,7 +38,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                         Ensure the other navigation menus show correctly for Case ID, Section 1, RoSH Screening and Initial Sentence Plan`)
 
                 new oasys.Pages.Assessment.OffenderInformation().checkCurrent()
-                oasys.San.checkLayer3Menu(true)
+                await san.checkLayer3Menu(true)
                 new oasys.Pages.Assessment.SourcesOfInformation().checkMenuVisibility(true)
                 new oasys.Pages.Assessment.OffendingInformation().checkMenuVisibility(true)
                 new oasys.Pages.Assessment.Predictors().checkMenuVisibility(true)
@@ -58,12 +58,12 @@ describe('SAN integration - test ref 08 part 2', () => {
                         Check the OASYS_SET record, it is not clear yet but I am assuming that we will get something back from SAN even if the OASys equivalent section is blank - but OASYS_SET.LASTUPD_FROM_SAN should be set to date/timestamp from the API response
                         None of the navigation menu options have ticks against them`)
 
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, 'Y', null)
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanUnappr, oasys.Users.probationSanCode, 'INITIAL')
+                await san.getSanApiTimeAndCheckDbValues(pk, 'Y', null)
+                await san.checkSanCreateAssessmentCall(pk, null, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'INITIAL')
 
-                oasys.San.checkNoQuestionsCreated(pk)
-                oasys.San.checkNoIspQuestions1Or2(pk)
-                oasys.San.checkSanAssessmentCompletionStatus(false)
+                await san.checkNoQuestionsCreated(pk)
+                await san.checkNoIspQuestions1Or2(pk)
+                await san.checkSanAssessmentCompletionStatus(false)
 
                 log(`Click on 'Sign and Lock'
                         Ensure the errors reported are consistent with being a 3.2 assessment: 
@@ -121,7 +121,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 sanSections.previous.checkStatus('enabled')
                 sanSections.markAsComplete.checkStatus('notVisible')
                 sanSections.openSanLabel.checkStatus('visible')
-                oasys.San.gotoSan()
+                await san.gotoSan()
 
                 log(`Within the SAME browser tab the OASys screen closes and is replaced by the first screen in the SAN Assessment
                          - get evidence here of the One-Time link API so we can check the parameters going out
@@ -134,8 +134,8 @@ describe('SAN integration - test ref 08 part 2', () => {
                         column which are all set to 'N' apart from 'Finance' and 'Health and wellbeing' which are set to 'N/A'.
                         The 'Scores' column are all just greyed out apart from 'Finance' and 'Health and wellbeing' which are set to 'N/A'.`)
 
-                oasys.San.checkSanLoaded(offender.probationCrn, offender.pnc)
-                oasys.San.checkSanOtlCall(pk, {
+                await san.checkSanLoaded(offender.probationCrn, offender.pnc)
+                await san.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -146,14 +146,14 @@ describe('SAN integration - test ref 08 part 2', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'YES',
                 }, {
-                    'displayName': oasys.Users.probSanUnappr.forenameSurname,
+                    'displayName': oasys.users.probSanUnappr.forenameSurname,
                     'accessMode': 'READ_WRITE',
                 },
                     'san', null
                 )
-                oasys.San.returnToOASys()
+                await san.returnToOASys()
                 sanSections.checkCurrent()
-                oasys.San.checkSanAssessmentCompletionStatus(false)
+                await san.checkSanAssessmentCompletionStatus(false)
                 const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
                 const expectedValues: ColumnValues[] = [
                     {

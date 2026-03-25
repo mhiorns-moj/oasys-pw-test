@@ -21,8 +21,8 @@ describe('SAN integration - test ref 21 part 4', () => {
             const offender2: OffenderDef = JSON.parse(offenderData as string)
             oasys.Db.getAllSetPksByPnc(offender2.pnc, 'mergedOffenderPks', true)
             cy.get<number[]>('@mergedOffenderPks').then((mergedOffenderPks) => {
-                oasys.login(oasys.Users.probSanHeadPdu)
-                oasys.Offender.searchAndSelectByPnc(offender2.pnc)
+                oasys.login(oasys.users.probSanHeadPdu)
+                await offender.searchAndSelectByPnc(offender2.pnc)
 
                 const assessmentsTab = new oasys.Pages.Offender.AssessmentsTab()
                 assessmentsTab.assessments.checkCount(7)
@@ -33,17 +33,17 @@ describe('SAN integration - test ref 21 part 4', () => {
                 // 4th assessment (3rd from offender 2)
                 assessmentsTab.assessments.clickNthRow(4)
                 checkAssessment(offender2, mergedOffenderPks[3], 0, 0)
-                oasys.Nav.clickButton('Close')
+                await oasys.clickButton('Close')
 
                 // 6th assessment (5rd from offender 2)
                 assessmentsTab.assessments.clickNthRow(2)
                 checkAssessment(offender2, mergedOffenderPks[1], 1, 2)
-                oasys.Nav.clickButton('Close')
+                await oasys.clickButton('Close')
 
                 // 7th assessment (6th from offender 2)
                 assessmentsTab.assessments.clickNthRow(1)
                 checkAssessment(offender2, mergedOffenderPks[0], 2, 4)
-                oasys.Nav.clickButton('Close')
+                await oasys.clickButton('Close')
 
                 oasys.logout()
             })
@@ -54,8 +54,8 @@ describe('SAN integration - test ref 21 part 4', () => {
 function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: number, spVersion: number) {
 
     log(`Checking assessment pk ${pk}`)
-    oasys.San.gotoSanReadOnly('Accommodation', 'information')
-    oasys.San.checkSanOtlCall(pk,
+    await san.gotoSanReadOnly('Accommodation', 'information')
+    await san.checkSanOtlCall(pk,
         {
             'crn': offender.probationCrn,
             'pnc': offender.pnc,
@@ -68,16 +68,16 @@ function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: n
             'sexuallyMotivatedOffenceHistory': null,
         },
         {
-            'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
+            'displayName': oasys.users.probSanHeadPdu.forenameSurname,
             'accessMode': 'READ_ONLY',
         },
         'san', assessmentVersion
     )
-    oasys.San.checkSanEditMode(false)
-    oasys.San.returnToOASys()
+    await san.checkSanEditMode(false)
+    await san.returnToOASys()
 
     oasys.ArnsSp.runScript('checkReadOnly')
-    oasys.San.checkSanOtlCall(pk,
+    await san.checkSanOtlCall(pk,
         {
             'crn': offender.probationCrn,
             'pnc': offender.pnc,
@@ -90,7 +90,7 @@ function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: n
             'sexuallyMotivatedOffenceHistory': null,
         },
         {
-            'displayName': oasys.Users.probSanHeadPdu.forenameSurname,
+            'displayName': oasys.users.probSanHeadPdu.forenameSurname,
             'planAccessMode': 'READ_ONLY',
         },
         'sp', spVersion

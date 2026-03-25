@@ -9,13 +9,13 @@ describe('SAN integration - test ref 29/30', () => {
 
             const offender1: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)
+            oasys.login(oasys.users.probSanHeadPdu)
 
             log(`Create an offender whose latest assessment is a WIP OASYS-SAN`)
 
-            oasys.Offender.searchAndSelectByPnc(offender1.pnc)
+            await offender.searchAndSelectByPnc(offender1.pnc)
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'pk')
 
             cy.get<number>('@pk').then((pk) => {
@@ -29,12 +29,12 @@ describe('SAN integration - test ref 29/30', () => {
                     An OASYS_SIGNING record has been created for the deletion 'ASSMT_DEL_SIGNING'
                     A Delete API has been sent to the SAN Service - check the parameters are the OASYS_SET_PK, Admins User ID and Name - a 200 response has been received back`)
 
-                oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-                oasys.Offender.searchAndSelectByPnc(offender1.pnc)
+                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                await offender.searchAndSelectByPnc(offender1.pnc)
                 oasys.Assessment.deleteLatest()
                 oasys.Assessment.checkDeleted(pk)
                 oasys.Assessment.checkSigningRecord(pk, ['ASSMT_DEL_SIGNING'])
-                oasys.San.checkSanDeleteCall(pk, oasys.Users.admin)
+                await san.checkSanDeleteCall(pk, oasys.users.admin)
 
 
                 log(`Test ref 30 - reverse deletion test`)
@@ -42,7 +42,7 @@ describe('SAN integration - test ref 29/30', () => {
 
                 oasys.Assessment.checkNotDeleted(pk)
                 oasys.Assessment.checkSigningRecord(pk, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING'])
-                oasys.San.checkSanUndeleteCall(pk, oasys.Users.admin)
+                await san.checkSanUndeleteCall(pk, oasys.users.admin)
 
                 // Leave the offender ready for part 4
                 oasys.Nav.history(offender1)

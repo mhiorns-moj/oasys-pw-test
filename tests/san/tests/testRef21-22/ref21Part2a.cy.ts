@@ -21,26 +21,26 @@ describe('SAN integration - test ref 21 part 2a', () => {
 
 
             // Create and complete assessment 4 (layer 3 v1)
-            oasys.login(oasys.Users.probHeadPdu)
+            oasys.login(oasys.users.probHeadPdu)
             oasys.Nav.history(offender2)
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
+            await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
             oasys.Populate.sections2To13NoIssues()
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
             new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
-            oasys.Assessment.signAndLock({ expectRsrWarning: true })
+            await signing.signAndLock({ expectRsrWarning: true })
             oasys.logout()
 
             // Transfer back to Durham
-            oasys.login(oasys.Users.probSanHeadPdu)
+            oasys.login(oasys.users.probSanHeadPdu)
             oasys.Nav.history(offender2)
             new oasys.Pages.Offender.OffenderDetails().requestTransfer.click()
             new oasys.Pages.Offender.RequestTransfer().submit.click()
             oasys.logout()
 
-            oasys.login(oasys.Users.probHeadPdu)
-            oasys.Task.search({ taskName: 'Transfer Request Received - Decision Required', offenderName: offender2.surname })
-            oasys.Task.selectFirstTask()
+            oasys.login(oasys.users.probHeadPdu)
+            await tasks.search({ taskName: 'Transfer Request Received - Decision Required', offenderName: offender2.surname })
+            await tasks.selectFirstTask()
             new oasys.Pages.Tasks.TransferDecisionTask().grantTransfer.click()
             oasys.logout()
 

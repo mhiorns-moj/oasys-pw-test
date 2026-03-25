@@ -156,7 +156,7 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen	
         Navigate to Section 5.2 to 8 - complete entry of the three fields on the screen for Public Protection conference`, 'Test step')
 
-    await sentencePlan.spService.goToSpService('assessment')
+    await sentencePlan.spService.gotoSpService('assessment')
     await sentencePlan.spService.populateTwoGoals()
 
     log(`Click on S&L - get the complete sections alert	

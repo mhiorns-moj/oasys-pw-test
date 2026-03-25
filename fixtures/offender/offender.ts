@@ -1,9 +1,9 @@
 import { Page, TestInfo } from '@playwright/test'
 
-import * as lib from 'lib'
 import { Oasys, Cms, OasysDb } from 'fixtures'
 import * as pages from './pages'
 import * as offenders from './offenderLib'
+import { User } from 'classes'
 
 
 export class Offender {
@@ -13,8 +13,9 @@ export class Offender {
     readonly offenderSearch = new pages.OffenderSearch(this.page)
     readonly offenderDetails = new pages.OffenderDetails(this.page)
     readonly rfi = new pages.Rfi(this.page)
+    readonly standaloneCsrp = new pages.StandaloneRsr(this.page)
+    readonly lao = new pages.Lao(this.page)
 
-    private readonly offenders = offenders
 
     /**
      * Create a probation offender using the details provided in an Offender type object.
@@ -71,7 +72,7 @@ export class Offender {
 
         // Populate any null key fields (PNC, CRN, NOMIS ID and Surname).
         await this.oasysDb.populateAutoData(offender)
-        offender.dateOfBirth = lib.OasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
+        offender.dateOfBirth = oasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
         // Delete the NOMIS Id if there is one to avoid attempting to populate it on the stub screen
         let nomisId: string
@@ -127,7 +128,7 @@ export class Offender {
 
         // Populate any null key fields (PNC, CRN, NOMIS ID and Surname).
         await this.oasysDb.populateAutoData(offender)
-        offender.dateOfBirth = lib.OasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
+        offender.dateOfBirth = oasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
         // Delete the probation CRN if there is one to avoid attempting to populate it on the stub screen
         let probationCrn: string
@@ -245,6 +246,17 @@ export class Offender {
         await this.offenderSearch.surnameColumn.clickFirstRow()
 
         if (!suppressLog) log(`Search and select offender: ${JSON.stringify(data)}`)
+    }
+
+    async setLaoReader(user: User) {
+
+        await this.lao.goto()
+
+        await this.lao.setLaoStatus.setValue('Yes')
+        await this.lao.laoReaders.addItemUsingFilter(user.lovLookup)
+        await this.lao.save.click()
+        log('Set LAO reader')
+        await this.lao.close.click()
     }
 
     /**

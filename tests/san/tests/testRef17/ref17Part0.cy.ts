@@ -11,7 +11,7 @@ describe('SAN integration - test ref 17 part 0', () => {
 
     it('Test ref 17 part 0 - create offender and IOM stub', () => {
 
-        oasys.login(oasys.Users.probSanPso)
+        oasys.login(oasys.users.probSanPso)
 
         oasys.Offender.createProb(offender, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {

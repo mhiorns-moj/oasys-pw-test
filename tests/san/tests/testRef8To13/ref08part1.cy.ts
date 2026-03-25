@@ -9,8 +9,8 @@ describe('SAN integration - test ref 08 part 1', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Create a new assessment - defaults to PSR-SDR, Layer 3, PSR Outline Plan with SDR court report
                     Ensure the new SAN question is not showing on the screen (cannot do SAN with a PSR type assessment)`)
@@ -50,7 +50,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                         Do not enter any data, go to a sentence plan screen and click on 'Sign and Lock' - ensure the errors reported are consistent with a 3.1 assessment type and there is nothing there to do with a SAN assessment`)
 
                 new oasys.Pages.Assessment.OffenderInformation().checkCurrent()
-                oasys.San.checkLayer3Menu(false)
+                await san.checkLayer3Menu(false)
 
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
 
@@ -67,8 +67,8 @@ describe('SAN integration - test ref 08 part 1', () => {
 
                 const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
                 offendingInformation.setValues({
-                    offence: '020', subcode: '01', count: '1', offenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -4 }), sentence: 'Fine',
-                    sentenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -3 })
+                    offence: '020', subcode: '01', count: '1', offenceDate: oasysDateTime.oasysDateAsString({ months: -4 }), sentence: 'Fine',
+                    sentenceDate: oasysDateTime.oasysDateAsString({ months: -3 })
                 })
                 oasys.Populate.Layer3Pages.Predictors.fullyPopulated({ r1_30PrePopulated: true, r1_41PrePopulated: true })
                 oasys.Populate.sections2To13NoIssues()
@@ -76,11 +76,11 @@ describe('SAN integration - test ref 08 part 1', () => {
                 oasys.Populate.Rosh.screeningNoRisks(true)
 
                 oasys.ArnsSp.runScript('populateMinimal')
-                oasys.Assessment.signAndLock({ expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu })
+                await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
 
                 oasys.logout()
-                oasys.login(oasys.Users.probSanHeadPdu)
+                oasys.login(oasys.users.probSanHeadPdu)
                 oasys.Assessment.countersign({ offender: offender, comment: 'Test comment' })
 
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })

@@ -15,20 +15,20 @@ describe('SAN integration - test ref 11', () => {
                     Find the offender used in Test Ref 10
                     Carry out a 'transfer' so that the probation owner and controlling owner transfers to the non-pilot area.`)
 
-            oasys.login(oasys.Users.probHeadPdu)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc, oasys.Users.probationSan)
+            oasys.login(oasys.users.probHeadPdu)
+            await offender.searchAndSelectByPnc(offender.pnc, oasys.users.probationSan)
             new oasys.Pages.Offender.OffenderDetails().requestTransfer.click()
 
             new oasys.Pages.Offender.RequestTransfer().submit.click()
             oasys.logout()
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Task.search({ taskName: 'Transfer Request Received - Decision Required', offenderName: offender.surname })
-            oasys.Task.selectFirstTask()
+            oasys.login(oasys.users.probSanUnappr)
+            await tasks.search({ taskName: 'Transfer Request Received - Decision Required', offenderName: offender.surname })
+            await tasks.selectFirstTask()
             new oasys.Pages.Tasks.TransferDecisionTask().grantTransfer.click()
             oasys.logout()
 
-            oasys.login(oasys.Users.probHeadPdu)
+            oasys.login(oasys.users.probHeadPdu)
 
             log(`Create a new 'Review' Layer 3 version 1 assessment - opens at the Case ID screen.  3.1 assessment includes a full analysis with sections 6.1 and 6.2.  
                     Sections 2 to 13 and the SAQ are showing in the navigation menu.  'Open Strengths and Needs' is NOT shown in the navigation menu.
@@ -39,10 +39,10 @@ describe('SAN integration - test ref 11', () => {
                     Check that the LAST THREE questions in Sections 7, 11 and 12 have ALL been set by the SAN data and are the same;  'identify' text box, 'linked to risk of serious harm...' 
                     and 'linked to reoffending...'  (note: this is coming from the TBA section in the SAN Assessment and, rightly or wrongly, Cindy wanted it mapped to ALL 3 sections in OASys).`)
 
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
+            await offender.searchAndSelectByPnc(offender.pnc)
+            await assessment.createProb({ purposeOfAssessment: 'Review' })
 
-            oasys.San.checkLayer3Menu(false, true)
+            await san.checkLayer3Menu(false, true)
             new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
@@ -50,7 +50,7 @@ describe('SAN integration - test ref 11', () => {
                 const pk = pks[0]
                 const prevPk = pks[1]
 
-                oasys.San.getSanApiTimeAndCheckDbValues(pk, null, prevPk)
+                await san.getSanApiTimeAndCheckDbValues(pk, null, prevPk)
 
                 oasys.Db.checkAnswers(pk, testData.nonOASysQuestions, 'nonOASysQuestionsResult', true)
                 cy.get<boolean>('@nonOASysQuestionsResult').then((failed) => {
@@ -104,7 +104,7 @@ describe('SAN integration - test ref 11', () => {
                 new oasys.Pages.Assessment.SelfAssessmentForm().goto().whyNotCompleted.setValue(`Didn't want to complete it`)
 
                 new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
-                oasys.Assessment.signAndLock()
+                await signing.signAndLock()
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
                     CLONED_FROM_PREV_OASYS_SAN_PK: prevPk.toString(),

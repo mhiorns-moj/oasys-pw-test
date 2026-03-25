@@ -28,15 +28,15 @@ function paTest() {
         const mappingTestOffender = JSON.parse(offenderDetails) as OffenderDef
 
         // Delete previous assessments so no data gets cloned
-        oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-        oasys.Offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
+        oasys.login(oasys.users.admin, oasys.users.probationSan)
+        await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
         oasys.Assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
         oasys.logout()
 
         // Create a new SAN assessment
-        oasys.login(oasys.Users.probSanUnappr)
-        oasys.Offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
-        oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+        oasys.login(oasys.users.probSanUnappr)
+        await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
+        await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
         oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
         cy.get<number>('@assessmentPk').then((assessmentPk) => {
@@ -60,7 +60,7 @@ function paTest() {
                 // Get to the right starting screen
 
                 if (test.ref == 1) {
-                    oasys.San.gotoSan('Drug use', 'information', true)
+                    await san.gotoSan('Drug use', 'information', true)
                     drugs1.everUsed.setValue('yes')  // Need to set this otherwise the motivation question doesn't get returned
                     // new oasys.Pages.San.SectionLandingPage('Drug use').analysis.click()  Removed for navigation change in release 1.11, might come back later
                     drugs1.saveAndContinue.click()
@@ -76,7 +76,7 @@ function paTest() {
                     drugs4.saveAndContinue.click()
                     infoSummary.analysis.click()
                 } else {
-                    oasys.San.gotoSan('Drug use', 'analysis', true)
+                    await san.gotoSan('Drug use', 'analysis', true)
                     infoSummary.analysis.click()
                     if (test.ref > 2) {
                         drugsAnalysis.change.click()
@@ -85,9 +85,9 @@ function paTest() {
 
                 // Set values on SAN, return to OASys and check the results
                 scenario(test)
-                oasys.San.returnToOASys()
-                oasys.Nav.clickButton('Previous', true)
-                oasys.Nav.clickButton('Next', true)
+                await san.returnToOASys()
+                await oasys.clickButton('Previous', true)
+                await oasys.clickButton('Next', true)
 
                 const failedAlias = `ref${test.ref}Alias`
                 cy.groupedLogStart(JSON.stringify(test)).then(() => {  // Force Cypress to wait before running the next bit

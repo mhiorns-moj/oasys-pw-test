@@ -1,7 +1,6 @@
-import { Locator, expect, Page } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 import { OasysPage } from 'classes/oasysPage'
 
-import * as lib from 'lib'
 
 export class Select<T extends string> {
 
@@ -17,7 +16,7 @@ export class Select<T extends string> {
     async setValue(value: T) {
 
         await this.selector.selectOption(value as string)
-        await OasysPage.waitForPageUpdate(this.page, 10)
+        await waitForPageUpdate(this.page, 10)
     }
 
     async setValueByIndex(index: number) {
@@ -78,7 +77,7 @@ export class Select<T extends string> {
     async checkOptionNotAvailable(option: T) {
 
         const options = await this.getOptions()
-        expect (options).not.toContain(option as string)
+        expect(options).not.toContain(option as string)
     }
 
     /**

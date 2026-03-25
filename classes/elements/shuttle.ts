@@ -1,130 +1,121 @@
-import { Locator, expect, Page } from '@playwright/test'
+import { Page } from '@playwright/test'
 
-import * as lib from 'lib'
 
 export class Shuttle {
 
-    selector: Locator
+    constructor(readonly page: Page, readonly selector: string) { }
 
-    constructor(page: Page, selector: string) {
+    async addItemUsingFilter(item: string) {
 
-        this.selector = page.locator(selector)
+        await this.setFilter('left', item)
+        await this.selectVisibleItem('left', 0)
+        await this.clickButton('select')
     }
 
-    addItemUsingFilter(item: string) {
+    // async addItems(items: string[]) {
 
-        this.setFilter('left', item)
-        this.selectVisibleItem('left', 0)
-        this.clickButton('select')
-    }
+    //     await this.clickButton('removeall')
 
-    addItems(items: string[]) {
+    //     items.forEach((item) => {
+    //         await this.goToStart('left')
+    //         await this.findAndSelect('left', item)
+    //     })
 
-        this.clickButton('removeall')
+    //     log(`Added items to ${this.selector}: ${JSON.stringify(items)}`)
+    // }
 
-        items.forEach((item) => {
-            this.goToStart('left')
-            this.findAndSelect('left', item)
-        })
-
-        log(`Added items to ${this.selector}: ${JSON.stringify(items)}`)
-    }
-
-    setFilter(side: 'left' | 'right', filter: string) {
+    async setFilter(side: 'left' | 'right', filter: string) {
 
         const filterSelector = `#${side}Filter${this.selector}`
-        cy.get(filterSelector).clear()
-        if (filter != '') {
-            cy.get(filterSelector).type(filter)
-        }
+        await this.page.locator(filterSelector).pressSequentially(filter, { delay: 50 })
     }
 
-    clickButton(button: 'selectall' | 'select' | 'remove' | 'removeall') {
+    async clickButton(button: 'selectall' | 'select' | 'remove' | 'removeall') {
 
         const buttonSelector = `#${button}${this.selector}`
-        cy.get(buttonSelector).click()
+        await this.page.locator(buttonSelector).click()
     }
 
-    selectVisibleItem(side: 'left' | 'right', index: number) {
+    async selectVisibleItem(side: 'left' | 'right', index: number) {
 
         const titleCaseSide = side.charAt(0).toUpperCase() + side.substring(1)
-        cy.get(`#select${titleCaseSide}${this.selector}`).select(index)
+        await this.page.locator(`#select${titleCaseSide}${this.selector}`).locator('option').nth(index).click()
     }
 
-    getItems(side: 'left' | 'right', alias: string) {
+    // async getItems(side: 'left' | 'right', alias: string) {
 
-        const titleCaseSide = side.charAt(0).toUpperCase() + side.substring(1)
-        cy.get(`#select${titleCaseSide}${this.selector}`).find('option').then((options) => {
-            const items: string[] = []
-            for (let i = 0; i < options.length; i++) {
-                items.push(options[i].innerText)
-            }
-            cy.wrap(items).as(alias)
-        })
-    }
+    //     const titleCaseSide = side.charAt(0).toUpperCase() + side.substring(1)
+    //     cy.get(`#select${titleCaseSide}${this.selector}`).find('option').then((options) => {
+    //         const items: string[] = []
+    //         for (let i = 0; i < options.length; i++) {
+    //             items.push(options[i].innerText)
+    //         }
+    //         cy.wrap(items).as(alias)
+    //     })
+    // }
 
-    checkButtonEnabled(button: string, alias: string) {
+    // async checkButtonEnabled(button: string, alias: string) {
 
-        let result: ElementStatus = 'visible'
+    //     let result: ElementStatus = 'visible'
 
-        cy.get(button).then((b) => {
-            if (b.is(':enabled')) {
-                result = 'enabled'
-            }
-        }).then(() => {
-            cy.wrap(result).as(alias)
-        })
+    //     cy.get(button).then((b) => {
+    //         if (b.is(':enabled')) {
+    //             result = 'enabled'
+    //         }
+    //     }).then(() => {
+    //         cy.wrap(result).as(alias)
+    //     })
 
-    }
+    // }
 
-    goToStart(side: 'left' | 'right') {
+    // async goToStart(side: 'left' | 'right') {
 
-        this.clickUntilGone(side, 'prev')
-    }
+    //     this.clickUntilGone(side, 'prev')
+    // }
 
-    clickUntilGone(side: 'left' | 'right', button: 'prev' | 'next', attempt = 0) {
+    // async clickUntilGone(side: 'left' | 'right', button: 'prev' | 'next', attempt = 0) {
 
-        if (attempt === 20) {
-            throw new Error(`clickUntilGone failure for ${side}`)
-        }
+    //     if (attempt === 20) {
+    //         throw new Error(`clickUntilGone failure for ${side}`)
+    //     }
 
-        const titleCaseSide = side.charAt(0).toUpperCase() + side.substring(1)
-        const buttonSelector = `#${button}Page${titleCaseSide}${this.selector}`
+    //     const titleCaseSide = side.charAt(0).toUpperCase() + side.substring(1)
+    //     const buttonSelector = `#${button}Page${titleCaseSide}${this.selector}`
 
-        cy.get(`#shuttle${this.selector}`).then((shuttle) => {
-            const enabled = shuttle.find(`${buttonSelector}:enabled`).length > 0
-            if (enabled) {
-                cy.get(buttonSelector).click()
-                this.clickUntilGone(side, button, ++attempt)
-            }
-        })
-    }
+    //     cy.get(`#shuttle${this.selector}`).then((shuttle) => {
+    //         const enabled = shuttle.find(`${buttonSelector}:enabled`).length > 0
+    //         if (enabled) {
+    //             cy.get(buttonSelector).click()
+    //             this.clickUntilGone(side, button, ++attempt)
+    //         }
+    //     })
+    // }
 
 
-    findAndSelect(side: 'left' | 'right', item: string, attempt = 0) {
+    // async findAndSelect(side: 'left' | 'right', item: string, attempt = 0) {
 
-        if (attempt === 20) {
-            throw new Error(`findAndSelect failure for ${item}`)
-        }
+    //     if (attempt === 20) {
+    //         throw new Error(`findAndSelect failure for ${item}`)
+    //     }
 
-        const titleCaseSide = side.charAt(0).toUpperCase() + side.substring(1)
-        const buttonSelector = `#nextPage${titleCaseSide}${this.selector}`
+    //     const titleCaseSide = side.charAt(0).toUpperCase() + side.substring(1)
+    //     const buttonSelector = `#nextPage${titleCaseSide}${this.selector}`
 
-        this.getItems(side, 'visibleItems')
-        cy.get<string[]>('@visibleItems').then((items) => {
-            if (items.includes(item)) {
-                cy.get(`#select${titleCaseSide}${this.selector}`).select(items.indexOf(item))
-                this.clickButton('select')
-            } else {
-                cy.get(`#shuttle${this.selector}`).then((shuttle) => {
-                    const enabled = shuttle.find(`${buttonSelector}:enabled`).length > 0
-                    if (enabled) {
-                        cy.get(buttonSelector).click()
-                        this.findAndSelect(side, item, ++attempt)
-                    }
-                })
-            }
-        })
+    //     this.getItems(side, 'visibleItems')
+    //     cy.get<string[]>('@visibleItems').then((items) => {
+    //         if (items.includes(item)) {
+    //             cy.get(`#select${titleCaseSide}${this.selector}`).select(items.indexOf(item))
+    //             this.clickButton('select')
+    //         } else {
+    //             cy.get(`#shuttle${this.selector}`).then((shuttle) => {
+    //                 const enabled = shuttle.find(`${buttonSelector}:enabled`).length > 0
+    //                 if (enabled) {
+    //                     cy.get(buttonSelector).click()
+    //                     this.findAndSelect(side, item, ++attempt)
+    //                 }
+    //             })
+    //         }
+    //     })
 
-    }
+    // }
 }

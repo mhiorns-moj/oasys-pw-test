@@ -1,8 +1,6 @@
-import { expect } from '@playwright/test'
 import { Temporal } from '@js-temporal/polyfill'
 
 import * as lib from 'lib'
-import { OasysDateTime } from 'lib/dateTime'
 import { OasysDb } from '../oasysDb/oasysDb'
 import { User } from 'classes'
 import { Oasys } from 'fixtures'
@@ -23,7 +21,7 @@ export class Queries {
     async getOasysSetSanData(pk: number): Promise<OasysSetSanData> {
 
         const query = `select san_assessment_linked_ind, arns_sp_only_linked_ind,
-                            to_char(lastupd_from_san, '${OasysDateTime.oracleTimestampFormat}'),
+                            to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'),
                             san_assessment_version_no, ssp_plan_version_no
                             from eor.oasys_set where oasys_set_pk = ${pk}`
 
@@ -58,11 +56,11 @@ export class Queries {
     */
     async checkLastUpdateTime(pk: number): Promise<boolean> {
 
-        const query = `select to_char(lastupd_from_san, '${OasysDateTime.oracleTimestampFormat}'), to_char(sysdate, '${OasysDateTime.oracleTimestampFormat}') 
+        const query = `select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(sysdate, '${oasysDateTime.oracleTimestampFormat}') 
                             from eor.oasys_set where oasys_set_pk = ${pk}`
 
         const updateTimes = await this.db.getData(query)
-        const diff = OasysDateTime.timestampDiffString(updateTimes[0][0], updateTimes[0][1])  // ms
+        const diff = oasysDateTime.timestampDiffString(updateTimes[0][0], updateTimes[0][1])  // ms
 
         if (diff > 10000) {  // 10 seconds - allows time from updating SAN, returning to OASys and updating the db.
             log(`FAILED - SAN update time mismatch in oasys_set- expected: ${updateTimes[0][0]}, updated: ${updateTimes[0][1]}`)
@@ -107,11 +105,11 @@ export class Queries {
      */
     async getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREATE_ASSESSMENT' | 'SAN_LOCK_INCOMPLETE'): Promise<Temporal.PlainDateTime> {
 
-        const query = `select to_char(time_stamp, '${OasysDateTime.oracleTimestampFormatMs}') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
+        const query = `select to_char(time_stamp, '${oasysDateTime.oracleTimestampFormatMs}') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
         const clogData = await this.db.getData(query)
         let result: Temporal.PlainDateTime = null
         if (clogData.length > 0) {
-            result = OasysDateTime.stringToTimestamp(clogData[0][0])
+            result = oasysDateTime.stringToTimestamp(clogData[0][0])
         }
         return result
     }
@@ -271,7 +269,7 @@ export class Queries {
 
         log('', `Checking OTL call for ${pk}`)
         if (expectedSubjectDetails['dateOfBirth']) {  // reformat the date
-            expectedSubjectDetails['dateOfBirth'] = OasysDateTime.oasysDateAsDbString(expectedSubjectDetails['dateOfBirth'])
+            expectedSubjectDetails['dateOfBirth'] = oasysDateTime.oasysDateAsDbString(expectedSubjectDetails['dateOfBirth'])
         }
 
         const query = `select log_text from eor.clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`
@@ -449,7 +447,7 @@ export class Queries {
     //     oasys.San.getSanApiTime(pk, 'SAN_LOCK_INCOMPLETE', 'lockIncompleteTime')
     //     cy.get<Temporal.PlainDateTime>('@getSanDataTime').then((getSanDataTime) => {
     //         cy.get<Temporal.PlainDateTime>('@lockIncompleteTime').then((lockIncompleteTime) => {
-    //             expect(oasys.OasysDateTime.timestampDiff(getSanDataTime, lockIncompleteTime)).gt(0)
+    //             expect(oasysDateTime.timestampDiff(getSanDataTime, lockIncompleteTime)).gt(0)
     //         })
     //     })
     // }
@@ -521,6 +519,44 @@ export class Queries {
 
         expect(failed).toBeFalsy()
     }
+
+    /**
+     * Check that no questions have been created in sections 2 to 13 and SAQ in the database for the given PK.
+     * Three questions (8.4, 8.5, 8.6) are expected, any more will result in the test failing.
+     */
+    async checkNoQuestionsCreated(pk: number) {
+
+        const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
+                    where st.oasys_set_pk = s.oasys_set_pk
+                    and s.oasys_section_pk = q.oasys_section_pk
+                    and q.oasys_question_pk = a.oasys_question_pk(+)
+                    and s.ref_section_code in ('2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'SAQ')
+                    and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
+                    and st.oasys_set_pk = ${pk}`
+
+        const count = await this.db.selectCount(query)
+        expect(count).toBeLessThanOrEqual(3)   // Expect 3 questions to be populated by getAssessment (8.4, 8.5 and 8.6)
+    }
+
+    // /**
+    //  * Check that IP.1 and IP.2 have not been created in the database.
+    //  */
+    // async checkNoIspQuestions1Or2(pk: number) {
+
+    //     const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
+    //                     where st.oasys_set_pk = s.oasys_set_pk
+    //                     and s.oasys_section_pk = q.oasys_section_pk
+    //                     and s.ref_section_code = 'ISP'
+    //                     and q.ref_question_code in ('IP.1', 'IP.2')
+    //                     and st.oasys_set_pk = ${pk}`
+
+    //     oasys.Db.selectCount(query, 'count')
+    //     cy.get<number>('@count').then((count) => {
+    //         if (count > 0) {
+    //             throw new Error(`Unexpected ISP questions found for assessment ${pk}`)
+    //         }
+    //     })
+    // }
 }
 
 

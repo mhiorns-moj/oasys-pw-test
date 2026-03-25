@@ -285,7 +285,7 @@ export class Assessment {
     //         cy.get<number>('@pk').then((pk) => {
     //             checkOgrs4CalcsPk(pk)
 
-    //             this.oasys.Nav.clickButton('Lock Incomplete', true)
+    //             this.await oasys.clickButton('Lock Incomplete', true)
     //             log('Locked assessment incomplete')
     //         })
     //     })

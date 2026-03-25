@@ -22,22 +22,22 @@ describe('SAN integration - test ref 22 part 1', () => {
             cy.task('retrieveValue', 'offender2').then((offenderData) => {
                 const offender2 = JSON.parse(offenderData as string)
 
-                oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-                oasys.Offender.searchAndSelectByPnc(offender2.pnc)
+                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                await offender.searchAndSelectByPnc(offender2.pnc)
 
                 // Demerge
-                oasys.Nav.clickButton('Demerge')
+                await oasys.clickButton('Demerge')
                 // Workaround for uncaught javascript error in OASys
                 Cypress.on('uncaught:exception', () => {
                     return false
                 })
-                oasys.Nav.clickButton('Confirm Demerge')
-                oasys.Nav.clickButton('Demerge')
+                await oasys.clickButton('Confirm Demerge')
+                await oasys.clickButton('Demerge')
                 cy.get('#apexConfirmBtn').click()
-                oasys.Nav.clickButton('Close')
+                await oasys.clickButton('Close')
                 oasys.logout()
 
-                oasys.San.checkSanMergeCall(oasys.Users.admin, 5)
+                await san.checkSanMergeCall(oasys.users.admin, 5)
             })
         })
     })

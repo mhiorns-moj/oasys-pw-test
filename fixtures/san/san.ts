@@ -1,5 +1,5 @@
 /**
- * __oasys.San.*function*__  
+ * __await san.*function*__  
  * 
  * Functions to interact with the SAN assessment and Sentence Plan, and check results.
  * 
@@ -7,14 +7,12 @@
  */
 
 import { Temporal } from '@js-temporal/polyfill'
-import { Page, TestInfo } from '@playwright/test'
+import { Page } from '@playwright/test'
 
-import * as lib from 'lib'
 import { User, Element } from 'classes'
 import { Oasys, OasysDb } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
-import { OasysDateTime } from 'lib'
 import * as exampleTest from './exampleTest'
 import { Queries } from './queries'
 import { Predictors } from 'fixtures/assessment/pages/predictors'
@@ -29,9 +27,13 @@ export class San {
 
     readonly queries = new Queries(this.oasysDb, this.oasys)
 
-    async populateMinimal() {
+    async populateMinimal(from: 'assessment' | 'offender' = 'assessment') {
 
-        await this.gotoSan()
+        if (from == 'assessment') {
+            await this.gotoSan()
+        } else {
+            await this.gotoSanFromOffender()
+        }
         await this.populateSanSections('Minimally populate SAN sections', exampleTest.minimal, true)
         await this.returnToOASys()
     }
@@ -173,7 +175,7 @@ export class San {
     async populateSanSections(name: string, script: SanPopulation, suppressLog: boolean = false) {
 
         if (suppressLog) {  // Just log the name
-            log('', name)
+            log(name, 'Populating SAN Sections')
         }
         for (let section of script) {
             if (section.section != 'Sentence plan') {
@@ -333,49 +335,7 @@ export class San {
     //     }
     // }
 
-    /**
-     * Check that no questions have been created in sections 2 to 13 and SAQ in the database for the given PK.
-     * Three questions (8.4, 8.5, 8.6) are expected, any more will result in the test failing.
-     */
-    // async checkNoQuestionsCreated(pk: number) {
 
-    //     const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
-    //                 where st.oasys_set_pk = s.oasys_set_pk
-    //                 and s.oasys_section_pk = q.oasys_section_pk
-    //                 and q.oasys_question_pk = a.oasys_question_pk(+)
-    //                 and s.ref_section_code in ('2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'SAQ')
-    //                 and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
-    //                 and st.oasys_set_pk = ${pk}`
-    //     log(query)
-    //     oasys.Db.selectCount(query, 'count')
-    //     cy.get<number>('@count').then((count) => {
-    //         log(count.toString())
-    //         if (count > 3) {    // Expect 3 questions to be populated by getAssessment (8.4, 8.5 and 8.6)
-    //             throw new Error(`${count - 3} unexpected questions/answers found for assessment ${pk}`)
-    //         }
-    //     })
-
-    // }
-
-    // /**
-    //  * Check that IP.1 and IP.2 have not been created in the database.
-    //  */
-    // async checkNoIspQuestions1Or2(pk: number) {
-
-    //     const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
-    //                     where st.oasys_set_pk = s.oasys_set_pk
-    //                     and s.oasys_section_pk = q.oasys_section_pk
-    //                     and s.ref_section_code = 'ISP'
-    //                     and q.ref_question_code in ('IP.1', 'IP.2')
-    //                     and st.oasys_set_pk = ${pk}`
-
-    //     oasys.Db.selectCount(query, 'count')
-    //     cy.get<number>('@count').then((count) => {
-    //         if (count > 0) {
-    //             throw new Error(`Unexpected ISP questions found for assessment ${pk}`)
-    //         }
-    //     })
-    // }
 
     // /**
     //  * Checks that the sections (plus SAF) are all either marked as complete on not.

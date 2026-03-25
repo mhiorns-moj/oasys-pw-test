@@ -17,7 +17,7 @@ export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssess
         result.addAssessment(assessment)
         delete result.timeline
 
-        const saraDateLimit = OasysDateTime.stringToDate(assessment.completedDate).subtract({ weeks: 6 }).toString()
+        const saraDateLimit = oasysDateTime.stringToDate(assessment.completedDate).subtract({ weeks: 6 }).toString()
 
         const saraAssessments = offenderData.assessments.filter(  // Pass all SARAs for this offender that are complete or locked in 6 weeks up to the main assessment date
             (ass) => ass.assessmentType == 'SARA'
@@ -146,7 +146,7 @@ class PniCalc {
             5. Otherwise, both 1.
         */
 
-        const age = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
+        const age = oasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
 
         // Rule 1
         if (age < 18) {
@@ -169,7 +169,7 @@ class PniCalc {
 
             } else {
                 const q2_3 = dbAssessment.qaData.getStringArray('2.3')?.includes('Physical violence towards partner')
-                const after6_30 = OasysDateTime.checkIfAfterReleaseNode('6.30', dbAssessment.initiationDate)
+                const after6_30 = oasysDateTime.checkIfAfterReleaseNode('6.30', dbAssessment.initiationDate)
                 const q6_7 = da(dbAssessment.qaData, after6_30)
 
                 // Rule 3
@@ -290,7 +290,7 @@ class RsrOspData {
         this.ospIiicScoreLevel = common.riskLabel(dbAssessment.riskDetails.ospIicRisk) ?? common.riskLabel(dbAssessment.riskDetails.ospIRisk)  // For pre-6.49 assessments
         this.rsrPercentageScore = common.fixDp(dbAssessment.riskDetails.rsrPercentageScore)
         this.rsrAlgorithmVersion = dbAssessment.riskDetails.rsrAlgorithmVersion
-        this.offenderAge = OasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
+        this.offenderAge = oasysDateTime.dateDiffString(dbAssessment.dateOfBirth, dbAssessment.initiationDate, 'year')
     }
 }
 
@@ -494,7 +494,7 @@ function pniCalc(dbAssessment: dbClasses.DbAssessment, community: boolean, saraR
     const ogrs3RiskRecon = dbAssessment.riskDetails.ogrs3RiskRecon
     const ovpRisk = dbAssessment.riskDetails.ovpRisk
 
-    const after649 = OasysDateTime.checkIfAfterReleaseNode('6.49', dbAssessment.initiationDate)
+    const after649 = oasysDateTime.checkIfAfterReleaseNode('6.49', dbAssessment.initiationDate)
     const ospCdc = after649 ? dbAssessment.riskDetails.ospDcRisk : dbAssessment.riskDetails.ospCRisk
     const ospIiic = after649 ? dbAssessment.riskDetails.ospIicRisk : dbAssessment.riskDetails.ospIRisk
     const rsrPercentageScore = dbAssessment.riskDetails.rsrPercentageScore

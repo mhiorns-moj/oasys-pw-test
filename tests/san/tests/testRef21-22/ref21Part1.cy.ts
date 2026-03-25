@@ -13,17 +13,17 @@ describe('SAN integration - test ref 21 part 1', () => {
 
             const offender1 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probHeadPdu)
-            oasys.Offender.searchAndSelectByPnc(offender1.pnc)
+            oasys.login(oasys.users.probHeadPdu)
+            await offender.searchAndSelectByPnc(offender1.pnc)
             // new oasys.Pages.Offender.OffenderDetails().pnc.setValue('UNKNOWN PNC')
 
             // Create assessment
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
             oasys.Populate.minimal({ layer: 'Layer 3', populate6_11: 'No' })
 
             new oasys.Pages.SentencePlan.IspSection52to8().goto()
-            oasys.Assessment.signAndLock({ expectRsrWarning: true })
+            await signing.signAndLock({ expectRsrWarning: true })
 
             oasys.logout()
 

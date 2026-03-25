@@ -24,7 +24,7 @@ export class SentencePlan {
 
         if (sentencePlan == 'spService') { // TODO others
 
-            await this.spService.goToSpService(from)
+            await this.spService.gotoSpService(from)
             await this.spService.populateMinimal()
         }
     }

@@ -15,17 +15,17 @@ describe('SAN integration - test ref 27', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'result', true)
 
             cy.get<number[]>('@result').then((pks) => {
 
-                oasys.San.gotoSan()
-                oasys.San.populateSanSections('Test 27 part 3 Complete SAN', testData.part3CompleteSan)
-                oasys.San.returnToOASys()
+                await san.gotoSan()
+                await san.populateSanSections('Test 27 part 3 Complete SAN', testData.part3CompleteSan)
+                await san.returnToOASys()
                 oasys.logout()
 
                 log(`Log in as a user in a different NON SAN PILOT probation area.  
@@ -36,15 +36,15 @@ describe('SAN integration - test ref 27', () => {
                     The user still has boilerplate access as they haven't yet created an assessment - just wanted to use this way for guilloting
                     Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`)
 
-                oasys.login(oasys.Users.probHeadPdu)
-                oasys.Offender.searchAndSelectByPnc(offender.pnc, oasys.Users.probationSan)
-                oasys.Nav.clickButton('Create Assessment')
-                oasys.Nav.clickButton('Yes')
-                oasys.Nav.clickButton('Yes - Guillotine WIP Immediately')
+                oasys.login(oasys.users.probHeadPdu)
+                await offender.searchAndSelectByPnc(offender.pnc, oasys.users.probationSan)
+                await oasys.clickButton('Create Assessment')
+                await oasys.clickButton('Yes')
+                await oasys.clickButton('Yes - Guillotine WIP Immediately')
 
-                oasys.Db.getData(`select to_char(lastupd_from_san, '${oasys.OasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate1')
+                oasys.Db.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate1')
                 // TODO added workaround for NOD-1xxx, ignore R2.2.2 as it might get created
-                const questionsQuery = `select max(to_char(q.lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
+                const questionsQuery = `select max(to_char(q.lastupd_date, '${oasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
                                         where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
                                         and q.ref_question_code <> 'R2.2.2'
                                         and st.oasys_set_pk = ${pks[0]}`
@@ -53,17 +53,17 @@ describe('SAN integration - test ref 27', () => {
                 cy.get<string[][]>('@lastUpdDate1').then((initialData) => {
                     cy.get<string[][]>('@questions1').then((questions1) => {
 
-                        const lastUpdFromSan1 = oasys.OasysDateTime.stringToTimestamp(initialData[0][0])
-                        const lastUpdDate1 = oasys.OasysDateTime.stringToTimestamp(initialData[0][1])
-                        const latestQuestionUpdDate1 = oasys.OasysDateTime.stringToTimestamp(questions1[0][0])
+                        const lastUpdFromSan1 = oasysDateTime.stringToTimestamp(initialData[0][0])
+                        const lastUpdDate1 = oasysDateTime.stringToTimestamp(initialData[0][1])
+                        const latestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(questions1[0][0])
 
                         log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
                         Check that the OASYS_SET record has the field 'SAN_ASSESSMENT_VERSION_NO' and 'SSP_PLAN_VERSION_NO' populated by the return API response
                         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                        oasys.San.checkSanLockIncompleteCall(pks[0], oasys.Users.probHeadPdu)
-                        oasys.San.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+                        await san.checkSanLockIncompleteCall(pks[0], oasys.users.probHeadPdu)
+                        await san.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
                         oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
                             SAN_ASSESSMENT_LINKED_IND: 'Y',
                             CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),
@@ -88,32 +88,32 @@ describe('SAN integration - test ref 27', () => {
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen
                         Close the assessment - back to the offender record`)
 
-                        oasys.login(oasys.Users.probSanUnappr)
+                        oasys.login(oasys.users.probSanUnappr)
                         oasys.Nav.history(offender)
-                        oasys.Assessment.openLatest()
-                        oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                        oasys.San.checkSanEditMode(false)
-                        oasys.San.returnToOASys()
+                        await assessment.openLatest()
+                        await san.gotoSanReadOnly('Accommodation', 'information')
+                        await san.checkSanEditMode(false)
+                        await san.returnToOASys()
 
                         oasys.ArnsSp.runScript('checkReadOnly')
 
-                        oasys.Nav.clickButton('Close')
+                        await oasys.clickButton('Close')
 
                         log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                         and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
                         oasys.Db.getData(questionsQuery, 'questions2')
-                        oasys.Db.getData(`select to_char(lastupd_from_san, '${oasys.OasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate2')
+                        oasys.Db.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pks[0]}`, 'lastUpdDate2')
                         cy.get<string[][]>('@questions2').then((questions2) => {
                             cy.get<string[][]>('@lastUpdDate2').then((updatedSetData2) => {
 
-                                const latestQuestionUpdDate2 = oasys.OasysDateTime.stringToTimestamp(questions2[0][0])
-                                const lastUpdFromSan2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData2[0][0])
-                                const lastUpdDate2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData2[0][1])
+                                const latestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(questions2[0][0])
+                                const lastUpdFromSan2 = oasysDateTime.stringToTimestamp(updatedSetData2[0][0])
+                                const lastUpdDate2 = oasysDateTime.stringToTimestamp(updatedSetData2[0][1])
 
-                                expect(oasys.OasysDateTime.timestampDiff(latestQuestionUpdDate1, latestQuestionUpdDate2)).lte(0)
-                                expect(oasys.OasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
-                                expect(oasys.OasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
+                                expect(oasysDateTime.timestampDiff(latestQuestionUpdDate1, latestQuestionUpdDate2)).lte(0)
+                                expect(oasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
+                                expect(oasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
 
                                 oasys.logout()
                             })

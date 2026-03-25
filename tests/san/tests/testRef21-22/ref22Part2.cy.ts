@@ -8,10 +8,10 @@ describe('SAN integration - test ref 22 part 2', () => {
         cy.task('retrieveValue', 'offender1').then((offenderData) => {
             const offender1 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probHeadPdu)
-            oasys.Offender.searchAndSelectByCrn(offender1.probationCrn)
+            oasys.login(oasys.users.probHeadPdu)
+            await offender.searchAndSelectByCrn(offender1.probationCrn)
             new oasys.Pages.Offender.AssessmentsTab().assessments.checkCount(1)
-            oasys.Assessment.openLatest()
+            await assessment.openLatest()
             new oasys.Pages.Assessment.OffenderInformation().religion.checkStatus('readonly')
             oasys.logout()
         })

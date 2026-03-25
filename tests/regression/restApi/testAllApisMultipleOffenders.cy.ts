@@ -7,7 +7,7 @@ import { testEnvironment } from '../../../localSettings'
  */
 describe('RestAPI regression tests', () => {
 
-    oasys.OasysDateTime.startTimer('apiTest')
+    oasysDateTime.startTimer('apiTest')
 
     let stats: EndpointStat[] = []
     let offendersTested = 0
@@ -166,7 +166,7 @@ describe('RestAPI regression tests', () => {
         const failed = reportStats()
         cy.groupedLogEnd()
 
-        let elapsedTimeS = Math.round(oasys.OasysDateTime.elapsedTime('apiTest') / 1000)
+        let elapsedTimeS = Math.round(oasysDateTime.elapsedTime('apiTest') / 1000)
         cy.groupedLogStart('Totals')
         cy.groupedLog(`Offenders: ${offendersTested}`)
         cy.groupedLog(`API calls: ${totalApiCount}`)
@@ -222,7 +222,7 @@ describe('RestAPI regression tests', () => {
     }
 
     function onlyUnique(value, index, array) {
-        return array.indexOf(value) === index;
+        return array.indexOf(value) === index
     }
 
     function getHighlightText(endpoint: string, time: number): string {

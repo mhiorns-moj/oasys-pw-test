@@ -14,10 +14,10 @@ describe('SAN integration - test ref 12', () => {
                     Find the offender used in Test Ref 11 - last assessment is a fully completed 3.1 OASys 
                     Create a new 3.1 OASys 'Review' assessment.`)
 
-            oasys.login(oasys.Users.probHeadPdu)
+            oasys.login(oasys.users.probHeadPdu)
 
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
+            await offender.searchAndSelectByPnc(offender.pnc)
+            await assessment.createProb({ purposeOfAssessment: 'Review' })
 
             log(`It does NOT call for any SAN data.
                     Check the OASYS_SET record; field CLONED_FROM_PREV_OASYS_SAN_PK has been set to the PK of of the last OASys-SAN assessment,
@@ -30,7 +30,7 @@ describe('SAN integration - test ref 12', () => {
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevSanPk = pks[2]
-                oasys.San.checkNoSanCall(pk)
+                await san.checkNoSanCall(pk)
 
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
@@ -145,7 +145,7 @@ describe('SAN integration - test ref 12', () => {
                 sara.reason.setValue('There was no suitably trained assessor available')
                 sara.ok.click()
 
-                oasys.Assessment.signAndLock({ page: oasys.Pages.SentencePlan.RspSection1to2 })
+                await signing.signAndLock({ page: oasys.Pages.SentencePlan.RspSection1to2 })
                 oasys.logout()
             })
 

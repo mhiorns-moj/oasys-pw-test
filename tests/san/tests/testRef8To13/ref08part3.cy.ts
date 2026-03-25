@@ -10,10 +10,10 @@ describe('SAN integration - test ref 08 part 3', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Assessment.openLatest()
+            await assessment.openLatest()
 
             log(`Now go back to the 'Strengths and Needs Sections' screen
                     Click on the button <Open Strengths and Needs> - launches into the SAN Assessment.  Answer all questions with whatever you like BUT at all the 'Is this area linked to risk of serious harm?' answer 'No'
@@ -23,10 +23,10 @@ describe('SAN integration - test ref 08 part 3', () => {
                     The navigation menu is now showing a green tick against the 'Strengths and Needs Sections' option
                     A full analysis has NOT been invoked`)
 
-            oasys.San.gotoSan()
-            oasys.San.populateSanSections('TestRef8 complete SAN', testData.sanPopulation)
-            oasys.San.returnToOASys()
-            oasys.Nav.clickButton('Next')
+            await san.gotoSan()
+            await san.populateSanSections('TestRef8 complete SAN', testData.sanPopulation)
+            await san.returnToOASys()
+            await oasys.clickButton('Next')
             new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
             new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
 
@@ -104,9 +104,9 @@ describe('SAN integration - test ref 08 part 3', () => {
                     Leave the default countersigner and enter a countersign comment
                     Check that a 'Sign API' has been posted to the SAN Service and the contents are correct (status passed is 'SIGNED' along with the User ID and User name)`)
 
-            oasys.Assessment.signAndLock({
+            await signing.signAndLock({
                 page: oasys.Pages.SentencePlan.SentencePlanService,
-                expectCountersigner: true, countersigner: oasys.Users.probSanHeadPdu, countersignComment: '3.2 assessment needs countersigning'
+                expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: '3.2 assessment needs countersigning'
             })
             oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')

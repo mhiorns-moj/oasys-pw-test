@@ -1,6 +1,5 @@
-import { Locator, Page, expect } from '@playwright/test'
+import { Locator, Page } from '@playwright/test'
 
-import * as lib from 'lib'
 
 export class Link {
 

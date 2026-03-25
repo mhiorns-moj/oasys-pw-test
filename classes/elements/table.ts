@@ -1,7 +1,6 @@
-import { Locator, expect, Page } from '@playwright/test'
-
-import * as lib from 'lib'
+import { Locator, Page } from '@playwright/test'
 import { Column } from './column'
+
 
 export class Table {
 

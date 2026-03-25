@@ -10,8 +10,8 @@ describe('SAN integration - test ref 17 part 1', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanPso)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanPso)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Create a Start of Community Order, layer 3, initial sentence plan.  
                     The SAN question appears asking if they want to 'Include strengths and needs sections' which has defaulted to 'Yes' 
@@ -23,12 +23,12 @@ describe('SAN integration - test ref 17 part 1', () => {
                     Ensure that we have NOT stored down any SAN version number OR Sentence Plan version number on the OASYS_SET record
                     Complete Section 1 with a non-sexual offence and complete the predictors screen - RSR dynamic score can't be scored yet.`)
 
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order' })
-            oasys.San.checkLayer3Menu(true)
+            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order' })
+            await san.checkLayer3Menu(true)
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
-                oasys.San.checkSanCreateAssessmentCall(pk, null, oasys.Users.probSanPso, oasys.Users.probationSanCode, 'INITIAL')
+                await san.checkSanCreateAssessmentCall(pk, null, oasys.users.probSanPso, oasys.users.probationSanCode, 'INITIAL')
                 oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
@@ -38,10 +38,10 @@ describe('SAN integration - test ref 17 part 1', () => {
 
                 const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
                 offendingInformation.setValues({
-                    offence: '030', subcode: '01', count: '1', offenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -4 }),
-                    sentence: 'Fine', sentenceDate: oasys.OasysDateTime.oasysDateAsString({ months: -3 })
+                    offence: '030', subcode: '01', count: '1', offenceDate: oasysDateTime.oasysDateAsString({ months: -4 }),
+                    sentence: 'Fine', sentenceDate: oasysDateTime.oasysDateAsString({ months: -3 })
                 })
-                const predictors = new oasys.Pages.Assessment.Predictors().goto(true)
+                await assessment.predictors.goto(true)
                 predictors.dateFirstSanction.setValue({ years: -3 })
                 predictors.o1_32.setValue(2)
                 predictors.o1_40.setValue(0)
@@ -67,10 +67,10 @@ describe('SAN integration - test ref 17 part 1', () => {
                         Ensure the SAN Assessment is completed and validated. The 'Strengths and Needs Sections' menu item has a green tick against it
                         A full analysis has been invoked - giving sections 6.1, 6.2, RoSH Summary and Risk Management Plan`)
 
-                oasys.San.gotoSan()
-                oasys.San.populateSanSections('Test ref 17', testData.sanPopulation)
-                oasys.San.returnToOASys()
-                oasys.Nav.clickButton('Next')
+                await san.gotoSan()
+                await san.populateSanSections('Test ref 17', testData.sanPopulation)
+                await san.returnToOASys()
+                await oasys.clickButton('Next')
                 new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
                 new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
                 new oasys.Pages.Rosh.RoshSummary().checkMenuVisibility(true)
@@ -116,7 +116,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                 oasys.Populate.RoshPages.ChildAtRisk.fullyPopulatedChild2()
 
                 const roshSummary = new oasys.Pages.Rosh.RoshSummary().goto()
-                oasys.Populate.RoshPages.RoshSummary.specificRiskLevel('Low')
+                await risk.populateWithSpecificRiskLevel('Low')
                 roshSummary.r10_6ChildrenCommunity.setValue('Medium')
 
                 log(`Navigate to the Risk Management screen - ensure the checklist of items are 'Use of weapons', 'Arson', 'Accommodation', 
@@ -164,7 +164,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen`)
 
                 oasys.ArnsSp.runScript('populateTwoGoals')
-                oasys.San.checkSanOtlCall(pk, {
+                await san.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -175,7 +175,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                     'location': 'COMMUNITY',
                     'sexuallyMotivatedOffenceHistory': 'NO',
                 }, {
-                    'displayName': oasys.Users.probSanPso.forenameSurname,
+                    'displayName': oasys.users.probSanPso.forenameSurname,
                     'planAccessMode': 'READ_WRITE',
                 }, 'sp', null,
                     {
@@ -253,10 +253,10 @@ describe('SAN integration - test ref 17 part 1', () => {
                             with the User ID and name)`)
 
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
-                oasys.Assessment.signAndLock({ expectCountersigner: true, countersignComment: 'Signing test 17' })
+                await signing.signAndLock({ expectCountersigner: true, countersignComment: 'Signing test 17' })
 
                 oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
-                oasys.San.checkSanSigningCall(pk, oasys.Users.probSanPso, 'COUNTERSIGN')
+                await san.checkSanSigningCall(pk, oasys.users.probSanPso, 'COUNTERSIGN')
 
                 oasys.logout()
             })

@@ -1,4 +1,3 @@
-import * as lib from 'lib'
 import { test } from 'fixtures'
 
 /**

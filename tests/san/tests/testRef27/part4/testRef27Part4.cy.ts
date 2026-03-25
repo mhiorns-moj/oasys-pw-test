@@ -16,23 +16,23 @@ describe('SAN integration - test ref 27', () => {
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
             // First delete the BCS as it prevents the transfer
-            oasys.login(oasys.Users.admin, oasys.Users.prisonSan)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.admin, oasys.users.prisonSan)
+            await offender.searchAndSelectByPnc(offender.pnc)
             oasys.Assessment.deleteLatest()
             oasys.logout()
 
-            oasys.login(oasys.Users.prisSanUnappr)
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.prisSanUnappr)
+            await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Assessment.createPris({ purposeOfAssessment: 'Start custody', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            await assessment.createPris({ purposeOfAssessment: 'Start custody', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
-                oasys.San.gotoSan()
-                oasys.San.populateSanSections('TestRef27 part 1 complete SAN', oasys.Populate.San.ExampleTest.sanPopulation1)
-                oasys.San.returnToOASys()
+                await san.gotoSan()
+                await san.populateSanSections('TestRef27 part 1 complete SAN', oasys.Populate.San.ExampleTest.sanPopulation1)
+                await san.returnToOASys()
                 oasys.ArnsSp.runScript('populateMinimal')
-                oasys.Nav.clickButton('Previous')
+                await oasys.clickButton('Previous')
 
                 oasys.Db.checkSingleAnswer(pk, '9', '9.2', 'refAnswer', '0')  // above population sets binge drinking to no
 
@@ -42,13 +42,13 @@ describe('SAN integration - test ref 27', () => {
                     Take screenshots of your input but do not click on <Save and Continue> - just navigate to a different screen - we need 'unvalidated' data
                     Return back to the Offender record`)
 
-                oasys.Nav.clickButton('Close')
-                oasys.Nav.clickButton('Open S&N')
+                await oasys.clickButton('Close')
+                await oasys.clickButton('Open S&N')
                 const landingPage = new oasys.Pages.San.LandingPage()
                 landingPage.confirmCheck.setValue(true)
                 landingPage.confirm.click()
-                oasys.San.populateSanSections('Test 27 part 4 SAN Alcohol', testData.test4ModifyAlcohol)
-                oasys.San.returnToOASys()
+                await san.populateSanSections('Test 27 part 4 SAN Alcohol', testData.test4ModifyAlcohol)
+                await san.returnToOASys()
 
                 log(`From the offender record click on the <Open SSP> button - taken into the Sentence Plan Service in EDIT mode
                     Change or enter more data that changes the sentence plan e.g. add an objective.  Take screenshots of your input but do not agree the plan
@@ -62,22 +62,22 @@ describe('SAN integration - test ref 27', () => {
                     Now log in as a user to the 'awaiting' NON SAN PILOT prison area.  
                     Search for and open up the Offender record currently owned by the SAN Pilot probation area - will have 'full' access to the offender record`)
 
-                oasys.login(oasys.Users.prisHomds)
+                oasys.login(oasys.users.prisHomds)
                 offender.receptionCode = 'TRANSFER IN FROM OTHER ESTABLISHMENT'
                 oasys.Offender.enterPrisonStubDetailsAndCreateReceptionEvent(offender)
-                oasys.Offender.searchAndSelectByPnc(offender.pnc, oasys.Users.prisonSan)
+                await offender.searchAndSelectByPnc(offender.pnc, oasys.users.prisonSan)
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
                 offenderDetails.offenderManagementTab.click()
-                new oasys.Pages.Offender.OffenderManagementTab().awaitingPrisonOwner.checkValue(oasys.Users.prisonNonSan)
+                new oasys.Pages.Offender.OffenderManagementTab().awaitingPrisonOwner.checkValue(oasys.users.prisonNonSan)
 
                 log(`Click on the <Create Assessment> button - shown 'Work In Progress Assessment at another Establishment…. Recording (Work in Progress)….' message
                     Click on the <Lock Incomplete> button - returns back to the Offender record
                     The user now has full access to the offender and the assessment is showing as Locked Incomplete
                     The controlling owner is now set to the Awaiting Prison Owner`)
 
-                oasys.Nav.clickButton('Create Assessment')
-                oasys.Nav.clickButton('Lock Incomplete')
-                offenderDetails.controllingOwner.checkValue(oasys.Users.prisonNonSan)
+                await oasys.clickButton('Create Assessment')
+                await oasys.clickButton('Lock Incomplete')
+                offenderDetails.controllingOwner.checkValue(oasys.users.prisonNonSan)
 
                 log(`Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'
                     Check that Get Assessment has occurred BEFORE locking incomplete
@@ -89,9 +89,9 @@ describe('SAN integration - test ref 27', () => {
                     Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                     Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                oasys.Db.getData(`select to_char(lastupd_from_san, '${oasys.OasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate1')
+                oasys.Db.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate1')
                 // TODO added workaround for NOD-1xxx, ignore R2.2.2 as it might get created
-                const questionsQuery = `select max(to_char(q.lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
+                const questionsQuery = `select max(to_char(q.lastupd_date, '${oasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
                                                         where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
                                                         and q.ref_question_code <> 'R2.2.2'
                                                         and st.oasys_set_pk = ${pk}`
@@ -100,13 +100,13 @@ describe('SAN integration - test ref 27', () => {
                 cy.get<string[][]>('@lastUpdDate1').then((initialData) => {
                     cy.get<string[][]>('@questions1').then((questions1) => {
 
-                        const lastUpdFromSan1 = oasys.OasysDateTime.stringToTimestamp(initialData[0][0])
-                        const lastUpdDate1 = oasys.OasysDateTime.stringToTimestamp(initialData[0][1])
-                        const latestQuestionUpdDate1 = oasys.OasysDateTime.stringToTimestamp(questions1[0][0])
+                        const lastUpdFromSan1 = oasysDateTime.stringToTimestamp(initialData[0][0])
+                        const lastUpdDate1 = oasysDateTime.stringToTimestamp(initialData[0][1])
+                        const latestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(questions1[0][0])
 
-                        oasys.San.checkSanGetAssessmentCall(pk, 0)
-                        oasys.San.checkSanLockIncompleteCall(pk, oasys.Users.prisHomds)
-                        oasys.San.checkSanLockIncompleteTimestamp(pk)
+                        await san.checkSanGetAssessmentCall(pk, 0)
+                        await san.checkSanLockIncompleteCall(pk, oasys.users.prisHomds)
+                        await san.checkSanLockIncompleteTimestamp(pk)
 
                         oasys.Db.checkSingleAnswer(pk, '9', '9.2', 'refAnswer', '2')  // change from offender record sets binge drinking
 
@@ -135,34 +135,34 @@ describe('SAN integration - test ref 27', () => {
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen
                         Close the assessment - back to the offender record`)
 
-                        oasys.Assessment.openLatest()
-                        oasys.San.gotoSanReadOnly('Accommodation', 'information')
-                        oasys.San.checkSanEditMode(false)
-                        oasys.San.goto('Alcohol use', 'information')
-                        oasys.San.checkReadonlyText(
+                        await assessment.openLatest()
+                        await san.gotoSanReadOnly('Accommodation', 'information')
+                        await san.checkSanEditMode(false)
+                        await san.goto('Alcohol use', 'information')
+                        await san.checkReadonlyText(
                             'Has TestRefTwentySeven-Four shown evidence of binge drinking or excessive alcohol use in the last 6 months?',
                             'Evidence of binge drinking or excessive alcohol use')
-                        oasys.San.returnToOASys()
+                        await san.returnToOASys()
 
                         oasys.ArnsSp.runScript('checkGoalCount', { readonly: true, currentGoals: 2, futureGoals: 0 })
 
-                        oasys.Nav.clickButton('Close')
+                        await oasys.clickButton('Close')
 
                         log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                              and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
                         oasys.Db.getData(questionsQuery, 'questions2')
-                        oasys.Db.getData(`select to_char(lastupd_from_san, '${oasys.OasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasys.OasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                        oasys.Db.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                         cy.get<string[][]>('@questions2').then((questions2) => {
                             cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 
-                                const latestQuestionUpdDate2 = oasys.OasysDateTime.stringToTimestamp(questions2[0][0])
-                                const lastUpdFromSan2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData[0][0])
-                                const lastUpdDate2 = oasys.OasysDateTime.stringToTimestamp(updatedSetData[0][1])
+                                const latestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(questions2[0][0])
+                                const lastUpdFromSan2 = oasysDateTime.stringToTimestamp(updatedSetData[0][0])
+                                const lastUpdDate2 = oasysDateTime.stringToTimestamp(updatedSetData[0][1])
 
-                                expect(oasys.OasysDateTime.timestampDiff(latestQuestionUpdDate1, latestQuestionUpdDate2)).lte(0)
-                                expect(oasys.OasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
-                                expect(oasys.OasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
+                                expect(oasysDateTime.timestampDiff(latestQuestionUpdDate1, latestQuestionUpdDate2)).lte(0)
+                                expect(oasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
+                                expect(oasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
 
                                 oasys.logout()
                             })

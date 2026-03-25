@@ -18,20 +18,20 @@ describe('SAN integration - tests 39-40', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)  // Senior user so no countersigning for this test
-            oasys.Offender.searchAndSelectByPnc(offender.pnc)
+            oasys.login(oasys.users.probSanHeadPdu)  // Senior user so no countersigning for this test
+            await offender.searchAndSelectByPnc(offender.pnc)
 
             // Create assessment
-            oasys.Assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
+            await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
-            oasys.San.gotoSan()
-            oasys.San.populateSanSections('Merge test', testData.modifySanForAssessment3)
-            oasys.San.returnToOASys()
+            await san.gotoSan()
+            await san.populateSanSections('Merge test', testData.modifySanForAssessment3)
+            await san.returnToOASys()
 
             // Sign and lock
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
-            oasys.Assessment.signAndLock()
+            await signing.signAndLock()
             oasys.logout()
         })
     })

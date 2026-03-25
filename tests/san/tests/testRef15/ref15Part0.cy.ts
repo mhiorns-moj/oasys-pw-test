@@ -23,7 +23,7 @@ describe('SAN integration - test ref 15 part 0', () => {
 
     it('Test ref 15 part 0 - create offender', () => {
 
-        oasys.login(oasys.Users.prisSanCAdm)
+        oasys.login(oasys.users.prisSanCAdm)
 
         oasys.Offender.createPris(offender, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {

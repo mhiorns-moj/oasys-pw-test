@@ -22,7 +22,7 @@ describe('Create or update users', () => {
 function createOrUpdateUser(user: User) {
 
     if (user.profile) {
-        oasys.login(oasys.Users.admin, user.profile.provider)
+        oasys.login(oasys.users.admin, user.profile.provider)
         const userAccounts = new oasys.Pages.Maintenance.UserAccounts().goto()
         userAccounts.userName.setValue(user.username)
         userAccounts.search.click()

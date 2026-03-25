@@ -17,17 +17,17 @@ describe('SAN integration - tests 39-40', () => {
         cy.task('retrieveValue', 'offender1').then((offenderData) => {
             const offender1 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.Users.probSanHeadPdu)
+            oasys.login(oasys.users.probSanHeadPdu)
 
-            oasys.Offender.searchAndSelectByCrn(offender1.probationCrn)
+            await offender.searchAndSelectByCrn(offender1.probationCrn)
             const assesmentTab = new oasys.Pages.Offender.AssessmentsTab()
             assesmentTab.assessments.checkData([{ name: 'purposeOfAssessment', values: ['Start of Community Order (Full) '] }])
 
-            oasys.Assessment.openLatest()
-            oasys.San.gotoSanReadOnly('Offence analysis')
-            oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
-            oasys.San.returnToOASys()
-            oasys.Nav.clickButton('Close')
+            await assessment.openLatest()
+            await san.gotoSanReadOnly('Offence analysis')
+            await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
+            await san.returnToOASys()
+            await oasys.clickButton('Close')
 
             // Create a new one, check cloning
             cy.get<AppConfig>('@appConfig').then((appConfig) => {
@@ -35,10 +35,10 @@ describe('SAN integration - tests 39-40', () => {
                     // Need to set PNC to avoid error creating assessment
                     new oasys.Pages.Offender.OffenderDetails().pnc.setValue(offender1.pnc)
                 }
-                oasys.Assessment.createProb({ purposeOfAssessment: 'Review' })
-                oasys.San.gotoSan('Offence analysis')
-                oasys.San.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
-                oasys.San.returnToOASys()
+                await assessment.createProb({ purposeOfAssessment: 'Review' })
+                await san.gotoSan('Offence analysis')
+                await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
+                await san.returnToOASys()
                 oasys.logout()
             })
         })

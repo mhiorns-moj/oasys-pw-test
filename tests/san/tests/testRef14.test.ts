@@ -38,7 +38,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
     await risk.screeningSection5.r5_1t.setValue('Want to do a full analysis')
     await oasys.clickButton('Save')
     await risk.summary.fullyPopulated()
-    await risk.riskManagementPlan.minimalWithTextFields()
+    await risk.rmp.minimalWithTextFields()
 
     await signing.signAndLock({ page: 'spService' })
 
@@ -112,7 +112,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
     // Check values in OASYS_SET
     await san.queries.getSanApiTimeAndCheckDbValues(pk2, 'Y', null)
 
-    await risk.riskManagementPlan.checkMenuVisibility(false)
+    await risk.rmp.checkMenuVisibility(false)
     await sentencePlan.spService.checkGoalCount(0, 0)
 
     await oasys.logout()
