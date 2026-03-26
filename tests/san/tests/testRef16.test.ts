@@ -54,9 +54,9 @@ test('SAN integration - test ref 16', async ({ oasys, offender, assessment, task
         The Learning Screening Tool states 'Not enough items have been scored to identify whether this individual has a learning disability and/or learning challenges.'
         The OPD section states 'It was not possible to identify whether this individual has met criteria for the OPD pathway as not enough items were answered.'`, 'Test step')
 
-    await assessment.layer3.summarySheet.goto()
-    await assessment.layer3.summarySheet.learningScreeningTool.checkValue('Not enough items have been scored to identify whether this individual has a learning disability and/or learning challenges.', true)
-    await assessment.layer3.summarySheet.opd.checkValue('It was not possible to identify whether this individual has met criteria for the OPD pathway as not enough items were answered.', true)
+    await assessment.summarySheet.goto()
+    await assessment.summarySheet.learningScreeningTool.checkValue('Not enough items have been scored to identify whether this individual has a learning disability and/or learning challenges.', true)
+    await assessment.summarySheet.opd.checkValue('It was not possible to identify whether this individual has met criteria for the OPD pathway as not enough items were answered.', true)
 
     log(`Navigate back to Section 1 Offending Information and complete the screen selecting a 'SEXUAL' offence
         Navigate to the RoSH Summary screen and set 10.6 PUBLIC risk to 'High'
@@ -87,9 +87,9 @@ test('SAN integration - test ref 16', async ({ oasys, offender, assessment, task
         and the screen override field has defaulted to 'No'
         Now navigate out to the Strengths and Needs sections via the OASys screen`, 'Test step')
 
-    await assessment.layer3.summarySheet.goto()
-    await assessment.layer3.summarySheet.opdOverrideMessage.checkValue('This individual does not meet the criteria for the OPD pathway.', true)
-    await assessment.layer3.summarySheet.opdOverride.checkValue('No')
+    await assessment.summarySheet.goto()
+    await assessment.summarySheet.opdOverrideMessage.checkValue('This individual does not meet the criteria for the OPD pathway.', true)
+    await assessment.summarySheet.opdOverride.checkValue('No')
 
     await san.gotoSan()
 
@@ -120,11 +120,11 @@ test('SAN integration - test ref 16', async ({ oasys, offender, assessment, task
         Leave the assessment as WIP`, 'Test step')
 
     await san.returnToOASys()
-    await assessment.layer3.summarySheet.goto()
-    await assessment.layer3.summarySheet.learningScreeningTool.checkValue(
+    await assessment.summarySheet.goto()
+    await assessment.summarySheet.learningScreeningTool.checkValue(
         'This individual may have a learning disability and/or learning challenges. Further assessment may be needed to determine the support required. Consideration for referral for specialised assessment should be given, if appropriate.',
         true)
-    await assessment.layer3.summarySheet.opd.checkValue('This individual meets the criteria for the OPD pathway.', true)
+    await assessment.summarySheet.opd.checkValue('This individual meets the criteria for the OPD pathway.', true)
 
     await oasys.logout()
 })

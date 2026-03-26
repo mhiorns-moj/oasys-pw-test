@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 /**
  * The SanPage class is used to define SAN pages, including all the elements on the page (i.e. text boxes, buttons etc), and the menu options used

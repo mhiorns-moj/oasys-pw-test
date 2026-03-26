@@ -13,27 +13,27 @@ describe('SAN integration - test ref 29/30', () => {
 
             const offender2 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanPo)
+            await oasys.login(oasys.users.probSanPo)
             await offender.searchAndSelectByPnc(offender2.pnc)
 
             // Create and complete assessment and SARA
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
             // Complete section 1
-            new oasys.Pages.Assessment.OffendingInformation().goto().count.setValue(1)
+            await assessment.offendingInformation.populateMinimal()
 
             await assessment.predictors.goto(true)
-            predictors.dateFirstSanction.setValue({ years: -2 })
-            predictors.o1_30.setValue('Yes')
-            predictors.o1_41.setValue('No')
-            predictors.o1_32.setValue(2)
-            predictors.o1_40.setValue(0)
-            predictors.o1_29.setValue({ months: -1 })
-            predictors.o1_33.setValue({ months: -6 })
-            predictors.o1_34.setValue(1)
-            predictors.o1_45.setValue(1)
-            predictors.o1_46.setValue(1)
-            predictors.o1_38.setValue({ months: -1 })
-            predictors.o1_37.setValue(1)
+            await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
+            await assessment.predictors.o1_30.setValue('Yes')
+            await assessment.predictors.o1_41.setValue('No')
+            await assessment.predictors.o1_32.setValue(2)
+            await assessment.predictors.o1_40.setValue(0)
+            await assessment.predictors.o1_29.setValue({ months: -1 })
+            await assessment.predictors.o1_33.setValue({ months: -6 })
+            await assessment.predictors.o1_34.setValue(1)
+            await assessment.predictors.o1_45.setValue(1)
+            await assessment.predictors.o1_46.setValue(1)
+            await assessment.predictors.o1_38.setValue({ months: -1 })
+            await assessment.predictors.o1_37.setValue(1)
 
             await san.gotoSan()
             await san.populateSanSections('TestRef29 complete SAN', testData.sanPopulation)
@@ -47,7 +47,7 @@ describe('SAN integration - test ref 29/30', () => {
             sara.signAndLock.click()
             sara.confirmSignAndLock.click()
 
-            oasys.Nav.history(offender2, 'Start of Community Order')
+            await oasys.history(offender2, 'Start of Community Order')
             oasys.Populate.RoshPages.RoshScreeningSection1.noRisks()
             oasys.Populate.RoshPages.RoshScreeningSection2to4.noRisks(true)
             await risk.populateWithSpecificRiskLevel('High')
@@ -60,10 +60,10 @@ describe('SAN integration - test ref 29/30', () => {
             await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: 'Sending test ref 20 for countersigning' })
 
             // Countersign
-            oasys.logout()
-            oasys.login(oasys.users.probSanHeadPdu)
-            oasys.Assessment.countersign({ offender: offender2 })
-            oasys.logout()
+            await oasys.logout()
+            await oasys.login(oasys.users.probSanHeadPdu)
+            await signing.countersign({ offender: offender2 })
+            await oasys.logout()
 
             log(`Log into the SAN Pilot area as an Administrator
                     Search for the offender and open up the SARA
@@ -79,7 +79,7 @@ describe('SAN integration - test ref 29/30', () => {
                     const saraPk = Number.parseInt(saraData[0][0])
                     log(`SARA PK: ${saraPk}`)
 
-                    oasys.login(oasys.users.admin, oasys.users.probationSan)
+                    await oasys.login(oasys.users.admin, oasys.users.probationSan)
                     await offender.searchAndSelectByPnc(offender2.pnc)
                     oasys.Assessment.open(2)  // SARA is second on the list
                     const deleteSara = new oasys.Pages.Sara.DeleteSara().goto(true)
@@ -96,9 +96,9 @@ describe('SAN integration - test ref 29/30', () => {
                         An OASYS_SIGNING record has been created for the deletion 'ASSMT_DEL_SIGNING'
                         A Delete API has been sent to the SAN Service - check the parameters are the OASYS_SET_PK, Admins User ID and Name - a 200 response has been received back`)
 
-                    oasys.Nav.history(offender2)
-                    oasys.Assessment.deleteLatest()
-                    await san.checkSanDeleteCall(pk, oasys.users.admin)
+                    await oasys.history(offender2)
+                    await assessment.deleteLatest()
+                    await san.queries.checkSanDeleteCall(pk, oasys.users.admin)
                     oasys.Assessment.checkDeleted(pk)
                     oasys.Assessment.checkSigningRecord(pk, ['ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
 
@@ -108,12 +108,12 @@ describe('SAN integration - test ref 29/30', () => {
 
                     oasys.Assessment.checkNotDeleted(pk)
                     oasys.Assessment.checkSigningRecord(pk, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
-                    await san.checkSanUndeleteCall(pk, oasys.users.admin)
+                    await san.queries.checkSanUndeleteCall(pk, oasys.users.admin)
                     oasys.Assessment.checkNotDeleted(saraPk)
                     oasys.Assessment.checkSigningRecord(saraPk, ['SARA_DEL_RESTORE', 'SARA_DEL_SIGNING', 'SARA_SIGNING'])
                     await san.checkNoSanCall(saraPk)
 
-                    oasys.logout()
+                    await oasys.logout()
                 })
             })
         })

@@ -25,9 +25,9 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
         await assessment.predictors.o1_30.setValue('No')
         await assessment.predictors.o1_29.setValue({ months: -1 })
         await assessment.predictors.o1_38.setValue({ years: 3 })
-        await assessment.layer3.summarySheet.goto()
-        await assessment.layer3.summarySheet.opdOverride.setValue('Yes')
-        await assessment.layer3.summarySheet.opdOverrideReason.setValue('Testing')
+        await assessment.summarySheet.goto()
+        await assessment.summarySheet.opdOverride.setValue('Yes')
+        await assessment.summarySheet.opdOverrideReason.setValue('Testing')
 
         // Sign assessment, then check SNS messages again
         await signing.signAndLock({ page: 'spService' })
@@ -45,7 +45,7 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
         await assessment.offendingInformation.populateMinimal()
         await assessment.predictors.populateMinimal()
-        await assessment.layer3.sections2To13NoIssues({ populate6_11: 'No' })
+        await assessment.sections2To13NoIssues({ populate6_11: 'No' })
         await assessment.selfAssessmentForm.populateMinimal()
 
         // Set to Medium risk to get countersigner
@@ -74,9 +74,9 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
         await assessment.predictors.o1_30.setValue('No')
         await assessment.predictors.o1_29.setValue({ months: -1 })
         await assessment.predictors.o1_38.setValue({ years: 3 })
-        await assessment.layer3.summarySheet.goto()
-        await assessment.layer3.summarySheet.opdOverride.setValue('Yes')
-        await assessment.layer3.summarySheet.opdOverrideReason.setValue('Testing')
+        await assessment.summarySheet.goto()
+        await assessment.summarySheet.opdOverride.setValue('Yes')
+        await assessment.summarySheet.opdOverrideReason.setValue('Testing')
 
         // Sign assessment and check SNS messages
         await signing.signAndLock({ page: 'spService', expectCountersigner: true, countersigner: oasys.users.probSpHeadPdu })

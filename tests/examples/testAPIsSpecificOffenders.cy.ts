@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 /**
  * Tests all endpoints against one or more specific oasys.Offender.

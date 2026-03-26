@@ -1,8 +1,8 @@
-import * as oasys from 'lib'
 
-export function cancelSara() {
+async cancelSara() {
 
-    const page = new oasys.Pages.Sara.ReasonNoSara().goto(true)
-    page.reason.setValue('There was no suitably trained assessor available')
-    page.ok.click()
+    await this.goto(true)
+        .Sara.ReasonNoSara().goto(true)
+    await this.reason.setValue('There was no suitably trained assessor available')
+    await this.ok.click()
 }

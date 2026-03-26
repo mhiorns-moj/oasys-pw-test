@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 import { mappingTestOffenderFile } from './xMappingTest'
 
 type TextType = 'normal' | 'max' | 'empty'
@@ -28,13 +27,13 @@ function paTest() {
         const mappingTestOffender = JSON.parse(offenderDetails) as OffenderDef
 
         // Delete previous assessments so no data gets cloned
-        oasys.login(oasys.users.admin, oasys.users.probationSan)
+        await oasys.login(oasys.users.admin, oasys.users.probationSan)
         await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
         oasys.Assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
-        oasys.logout()
+        await oasys.logout()
 
         // Create a new SAN assessment
-        oasys.login(oasys.users.probSanUnappr)
+        await oasys.login(oasys.users.probSanUnappr)
         await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
@@ -138,7 +137,7 @@ function getText(question: 'strengths' | 'riskOfHarm' | 'riskOfReoffending', yes
         case 'normal':
             return `${question} text - ${yes ? 'yes' : 'no'} selected`
         case 'max':
-            return oasys.oasysString(question == 'riskOfReoffending' ? 1000 : 1425)
+            return utils.oasysString(question == 'riskOfReoffending' ? 1000 : 1425)
         case 'empty':
             return ''
     }

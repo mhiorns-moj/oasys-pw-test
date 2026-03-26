@@ -10,7 +10,7 @@ describe('SAN integration - test ref 21 part 5', () => {
 
             const offender2: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)
+            await oasys.login(oasys.users.probSanHeadPdu)
             await offender.searchAndSelectByPnc(offender2.pnc)
 
             // Create and complete assessment 8 (layer 3 v2)
@@ -22,7 +22,7 @@ describe('SAN integration - test ref 21 part 5', () => {
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
             await signing.signAndLock({ expectRsrWarning: true })
 
-            oasys.logout()
+            await oasys.logout()
 
         })
     })

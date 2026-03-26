@@ -1,4 +1,3 @@
-import * as lib from 'lib'
 import { test } from 'fixtures'
 
 test('Example test - create a prison offender and a layer 1 assessment', async ({ oasys, offender, assessment, signing }) => {

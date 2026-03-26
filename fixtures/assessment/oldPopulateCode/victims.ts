@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 export function victim1() {
 

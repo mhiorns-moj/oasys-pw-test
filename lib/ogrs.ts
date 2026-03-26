@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 import { calculate } from 'lib/ogrs/calculateScore'
 import { createOutputObject } from 'lib/ogrs/createOutput'
 import { ospRsrCalc } from 'lib/ogrs/ospRsr'

@@ -134,10 +134,10 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     await assessment.predictors.o1_30.setValue('No')
     await assessment.predictors.o1_38.setValue({ months: 6 })
 
-    await assessment.layer3.section2.goto()
-    await assessment.layer3.section2.briefOffenceDetails.checkValue('Offence description') // Confirms cloning from historic SAN
-    await assessment.layer3.section2.o2_14.setValue('No')
-    await assessment.layer3.sections2To13NoIssues()
+    await assessment.section2.goto()
+    await assessment.section2.briefOffenceDetails.checkValue('Offence description') // Confirms cloning from historic SAN
+    await assessment.section2.o2_14.setValue('No')
+    await assessment.sections2To13NoIssues()
 
     await assessment.selfAssessmentForm.populateMinimal()
     await sentencePlan.populateMinimal()
@@ -277,7 +277,7 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
 
     log(`Complete the Fast Review assessment`, 'Test step')
 
-    await assessment.layer3.fastReview.populateNoChanges()
+    await assessment.fastReview.populateNoChanges()
     await signing.signAndLock({ page: 'spService' })
 
     log(`Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page - defaults POA to Fast Review

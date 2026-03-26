@@ -58,7 +58,13 @@ export const probation: { [keys: string]: OffenderDef } = {
                 },
             ],
         },
-    }
+    },
+
+    noEvent: {
+        forename1: 'Autotest',
+        gender: 'Male',
+        dateOfBirth: { years: -40 },
+    },
 }
 
 export const prison: { [keys: string]: OffenderDef } = {
@@ -124,6 +130,12 @@ export const prison: { [keys: string]: OffenderDef } = {
                 },
             ],
         },
-    }
+    },
+
+    noEvent: {
+        forename1: 'Autotest',
+        gender: 'Male',
+        dateOfBirth: { years: -40 },
+    },
 }
 

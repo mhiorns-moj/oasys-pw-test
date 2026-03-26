@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 import { testEnvironment } from '../../../localSettings'
 
 /**

@@ -22,8 +22,8 @@ describe('SAN integration - test ref 21 part 2b', () => {
 
 
             // Create and complete assessment 5 (layer 3 v2)
-            oasys.login(oasys.users.probSanHeadPdu)
-            oasys.Nav.history(offender2)
+            await oasys.login(oasys.users.probSanHeadPdu)
+            await oasys.history(offender2)
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             await san.gotoSan()
             await san.populateSanSections('Test ref 21', testData.assessment5)
@@ -33,7 +33,7 @@ describe('SAN integration - test ref 21 part 2b', () => {
             await signing.signAndLock({ expectRsrWarning: true })
 
             // Create and complete assessment 6 (layer 3 v2)
-            oasys.Nav.history(offender2)
+            await oasys.history(offender2)
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             await san.gotoSan()
             await san.populateSanSections('Test ref 21', testData.assessment6)
@@ -42,7 +42,7 @@ describe('SAN integration - test ref 21 part 2b', () => {
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
             await signing.signAndLock({ expectRsrWarning: true })
 
-            oasys.logout()
+            await oasys.logout()
 
         })
     })

@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 
 describe('NOD-1148 OGRS4 regression test ref 3', () => {
@@ -9,7 +8,7 @@ describe('NOD-1148 OGRS4 regression test ref 3', () => {
 
     it('Test ref 3 part 0 - create probation offender', () => {
 
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {
@@ -17,7 +16,7 @@ describe('NOD-1148 OGRS4 regression test ref 3', () => {
             // Save the offender details for use in later tests
             cy.task('storeValue', { key: 'offender', value: JSON.stringify(offender) })
 
-            oasys.logout()
+            await oasys.logout()
         })
     })
 })

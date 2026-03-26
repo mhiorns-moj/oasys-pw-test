@@ -23,7 +23,7 @@ describe('SAN integration - test ref 17 part 2', () => {
                             • Integrated Offender Management (IOM)
                         Return back to the assessment - now on the last screen for the Initial Sentence Plan`)
 
-            oasys.login(oasys.users.probSanPo)
+            await oasys.login(oasys.users.probSanPo)
             oasys.Task.openAssessmentFromCountersigningTaskByName(offender.surname)
             const countersigningOverview = new oasys.Pages.Signing.CountersigningOverview()
             countersigningOverview.header.checkStatus('visible')
@@ -37,7 +37,7 @@ describe('SAN integration - test ref 17 part 2', () => {
             countersigningOverview.returnToAssessment.click()
             new oasys.Pages.SentencePlan.SentencePlanService().checkCurrent()
 
-            oasys.logout()
+            await oasys.logout()
 
             const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO, SSP_PLAN_VERSION_NO from eor.oasys_set where cms_prob_number = '${offender.probationCrn}'`
             oasys.Db.getData(sanColumnsQuery, 'oasysSetData')

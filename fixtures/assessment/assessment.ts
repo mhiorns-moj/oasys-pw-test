@@ -1,8 +1,6 @@
-import { Page, TestInfo } from '@playwright/test'
+import { Page } from '@playwright/test'
 
-import * as lib from 'lib'
-import { Oasys, Cms, Offender, OasysDb, Tasks, San, Risk, Signing, SentencePlan } from 'fixtures'
-import { Layer1, Layer3 } from '.'
+import { Oasys, Cms, Offender, OasysDb, San, Risk, SentencePlan } from 'fixtures'
 import * as pages from './pages'
 import { BaseAssessmentPage } from 'classes'
 
@@ -10,8 +8,8 @@ import { BaseAssessmentPage } from 'classes'
 export class Assessment {
 
     constructor(private readonly page: Page, private readonly oasys: Oasys, private readonly cms: Cms,
-        private readonly offender: Offender, private readonly oasysDb: OasysDb, private readonly tasks: Tasks, private readonly san: San,
-        private readonly risk: Risk, private readonly sentencePlan: SentencePlan, private readonly signing: Signing) { }
+        private readonly offender: Offender, private readonly oasysDb: OasysDb, private readonly san: San,
+        private readonly risk: Risk, private readonly sentencePlan: SentencePlan) { }
 
     assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
@@ -19,15 +17,37 @@ export class Assessment {
     readonly createAssessmentPage = new pages.CreateAssessment(this.page)
     readonly assessmentsTab = new pages.AssessmentsTab(this.page)
     readonly deleteAssessment = new pages.DeleteAssessment(this.page)
+    readonly rollbackAssessment = new pages.RollbackAssessment(this.page)
     readonly rfis = new pages.Rfis(this.page)
+    private readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
+
+    // Common pages
     readonly offenderInformation = new pages.OffenderInformation(this.page)
     readonly offendingInformation = new pages.OffendingInformation(this.page)
     readonly predictors = new pages.Predictors(this.page)
     readonly selfAssessmentForm = new pages.SelfAssessmentForm(this.page)
-    private readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
 
-    readonly layer1 = new Layer1(this.page, this.oasys)
-    readonly layer3 = new Layer3(this.page, this.oasys)
+    // Layer 1
+    readonly layer1Section2 = new pages.Layer1Section2(this.page)
+    readonly predictorQuestions = new pages.PredictorQuestions(this.page)
+    readonly roshaPredictors = new pages.RoshaPredictors(this.page)
+
+    // Layer 3
+    readonly section2 = new pages.Section2(this.page)
+    readonly section3 = new pages.Section3(this.page)
+    readonly section4 = new pages.Section4(this.page)
+    readonly section5 = new pages.Section5(this.page)
+    readonly section6 = new pages.Section6(this.page)
+    readonly section7 = new pages.Section7(this.page)
+    readonly section8 = new pages.Section8(this.page)
+    readonly section9 = new pages.Section9(this.page)
+    readonly section10 = new pages.Section10(this.page)
+    readonly section11 = new pages.Section11(this.page)
+    readonly section12 = new pages.Section12(this.page)
+    readonly section13 = new pages.Section13(this.page)
+    readonly summarySheet = new pages.SummarySheet(this.page)
+    readonly fastReview = new pages.FastReview(this.page)
+
 
     /**
      * Create a probation assessment with the details provided for the Create Assessment page. Assumes you are starting on the Offender Details page.
@@ -114,12 +134,13 @@ export class Assessment {
 
         switch (params?.layer) {
             case 'Layer 1':
-                await this.layer1.populateMinimal(params)
+                await this.layer1Section2.populateMinimal()
                 break
             case 'Layer 1V2':
+                await this.roshaPredictors.populateMinimal()
                 break
             case 'Layer 3':
-                await this.layer3.sections2To13NoIssues(params)
+                await this.sections2To13NoIssues(params)
                 break
             case 'Layer 3V2':
                 await this.san.populateMinimal()
@@ -129,49 +150,82 @@ export class Assessment {
         await this.sentencePlan.populateMinimal(params?.sentencePlan)
     }
 
-    // export function fullyPopulated(params: PopulateAssessmentParams) {
+    async populateFull(params: PopulateAssessmentParams) {
 
-    //     if (params.layer != 'Layer 1V2') {
-    //         populate.CommonPages.OffendingInformation.fullyPopulated(params)
-    //     }
+        // if (params.layer != 'Layer 1V2') {
+        //     populate.CommonPages.OffendingInformation.fullyPopulated(params)
+        // }
 
-    //     switch (params.layer) {
-    //         case 'Layer 1':
-    //             populate.Layer1Pages.Predictors.minimal()
-    //             populate.Layer1Pages.Section2.fullyPopulated(params.maxStrings)
-    //             break
-    //         case 'Layer 1V2':
-    //             populate.RoshaPages.RoshaPredictors.fullyPopulated()
-    //             break
-    //         case 'Layer 3':
-    //             populate.Layer3Pages.Predictors.fullyPopulated(params)
-    //             sections2To13FullyPopulated(params)
-    //             break
-    //     }
+        switch (params.layer) {
+            case 'Layer 1':
+                // populate.Layer1Pages.Predictors.minimal()
+                // populate.Layer1Pages.Section2.fullyPopulated(params.maxStrings)
+                break
+            case 'Layer 1V2':
+                await this.roshaPredictors.populateFull()
+                break
+            case 'Layer 3':
+                // populate.Layer3Pages.Predictors.fullyPopulated(params)
+                // sections2To13FullyPopulated(params)
+                break
+        }
 
-    //     if (params.layer != 'Layer 1V2') {
-    //         populate.CommonPages.SelfAssessmentForm.fullyPopulated(params.maxStrings)
-    //     }
+        if (params.layer != 'Layer 1V2') {
+            // populate.CommonPages.SelfAssessmentForm.fullyPopulated(params.maxStrings)
+        }
 
-    //     populate.Rosh.screeningFullyPopulated(params)
-    //     populate.Rosh.fullAnalysisFullyPopulated(params)
+        // Risk
+        await this.risk.populateFull(params)
 
-    //     switch (params.layer) {
-    //         case 'Layer 1':
-    //             // TODO
-    //             break
-    //         case 'Layer 1V2':
-    //             break
-    //         case 'Layer 3':
-    //             if (params.sentencePlan == 'Review') {
-    //                 rspFullyPopulated(params)
-    //             } else {
-    //                 ispFullyPopulated(params)
-    //             }
-    //             break
-    //     }
+        // Sentence plan
+        switch (params.layer) {
+            case 'Layer 1':
+                // TODO
+                break
+            case 'Layer 1V2':
+                break
+            case 'Layer 3':
+                // if (params.sentencePlan == 'Review') {
+                //     rspFullyPopulated(params)
+                // } else {
+                //     ispFullyPopulated(params)
+                // }
+                break
+        }
 
-    //     log(`Fully populated assessment: ${JSON.stringify(params)}`)
+        log(`Fully populated assessment: ${JSON.stringify(params)}`)
+    }
+
+
+    async sections2To13NoIssues(params?: PopulateAssessmentParams) {
+
+        await this.section2.populateNoIssues(true)
+        await this.section3.populateNoIssues(true)
+        await this.section4.populateNoIssues(true)
+        await this.section5.populateNoIssues(true)
+        await this.section6.populateNoIssues(params?.populate6_11, true)
+        await this.section7.populateNoIssues(true)
+        await this.section8.populateNoIssues(true)
+        await this.section9.populateNoIssues(true)
+        await this.section10.populateNoIssues(true)
+        await this.section11.populateNoIssues(true)
+        await this.section12.populateNoIssues(true)
+    }
+
+    // export function sections2To13FullyPopulated(params: PopulateAssessmentParams) {
+
+    //     populate.Layer3Pages.Section2.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section3.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section4.fullyPopulated(params)
+    //     populate.Layer3Pages.Section5.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section6.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section7.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section8.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section9.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section10.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section11.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section12.fullyPopulated(params.maxStrings)
+    //     populate.Layer3Pages.Section13.fullyPopulated(params.maxStrings)
     // }
 
 
@@ -195,18 +249,15 @@ export class Assessment {
     /**
      * Delete the most recent assessment.  Assumes you have the appropriate rights and are on the OffenderDetails page with the assessments tab visible.
      */
-    // async deleteLatest() {
+    async deleteLatest() {
 
-    //     const tab = new this.oasys.Pages.Offender.AssessmentsTab()
-    //     const deleteAssessment = new this.oasys.Pages.Assessment.Other.DeleteAssessment()
+        await this.openLatest()
+        await this.deleteAssessment.goto(true)
+        await this.deleteAssessment.reasonForDeletion.setValue('Testing')
+        await this.deleteAssessment.ok.click()
 
-    //     tab.assessments.purposeOfAssessment.clickFirstRow()
-    //     deleteAssessment.goto(true)
-    //     deleteAssessment.reasonForDeletion.setValue('Testing')
-    //     deleteAssessment.ok.click()
-
-    //     log(`Deleted latest assessment`)
-    // }
+        log(`Deleted latest assessment`)
+    }
 
 
 
@@ -231,15 +282,15 @@ export class Assessment {
     /**
      * Roll back the assessment.  Assumes you are on an assessment page.
      */
-    // async rollBack(comment?: string) {
+    async rollBack(comment?: string) {
 
-    //     const rollback = new this.oasys.Pages.Assessment.Other.RollbackAssessment().goto()
-    //     rollback.ok.click()
-    //     rollback.enterAComment.setValue(comment ?? 'Rollback test comment')
-    //     rollback.ok.click()
+        await this.rollbackAssessment.goto()
+        await this.rollbackAssessment.ok.click()
+        await this.rollbackAssessment.enterAComment.setValue(comment ?? 'Rollback test comment')
+        await this.rollbackAssessment.ok.click()
 
-    //     log('Rolled back assessment')
-    // }
+        log('Rolled back assessment')
+    }
 
     /**
      * Make the assessment historic.  Assumes you are on an assessment page.
@@ -269,27 +320,22 @@ export class Assessment {
 
     /**
      * Assuming you have the offender details open with assessment tab showing, clicks the Lock Incomplete button,
-     * then checks and accepts the alert message.  Checks the standard message unless otherwise specified
+     * then checks and accepts the alert message.  Optionally pass an assessment PK to check the OGRS4 calculation
      */
-    // async lockIncomplete(message?: string) {
+    async lockIncomplete(pk?: number) {
 
-    //     // Set up a Cypress event to trap the alert
-    //     cy.on('window:confirm', (str) => {
-    //         expect(str).to.equal(message ?? 'Do you wish to lock the assessment as incomplete?')
-    //     })
+        this.page.on('dialog', dialog => {
+            expect(dialog.message()).toBe('Do you wish to lock the assessment as incomplete?')
+            dialog.accept()
+        })
 
-    //     // Check the OGRS4 calculations
-    //     new this.oasys.Pages.Offender.OffenderDetails().pnc.getValue('pnc')
-    //     cy.get<string>('@pnc').then((pnc) => {
-    //         this.oasys.Db.getLatestSetPkByPnc(pnc, 'pk')
-    //         cy.get<number>('@pk').then((pk) => {
-    //             checkOgrs4CalcsPk(pk)
+        await this.oasys.clickButton('Lock Incomplete', true)
+        log('Locked assessment incomplete')
 
-    //             this.await oasys.clickButton('Lock Incomplete', true)
-    //             log('Locked assessment incomplete')
-    //         })
-    //     })
-    // }
+        // Check the OGRS4 calculations
+        // checkOgrs4CalcsPk(pk) // TODO
+
+    }
 
     // /**
     //  * Finds the latest non-deleted oasys_set record for a given offender
@@ -357,33 +403,5 @@ export class Assessment {
             return null
         }
     }
-
-    /** 
-     * Returns a string with x characters.  The string includes some spaces and carriage returns, and a counter at regular intervals.
-     */
-    oasysString(length: number): string {
-
-        let result = ''
-        let i = 0
-        let letters = 'ABCD efg'
-        let lineLength = 0
-
-        while (i < length - 12) {
-            // Add 10 characters at a time, including a counter, until nearly at the end
-            i += 10
-            lineLength += 10
-            let counter = i.toString()
-            result += `${letters.substring(0, 10 - counter.length)}${counter}`
-
-            if (lineLength == 400) {
-                result += '\n'  // newline counts 2 characters
-                i += 2
-                lineLength = 0
-            }
-        }
-
-        return `${result}${'.'.repeat(length - i)}`
-    }
-
 
 }

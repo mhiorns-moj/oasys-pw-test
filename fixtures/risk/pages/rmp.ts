@@ -1,5 +1,4 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
-import * as lib from 'lib'
 
 export class Rmp extends BaseAssessmentPage {
 
@@ -58,7 +57,7 @@ export class Rmp extends BaseAssessmentPage {
     considerMappa = new Element.Text(this.page, 'You have assessed the individual as High Rosh and committing current or past domestic abuse.Consider referral to MAPPA.')
 
 
-    async minimal(earlyAllocation: boolean = false) {
+    async populateMinimal(earlyAllocation: boolean = false) {
 
         log('Minimally populating Risk Management Plan')
         await this.goto(true)
@@ -74,7 +73,7 @@ export class Rmp extends BaseAssessmentPage {
 
     async minimalWithTextFields(earlyAllocation: boolean = false) {
 
-        await this.minimal(earlyAllocation)
+        await this.populateMinimal(earlyAllocation)
         await this.additionalComments.setValue('Some additional comments')
         await this.furtherConsiderations.setValue('FurtherConsiderations')
         await this.supervision.setValue('Supervision')
@@ -98,13 +97,13 @@ export class Rmp extends BaseAssessmentPage {
     //     if (params?.layer != 'Layer 1V2') {
     //         rmpCheckboxes(page, params)
 
-    //         page.additionalComments.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Some additional comments')
-    //         page.furtherConsiderations.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'FurtherConsiderations')
-    //         page.supervision.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Supervision')
-    //         page.monitoring.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Monitoring')
-    //         page.interventions.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Interventions')
-    //         page.victimSafety.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'VictimSafety')
-    //         page.contingency.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'Contingency')
+    //         page.additionalComments.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Some additional comments')
+    //         page.furtherConsiderations.setValue(params?.maxStrings ? utils.oasysString(4000) : 'FurtherConsiderations')
+    //         page.supervision.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Supervision')
+    //         page.monitoring.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Monitoring')
+    //         page.interventions.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Interventions')
+    //         page.victimSafety.setValue(params?.maxStrings ? utils.oasysString(4000) : 'VictimSafety')
+    //         page.contingency.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Contingency')
     //     }
     // }
 

@@ -27,7 +27,7 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
     await san.queries.getSanApiTimeAndCheckDbValues(pk1, 'Y', null)
 
     // Check Create call
-    await san.queries.checkSanCreateAssessmentCall(pk1, null, oasys.users.probSanPo, oasys.users.probationSanCode, 'INITIAL')
+    await san.queries.checkSanCreateAssessmentCall(pk1, null, null, oasys.users.probSanPo, oasys.users.probationSanCode, 'INITIAL')
     await san.queries.checkSanGetAssessmentCall(pk1, 0)
 
     // Complete section 1

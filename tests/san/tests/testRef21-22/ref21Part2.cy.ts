@@ -20,7 +20,7 @@ describe('SAN integration - test ref 21 part 2', () => {
 
             const offender2: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)  // No countersigning for this test
+            await oasys.login(oasys.users.probSanHeadPdu)  // No countersigning for this test
             await offender.searchAndSelectByPnc(offender2.pnc)
 
             // Create and complete assessment 1 (layer 1 v1)
@@ -41,7 +41,7 @@ describe('SAN integration - test ref 21 part 2', () => {
             await signing.signAndLock({ expectRsrWarning: true })
 
             // Create and complete assessment 3 (layer 3 v2)
-            oasys.Nav.history(offender2)
+            await oasys.history(offender2)
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
             await san.gotoSan()
             await san.populateSanSections('Test ref 21', testData.assessment3)
@@ -51,20 +51,20 @@ describe('SAN integration - test ref 21 part 2', () => {
 
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
             await signing.signAndLock({ expectRsrWarning: true })
-            oasys.logout()
+            await oasys.logout()
 
             // Transfer to Bedfordshire
-            oasys.login(oasys.users.probHeadPdu)
+            await oasys.login(oasys.users.probHeadPdu)
             await offender.searchAndSelectByPnc(offender2.pnc, oasys.users.probationSan)
             new oasys.Pages.Offender.OffenderDetails().requestTransfer.click()
             new oasys.Pages.Offender.RequestTransfer().submit.click()
-            oasys.logout()
+            await oasys.logout()
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await tasks.search({ taskName: 'Transfer Request Received - Decision Required', offenderName: offender2.surname })
             await tasks.selectFirstTask()
             new oasys.Pages.Tasks.TransferDecisionTask().grantTransfer.click()
-            oasys.logout()
+            await oasys.logout()
 
 
         })

@@ -17,7 +17,7 @@ describe('SAN integration - tests 39-40', () => {
         cy.task('retrieveValue', 'offender2').then((offenderData) => {
             const offender2 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)
+            await oasys.login(oasys.users.probSanHeadPdu)
 
             await offender.searchAndSelectByCrn(offender2.probationCrn)
             const assesmentTab = new oasys.Pages.Offender.AssessmentsTab()
@@ -41,7 +41,7 @@ describe('SAN integration - tests 39-40', () => {
             await san.gotoSan('Offence analysis')
             await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
             await san.returnToOASys()
-            oasys.logout()
+            await oasys.logout()
         })
     })
 })

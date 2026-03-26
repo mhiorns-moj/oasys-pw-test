@@ -1,5 +1,4 @@
-﻿import * as oasys from 'lib'
-import * as ContributorDetails from './contributorDetails'
+﻿import * as ContributorDetails from './contributorDetails'
 
 
 export function minimal() {
@@ -11,17 +10,17 @@ export function minimal() {
 export function fullyPopulated(maxStrings: boolean = false) {
 
     const page = new oasys.Pages.SentencePlan.RspSection72to10().goto(true)
-    page.supervisionArrangements.setValue(maxStrings ? oasys.oasysString(4000) : 'Supervision arrangements')
+    page.supervisionArrangements.setValue(maxStrings ? utils.oasysString(4000) : 'Supervision arrangements')
     page.agreeWithPlan.setValue('No')
-    page.whyNotAgree.setValue(maxStrings ? oasys.oasysString(4000) : 'Why not agree')
-    page.offenderComments.setValue(maxStrings ? oasys.oasysString(4000) : 'Offender comments')
+    page.whyNotAgree.setValue(maxStrings ? utils.oasysString(4000) : 'Why not agree')
+    page.offenderComments.setValue(maxStrings ? utils.oasysString(4000) : 'Offender comments')
     page.offenderSigned.setValue('Yes')
     page.dateSigned.setValue({})
-    page.assessorComments.setValue(maxStrings ? oasys.oasysString(4000) : 'Assessor comments')
-    page.position.setValue(maxStrings ? oasys.oasysString(32) : 'Position')
+    page.assessorComments.setValue(maxStrings ? utils.oasysString(4000) : 'Assessor comments')
+    page.position.setValue(maxStrings ? utils.oasysString(32) : 'Position')
     page.publicProtectionConference.setValue('Yes')
     page.conferenceDate.setValue({ days: -10 })
-    page.conferenceChair.setValue(maxStrings ? oasys.oasysString(100) : 'Protection board chair')
+    page.conferenceChair.setValue(maxStrings ? utils.oasysString(100) : 'Protection board chair')
 
     ContributorDetails.contributor1(maxStrings)
     ContributorDetails.contributor2(maxStrings)

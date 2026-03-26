@@ -40,9 +40,7 @@ export class Offender {
     getStandardOffenderDef(provider: Provider, params?: OffenderLibParams): OffenderDef {
 
         const offenderSet = provider == 'pris' ? offenders.prison : offenders.probation
-        const offenderDef = params?.type == 'twoOffences' ? offenderSet.twooffences
-            : params?.type == 'sexual' ? offenderSet.sexual
-                : offenderSet.burglary
+        const offenderDef = params?.type ? offenderSet[params.type] : offenderSet.burglary
 
         // Get a copy of the offender data (to avoid changing it for other offenders in the same test based on the same source offender),
         const offender = JSON.parse(JSON.stringify(offenderDef)) as OffenderDef

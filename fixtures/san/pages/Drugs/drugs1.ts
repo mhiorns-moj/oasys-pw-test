@@ -1,6 +1,5 @@
 import { Element } from 'classes'
 import { BaseSanEditPage } from '../baseSanEditPage'
-import * as lib from 'lib'
 
 export class Drugs1 extends BaseSanEditPage {
 

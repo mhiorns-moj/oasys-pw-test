@@ -9,7 +9,7 @@ describe('SAN integration - test ref 29/30', () => {
 
             const offender1: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
 
             log(`Create an offender whose latest assessment is signed and locked but awaiting countersignature`)
 
@@ -24,7 +24,7 @@ describe('SAN integration - test ref 29/30', () => {
 
                 await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
 
-                oasys.logout()
+                await oasys.logout()
 
                 log(`Log into the SAN Pilot area as an Administrator
                     Search for the offender and open up the readonly OASys-SAN assessment
@@ -33,12 +33,12 @@ describe('SAN integration - test ref 29/30', () => {
                     An OASYS_SIGNING record has been created for the deletion 'ASSMT_DEL_SIGNING'
                     A Delete API has been sent to the SAN Service - check the parameters are the OASYS_SET_PK, Admins User ID and Name - a 200 response has been received back`)
 
-                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                await oasys.login(oasys.users.admin, oasys.users.probationSan)
                 await offender.searchAndSelectByPnc(offender1.pnc)
-                oasys.Assessment.deleteLatest()
+                await assessment.deleteLatest()
                 oasys.Assessment.checkDeleted(pk)
                 oasys.Assessment.checkSigningRecord(pk, ['ASSMT_DEL_SIGNING', 'SIGNING'])
-                await san.checkSanDeleteCall(pk, oasys.users.admin)
+                await san.queries.checkSanDeleteCall(pk, oasys.users.admin)
 
 
                 log(`Test ref 30 - reverse deletion test`)
@@ -46,13 +46,13 @@ describe('SAN integration - test ref 29/30', () => {
 
                 oasys.Assessment.checkNotDeleted(pk)
                 oasys.Assessment.checkSigningRecord(pk, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'SIGNING'])
-                await san.checkSanUndeleteCall(pk, oasys.users.admin)
+                await san.queries.checkSanUndeleteCall(pk, oasys.users.admin)
 
                 // Leave the offender ready for part 4
-                oasys.Nav.history(offender1)
-                oasys.Assessment.lockIncomplete('Do you wish to lock the assessment as incomplete? This assessment is currently awaiting countersignature')
+                await oasys.history(offender1)
+                await assessment.lockIncomplete('Do you wish to lock the assessment as incomplete? This assessment is currently awaiting countersignature')
 
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })

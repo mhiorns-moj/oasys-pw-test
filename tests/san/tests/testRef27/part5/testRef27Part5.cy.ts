@@ -15,7 +15,7 @@ describe('SAN integration - test ref 27', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.prisSanUnappr)
+            await oasys.login(oasys.users.prisSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createPris({ purposeOfAssessment: 'Start custody', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
@@ -25,9 +25,9 @@ describe('SAN integration - test ref 27', () => {
                 await san.gotoSan()
                 await san.populateSanSections('TestRef27 part 1 complete SAN', oasys.Populate.San.ExampleTest.sanPopulation1)
                 await san.returnToOASys()
-                oasys.ArnsSp.runScript('populateMinimal')
+                await sentencePlan.populateMinimal()
                 await oasys.clickButton('Next')
-                new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
+                await san.sanSections.checkCompletionStatus(true)
                 new oasys.Pages.SentencePlan.SentencePlanService().checkCompletionStatus(true)
 
                 log(`Open up the offender record
@@ -59,7 +59,7 @@ describe('SAN integration - test ref 27', () => {
                         const lastUpdDate1 = oasysDateTime.stringToTimestamp(initialData[0][1])
                         const latestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(questions1[0][0])
 
-                        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                        await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                             SAN_ASSESSMENT_LINKED_IND: 'Y',
                             CLONED_FROM_PREV_OASYS_SAN_PK: null,
                         })
@@ -71,12 +71,12 @@ describe('SAN integration - test ref 27', () => {
                         cy.get<number>('@sections').then((sections) => {
                             expect(sections).equal(2)
                         })
-                        oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
-                        oasys.logout()
+                        await oasys.logout()
 
-                        oasys.login(oasys.users.probHeadPdu)
-                        oasys.Nav.history(offender)
+                        await oasys.login(oasys.users.probHeadPdu)
+                        await oasys.history(offender)
                         new oasys.Pages.Offender.OffenderDetails().controllingOwner.checkValue(oasys.users.probationNonSan)
                         new oasys.Pages.Offender.AssessmentsTab().assessments.checkData([{
                             name: 'status',
@@ -97,7 +97,7 @@ describe('SAN integration - test ref 27', () => {
                         await san.checkSanEditMode(false)
                         await san.returnToOASys()
 
-                        oasys.ArnsSp.runScript('checkReadOnly')
+                        await sentencePlan.spService.checkReadOnly()
 
                         await oasys.clickButton('Close')
 
@@ -117,7 +117,7 @@ describe('SAN integration - test ref 27', () => {
                                 expect(oasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
                                 expect(oasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
 
-                                oasys.logout()
+                                await oasys.logout()
                             })
                         })
                     })

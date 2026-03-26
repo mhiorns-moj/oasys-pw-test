@@ -1,5 +1,4 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
-import * as lib from 'lib'
 
 export class SourcesOfInformation extends BaseAssessmentPage {
 

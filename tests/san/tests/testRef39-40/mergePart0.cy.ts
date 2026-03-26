@@ -28,7 +28,7 @@ describe('SAN integration - tests 39-40 part 0', () => {
 
     it('Create offenders', () => {
 
-        oasys.login(oasys.users.probSanUnappr)
+        await oasys.login(oasys.users.probSanUnappr)
 
         oasys.Offender.createProb(offender1, 'offender1')
         cy.get<OffenderDef>('@offender1').then((offender) => {
@@ -42,7 +42,7 @@ describe('SAN integration - tests 39-40 part 0', () => {
             // Save the offender details for use in later tests
             cy.task('storeValue', { key: 'offender2', value: JSON.stringify(offender) })
         })
-        oasys.logout()
+        await oasys.logout()
 
     })
 })

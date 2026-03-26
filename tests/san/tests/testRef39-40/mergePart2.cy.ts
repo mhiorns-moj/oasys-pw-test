@@ -18,7 +18,7 @@ describe('SAN integration - tests 39-40', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)  // Senior user so no countersigning for this test
+            await oasys.login(oasys.users.probSanHeadPdu)  // Senior user so no countersigning for this test
             await offender.searchAndSelectByPnc(offender.pnc)
 
             // Create assessment
@@ -26,7 +26,7 @@ describe('SAN integration - tests 39-40', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
             // Complete section 1
-            const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
+            await assessment.offendingInformation.goto()
             offendingInformation.offence.setValue('030')
             offendingInformation.subcode.setValue('01')
             offendingInformation.count.setValue(1)
@@ -35,36 +35,36 @@ describe('SAN integration - tests 39-40', () => {
             offendingInformation.sentenceDate.setValue({ months: -1 })
 
             await assessment.predictors.goto(true)
-            predictors.dateFirstSanction.setValue({ years: -2 })
-            predictors.o1_32.setValue(2)
-            predictors.o1_40.setValue(0)
-            predictors.o1_29.setValue({ months: -1 })
-            predictors.o1_30.setValue('No')
-            predictors.o1_38.setValue({})
+            await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
+            await assessment.predictors.o1_32.setValue(2)
+            await assessment.predictors.o1_40.setValue(0)
+            await assessment.predictors.o1_29.setValue({ months: -1 })
+            await assessment.predictors.o1_30.setValue('No')
+            await assessment.predictors.o1_38.setValue({})
 
             await san.gotoSan()
             await san.populateSanSections('Merge test', testData.sanPopulation)
             await san.populateSanSections('Merge test', testData.modifySanForAssessment2)
             await san.returnToOASys()
 
-            oasys.Populate.Rosh.screeningNoRisks(true)
+            await risk.screeningNoRisks(true)
 
             // Complete SP, then sign and lock
-            oasys.ArnsSp.runScript('populateMinimal')
+            await sentencePlan.populateMinimal()
 
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
             await signing.signAndLock()
 
             // Deleted assessment added for testing of SAN defect ARN-2427
-            oasys.Nav.history(offender)
+            await oasys.history(offender)
             await assessment.createProb({ purposeOfAssessment: 'Review' })
-            oasys.logout()
+            await oasys.logout()
 
-            oasys.login(oasys.users.admin, oasys.users.probationSan)
+            await oasys.login(oasys.users.admin, oasys.users.probationSan)
             await offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Assessment.deleteLatest()
+            await assessment.deleteLatest()
 
-            oasys.logout()
+            await oasys.logout()
         })
     })
 })

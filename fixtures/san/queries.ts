@@ -1,6 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
 
-import * as lib from 'lib'
 import { OasysDb } from '../oasysDb/oasysDb'
 import { User } from 'classes'
 import { Oasys } from 'fixtures'
@@ -30,8 +29,8 @@ export class Queries {
             sanIndicator: oasysSetData[0][0],
             spIndicator: oasysSetData[0][1],
             lastUpdateFromSan: oasysSetData[0][2],
-            sanVersion: lib.getInteger(oasysSetData[0][3]),
-            spVersion: lib.getInteger(oasysSetData[0][4]),
+            sanVersion: utils.getInteger(oasysSetData[0][3]),
+            spVersion: utils.getInteger(oasysSetData[0][4]),
         }
     }
 
@@ -125,9 +124,10 @@ export class Queries {
      *  - expectedVersion: version number that should be returned by SAN
      *  - expectedSpVersion: version number that should be returned by SAN for the Sentence Plan
      */
-    async checkSanCreateAssessmentCall(pk: number, previousPk: number, expectedUser: User, expectedProvider: string, expectedPlanType: 'INITIAL' | 'REVIEW') {
+    async checkSanCreateAssessmentCall(pk: number, previousSanPk: number, previousSpPk: number,
+        expectedUser: User, expectedProvider: string, expectedPlanType: 'INITIAL' | 'REVIEW') {
 
-        log(`Check CreateAssessment API call for ${pk}, previous ${previousPk}`)
+        log('', `Check CreateAssessment API call for ${pk}, previous ${previousSanPk}`)
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
         const clogData = await this.db.getData(query)
         let failed = false
@@ -142,8 +142,12 @@ export class Queries {
                 failed = true
             }
             const callData = JSON.parse(call[3].substring(16))
-            if (callData['previousOasysAssessmentPk'] != previousPk) {
-                log(`Expected previous PK: ${previousPk}, found ${callData['previousOasysAssessmentPk']}`)
+            if (callData['previousOasysSanPk'] != previousSanPk) {
+                log(`Expected previous SAN PK: ${previousSanPk}, found ${callData['previousOasysSanPk']}`)
+                failed = true
+            }
+            if (callData['previousOasysSpPk'] != previousSpPk) {
+                log(`Expected previous SP PK: ${previousSpPk}, found ${callData['previousOasysSpPk']}`)
                 failed = true
             }
             if (callData['regionPrisonCode'] != expectedProvider) {
@@ -432,9 +436,9 @@ export class Queries {
 
         const sanDataTime = await this.getSanApiTime(pk, 'SAN_GET_ASSESSMENT')
         await this.oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
-            SAN_ASSESSMENT_LINKED_IND: linkedInd,
-            CLONED_FROM_PREV_OASYS_SAN_PK: clonedPk?.toString() ?? null,
-            LASTUPD_FROM_SAN: sanDataTime
+            san_assessment_linked_ind: linkedInd,
+            cloned_from_prev_oasys_san_pk: clonedPk?.toString() ?? null,
+            lastupd_from_san: sanDataTime
         })
     }
 

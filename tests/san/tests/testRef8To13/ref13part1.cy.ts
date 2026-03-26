@@ -11,7 +11,7 @@ describe('SAN integration - test ref 13 part 1', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
             await assessment.openLatest()
 
@@ -24,7 +24,7 @@ describe('SAN integration - test ref 13 part 1', () => {
                 const pk = pks[0]
                 const prevSanPk = pks[3]
 
-                oasys.Db.checkAnswers(pk, testData.clonedData, 'answerCheck', true)
+                const failed = await oasys.queries.checkAnswers(pk, testData.clonedData, 'answerCheck', true)
                 cy.get<boolean>('@answerCheck').then((answerCheck) => {
                     expect(answerCheck).equal(false)
                 })
@@ -33,15 +33,15 @@ describe('SAN integration - test ref 13 part 1', () => {
                         fully marked as complete for all sections.`)
                 await san.gotoSan()
                 await san.populateSanSections('TestRef13 modify SAN', testData.modifySan)
-                await san.checkSanSectionsCompletionStatus(9)
+                await san.queries.checkSanSectionsCompletionStatus(9)
                 await san.returnToOASys()
 
                 await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService, expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
-                oasys.logout()
+                await oasys.logout()
 
-                oasys.login(oasys.users.probSanHeadPdu)
-                oasys.Assessment.countersign({ offender: offender })
-                oasys.logout()
+                await oasys.login(oasys.users.probSanHeadPdu)
+                await signing.countersign({ offender: offender })
+                await oasys.logout()
 
             })
         })

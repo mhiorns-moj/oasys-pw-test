@@ -1,6 +1,5 @@
 import { Page, TestInfo } from '@playwright/test'
 
-import * as lib from 'lib'
 import { Oasys } from 'fixtures'
 import * as pages from './pages'
 

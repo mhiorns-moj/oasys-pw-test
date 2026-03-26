@@ -1,6 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test'
-
-import * as oasys from 'lib'
+import { Locator, Page } from '@playwright/test'
 
 /**
  * The Page class is used to define OASys pages, including all the elements on the page (i.e. text boxes, buttons etc), and the menu options used
@@ -176,7 +174,7 @@ export abstract class OasysPage {
         await waitForPageUpdate(this.page)
         let title = await this.page.title()
 
-        oasys.expect(title).toContain(this.title)
+        expect(title).toContain(this.title)
         if (!suppressLog) log(`Check current page: ${this.name} `)
         return this
     }
@@ -220,6 +218,11 @@ export abstract class OasysPage {
                         const level1Expanded = await level1LinkExpanded.isVisible()
 
                         if (!level1Expanded) {
+                            const level1Available = await this.floatingMenu.locator('.expandable').filter({ hasText: this.menu.level1 }).isVisible()
+                            if (!level1Available) {
+                                visible = false
+                                break
+                            }
                             await this.floatingMenu.locator('.expandable').filter({ hasText: this.menu.level1 }).click()
                             await this.waitForAnimation(this.floatingMenu)
                         }

@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 import { testEnvironment } from '../../localSettings'
 
 
@@ -16,7 +15,7 @@ describe('Create or update admin user', () => {
 
             oasys.users.adminProfiles.forEach((profile) => {
 
-                oasys.login(oasys.Users.globalAdminUser, testEnvironment.globalAdminUserPassword, profile.provider)
+                await oasys.login(oasys.Users.globalAdminUser, testEnvironment.globalAdminUserPassword, profile.provider)
 
                 if (newUser) {
                     new oasys.Pages.Maintenance.UserAccounts().goto().createAccount.click()
@@ -55,7 +54,7 @@ describe('Create or update admin user', () => {
                 maintainProfile.save.click()
                 maintainProfile.close.click()
 
-                oasys.logout()
+                await oasys.logout()
             })
 
             if (!t2) {

@@ -1,6 +1,5 @@
 import { Page, TestInfo } from '@playwright/test'
 
-import * as lib from 'lib'
 import { Oasys, Assessment, Tasks } from 'fixtures'
 import * as pages from './pages'
 import { User } from 'classes/user'
@@ -93,7 +92,7 @@ export class Signing {
      * 
      *   - comment: countersigning comment (a generic comment will be used if this is not provided)
      */
-    async countersign(params?: { page?: SigningPage, offender?: OffenderDef, comment?: string }) {
+    async countersign(params?: { page?: SigningPage, offender?: OffenderDef, comment?: string, expectSecondCountersigner?: boolean, secondCountersigner?: any }) {
 
         log(`Countersign assessment`)
 
@@ -108,6 +107,12 @@ export class Signing {
         await this.countersigning.selectAction.setValue('Countersign')
         await this.countersigning.comments.setValue(params?.comment ?? 'Countersigning the assessment')
         await this.countersigning.ok.click()
+
+        if (params?.expectSecondCountersigner) {
+
+            this.cPage.comments.setValue('Sending for second countersignature')
+            this.cPage.confirm.click()
+        }
 
         await this.tasks.taskManager.checkCurrent(true)
     }
@@ -148,23 +153,5 @@ export class Signing {
         await this.oasys.gotoSigningPage(page)
         await this.countersigningOverview.goto()
     }
-
-    /**
-     * Checks that the expected set of OASYS_SIGNING records are found for a given assessment PK; the expectedActions parameter should include all actions, latest first.
-     */
-    // async checkSigningRecord(pk: number, expectedActions: AssessmentSigning[]) {
-
-    //     this.oasys.Db.getData(`select signing_action_elm from eor.oasys_signing where oasys_set_pk = ${pk} order by create_date desc`, 'data')
-    //     cy.get<string[][]>('@data').then((data) => {
-
-    //         log(`Checking OASYS_SIGNING actions for ${pk}: ${JSON.stringify(data)} `)
-
-    //         expect(data.length).eq(expectedActions.length)
-    //         for (let i = 0; i < expectedActions.length; i++) {
-    //             expect(data[i][0]).eq(expectedActions[i])
-    //         }
-    //     })
-    // }
-
 
 }

@@ -1,5 +1,4 @@
-﻿import * as oasys from 'lib'
-import * as ObjectivesAndActions from './objectivesAndActions'
+﻿import * as ObjectivesAndActions from './objectivesAndActions'
 
 
 export function fullyPopulated(maxStrings: boolean = false) {

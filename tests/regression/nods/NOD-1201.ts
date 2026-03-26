@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 describe('NOD-1201', () => {
 
@@ -6,7 +5,7 @@ describe('NOD-1201', () => {
     // Second assessment with SARA rejected
 
     it('NOD-1201', () => {
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         // Offender 1
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
@@ -18,7 +17,7 @@ describe('NOD-1201', () => {
             oasys.Populate.Layer3Pages.Predictors.minimal()
             oasys.Populate.sections2To13NoIssues({ populate6_11: 'No' })
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
-            oasys.Populate.Rosh.screeningNoRisks()
+            await risk.screeningNoRisks()
 
             // Set 6.7 to trigger the SARA
             const section2 = new oasys.Pages.Assessment.Section2().goto()
@@ -35,7 +34,7 @@ describe('NOD-1201', () => {
             await oasys.clickButton('Confirm Sign & Lock')
 
             // Complete the assessment
-            oasys.Nav.history(offender1, 'Start of Community Order')
+            await oasys.history(offender1, 'Start of Community Order')
             new oasys.Pages.SentencePlan.IspSection52to8().goto().agreeWithPlan.setValue('Yes')
             await signing.signAndLock({ expectRsrWarning: true })
 
@@ -45,7 +44,7 @@ describe('NOD-1201', () => {
             })
 
             // Create assessment 2
-            oasys.Nav.history(offender1)
+            await oasys.history(offender1)
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
 
             // Reject the SARA
@@ -64,7 +63,7 @@ describe('NOD-1201', () => {
             })
 
             // Create assessment 3
-            oasys.Nav.history(offender1)
+            await oasys.history(offender1)
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
 
             // Create the SARA, but clear the risk flags
@@ -89,7 +88,7 @@ describe('NOD-1201', () => {
             cy.get<boolean>('@probationFailedAlias').then((offenderFailed) => {
                 expect(offenderFailed).to.be.false
             })
-            oasys.logout()
+            await oasys.logout()
         })
     })
 

@@ -15,7 +15,7 @@ describe('SAN integration - test ref 38 part 4', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)
+            await oasys.login(oasys.users.probSanHeadPdu)
             await offender.searchAndSelectByPnc(offender.pnc)
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
@@ -24,11 +24,11 @@ describe('SAN integration - test ref 38 part 4', () => {
                 await assessment.openLatest()
 
                 // Open as countsigner
-                oasys.logout()
-                oasys.login(oasys.users.probSanHeadPdu)
-                oasys.Nav.history()
+                await oasys.logout()
+                await oasys.login(oasys.users.probSanHeadPdu)
+                await oasys.history()
                 await san.gotoSanReadOnly('Accommodation', 'information')
-                await san.checkSanOtlCall(pk, {
+                await san.queries.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -49,15 +49,15 @@ describe('SAN integration - test ref 38 part 4', () => {
 
                 // Countersign the assessment
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
-                await san.checkSanGetAssessmentCall(pk, 2)
-                oasys.Assessment.countersign({ comment: 'Countersigning for the third time' })
+                await san.queries.checkSanGetAssessmentCall(pk, 2)
+                await signing.countersign({ comment: 'Countersigning for the third time' })
 
-                await san.checkSanCountersigningCall(pk, oasys.users.probSanHeadPdu, 'COUNTERSIGNED')
-                await san.checkSanGetAssessmentCall(pk, 2)
-                oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                await san.queries.checkSanCountersigningCall(pk, oasys.users.probSanHeadPdu, 'COUNTERSIGNED')
+                await san.queries.checkSanGetAssessmentCall(pk, 2)
+                await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
                 // Check the signing history
-                oasys.Nav.history()
+                await oasys.history()
                 const expectedValues: ColumnValues[] = [
                     {
                         name: 'action',
@@ -84,7 +84,7 @@ describe('SAN integration - test ref 38 part 4', () => {
                 ]
                 new oasys.Pages.Assessment.OffenderInformation().signingHistory.checkData(expectedValues)
 
-                oasys.logout()
+                await oasys.logout()
 
             })
         })

@@ -1,11 +1,10 @@
-import * as lib from 'lib'
 import { test } from 'fixtures'
 
 /**
     New FEMALE Probation Offender in SAN Area - check functionality when say 'No' to cloning from an Historic OASys-SAN assessment.
  */
 
-test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasysDb, san, signing, sentencePlan, risk }) => {
+test('SAN integration - test ref 14', async ({ oasys, offender, assessment, san, signing, sentencePlan, risk }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)
     const offender1 = await offender.createProbFromStandardOffender({ gender: 'Female', forename1: 'TestRefFourteen' })
@@ -108,7 +107,7 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, oasy
 
     const pk2 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' }, 'No')
 
-    await san.queries.checkSanCreateAssessmentCall(pk2, null, oasys.users.probSanHeadPdu, oasys.users.probationSanCode, 'INITIAL')
+    await san.queries.checkSanCreateAssessmentCall(pk2, null, null, oasys.users.probSanHeadPdu, oasys.users.probationSanCode, 'INITIAL')
     // Check values in OASYS_SET
     await san.queries.getSanApiTimeAndCheckDbValues(pk2, 'Y', null)
 

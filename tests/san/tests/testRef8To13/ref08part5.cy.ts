@@ -22,7 +22,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                 oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
                 cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery1) => {
 
-                    oasys.login(oasys.users.probSanHeadPdu)
+                    await oasys.login(oasys.users.probSanHeadPdu)
                     await offender.searchAndSelectByPnc(offender.pnc)
                     await assessment.openLatest()
 
@@ -37,11 +37,11 @@ describe('SAN integration - test ref 08 part 5', () => {
                     await san.gotoSanReadOnly('Accommodation', 'information')
                     await san.checkSanEditMode(false)
                     await san.returnToOASys()
-                    oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test comment' })
-                    oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])  // Note AssSumm only at this stage, as others were sent on signing
+                    await signing.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test comment' })
+                    await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])  // Note AssSumm only at this stage, as others were sent on signing
                     new oasys.Pages.Tasks.TaskManager().checkCurrent()
 
-                    await san.checkSanCountersigningCall(pk, oasys.users.probSanHeadPdu, 'COUNTERSIGNED')
+                    await san.queries.checkSanCountersigningCall(pk, oasys.users.probSanHeadPdu, 'COUNTERSIGNED')
 
                     log(`Open up the Offender record
                         Ensure the latest completed assessment shows an 'S&N' icon next to it
@@ -77,9 +77,9 @@ describe('SAN integration - test ref 08 part 5', () => {
 
                     await assessment.openLatest()
                     new oasys.Pages.Assessment.OffenderInformation().religion.checkStatus('readonly')
-                    const predictors = new oasys.Pages.Assessment.Predictors().goto()
-                    predictors.o1_32.checkStatus('readonly')
-                    predictors.print.click()
+                    await assessment.predictors.goto()
+                    await assessment.predictors.o1_32.checkStatus('readonly')
+                    await assessment.predictors.print.click()
                     const print = new oasys.Pages.Assessment.Other.PrintAssessment()
                     print.section2.checkStatus('notVisible')
                     print.section3.checkStatus('notVisible')
@@ -121,7 +121,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                     print.cancel.click()
                     cy.get<boolean>('@pdf').then((failed) => expect(failed).equal(false))
 
-                    oasys.logout()
+                    await oasys.logout()
                 })
 
             })

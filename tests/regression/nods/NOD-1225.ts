@@ -1,11 +1,10 @@
-import * as oasys from 'lib'
 
 describe('NOD-1225', () => {
 
     // Offender has a completed assessment and incomplete SARA (rejected at S/L) with high/medium
 
     it('NOD-1225', () => {
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         // Offender 1
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
@@ -17,7 +16,7 @@ describe('NOD-1225', () => {
             oasys.Populate.Layer3Pages.Predictors.minimal()
             oasys.Populate.sections2To13NoIssues({ populate6_11: 'No' })
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
-            oasys.Populate.Rosh.screeningNoRisks()
+            await risk.screeningNoRisks()
 
             // Set 6.7 to trigger the SARA
             const section6 = new oasys.Pages.Assessment.Section6().goto()
@@ -56,7 +55,7 @@ describe('NOD-1225', () => {
                 expect(offenderFailed).to.be.false
             })
 
-            oasys.logout()
+            await oasys.logout()
         })
     })
 

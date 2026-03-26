@@ -11,7 +11,7 @@ describe('SAN integration - test ref 17 part 0', () => {
 
     it('Test ref 17 part 0 - create offender and IOM stub', () => {
 
-        oasys.login(oasys.users.probSanPso)
+        await oasys.login(oasys.users.probSanPso)
 
         oasys.Offender.createProb(offender, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {
@@ -19,7 +19,7 @@ describe('SAN integration - test ref 17 part 0', () => {
             // Save the offender details for use in later tests
             cy.task('storeValue', { key: 'offender', value: JSON.stringify(offender) })
 
-            oasys.logout()
+            await oasys.logout()
             // TODO implement IOM stub
             // oasys.Offender.createIomStub(offender.probationCrn, 'Y', 1, 'OK', 'Y')
         })

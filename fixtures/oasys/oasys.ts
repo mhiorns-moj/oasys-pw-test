@@ -8,11 +8,12 @@ import * as users from './users'
 import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan'
 import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
 import { Queries } from './queries'
+import { OasysDb } from 'fixtures/oasysDb/oasysDb'
 
 
 export class Oasys {
 
-    constructor(private readonly page: Page, private readonly testInfo: TestInfo, private readonly oasysDb) { }
+    constructor(private readonly page: Page, private readonly testInfo: TestInfo, private readonly oasysDb: OasysDb) { }
 
 
     readonly queries = new Queries(this.oasysDb)
@@ -102,7 +103,7 @@ export class Oasys {
         if (p1 === undefined) {
             await this.page.locator('#history_1').click()
             log('First item', 'History menu')
-            await waitForPageUpdate(this.page)
+            await waitForPageUpdate(this.page, 500)
             return null
         }
 
@@ -129,7 +130,7 @@ export class Oasys {
         const menuText = assessment == undefined ? `Offender - ${forename} ${surname}` : `${assessment} - ${forename} ${surname}`
         await this.page.getByText(menuText).click()
         log(menuText, 'History menu')
-        await waitForPageUpdate(this.page)
+        await waitForPageUpdate(this.page, 500)
 
         return null
     }

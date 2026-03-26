@@ -28,7 +28,7 @@ describe('SAN integration - tests 39-40', () => {
                 cy.get<number[]>('@currentOff1Pks').then((currentOff1Pks) => {
                     cy.get<number[]>('@currentOff2Pks').then((currentOff2Pks) => {
 
-                        oasys.login(oasys.users.admin, oasys.users.probationSan)
+                        await oasys.login(oasys.users.admin, oasys.users.probationSan)
                         await offender.searchAndSelectByPnc(offender2.pnc)
 
                         // Demerge
@@ -37,7 +37,7 @@ describe('SAN integration - tests 39-40', () => {
                         await oasys.clickButton('Demerge')
                         cy.get('#apexConfirmBtn').click()
                         await oasys.clickButton('Close')
-                        oasys.logout()
+                        await oasys.logout()
 
                         // Get new assessment PKs
                         oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'newOff1Pks')
@@ -45,7 +45,7 @@ describe('SAN integration - tests 39-40', () => {
                         cy.get<number[]>('@newOff1Pks').then((newOff1Pks) => {
                             cy.get<number[]>('@newOff2Pks').then((newOff2Pks) => {
 
-                                await san.checkSanMergeCall(oasys.users.admin, 3)
+                                await san.queries.checkSanMergeCall(oasys.users.admin, 3)
                             })
                         })
 

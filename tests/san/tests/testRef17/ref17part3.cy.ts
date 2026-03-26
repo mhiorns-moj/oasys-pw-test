@@ -15,8 +15,8 @@ describe('SAN integration - test ref 17 part 3', () => {
                 Click on the button <Open Strengths and Needs> - launches into the SAN Assessment.  Ensure you can navigate through the SAN Assessment and it is ALL read only.
                 Return back to the assessment via the button/link - SAN assessment disappears and returned to the 'Strengths and Needs Sections' screen in the same browser tab`)
 
-            oasys.login(oasys.users.probSanPo)
-            oasys.Nav.history()
+            await oasys.login(oasys.users.probSanPo)
+            await oasys.history()
             await san.gotoSanReadOnly('Accommodation', 'information')
             await san.checkSanEditMode(false)
             await san.returnToOASys()
@@ -26,14 +26,14 @@ describe('SAN integration - test ref 17 part 3', () => {
                         'outcome' being 'COUNTERSIGNED' along with the countersigners ID and name
                     Check that on the SNS_MESSAGE table there are records for OGRS, RSR, OPD and AssSumm (with URL asssummsan)`)
 
-            oasys.Assessment.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Countersigning test ref 17' })
-            // TODO restore OPD check (needs IOM stub) oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OPD'])    // Others checked at signing
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+            await signing.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Countersigning test ref 17' })
+            // TODO restore OPD check (needs IOM stub) await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OPD'])    // Others checked at signing
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
-                await san.checkSanCountersigningCall(pk, oasys.users.probSanPo, 'COUNTERSIGNED')
+                await san.queries.checkSanCountersigningCall(pk, oasys.users.probSanPo, 'COUNTERSIGNED')
 
                 log(`Open up the Offender record
                             Ensure the latest completed assessment shows an 'S&N/SSP' icon next to it
@@ -57,7 +57,7 @@ describe('SAN integration - test ref 17 part 3', () => {
                         expect(JSON.stringify(sanColumnsQuery2)).equal(sanColumnsQuery1)
                     })
 
-                    oasys.Db.checkAnswers(pk, testData.dataFromSan, 'answerCheck', true)
+                    const failed = await oasys.queries.checkAnswers(pk, testData.dataFromSan, 'answerCheck', true)
                     cy.get<boolean>('@answerCheck').then((answerCheck) => {
                         expect(answerCheck).equal(false)
                     })
@@ -109,7 +109,7 @@ describe('SAN integration - test ref 17 part 3', () => {
                     print.cancel.click()
                     cy.get<boolean>('@pdf').then((failed) => expect(failed).equal(false))
 
-                    oasys.logout()
+                    await oasys.logout()
                 })
             })
         })

@@ -26,14 +26,14 @@ describe('SAN integration - test ref 27', () => {
 
         log(`Lock Incomplete a prison OASys-SAN assessment when the Offender has been discharged from Prison (WIP guillotines immediately)`)
 
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(offender, 'offender')
-        oasys.logout()
+        await oasys.logout()
 
-        oasys.login(oasys.users.prisSanUnappr)
+        await oasys.login(oasys.users.prisSanUnappr)
         oasys.Offender.createReceptionEvent('@offender')
-        oasys.logout()
+        await oasys.logout()
         cy.get<OffenderDef>('@offender').then((offender) => {
 
             // Save the offender details for use in later tests

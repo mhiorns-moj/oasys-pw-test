@@ -9,7 +9,7 @@ describe('SAN integration - test ref 22 part 3', () => {
         cy.task('retrieveValue', 'offender2').then((offenderData) => {
             const offender2 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)
+            await oasys.login(oasys.users.probSanHeadPdu)
             await offender.searchAndSelectByPnc(offender2.pnc)
 
             oasys.Db.getAllSetPksByPnc(offender2.pnc, 'pks', true)
@@ -38,7 +38,7 @@ describe('SAN integration - test ref 22 part 3', () => {
                 checkAssessment(offender2, pks[0], 3, 6, 'Renting from social, local authority or other')
                 await oasys.clickButton('Close')
 
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })
@@ -49,7 +49,7 @@ function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: n
 
     log(`Checking assessment pk ${pk}`)
     await san.gotoSanReadOnly('Accommodation', 'information')
-    await san.checkSanOtlCall(pk,
+    await san.queries.checkSanOtlCall(pk,
         {
             'crn': offender.probationCrn,
             'pnc': offender.pnc,
@@ -73,7 +73,7 @@ function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: n
         await san.returnToOASys()
         // Pass user details as they get lost in the cy.get.then structure
         oasys.ArnsSp.runScript('checkReadOnly', { username: oasys.users.probSanHeadPdu.username, password: testEnvironment.standardUserPassword })
-        await san.checkSanOtlCall(pk,
+        await san.queries.checkSanOtlCall(pk,
             {
                 'crn': offender.probationCrn,
                 'pnc': offender.pnc,

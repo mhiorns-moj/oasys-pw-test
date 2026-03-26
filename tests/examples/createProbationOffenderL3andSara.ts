@@ -1,10 +1,9 @@
-import * as oasys from 'lib'
 
 describe('Create a probation offender and a layer 3 assessment plus SARA', () => {
 
 
     it('Create offender and assessment', () => {
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
         cy.get<OffenderDef>('@offender1').then((offender1) => {
@@ -15,7 +14,7 @@ describe('Create a probation offender and a layer 3 assessment plus SARA', () =>
             oasys.Populate.Layer3Pages.Predictors.minimal()
             oasys.Populate.sections2To13NoIssues({ populate6_11: 'No' })
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
-            oasys.Populate.Rosh.screeningNoRisks()
+            await risk.screeningNoRisks()
             const section2 = new oasys.Pages.Assessment.Section2().goto()
             section2.o2_3PhysicalViolence.setValue(true)
             section2.save.click()
@@ -29,11 +28,11 @@ describe('Create a probation offender and a layer 3 assessment plus SARA', () =>
             await oasys.clickButton('Sign & lock')
             await oasys.clickButton('Confirm Sign & Lock')
 
-            oasys.Nav.history(offender1.surname, offender1.forename1, 'Start of Community Order')
+            await oasys.history(offender1.surname, offender1.forename1, 'Start of Community Order')
             oasys.Populate.SentencePlanPages.IspSection52to8.minimal()
             await signing.signAndLock({ expectRsrWarning: true })
 
-            oasys.logout()
+            await oasys.logout()
         })
     })
 

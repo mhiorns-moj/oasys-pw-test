@@ -1,7 +1,6 @@
 import { Page, TestInfo, expect } from '@playwright/test'
 import { flatten } from 'flat' // https://www.npmjs.com/package/flat
 
-import * as lib from 'lib'
 import { assessment, Oasys, OasysDb } from 'fixtures'
 import { DbAssessmentOrRsr, DbSns } from './dbClasses'
 import { SnsMessage } from './snsClasses'

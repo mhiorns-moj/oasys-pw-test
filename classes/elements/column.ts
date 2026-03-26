@@ -77,56 +77,59 @@ export class Column {
     }
 
     /**
-     * Returns the data visible in a column using an alias.  Image columns return a comma-separated list of the title attributes for each row
+     * Returns the data visible in a column.  Image columns return a comma-separated list of the title attributes for each row
      */
-    // getValues(resultAlias: string) {
+    async getValues(): Promise<string[]> {
 
-    //     const result: string[] = []
-    //     cy.get(this.tableId ?? '#content').then((containerDiv) => {
-    //         const noData = containerDiv.find('.nodatafound')
-    //         if (noData.length == 0) {
-    //             this.getColumnHeaderId().then((id) => {
-    //                 const rows = containerDiv.find(`[headers="${id}"]`)
-    //                 for (let r = 0; r < rows.length; r++) {
-    //                     if (this.type == ColumnType.ImageColumn) {
-    //                         const images = rows[r].getElementsByTagName('img')
-    //                         let titles = ''
-    //                         for (let i = 0; i < images.length; i++) {
-    //                             titles = `${titles}${images[i].getAttribute('title')},`
-    //                         }
-    //                         result.push(titles == '' ? '' : titles.substring(0, titles.length - 1)) // remove trailing comma
-    //                     } else if (this.type == ColumnType.ScoresColumn) {
-    //                         const scores = rows[r].getElementsByClassName(`BL`)
-    //                         if (scores.length == 0) {
-    //                             result.push('N/A')
-    //                         } else {
-    //                             let score = -1
-    //                             for (let i = 0; i < scores.length; i++) {
-    //                                 const p = scores[i].getElementsByTagName('p')
-    //                                 if (p.length > 0) {
-    //                                     const val = parseInt(p[0].textContent.trim())
-    //                                     if (Number.isInteger(val)) {
-    //                                         if (p[0].className.search('BGY') == -1) {  // If not grey
-    //                                             score = val
-    //                                         }
-    //                                     }
-    //                                 }
-    //                             }
-    //                             if (score == -1) {
-    //                                 result.push(null)
-    //                             } else {
-    //                                 result.push(score.toString())
-    //                             }
-    //                         }
-    //                     } else {
-    //                         result.push(rows[r].textContent)
-    //                     }
-    //                 }
-    //             })
-    //         }
-    //         cy.wrap(result).as(resultAlias)
-    //     })
-    // }
+        const result: string[] = []
+
+        const container = this.page.locator(this.tableId ?? '#content')
+        await container.waitFor()
+        const noData = await container.locator('.nodatafound').count()
+
+        if (noData == 0) {
+            const id = await this.getColumnHeaderId()
+            const rows = await this.page.locator(`[headers="${id}"]`).all()
+
+            for (let r = 0; r < rows.length; r++) {
+                if (this.type == ColumnType.ImageColumn) {
+                    const images = await rows[r].locator('img').all()
+                    let titles = ''
+                    for (let i = 0; i < images.length; i++) {
+                        titles = `${titles}${await images[i].getAttribute('title')},`
+                    }
+                    result.push(titles == '' ? '' : titles.substring(0, titles.length - 1)) // remove trailing comma
+
+                } else if (this.type == ColumnType.ScoresColumn) {
+                    const scores = await rows[r].locator('.BL').all()
+                    if (scores.length == 0) {
+                        result.push('N/A')
+                    } else {
+                        let score = -1
+                        for (let i = 0; i < scores.length; i++) {
+                            const p = await scores[i].locator('p').all()
+                            if (p.length > 0) {
+                                const val = parseInt((await p[0].textContent()).trim())
+                                if (Number.isInteger(val)) {
+                                    if (!(await p[0].getAttribute('class')).includes('BGY')) {  // If not grey
+                                        score = val
+                                    }
+                                }
+                            }
+                        }
+                        if (score == -1) {
+                            result.push(null)
+                        } else {
+                            result.push(score.toString())
+                        }
+                    }
+                } else {
+                    result.push(await rows[r].textContent())
+                }
+            }
+        }
+        return result
+    }
 }
 
 export enum ColumnType {

@@ -21,8 +21,8 @@ test('SAN integration - test refs 35 and 45', async ({ oasys, offender, assessme
 
     await sentencePlan.populateMinimal('spService')
 
-    await assessment.layer3.summarySheet.goto()
-    await assessment.layer3.summarySheet.maturityScreening.checkValue('This individual is likely to need support or services aimed at promoting maturation.', true)
+    await assessment.summarySheet.goto()
+    await assessment.summarySheet.maturityScreening.checkValue('This individual is likely to need support or services aimed at promoting maturation.', true)
 
     oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',

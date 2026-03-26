@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 import { mappingTestOffenderFile } from './xMappingTest'
 
 const accommodation1 = new oasys.Pages.San.Accommodation.Accommodation1()
@@ -36,12 +35,12 @@ describe('Mapping test for question 6.8', () => {
         cy.readFile(mappingTestOffenderFile).then((offenderDetails) => {
             const mappingTestOffender = JSON.parse(offenderDetails) as OffenderDef
 
-            oasys.login(oasys.users.admin, oasys.users.probationSan)
+            await oasys.login(oasys.users.admin, oasys.users.probationSan)
             await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
             oasys.Assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
-            oasys.logout()
+            await oasys.logout()
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
@@ -109,7 +108,7 @@ describe('Mapping test for question 6.8', () => {
                     cy.groupedLogStart('Test case details:')
                     logText.forEach((line) => { cy.groupedLog(line) })
                     cy.groupedLogEnd().then(() => {
-                        oasys.logout()
+                        await oasys.logout()
                         expect(failed).to.be.false
                     })
                 })

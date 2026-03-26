@@ -22,7 +22,7 @@ describe('SAN integration - test ref 22 part 1', () => {
             cy.task('retrieveValue', 'offender2').then((offenderData) => {
                 const offender2 = JSON.parse(offenderData as string)
 
-                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                await oasys.login(oasys.users.admin, oasys.users.probationSan)
                 await offender.searchAndSelectByPnc(offender2.pnc)
 
                 // Demerge
@@ -35,9 +35,9 @@ describe('SAN integration - test ref 22 part 1', () => {
                 await oasys.clickButton('Demerge')
                 cy.get('#apexConfirmBtn').click()
                 await oasys.clickButton('Close')
-                oasys.logout()
+                await oasys.logout()
 
-                await san.checkSanMergeCall(oasys.users.admin, 5)
+                await san.queries.checkSanMergeCall(oasys.users.admin, 5)
             })
         })
     })

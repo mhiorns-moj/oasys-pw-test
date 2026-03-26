@@ -15,7 +15,7 @@ describe('SAN integration - test ref 38 part 2', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.admin, oasys.users.probationSan)
+            await oasys.login(oasys.users.admin, oasys.users.probationSan)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, '[pks]')
@@ -24,7 +24,7 @@ describe('SAN integration - test ref 38 part 2', () => {
                 await assessment.openLatest()
 
                 await san.gotoSanReadOnly('Accommodation', 'information')
-                await san.checkSanOtlCall(pks[1], {
+                await san.queries.checkSanOtlCall(pks[1], {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -48,8 +48,8 @@ describe('SAN integration - test ref 38 part 2', () => {
 
 
                 // Check OASYS_SET and API calls
-                await san.checkSanRollbackCall(pks[1], oasys.users.admin)
-                oasys.logout()
+                await san.queries.checkSanRollbackCall(pks[1], oasys.users.admin)
+                await oasys.logout()
 
             })
         })

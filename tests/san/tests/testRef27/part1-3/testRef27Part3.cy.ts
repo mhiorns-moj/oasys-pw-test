@@ -15,7 +15,7 @@ describe('SAN integration - test ref 27', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
@@ -26,7 +26,7 @@ describe('SAN integration - test ref 27', () => {
                 await san.gotoSan()
                 await san.populateSanSections('Test 27 part 3 Complete SAN', testData.part3CompleteSan)
                 await san.returnToOASys()
-                oasys.logout()
+                await oasys.logout()
 
                 log(`Log in as a user in a different NON SAN PILOT probation area.  
                     Search for and open up the Offender record in the SAN Pilot probation area - will currently have 'boilerplate' access
@@ -36,7 +36,7 @@ describe('SAN integration - test ref 27', () => {
                     The user still has boilerplate access as they haven't yet created an assessment - just wanted to use this way for guilloting
                     Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`)
 
-                oasys.login(oasys.users.probHeadPdu)
+                await oasys.login(oasys.users.probHeadPdu)
                 await offender.searchAndSelectByPnc(offender.pnc, oasys.users.probationSan)
                 await oasys.clickButton('Create Assessment')
                 await oasys.clickButton('Yes')
@@ -62,9 +62,9 @@ describe('SAN integration - test ref 27', () => {
                         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                        await san.checkSanLockIncompleteCall(pks[0], oasys.users.probHeadPdu)
-                        await san.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
+                        await san.queries.checkSanLockIncompleteCall(pks[0], oasys.users.probHeadPdu)
+                        await san.queries.getSanApiTime(pks[0], 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+                        await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pks[0]}`, {
                             SAN_ASSESSMENT_LINKED_IND: 'Y',
                             CLONED_FROM_PREV_OASYS_SAN_PK: pks[1].toString(),
                         })
@@ -76,8 +76,8 @@ describe('SAN integration - test ref 27', () => {
                         cy.get<number>('@sections').then((sections) => {
                             expect(sections).equal(2)
                         })
-                        oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
-                        oasys.logout()
+                        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                        await oasys.logout()
 
                         log(`Log back in as a user from the probation area of the offender
                         Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
@@ -88,14 +88,14 @@ describe('SAN integration - test ref 27', () => {
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen
                         Close the assessment - back to the offender record`)
 
-                        oasys.login(oasys.users.probSanUnappr)
-                        oasys.Nav.history(offender)
+                        await oasys.login(oasys.users.probSanUnappr)
+                        await oasys.history(offender)
                         await assessment.openLatest()
                         await san.gotoSanReadOnly('Accommodation', 'information')
                         await san.checkSanEditMode(false)
                         await san.returnToOASys()
 
-                        oasys.ArnsSp.runScript('checkReadOnly')
+                        await sentencePlan.spService.checkReadOnly()
 
                         await oasys.clickButton('Close')
 
@@ -115,7 +115,7 @@ describe('SAN integration - test ref 27', () => {
                                 expect(oasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
                                 expect(oasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
 
-                                oasys.logout()
+                                await oasys.logout()
                             })
                         })
                     })

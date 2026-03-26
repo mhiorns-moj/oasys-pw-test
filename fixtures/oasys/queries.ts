@@ -194,68 +194,52 @@ export class Queries {
     /**
      * Checks that a set of OASys sections (string[] of section refs) have been cloned from one assessment to another, fails if there are any mismatches in any of the sections.
      */
-    // async checkCloning(newPk: number, oldPk: number, sections: string[]) {
+    async checkCloning(newPk: number, oldPk: number, sections: string[]) {
 
-    //     log(`Checking cloning from ${oldPk} to ${newPk}`)
-    //     cy.wrap(false).as('failed')
-    //     sections.forEach((section) => {
-    //         checkSectionCloning(newPk, oldPk, section, 'failed')
-    //     })
-    //     cy.get<boolean>('@failed').then((failed) => expect(failed).equal(false))
-    // }
+        log(`Checking cloning from ${oldPk} to ${newPk}`)
+        let failed = false
+        for (let section of sections) {
+            failed = await this.checkSectionCloning(newPk, oldPk, section) || failed
+        }
+        expect(failed).toBeFalsy()
+    }
 
-    // /**
-    //  * Checks that a set of OASys sections (string[] of section refs) have not been cloned from one assessment to another, fails if everything has cloned.
-    //  */
-    // async checkCloningExpectMismatch(newPk: number, oldPk: number, sections: string[]) {
+    /**
+     * Checks that a set of OASys sections (string[] of section refs) have not been cloned from one assessment to another, fails if everything has cloned.
+     */
+    async checkCloningExpectMismatch(newPk: number, oldPk: number, sections: string[]) {
 
-    //     log(`Checking cloning from ${oldPk} to ${newPk}`)
-    //     sections.forEach((section) => {
-    //         cy.wrap(false).as('failed')
-    //         checkSectionCloning(newPk, oldPk, section, 'failed')
-    //         cy.get<boolean>('@failed').then((failed) => expect(failed).equal(true))
-    //     })
-    // }
+        log('', `Checking cloning from ${oldPk} to ${newPk}, expecting mismatch`)
+        let failed = false
+        for (let section of sections) {
+            failed = await this.checkSectionCloning(newPk, oldPk, section) || failed
+        }
+        expect(failed).toBeTruthy()
+    }
 
-    // async checkSectionCloning(newPk: number, oldPk: number, section: string, resultAlias: string) {
+    async checkSectionCloning(newPk: number, oldPk: number, section: string): Promise<boolean> {
 
-    //     let failed = false
-    //     cy.task('getData', sectionQuery(newPk, section)).then((result: DbResponse) => {
-    //         if (result.error != null) { // database error
-    //             throw new Error(result.error)
-    //         } else {
-    //             const newData = result.data as string[][]
-    //             cy.task('getData', sectionQuery(oldPk, section)).then((result: DbResponse) => {
-    //                 if (result.error != null) { // database error
-    //                     throw new Error(result.error)
-    //                 } else {
-    //                     const oldData = result.data as string[][]
-    //                     lib.logStart(`Checking cloning for new PK ${newPk}, old PK ${oldPk}, section ${section}`)
-    //                     if (newData.length != oldData.length) {
-    //                         log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0}`)
-    //                         failed = true
-    //                     } else {
-    //                         for (let i = 0; i < newData.length; i++) {
-    //                             const newQ = JSON.stringify(newData[i])
-    //                             const oldQ = JSON.stringify(oldData[i])
-    //                             if (newQ != oldQ) {
-    //                                 log(`New question: ${newQ}, old question: ${oldQ}`)
-    //                                 failed = true
-    //                             }
-    //                         }
-    //                     }
+        let failed = false
 
-    //                     lib.logEnd()
+        const newData = await this.oasysDb.getData(sectionQuery(newPk, section))
+        const oldData = await this.oasysDb.getData(sectionQuery(oldPk, section))
 
-    //                     cy.get<boolean>(`@${resultAlias}`).then((aliasValue) => {  // Need to refresh the alias even if not changing to indicate completion
-    //                         const newValue = failed ? true : aliasValue
-    //                         cy.wrap(newValue).as(resultAlias)
-    //                     })
-    //                 }
-    //             })
-    //         }
-    //     })
-    // }
+        if (newData.length != oldData.length) {
+            log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0}`)
+            failed = true
+        } else {
+            for (let i = 0; i < newData.length; i++) {
+                const newQ = JSON.stringify(newData[i])
+                const oldQ = JSON.stringify(oldData[i])
+                if (newQ != oldQ) {
+                    log(`New question: ${newQ}, old question: ${oldQ}`)
+                    failed = true
+                }
+            }
+        }
+
+        return failed
+    }
 
 
     /**
@@ -287,6 +271,22 @@ export class Queries {
     //         }
     //     })
     // }
+
+
+    /**
+     * Checks that the expected set of OASYS_SIGNING records are found for a given assessment PK; the expectedActions parameter should include all actions, latest first.
+     */
+    async checkSigningRecord(pk: number, expectedActions: AssessmentSigning[]) {
+
+        const data = await this.oasysDb.getData(`select signing_action_elm from eor.oasys_signing where oasys_set_pk = ${pk} order by create_date desc`)
+
+        log(`Checking OASYS_SIGNING actions for ${pk}: ${JSON.stringify(data)} `)
+
+        expect(data.length).toBe(expectedActions.length)
+        for (let i = 0; i < expectedActions.length; i++) {
+            expect(data[i][0]).toBe(expectedActions[i])
+        }
+    }
 }
 
 

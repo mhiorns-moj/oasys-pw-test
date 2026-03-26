@@ -45,7 +45,7 @@ export class BaseAssessmentPage extends OasysPage {
                 await this.floatingMenu.locator('.expandable').filter({ hasText: this.menu.level1 }).click()
                 await this.waitForAnimation(this.floatingMenu)
             }
-            imageTitle = await this.floatingMenu.locator(`li:has-text('${this.menu.level1}') img`).getAttribute('title')
+            imageTitle = await this.floatingMenu.locator(`li:has-text('${this.menu.level1}') li:has-text('${this.menu.level2}') img`).getAttribute('title')
         }
 
         const complete = imageTitle == 'Section Complete'

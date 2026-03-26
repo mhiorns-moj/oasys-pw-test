@@ -10,7 +10,7 @@ describe('SAN integration - test ref 13 part 3', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Now create a new 3.2 OASys-SAN Assessment, the new SAN question defaults to 'Yes' and during the Create process say 'Yes' to cloning from the historic assessment.
@@ -28,36 +28,36 @@ describe('SAN integration - test ref 13 part 3', () => {
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
 
-                await san.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
+                await san.queries.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
 
                 log(`Check Section 1 of the assessment - ONLY 1.8 has cloned through.  
                         The offence will not have cloned through unless it has been setup on the CMS stub and it gets copied from there.
                         Data will have been copied through from the 'living' SAN assessment as we said 'Yes' to cloning.
                         Leave the 3.2 OASys-SAN assessment as WIP.  This test proves the cloning through from a 'historic' 3.2 assessment.`)
 
-                const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
+                await assessment.offendingInformation.goto()
                 offendingInformation.offence.checkValue('')
                 offendingInformation.sentence.checkValue('')
                 offendingInformation.sentenceDate.checkValue('')
 
-                const predictors = new oasys.Pages.Assessment.Predictors().goto()
-                predictors.ageFirstSanction.checkValue('37')
-                predictors.o1_32.checkValue(null)
-                predictors.o1_40.checkValue(null)
-                predictors.o1_29.checkValue('')
-                predictors.o1_30.checkValue('')
-                predictors.o1_38.checkValue('')
-                predictors.arp.checkValue('Unable to calculate', true)
-                predictors.vrp.checkValue('Unable to calculate', true)
-                predictors.svrp.checkValue('Unable to calculate', true)
-                predictors.ospDc.checkValue('Unable to calculate', true)
-                predictors.ospIic.checkValue('Unable to calculate', true)
+                await assessment.predictors.goto()
+                await assessment.predictors.ageFirstSanction.checkValue('37')
+                await assessment.predictors.o1_32.checkValue(null)
+                await assessment.predictors.o1_40.checkValue(null)
+                await assessment.predictors.o1_29.checkValue('')
+                await assessment.predictors.o1_30.checkValue('')
+                await assessment.predictors.o1_38.checkValue('')
+                await assessment.predictors.arp.checkValue('Unable to calculate', true)
+                await assessment.predictors.vrp.checkValue('Unable to calculate', true)
+                await assessment.predictors.svrp.checkValue('Unable to calculate', true)
+                await assessment.predictors.ospDc.checkValue('Unable to calculate', true)
+                await assessment.predictors.ospIic.checkValue('Unable to calculate', true)
 
-                oasys.Db.checkAnswers(pks[0], testData.clonedAndModifiedData, 'answerCheck', true)
+                const failed = await oasys.queries.checkAnswers(pks[0], testData.clonedAndModifiedData, 'answerCheck', true)
                 cy.get<boolean>('@answerCheck').then((answerCheck) => {
                     expect(answerCheck).equal(false)
                 })
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })

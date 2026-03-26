@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 const offender1: OffenderDef = {
     forename1: 'Autotest',
@@ -11,7 +10,7 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
 
     it('No countersigning required', () => {
 
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
         oasys.Offender.createProb(offender1, 'offender1')
         cy.get<OffenderDef>('@offender1').then((offender) => {
 
@@ -41,12 +40,12 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
             roshScreening2.next.click()
 
             await signing.signAndLock({ expectRsrScore: true })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
             // First L1
-            oasys.Nav.history(offender)
+            await oasys.history(offender)
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' })
-            const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
+            await assessment.offendingInformation.goto()
             offendingInformation.count.setValue(1)
             offendingInformation.offenceDate.setValue({ months: -9 })
             const additionalOffence = new oasys.Pages.Assessment.Other.AdditionalOffences().goto()
@@ -65,7 +64,7 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
             oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
 
             await signing.signAndLock({ page: oasys.Pages.SentencePlan.BasicSentencePlan, })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
         })
 

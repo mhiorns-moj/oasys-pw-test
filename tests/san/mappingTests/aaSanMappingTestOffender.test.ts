@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra'
 
-import * as lib from 'lib'
 import { test } from 'fixtures'
 import { mappingTestOffenderFile } from './xMappingTest'
 

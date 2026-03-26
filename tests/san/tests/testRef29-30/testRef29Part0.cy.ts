@@ -43,7 +43,7 @@ describe('SAN integration - test ref 29', () => {
 
     it('Test ref 29 part 0 - create offender', () => {
 
-        oasys.login(oasys.users.probSanHeadPdu)  // No countersigning for this test
+        await oasys.login(oasys.users.probSanHeadPdu)  // No countersigning for this test
 
         oasys.Offender.createProb(offender1, 'offender1')
         oasys.Offender.createProb(offender2, 'offender2')
@@ -56,7 +56,7 @@ describe('SAN integration - test ref 29', () => {
 
                 cy.task('storeValue', { key: 'offender2', value: JSON.stringify(offender2) })
 
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })

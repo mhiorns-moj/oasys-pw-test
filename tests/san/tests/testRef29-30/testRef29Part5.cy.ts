@@ -9,7 +9,7 @@ describe('SAN integration - test ref 29/30', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)
+            await oasys.login(oasys.users.probSanHeadPdu)
 
             log(`Create an offender whose latest assessment is a locked incomplete OASYS-SAN`)
 
@@ -21,9 +21,9 @@ describe('SAN integration - test ref 29/30', () => {
             cy.get<number>('@pk').then((pk) => {
 
                 await oasys.clickButton('Close')
-                oasys.Assessment.lockIncomplete()
+                await assessment.lockIncomplete()
 
-                oasys.logout()
+                await oasys.logout()
 
                 log(`Log into the SAN Pilot area as an Administrator
                     Search for the offender and open up the readonly OASys-SAN assessment
@@ -32,12 +32,12 @@ describe('SAN integration - test ref 29/30', () => {
                     An OASYS_SIGNING record has been created for the deletion 'ASSMT_DEL_SIGNING'
                     A Delete API has been sent to the SAN Service - check the parameters are the OASYS_SET_PK, Admins User ID and Name - a 200 response has been received back`)
 
-                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                await oasys.login(oasys.users.admin, oasys.users.probationSan)
                 await offender.searchAndSelectByPnc(offender.pnc)
-                oasys.Assessment.deleteLatest()
+                await assessment.deleteLatest()
                 oasys.Assessment.checkDeleted(pk)
                 oasys.Assessment.checkSigningRecord(pk, ['ASSMT_DEL_SIGNING', 'LOCKED_INCOMPLETE'])
-                await san.checkSanDeleteCall(pk, oasys.users.admin)
+                await san.queries.checkSanDeleteCall(pk, oasys.users.admin)
 
 
                 log(`Test ref 30 - reverse deletion test`)
@@ -45,9 +45,9 @@ describe('SAN integration - test ref 29/30', () => {
 
                 oasys.Assessment.checkNotDeleted(pk)
                 oasys.Assessment.checkSigningRecord(pk, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'LOCKED_INCOMPLETE'])
-                await san.checkSanUndeleteCall(pk, oasys.users.admin)
+                await san.queries.checkSanUndeleteCall(pk, oasys.users.admin)
 
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })

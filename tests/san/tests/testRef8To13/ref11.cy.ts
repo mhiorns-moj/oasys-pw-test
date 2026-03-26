@@ -15,20 +15,20 @@ describe('SAN integration - test ref 11', () => {
                     Find the offender used in Test Ref 10
                     Carry out a 'transfer' so that the probation owner and controlling owner transfers to the non-pilot area.`)
 
-            oasys.login(oasys.users.probHeadPdu)
+            await oasys.login(oasys.users.probHeadPdu)
             await offender.searchAndSelectByPnc(offender.pnc, oasys.users.probationSan)
             new oasys.Pages.Offender.OffenderDetails().requestTransfer.click()
 
             new oasys.Pages.Offender.RequestTransfer().submit.click()
-            oasys.logout()
+            await oasys.logout()
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await tasks.search({ taskName: 'Transfer Request Received - Decision Required', offenderName: offender.surname })
             await tasks.selectFirstTask()
             new oasys.Pages.Tasks.TransferDecisionTask().grantTransfer.click()
-            oasys.logout()
+            await oasys.logout()
 
-            oasys.login(oasys.users.probHeadPdu)
+            await oasys.login(oasys.users.probHeadPdu)
 
             log(`Create a new 'Review' Layer 3 version 1 assessment - opens at the Case ID screen.  3.1 assessment includes a full analysis with sections 6.1 and 6.2.  
                     Sections 2 to 13 and the SAQ are showing in the navigation menu.  'Open Strengths and Needs' is NOT shown in the navigation menu.
@@ -43,16 +43,16 @@ describe('SAN integration - test ref 11', () => {
             await assessment.createProb({ purposeOfAssessment: 'Review' })
 
             await san.checkLayer3Menu(false, true)
-            new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
+            await risk.fullAnalysisSection62.checkMenuVisibility(true)
 
             oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevPk = pks[1]
 
-                await san.getSanApiTimeAndCheckDbValues(pk, null, prevPk)
+                await san.queries.getSanApiTimeAndCheckDbValues(pk, null, prevPk)
 
-                oasys.Db.checkAnswers(pk, testData.nonOASysQuestions, 'nonOASysQuestionsResult', true)
+                const failed = await oasys.queries.checkAnswers(pk, testData.nonOASysQuestions, 'nonOASysQuestionsResult', true)
                 cy.get<boolean>('@nonOASysQuestionsResult').then((failed) => {
                     expect(failed).equal(false)
                 })
@@ -61,7 +61,7 @@ describe('SAN integration - test ref 11', () => {
                             '7 - Lifestyle and Associates', '11 - Thinking and Behaviour', '12 - Attitudes'
                         Carry on to fully complete the 3.1 assessment in OASys ensuring at S&L the Assessor DOES NOT receive any errors relating to the SAN service.`)
 
-                const rosh1 = new oasys.Pages.Rosh.RoshScreeningSection1().goto()
+                await risk.screeningSection1.goto()
                 rosh1.areasOfConcern.getValues('areas')
                 cy.get<string[]>('@areas').then((areas) => {
                     expect(areas).contains('7 - Lifestyle and Associates').and.contains('11 - Thinking and Behaviour').and.contains('12 - Attitudes')
@@ -105,12 +105,12 @@ describe('SAN integration - test ref 11', () => {
 
                 new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
                 await signing.signAndLock()
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
                     CLONED_FROM_PREV_OASYS_SAN_PK: prevPk.toString(),
                     SAN_ASSESSMENT_VERSION_NO: null,
                 })
-                oasys.logout()
+                await oasys.logout()
             })
 
         })

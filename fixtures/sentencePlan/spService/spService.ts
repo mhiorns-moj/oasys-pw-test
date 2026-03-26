@@ -2,7 +2,6 @@ import { Page, expect } from '@playwright/test'
 
 import * as pages from './pages'
 import { Oasys } from 'fixtures/oasys/oasys'
-import * as lib from 'lib'
 
 
 export class SpService {
@@ -132,9 +131,12 @@ export class SpService {
 
     }
 
-    async addGoal(page: Page, sentencePlan: pages.SentencePlan) {
+    async addGoal(from: 'assessment' | 'offender' = 'assessment') {
 
-        await sentencePlan.createGoal.click()
+        log('Adding a goal')
+        await this.gotoSpService(from)
+
+        await this.sentencePlan.createGoal.click()
 
         const createGoal = new pages.CreateGoal(this.page)
         await createGoal.goal.setValue('Adding a goal')
@@ -146,6 +148,8 @@ export class SpService {
         await this.page.getByLabel('Who will do the step?').selectOption('probation_practitioner')
         await this.page.getByRole('textbox', { name: 'What should they do to' }).fill('Do some additional stuff')
         await this.page.getByRole('button', { name: 'Save and continue' }).click()
+
+        await this.returnToOasys()
     }
 
 }

@@ -15,7 +15,7 @@ describe('SAN integration - test ref 08 part 4', () => {
                 Countersigner shown the correct 'Countersigning Overview' screen
                 Return back to the assessment - now on the first Initial Sentence Plan screen`)
 
-            oasys.login(oasys.users.probSanHeadPdu)
+            await oasys.login(oasys.users.probSanHeadPdu)
             oasys.Task.openAssessmentFromCountersigningTaskByName(offender.surname)
             const countersigningOverview = new oasys.Pages.Signing.CountersigningOverview()
             countersigningOverview.header.checkStatus('visible')
@@ -27,7 +27,7 @@ describe('SAN integration - test ref 08 part 4', () => {
             countersigningOverview.returnToAssessment.click()
             new oasys.Pages.SentencePlan.SentencePlanService().checkCurrent()
 
-            oasys.logout()
+            await oasys.logout()
 
         })
     })

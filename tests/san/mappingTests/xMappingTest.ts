@@ -2,7 +2,6 @@ import * as fs from 'fs-extra'
 
 import { Oasys, Offender, Assessment, San } from 'fixtures'
 
-import * as lib from 'lib'
 
 /**
  * Test script used by all of the mapping tests.  Need to run the aaSanMappingTestOffender script first to create an offender and store the details in a local file.

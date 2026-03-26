@@ -46,7 +46,7 @@ describe('SAN integration - test ref 21 part 0', () => {
 
     it('Create offenders', () => {
 
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(offender1, 'offender1')
         cy.get<OffenderDef>('@offender1').then((offender) => {
@@ -54,19 +54,19 @@ describe('SAN integration - test ref 21 part 0', () => {
             // Save the offender details for use in later tests
             cy.task('storeValue', { key: 'offender1', value: JSON.stringify(offender) })
         })
-        oasys.logout()
+        await oasys.logout()
 
-        oasys.login(oasys.users.probSanHeadPdu)
+        await oasys.login(oasys.users.probSanHeadPdu)
         oasys.Offender.createProb(offender2, 'offender2')
         cy.get<OffenderDef>('@offender2').then((offender) => {
 
             // Save the offender details for use in later tests
             cy.task('storeValue', { key: 'offender2', value: JSON.stringify(offender) })
-            oasys.logout()
+            await oasys.logout()
 
-            oasys.login(oasys.users.probHeadPdu)
+            await oasys.login(oasys.users.probHeadPdu)
             oasys.Offender.addProbationOffenderToStub(offender)
-            oasys.logout()
+            await oasys.logout()
         })
     })
 })

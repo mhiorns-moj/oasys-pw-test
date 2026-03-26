@@ -1,5 +1,4 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
-import * as lib from 'lib'
 
 export class Summary extends BaseAssessmentPage {
 
@@ -59,11 +58,11 @@ export class Summary extends BaseAssessmentPage {
         log('Fully populated RoSH summary')
         await this.goto(true)
 
-        await this.r10_1.setValue(maxStrings ? lib.oasysString(4000) : 'R10.1 details')
-        await this.r10_2.setValue(maxStrings ? lib.oasysString(4000) : 'R10.2 details')
-        await this.riskFactorAnslysis.setValue(maxStrings ? lib.oasysString(4000) : 'Risk factor analysis')
-        await this.r10_5.setValue(maxStrings ? lib.oasysString(4000) : 'R10.5 details')
-        await this.r10_3.setValue(maxStrings ? lib.oasysString(4000) : 'R10.3 details')
+        await this.r10_1.setValue(maxStrings ? utils.oasysString(4000) : 'R10.1 details')
+        await this.r10_2.setValue(maxStrings ? utils.oasysString(4000) : 'R10.2 details')
+        await this.riskFactorAnslysis.setValue(maxStrings ? utils.oasysString(4000) : 'Risk factor analysis')
+        await this.r10_5.setValue(maxStrings ? utils.oasysString(4000) : 'R10.5 details')
+        await this.r10_3.setValue(maxStrings ? utils.oasysString(4000) : 'R10.3 details')
         await this.r10_6ChildrenCommunity.setValue('Low')
         await this.r10_6ChildrenCustody.setValue('High')
         await this.r10_6PublicCommunity.setValue('Medium')
@@ -73,6 +72,6 @@ export class Summary extends BaseAssessmentPage {
         await this.r10_6StaffCommunity.setValue('Low')
         await this.r10_6StaffCustody.setValue('Very High')
         await this.r10_6PrisonersCustody.setValue('High')
-        await this.details.setValue(maxStrings ? lib.oasysString(4000) : 'Some details about documents and reports')
+        await this.details.setValue(maxStrings ? utils.oasysString(4000) : 'Some details about documents and reports')
     }
 }

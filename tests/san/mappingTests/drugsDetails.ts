@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 import { mappingTestOffenderFile } from './xMappingTest'
 
 type TestCase = { ref: number, lastSix: boolean, frequency: DrugsFrequency, injectedLastSix: boolean, injectedMoreThanSix: boolean }
@@ -100,13 +99,13 @@ function drugTest(drugType: DrugType) {
         const mappingTestOffender = JSON.parse(offenderDetails) as OffenderDef
 
         // Delete previous assessments so no data gets cloned
-        oasys.login(oasys.users.admin, oasys.users.probationSan)
+        await oasys.login(oasys.users.admin, oasys.users.probationSan)
         await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
         oasys.Assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
-        oasys.logout()
+        await oasys.logout()
 
         // Create a new SAN assessment
-        oasys.login(oasys.users.probSanUnappr)
+        await oasys.login(oasys.users.probSanUnappr)
         await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 

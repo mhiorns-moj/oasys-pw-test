@@ -1,11 +1,11 @@
-import * as oasys from 'lib'
 
-export function fullyPopulated(params?: PopulateAssessmentParams) {
+async populateFull(params ?: PopulateAssessmentParams) {
 
-    const page = new oasys.Pages.Rosh.RoshFullAnalysisSection8().goto(true)
-    page.suicideSelfHarm.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'SuicideHarmDetails')
-    page.custodyAnalysis.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'CustodyDetails')
-    page.vulnerabilityAnalysis.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'VulnerabilityDetails')
-    page.roshOthers.setValue('Yes')
-    page.riskDetails.setValue(params?.maxStrings ? oasys.oasysString(4000) : 'RiskDetails')
+    await this.goto(true)
+        .Rosh.RoshFullAnalysisSection8().goto(true)
+    await this.suicideSelfHarm.setValue(params?.maxStrings ? utils.oasysString(4000) : 'SuicideHarmDetails')
+    await this.custodyAnalysis.setValue(params?.maxStrings ? utils.oasysString(4000) : 'CustodyDetails')
+    await this.vulnerabilityAnalysis.setValue(params?.maxStrings ? utils.oasysString(4000) : 'VulnerabilityDetails')
+    await this.roshOthers.setValue('Yes')
+    await this.riskDetails.setValue(params?.maxStrings ? utils.oasysString(4000) : 'RiskDetails')
 }

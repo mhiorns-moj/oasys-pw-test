@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 export function minimal() {
 
@@ -69,6 +68,6 @@ export function fullyPopulated(maxStrings: boolean = false) {
     page.s27.setValue('Yes')
     page.s27LinkedOffending.setValue('Yes')
     page.s28.setValue('Quite likely')
-    page.why.setValue(maxStrings ? oasys.oasysString(4000) : `Because I'm a criminal`)
+    page.why.setValue(maxStrings ? utils.oasysString(4000) : `Because I'm a criminal`)
     page.save.click()
 }

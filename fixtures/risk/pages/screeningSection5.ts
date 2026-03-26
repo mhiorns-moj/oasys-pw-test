@@ -1,5 +1,4 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
-import * as lib from 'lib'
 
 export class ScreeningSection5 extends BaseAssessmentPage {
 
@@ -14,4 +13,13 @@ export class ScreeningSection5 extends BaseAssessmentPage {
     r5_1t = new Element.Textbox(this.page, '#textarea_R5_1_t')
     r5_2 = new Element.Select(this.page, '#itm_R5_2b')
     r5_2t = new Element.Textbox(this.page, '#textarea_R5_2a')
+
+
+    async populateFull() {
+
+        log('RoSH screening section 5 - fully populated')
+        await this.goto(true)
+        await this.r5_1.setValue('Yes')
+        await this.r5_1t.setValue('This is a really bad offender')
+    }
 }

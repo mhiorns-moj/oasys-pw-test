@@ -15,7 +15,7 @@ describe('SAN integration - test ref 27', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
@@ -48,7 +48,7 @@ describe('SAN integration - test ref 27', () => {
                     Assessment now showing as locked incomplete
                     Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`)
 
-                oasys.Assessment.lockIncomplete()
+                await assessment.lockIncomplete()
 
                 oasys.Db.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate1')
 
@@ -70,8 +70,8 @@ describe('SAN integration - test ref 27', () => {
                         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                        await san.checkSanLockIncompleteCall(pk, oasys.users.probSanUnappr)
-                        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                        await san.queries.checkSanLockIncompleteCall(pk, oasys.users.probSanUnappr)
+                        await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                             SAN_ASSESSMENT_LINKED_IND: 'Y',
                             CLONED_FROM_PREV_OASYS_SAN_PK: null,
                         })
@@ -83,7 +83,7 @@ describe('SAN integration - test ref 27', () => {
                         cy.get<number>('@sections').then((sections) => {
                             expect(sections).equal(2)
                         })
-                        oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
                         log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
                         Click on the 'Open Strengths and Needs' button
@@ -98,7 +98,7 @@ describe('SAN integration - test ref 27', () => {
                         await san.checkSanEditMode(false)
                         await san.returnToOASys()
 
-                        oasys.ArnsSp.runScript('checkReadOnly')
+                        await sentencePlan.spService.checkReadOnly()
 
                         await oasys.clickButton('Close')
 
@@ -118,7 +118,7 @@ describe('SAN integration - test ref 27', () => {
                                 expect(oasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
                                 expect(oasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
 
-                                oasys.logout()
+                                await oasys.logout()
                             })
                         })
                     })

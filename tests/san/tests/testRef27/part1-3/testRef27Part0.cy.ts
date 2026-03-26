@@ -13,7 +13,7 @@ describe('SAN integration - test ref 27', () => {
 
     it('Test ref 27 part 0 - create offender', () => {
 
-        oasys.login(oasys.users.probSanUnappr)
+        await oasys.login(oasys.users.probSanUnappr)
 
         oasys.Offender.createProb(offender, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {

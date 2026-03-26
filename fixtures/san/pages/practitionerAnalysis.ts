@@ -1,6 +1,5 @@
 import { Page } from '@playwright/test'
 import { OasysPage, Element } from 'classes'
-import * as lib from 'lib'
 
 export class PractitionerAnalysis extends OasysPage {
 

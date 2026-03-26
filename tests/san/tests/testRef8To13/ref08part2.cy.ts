@@ -9,7 +9,7 @@ describe('SAN integration - test ref 08 part 2', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Create another assessment - defaults to Review
@@ -58,12 +58,12 @@ describe('SAN integration - test ref 08 part 2', () => {
                         Check the OASYS_SET record, it is not clear yet but I am assuming that we will get something back from SAN even if the OASys equivalent section is blank - but OASYS_SET.LASTUPD_FROM_SAN should be set to date/timestamp from the API response
                         None of the navigation menu options have ticks against them`)
 
-                await san.getSanApiTimeAndCheckDbValues(pk, 'Y', null)
-                await san.checkSanCreateAssessmentCall(pk, null, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'INITIAL')
+                await san.queries.getSanApiTimeAndCheckDbValues(pk, 'Y', null)
+                await san.queries.checkSanCreateAssessmentCall(pk, null, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'INITIAL')
 
                 await san.checkNoQuestionsCreated(pk)
                 await san.checkNoIspQuestions1Or2(pk)
-                await san.checkSanAssessmentCompletionStatus(false)
+                await san.queries.checkSanAssessmentCompletionStatus(false)
 
                 log(`Click on 'Sign and Lock'
                         Ensure the errors reported are consistent with being a 3.2 assessment: 
@@ -103,17 +103,17 @@ describe('SAN integration - test ref 08 part 2', () => {
                 offenderInformation.religion.setValue('Adventist')
                 const sourcesOfInformation = new oasys.Pages.Assessment.SourcesOfInformation().goto()
                 sourcesOfInformation.sourcesOther.setValue('Some other sources')
-                const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
+                await assessment.offendingInformation.goto()
                 offendingInformation.communityPunishmentHours.setValue('200')
                 offendingInformation.additionalRequirements1.setValue('Citizenship')
                 offendingInformation.sentenceAdditionalLicenceConditions.setValue('Some additional conditions')
-                const predictors = new oasys.Pages.Assessment.Predictors().goto()
-                predictors.o1_32.setValue(4)
-                predictors.o1_40.setValue(0)
-                predictors.o1_29.setValue({ days: -7 })
-                predictors.o1_46.checkLabel('Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences')
-                predictors.save.click()
-                predictors.next.click()
+                await assessment.predictors.goto()
+                await assessment.predictors.o1_32.setValue(4)
+                await assessment.predictors.o1_40.setValue(0)
+                await assessment.predictors.o1_29.setValue({ days: -7 })
+                await assessment.predictors.o1_46.checkLabel('Number of previous/current sanctions involving indecent child image or indirect child contact sexual/sexually motivated offences')
+                await assessment.predictors.save.click()
+                await assessment.predictors.next.click()
 
                 const sanSections = new oasys.Pages.Assessment.SanSections().checkCurrent()
                 sanSections.close.checkStatus('enabled')
@@ -134,8 +134,8 @@ describe('SAN integration - test ref 08 part 2', () => {
                         column which are all set to 'N' apart from 'Finance' and 'Health and wellbeing' which are set to 'N/A'.
                         The 'Scores' column are all just greyed out apart from 'Finance' and 'Health and wellbeing' which are set to 'N/A'.`)
 
-                await san.checkSanLoaded(offender.probationCrn, offender.pnc)
-                await san.checkSanOtlCall(pk, {
+                await san.queries.checkSanLoaded(offender.probationCrn, offender.pnc)
+                await san.queries.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -153,8 +153,8 @@ describe('SAN integration - test ref 08 part 2', () => {
                 )
                 await san.returnToOASys()
                 sanSections.checkCurrent()
-                await san.checkSanAssessmentCompletionStatus(false)
-                const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
+                await san.queries.checkSanAssessmentCompletionStatus(false)
+                await assessment.summarySheet.goto()
                 const expectedValues: ColumnValues[] = [
                     {
                         name: 'oasysSection',
@@ -172,7 +172,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                 summarySheet.save.click()  // Workaround for defect NOD-1165
                 summarySheet.sanCrimTable.checkData(expectedValues)
 
-                oasys.logout()
+                await oasys.logout()
             })
 
         })

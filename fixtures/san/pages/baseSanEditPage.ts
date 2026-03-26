@@ -1,5 +1,4 @@
 import { OasysPage, Element } from 'classes'
-import * as lib from 'lib'
 
 export class BaseSanEditPage extends OasysPage {
 

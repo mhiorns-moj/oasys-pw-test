@@ -13,7 +13,7 @@ describe('SAN integration - test ref 21 part 1', () => {
 
             const offender1 = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probHeadPdu)
+            await oasys.login(oasys.users.probHeadPdu)
             await offender.searchAndSelectByPnc(offender1.pnc)
             // new oasys.Pages.Offender.OffenderDetails().pnc.setValue('UNKNOWN PNC')
 
@@ -25,11 +25,11 @@ describe('SAN integration - test ref 21 part 1', () => {
             new oasys.Pages.SentencePlan.IspSection52to8().goto()
             await signing.signAndLock({ expectRsrWarning: true })
 
-            oasys.logout()
+            await oasys.logout()
 
             oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'pk')
             cy.get('@pk').then((pk) => {
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     SAN_ASSESSMENT_VERSION_NO: null,

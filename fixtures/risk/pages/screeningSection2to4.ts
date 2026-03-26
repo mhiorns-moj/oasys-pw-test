@@ -1,5 +1,4 @@
 ﻿import { BaseAssessmentPage, Element } from 'classes'
-import * as lib from 'lib'
 
 export class ScreeningSection2to4 extends BaseAssessmentPage {
 
@@ -36,6 +35,22 @@ export class ScreeningSection2to4 extends BaseAssessmentPage {
         await this.r4_1.setValue('No')
         await this.r4_6.setValue('No')
         await this.r4_4.setValue('No')
+    }
+    
+    async populateFull() {
+        
+        log('RoSH screening section 2 - fully populated')
+        await this.goto(true)
+        await this.r2_3.setValue('Yes')
+        await this.r2_4_1.setValue('Yes')
+        await this.r2_4_2.setValue('Yes')
+        await this.r3_1.setValue('Yes')
+        await this.r3_2.setValue('Yes')
+        await this.r3_3.setValue('Yes')
+        await this.r3_4.setValue('Yes')
+        await this.r4_1.setValue('Yes')
+        await this.r4_6.setValue('Yes')
+        await this.r4_4.setValue('Yes')
     }
 }
 

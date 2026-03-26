@@ -20,14 +20,14 @@ describe('SAN integration - test ref 09', () => {
                     DO NOT answer 'Yes' to any of the sections 'linked to risk' questions.  Ensure all sections are marked as complete.
                     Return back to OASys.`)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
                 await san.gotoSanFromOffender()
-                await san.checkSanOtlCall(pk, {
+                await san.queries.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -43,7 +43,7 @@ describe('SAN integration - test ref 09', () => {
                 }, 'san', null
                 )
                 await san.populateSanSections('TestRef9 modify SAN', testData.modifySan)
-                await san.checkSanSectionsCompletionStatus(9)
+                await san.queries.checkSanSectionsCompletionStatus(9)
                 await san.returnToOASys()
 
                 log(`Open up the latest fully completed OASys-SAN assessment - navigate to the 'Open Strengths and Needs'  section and link out to the SAN Service
@@ -60,7 +60,7 @@ describe('SAN integration - test ref 09', () => {
                     await san.returnToOASys()
                     await oasys.clickButton('Next')
                     oasys.Db.checkSingleAnswer(pk, '5', '5.4', 'refAnswer', '2')  // Should be 2 in the assessment (source of income = offending only).  Change in offender record would return 1 if it impacted the assessment.
-                    oasys.logout()
+                    await oasys.logout()
                 })
             })
         })

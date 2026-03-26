@@ -18,7 +18,7 @@ describe('SAN integration - tests 39-40', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanHeadPdu)  // Senior user so no countersigning for this test
+            await oasys.login(oasys.users.probSanHeadPdu)  // Senior user so no countersigning for this test
             await offender.searchAndSelectByPnc(offender.pnc)
 
             // Create assessment
@@ -32,7 +32,7 @@ describe('SAN integration - tests 39-40', () => {
             // Sign and lock
             new oasys.Pages.SentencePlan.SentencePlanService().goto()
             await signing.signAndLock()
-            oasys.logout()
+            await oasys.logout()
         })
     })
 })

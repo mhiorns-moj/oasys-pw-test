@@ -14,7 +14,7 @@ describe('SAN integration - test ref 12', () => {
                     Find the offender used in Test Ref 11 - last assessment is a fully completed 3.1 OASys 
                     Create a new 3.1 OASys 'Review' assessment.`)
 
-            oasys.login(oasys.users.probHeadPdu)
+            await oasys.login(oasys.users.probHeadPdu)
 
             await offender.searchAndSelectByPnc(offender.pnc)
             await assessment.createProb({ purposeOfAssessment: 'Review' })
@@ -32,7 +32,7 @@ describe('SAN integration - test ref 12', () => {
                 const prevSanPk = pks[2]
                 await san.checkNoSanCall(pk)
 
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
                     CLONED_FROM_PREV_OASYS_SAN_PK: prevSanPk.toString(),
                     SAN_ASSESSMENT_VERSION_NO: null,
@@ -136,7 +136,7 @@ describe('SAN integration - test ref 12', () => {
                 section12.o12_9.setValue('2-Significant problems')
                 section12.save.click()
 
-                const rosh2 = new oasys.Pages.Rosh.RoshScreeningSection2to4().goto()
+                await risk.screeningSection2to4.goto()
                 rosh2.r2_3.setValue('No')
                 rosh2.rationale.setValue('Some reason')
                 rosh2.save.click()
@@ -146,7 +146,7 @@ describe('SAN integration - test ref 12', () => {
                 sara.ok.click()
 
                 await signing.signAndLock({ page: oasys.Pages.SentencePlan.RspSection1to2 })
-                oasys.logout()
+                await oasys.logout()
             })
 
         })

@@ -19,7 +19,7 @@ describe('SAN integration - test ref 27', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
@@ -29,7 +29,7 @@ describe('SAN integration - test ref 27', () => {
                 await san.gotoSan()
                 await san.populateSanSections('TestRef27 part 1 complete SAN', oasys.Populate.San.ExampleTest.sanPopulation1)
                 await san.returnToOASys()
-                oasys.ArnsSp.runScript('populateMinimal')
+                await sentencePlan.populateMinimal()
 
                 log(`Open up the offender record
                     Click on the <Lock Incomplete> button and then click <OK> to confirm the action
@@ -37,7 +37,7 @@ describe('SAN integration - test ref 27', () => {
                     Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`)
 
                 await oasys.clickButton('Close')
-                oasys.Assessment.lockIncomplete()
+                await assessment.lockIncomplete()
 
                 oasys.Db.getData(`select to_char(lastupd_from_san,'${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}')  from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate')
                 cy.get<string[][]>('@lastUpdDate').then((initialData) => {
@@ -50,9 +50,9 @@ describe('SAN integration - test ref 27', () => {
                         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                    await san.checkSanLockIncompleteCall(pk, oasys.users.probSanUnappr)
-                    await san.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
-                    oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                    await san.queries.checkSanLockIncompleteCall(pk, oasys.users.probSanUnappr)
+                    await san.queries.getSanApiTime(pk, 'SAN_GET_ASSESSMENT', 'getSanDataTime')
+                    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                         SAN_ASSESSMENT_LINKED_IND: 'Y',
                         CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     })
@@ -65,7 +65,7 @@ describe('SAN integration - test ref 27', () => {
                         expect(sections).equal(2)
                     })
 
-                    oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                    await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
                     // TODO added workaround for NOD-1xxx, ignore R2.2.2 as it might get created
                     const questionsQuery = `select max(to_char(q.lastupd_date, '${oasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
@@ -88,7 +88,7 @@ describe('SAN integration - test ref 27', () => {
                     await san.checkSanEditMode(false)
                     await san.returnToOASys()
 
-                    oasys.ArnsSp.runScript('checkReadOnly')
+                    await sentencePlan.spService.checkReadOnly()
 
                     await oasys.clickButton('Close')
 
@@ -114,20 +114,20 @@ describe('SAN integration - test ref 27', () => {
                                         Ensure the SAN service respond with a 200
                                         Lock incomplete the assessment again without any changes - ensure the SAN Service respond accordingly with a 200`)
 
-                                oasys.logout()
-                                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                                await oasys.logout()
+                                await oasys.login(oasys.users.admin, oasys.users.probationSan)
                                 await offender.searchAndSelectByPnc(offender.pnc)
                                 await assessment.openLatest()
                                 oasys.Assessment.rollBack('Test 27 part 1')
-                                await san.checkSanRollbackCall(pk, oasys.users.admin)
+                                await san.queries.checkSanRollbackCall(pk, oasys.users.admin)
                                 await oasys.clickButton('Close')
-                                oasys.Assessment.lockIncomplete()
-                                await san.checkSanLockIncompleteCall(pk, oasys.users.admin)
+                                await assessment.lockIncomplete()
+                                await san.queries.checkSanLockIncompleteCall(pk, oasys.users.admin)
 
                                 // Delete assessment in preparation for part 2
-                                oasys.Assessment.deleteLatest()
+                                await assessment.deleteLatest()
 
-                                oasys.logout()
+                                await oasys.logout()
                             })
                         })
                     })

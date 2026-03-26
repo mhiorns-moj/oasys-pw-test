@@ -6,11 +6,10 @@
  * @module SAN Assessments
  */
 
-import { Temporal } from '@js-temporal/polyfill'
 import { Page } from '@playwright/test'
 
-import { User, Element } from 'classes'
-import { Oasys, OasysDb } from 'fixtures'
+import { Element } from 'classes'
+import { Oasys, OasysDb, Assessment, SentencePlan } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
 import * as exampleTest from './exampleTest'
@@ -298,42 +297,24 @@ export class San {
      * Checks the floating menu to see if sections 2 to 13 and the self-assessment form are there or not, and checks for the SAN and SP sections.
      * Parameter is true for SAN mode, false for normal OASys mode (layer 3.1), the test fails if the menu is not as expected.
      */
-    // async checkLayer3Menu(sanMode: boolean) {
+    async checkLayer3Menu(sanMode: boolean, assessment: Assessment, sentencePlan: SentencePlan) {
 
-    //     if (sanMode) {
-    //         new oasys.Pages.Assessment.Section2().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section3().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section4().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section5().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section6().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section7().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section8().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section9().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section10().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section11().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section12().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.Section13().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.SelfAssessmentForm().checkIsNotOnMenu()
-    //         new oasys.Pages.Assessment.SanSections().checkMenuVisibility(true)
-    //         new oasys.Pages.SentencePlan.SentencePlanService().checkMenuVisibility(true)
-    //     } else {
-    //         new oasys.Pages.Assessment.Section2().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section3().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section4().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section5().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section6().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section7().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section8().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section9().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section10().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section11().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section12().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.Section13().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.SelfAssessmentForm().checkMenuVisibility(true)
-    //         new oasys.Pages.Assessment.SanSections().checkIsNotOnMenu()
-    //         new oasys.Pages.SentencePlan.SentencePlanService().checkIsNotOnMenu()
-    //     }
-    // }
+        await assessment.section2.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section3.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section4.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section5.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section6.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section7.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section8.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section9.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section10.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section11.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section12.checkMenuVisibility(!sanMode)
+        await assessment.layer3.section13.checkMenuVisibility(!sanMode)
+        await assessment.selfAssessmentForm.checkMenuVisibility(!sanMode)
+        await this.sanSections.checkMenuVisibility(sanMode)
+        await sentencePlan.spService.sentencePlanService.checkMenuVisibility(true)
+    }
 
 
 

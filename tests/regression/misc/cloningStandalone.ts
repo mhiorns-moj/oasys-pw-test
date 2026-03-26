@@ -1,10 +1,9 @@
-import * as oasys from 'lib'
 
 describe('Cloning test - standalone CSRP', () => {
 
     it('Cloning test - standalone CSRP', () => {
 
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {
@@ -19,13 +18,13 @@ describe('Cloning test - standalone CSRP', () => {
             const section3 = new oasys.Pages.Assessment.Section3().goto()
             section3.o3_4.setValue('1-Some problems')
 
-            const rosh2 = new oasys.Pages.Rosh.RoshScreeningSection2to4().goto()
+            await risk.screeningSection2to4.goto()
             rosh2.r2_3.setValue('No')
             rosh2.rationale.setValue('Rationale')
 
             await signing.signAndLock({ page: oasys.Pages.SentencePlan.IspSection52to8, expectRsrWarning: true })
 
-            oasys.Nav.history(offender)
+            await oasys.history(offender)
             const rsr = new oasys.Pages.Offender.StandaloneRsr().goto()
             rsr.o1_8Age.checkValue('23')
             rsr.o1_32.checkValue(2)
@@ -43,9 +42,9 @@ describe('Cloning test - standalone CSRP', () => {
             rsr.close.click()
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-            const predictors = new oasys.Pages.Assessment.Predictors().goto()
-            predictors.o1_32.checkValue(5)
-            predictors.o1_40.checkValue(4)
+            await assessment.predictors.goto()
+            await assessment.predictors.o1_32.checkValue(5)
+            await assessment.predictors.o1_40.checkValue(4)
 
             section2.goto()
             section2.o2_2Weapon.checkValue('Yes')
@@ -54,7 +53,7 @@ describe('Cloning test - standalone CSRP', () => {
             section3.goto()
             section3.o3_4.checkValue('1-Some problems')
 
-            oasys.logout()
+            await oasys.logout()
         })
     })
 })

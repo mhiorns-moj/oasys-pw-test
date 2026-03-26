@@ -1,11 +1,10 @@
-import * as oasys from 'lib'
 
 describe('NOD-1228', () => {
 
     // First offender has low risks in the SARA
 
     it('NOD-1228', () => {
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         // Offender 1
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
@@ -27,7 +26,7 @@ describe('NOD-1228', () => {
             })
 
 
-            oasys.logout()
+            await oasys.logout()
         })
     })
 })

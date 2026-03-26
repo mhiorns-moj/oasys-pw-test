@@ -75,6 +75,67 @@ export class ScreeningSection1 extends BaseAssessmentPage {
         await this.mark1_3AsNo.click()
         await this.r1_4.setValue('No')
     }
+    
+    
+    async populateFull(params: PopulateAssessmentParams) {
+        
+        log('RoSH screening section 1 - fully populated')
+        await this.goto(true)
+        await this.r1_2_1P.setValue('Yes')
+        await this.r1_2_2P.setValue('Yes')
+        await this.r1_2_3P.setValue('Yes')
+        await this.r1_2_4P.setValue('Yes')
+        await this.r1_2_5P.setValue('Yes')
+        await this.r1_2_6P.setValue('Yes')
+        await this.r1_2_7P.setValue('Yes')
+        await this.r1_2_8P.setValue('Yes')
+        await this.r1_2_9P.setValue('Yes')
+        await this.r1_2_10P.setValue('Yes')
+        await this.r1_2_11P.setValue('Yes')
+        await this.r1_2_12P.setValue('Yes')
+        // await this.r1_2_13P.setValue('Yes')   pre-populated by answer above
+        await this.r1_2_14P.setValue('Yes')
+        await this.otherOffence.setValue('Another serious offence')
+        await this.r1_2_16P.setValue('Yes')
+        await this.r1_3_1.setValue('Yes')
+        await this.r1_3_2.setValue('Yes')
+        if (params.layer != 'Layer 3') {
+            await this.r1_3_20.setValue('Yes')    // pre-populated in fully popuplated layer 3
+        }
+        await this.r1_3_4.setValue('Yes')
+        await this.r1_3_6.setValue('Yes')
+        await this.r1_3_7.setValue('Yes')
+        await this.r1_3_10.setValue('Yes')
+        if (params?.layer == 'Layer 1V2') {
+            await this.r1_3_12.setValue('Yes')    // pre-populated in fully populated layer 1 and layer 3
+        }
+        await this.r1_3_13.setValue('Yes')
+        await this.r1_3_15.setValue('Yes')
+        await this.r1_3_16.setValue('Yes')
+        await this.r1_3_17.setValue('Yes')
+        await this.r1_3_21.setValue('Yes')
+        await this.r1_4.setValue('Yes')
+        await this.r1_4_1.setValue('Yes')
+        await this.r1_4_19.setValue('Yes')
+        await this.r1_4_2.setValue('Yes')
+        await this.r1_4_3.setValue('Yes')
+        await this.r1_4_4.setValue('Yes')
+        await this.r1_4_7.setValue('Yes')
+        await this.r1_4_8.setValue('Yes')
+        await this.r1_4_20.setValue('Yes')
+        await this.r1_4_9.setValue('Yes')
+        await this.r1_4_21.setValue('Yes')
+        await this.r1_4_22.setValue('Yes')
+        await this.r1_4_10.setValue('Yes')
+        await this.r1_4_11.setValue('Yes')
+        await this.r1_4_12.setValue('Yes')
+        await this.r1_4_13.setValue('Yes')
+        await this.r1_4_14.setValue('Yes')
+        await this.r1_4_15.setValue('Yes')
+        await this.r1_4_16.setValue('Yes')
+        await this.r1_4_17.setValue('Yes')
+        await this.r1_4_18.setValue('Yes')
+    }
 }
 
 class AreasOfConcern {

@@ -20,7 +20,7 @@ describe('SAN integration - test ref 10', () => {
                     Check the cloning from 3.2 to 3.2 assessment.  Case ID, Section 1 (sexual offence), RoSH Screening cloned through.
                     Sections 2 to 13 and SAN exist in the background and have been updated with the data from the Updated SAN Assessment carried out in Test Ref 9.`)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createProb({ purposeOfAssessment: 'Review' })  // Assume SAN defaults to 'Yes'
@@ -29,14 +29,14 @@ describe('SAN integration - test ref 10', () => {
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevPk = pks[1]
-                await san.checkSanCreateAssessmentCall(pk, prevPk, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
+                await san.queries.checkSanCreateAssessmentCall(pk, prevPk, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
 
-                oasys.Db.checkCloning(pk, prevPk, [
+                await oasys.queries.checkCloning(pk, prevPk, [
                     '2', '7', '8', '9', '10', '11', '12', '13',
                     'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SAN',
                 ])
 
-                oasys.Db.checkCloningExpectMismatch(pk, prevPk, [
+                await oasys.queries.checkCloningExpectMismatch(pk, prevPk, [
                     '1', '3', '4', '5', '6', 'SKILLSCHECKER'     // These sections were modified in the offender record prior to creating this assessment, so will not match the previous one 
                 ])
 
@@ -47,8 +47,8 @@ describe('SAN integration - test ref 10', () => {
                         RSR and OSP-IIC and OSP-DC are all calculated.
                         The SAN 'Strengths and Needs Sections' menu option has a green tick against it for the data being complete.`)
 
-                await san.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk)
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await san.queries.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk)
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     RSR_PERCENTAGE_SCORE: '9.96',
                     RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
                     RSR_ERROR_COUNT: '0',
@@ -58,7 +58,7 @@ describe('SAN integration - test ref 10', () => {
 
                 const r62 = new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkIsNotOnMenu()
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
-                const san = new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
+                const san = await san.sanSections.checkCompletionStatus(true)
 
                 log(`Go to the SAN assessment, change data in the ''accommodation' and 'thinking, behaviours and attitudes' sections to state 
                         they are linked to risk of serious harm (ensure the data is validated).
@@ -114,11 +114,11 @@ describe('SAN integration - test ref 10', () => {
                 new oasys.Pages.SentencePlan.SentencePlanService().goto().checkCompletionStatus(true)
                 await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
 
-                oasys.logout()
+                await oasys.logout()
 
-                oasys.login(oasys.users.probSanHeadPdu)
-                oasys.Assessment.countersign({ offender: offender })
-                oasys.logout()
+                await oasys.login(oasys.users.probSanHeadPdu)
+                await signing.countersign({ offender: offender })
+                await oasys.logout()
 
                 // Check that the correct number of sections have been completed
                 const sectionQuery = `select count(*) from eor.oasys_section 

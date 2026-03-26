@@ -10,7 +10,7 @@ describe('SAN integration - test ref 17 part 1', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanPso)
+            await oasys.login(oasys.users.probSanPso)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Create a Start of Community Order, layer 3, initial sentence plan.  
@@ -28,26 +28,26 @@ describe('SAN integration - test ref 17 part 1', () => {
 
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
-                await san.checkSanCreateAssessmentCall(pk, null, oasys.users.probSanPso, oasys.users.probationSanCode, 'INITIAL')
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await san.queries.checkSanCreateAssessmentCall(pk, null, oasys.users.probSanPso, oasys.users.probationSanCode, 'INITIAL')
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     SAN_ASSESSMENT_VERSION_NO: null,
                     SSP_PLAN_VERSION_NO: null,
                 })
 
-                const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
+                await assessment.offendingInformation.goto()
                 offendingInformation.setValues({
                     offence: '030', subcode: '01', count: '1', offenceDate: oasysDateTime.oasysDateAsString({ months: -4 }),
                     sentence: 'Fine', sentenceDate: oasysDateTime.oasysDateAsString({ months: -3 })
                 })
                 await assessment.predictors.goto(true)
-                predictors.dateFirstSanction.setValue({ years: -3 })
-                predictors.o1_32.setValue(2)
-                predictors.o1_40.setValue(0)
-                predictors.o1_29.setValue({ months: -6 })
-                predictors.o1_30.setValue('No')
-                predictors.o1_38.setValue({ months: -1 })
+                await assessment.predictors.dateFirstSanction.setValue({ years: -3 })
+                await assessment.predictors.o1_32.setValue(2)
+                await assessment.predictors.o1_40.setValue(0)
+                await assessment.predictors.o1_29.setValue({ months: -6 })
+                await assessment.predictors.o1_30.setValue('No')
+                await assessment.predictors.o1_38.setValue({ months: -1 })
 
                 log(`Navigate out to the 'Strengths and Needs Sections' - complete the following questions in the SAN assessment that relate to Female OPD scoring.		
                         The following set of SAN questions are for the FEMALE OPD score:	
@@ -71,8 +71,8 @@ describe('SAN integration - test ref 17 part 1', () => {
                 await san.populateSanSections('Test ref 17', testData.sanPopulation)
                 await san.returnToOASys()
                 await oasys.clickButton('Next')
-                new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
-                new oasys.Pages.Rosh.RoshFullAnalysisSection62().checkMenuVisibility(true)
+                await san.sanSections.checkCompletionStatus(true)
+                await risk.fullAnalysisSection62.checkMenuVisibility(true)
                 new oasys.Pages.Rosh.RoshSummary().checkMenuVisibility(true)
                 new oasys.Pages.Rosh.RiskManagementPlan().checkMenuVisibility(true)
 
@@ -88,14 +88,14 @@ describe('SAN integration - test ref 17 part 1', () => {
                     Complete the full analysis, adding a couple of child details and set the offender to have 'MEDIUM' risk for CHILDREN IN COMMUNITY,
                         set all other risks to 'LOW'`)
 
-                const rosh1 = new oasys.Pages.Rosh.RoshScreeningSection1().goto()
+                await risk.screeningSection1.goto()
                 rosh1.mark1_2AsNo.click()
                 rosh1.r1_2_7P.setValue('Yes')
                 rosh1.r1_2_13P.setValue('Yes')
                 rosh1.mark1_3AsNo.click()
                 rosh1.r1_4.setValue('No')
 
-                const rosh2 = new oasys.Pages.Rosh.RoshScreeningSection2to4().goto()
+                await risk.screeningSection2to4.goto()
                 rosh2.r2_3.setValue('Yes')
                 rosh2.r2_4_1.setValue('Yes')
                 rosh2.r2_4_2.setValue('No')
@@ -149,11 +149,11 @@ describe('SAN integration - test ref 17 part 1', () => {
                             'This individual meets the criteria for the OPD Pathway'.
                         Check the database and the OASYS_SET record - ensure field OPD_SCORE = 14 and OPD_RESULT = 'SCREEN_IN'`)
 
-                const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
+                await assessment.summarySheet.goto()
 
                 // TODO restore OPD check
                 // summarySheet.opd.checkValue('This individual meets the criteria for the OPD pathway.')
-                // oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                // await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                 //     OPD_SCORE: '11',
                 //     OPD_RESULT: 'SCREEN IN',
                 // })
@@ -164,7 +164,7 @@ describe('SAN integration - test ref 17 part 1', () => {
                         Return back to the OASys Assessment - goes back to the 'Sentence Plan Service' screen`)
 
                 oasys.ArnsSp.runScript('populateTwoGoals')
-                await san.checkSanOtlCall(pk, {
+                await san.queries.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -255,10 +255,10 @@ describe('SAN integration - test ref 17 part 1', () => {
                 new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 await signing.signAndLock({ expectCountersigner: true, countersignComment: 'Signing test 17' })
 
-                oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
-                await san.checkSanSigningCall(pk, oasys.users.probSanPso, 'COUNTERSIGN')
+                await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
+                await san.queries.checkSanSigningCall(pk, oasys.users.probSanPso, 'COUNTERSIGN')
 
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })

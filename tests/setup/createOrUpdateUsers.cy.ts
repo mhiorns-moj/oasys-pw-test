@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 import { User } from 'classes/user'
 import { testEnvironment } from '../../localSettings'
 
@@ -22,7 +21,7 @@ describe('Create or update users', () => {
 function createOrUpdateUser(user: User) {
 
     if (user.profile) {
-        oasys.login(oasys.users.admin, user.profile.provider)
+        await oasys.login(oasys.users.admin, user.profile.provider)
         const userAccounts = new oasys.Pages.Maintenance.UserAccounts().goto()
         userAccounts.userName.setValue(user.username)
         userAccounts.search.click()
@@ -66,7 +65,7 @@ function createOrUpdateUser(user: User) {
 
             maintainProfile.save.click()
             maintainProfile.close.click()
-            oasys.logout()
+            await oasys.logout()
 
             if (!t2) {
                 oasys.Db.setPassword(user.username, testEnvironment.standardUserPassword)

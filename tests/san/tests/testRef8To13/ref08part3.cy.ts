@@ -10,7 +10,7 @@ describe('SAN integration - test ref 08 part 3', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.openLatest()
@@ -27,7 +27,7 @@ describe('SAN integration - test ref 08 part 3', () => {
             await san.populateSanSections('TestRef8 complete SAN', testData.sanPopulation)
             await san.returnToOASys()
             await oasys.clickButton('Next')
-            new oasys.Pages.Assessment.SanSections().checkCompletionStatus(true)
+            await san.sanSections.checkCompletionStatus(true)
             new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
 
             log(`Go to the Summary Sheet screen
@@ -44,7 +44,7 @@ describe('SAN integration - test ref 08 part 3', () => {
                     Carry out a manual check to ensure that the OGP and OVP scores are correct to the FAST algorithm calculation - 
                     will need to interogate the OASys database and use the 'L3.2 OGP and OVP FAST calculator.xls' spreadsheet to input the values and obtain the scores`)
 
-            const summarySheet = new oasys.Pages.Assessment.SummarySheet().goto()
+            await assessment.summarySheet.goto()
             summarySheet.summarySheet.checkStatus('notVisible')
             summarySheet.print.checkStatus('enabled')
 
@@ -108,15 +108,15 @@ describe('SAN integration - test ref 08 part 3', () => {
                 page: oasys.Pages.SentencePlan.SentencePlanService,
                 expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: '3.2 assessment needs countersigning'
             })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     SAN_ASSESSMENT_VERSION_NO: '0'
                 })
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })

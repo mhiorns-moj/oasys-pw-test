@@ -16,7 +16,7 @@ describe('SAN integration - test ref 38 part 1', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             // Create new assessment
@@ -25,14 +25,14 @@ describe('SAN integration - test ref 38 part 1', () => {
 
             cy.get<number[]>('@pks').then((pks) => {
                 // Check values in OASYS_SET
-                await san.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1])
+                await san.queries.getSanApiTimeAndCheckDbValues(pks[0], 'Y', pks[1])
 
                 // Check Create call
-                await san.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
-                await san.checkSanGetAssessmentCall(pks[0], 1)
+                await san.queries.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
+                await san.queries.checkSanGetAssessmentCall(pks[0], 1)
 
                 // Tweak section 1
-                const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
+                await assessment.offendingInformation.goto()
                 offendingInformation.offence.setValue('030')
                 offendingInformation.subcode.setValue('01')
                 offendingInformation.count.setValue(3)
@@ -41,17 +41,17 @@ describe('SAN integration - test ref 38 part 1', () => {
                 offendingInformation.sentenceDate.setValue({ months: -1 })
 
                 await assessment.predictors.goto(true)
-                predictors.o1_32.setValue(4)
-                predictors.o1_40.setValue(1)
-                predictors.o1_29.setValue({ months: -1 })
-                predictors.o1_30.setValue('No')
-                predictors.o1_38.setValue({})
+                await assessment.predictors.o1_32.setValue(4)
+                await assessment.predictors.o1_40.setValue(1)
+                await assessment.predictors.o1_29.setValue({ months: -1 })
+                await assessment.predictors.o1_30.setValue('No')
+                await assessment.predictors.o1_38.setValue({})
                 await oasys.clickButton('Save')
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
 
                 // Populate SAN sections, check API calls
                 await san.gotoSan()
-                await san.checkSanOtlCall(pks[0], {
+                await san.queries.checkSanOtlCall(pks[0], {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,
                     'nomisId': null,
@@ -73,15 +73,15 @@ describe('SAN integration - test ref 38 part 1', () => {
                 await san.returnToOASys()
                 await oasys.clickButton('Next')
                 rmp.checkMenuVisibility(true)
-                await san.checkSanGetAssessmentCall(pks[0], 1)
+                await san.queries.checkSanGetAssessmentCall(pks[0], 1)
 
-                oasys.logout()
+                await oasys.logout()
                 // Delete the WIP assessment
-                oasys.login(oasys.users.admin, oasys.users.probationSan)
+                await oasys.login(oasys.users.admin, oasys.users.probationSan)
                 await offender.searchAndSelectByPnc(offender.pnc)
-                oasys.Assessment.deleteLatest()
-                await san.checkSanDeleteCall(pks[0], oasys.users.admin)
-                oasys.logout()
+                await assessment.deleteLatest()
+                await san.queries.checkSanDeleteCall(pks[0], oasys.users.admin)
+                await oasys.logout()
 
             })
         })

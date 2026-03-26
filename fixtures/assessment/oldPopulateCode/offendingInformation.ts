@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 /** 
  * Minimal population to complete the page, assuming offence and sentence details have already been set via the stub.
@@ -47,16 +46,16 @@ export function fullyPopulated(params: PopulateAssessmentParams) {
         page.financial.setValue('Yes')
         page.accommodation.setValue('Yes')
         page.other.setValue('Yes')
-        page.otherDescription.setValue(oasys.oasysString(4000))
+        page.otherDescription.setValue(utils.oasysString(4000))
         page.accreditedProgramme.setValue('Yes')
         page.accreditedProgramme1.setValue('Cognitive Self Change Programme (CSCP) Blocks 1-5')
         page.accreditedProgramme2.setValue('Sex Offender Treatment Programme (SOTP)')
         page.accreditedProgramme3.setValue(`Programme for Reducing Individual's Substance Misuse (PRISM)`)
         page.accreditedProgramme4.setValue('One to One Programme')
         page.prohibitedActivity.setValue('Yes')
-        page.prohibitedActivity1.setValue(oasys.oasysString(4000))
-        page.prohibitedActivity2.setValue(oasys.oasysString(4000))
-        page.prohibitedActivity3.setValue(oasys.oasysString(4000))
+        page.prohibitedActivity1.setValue(utils.oasysString(4000))
+        page.prohibitedActivity2.setValue(utils.oasysString(4000))
+        page.prohibitedActivity3.setValue(utils.oasysString(4000))
         page.curfew.setValue('Yes')
         page.exclusion.setValue('Yes')
         page.residence.setValue('Yes')
@@ -78,12 +77,12 @@ export function fullyPopulated(params: PopulateAssessmentParams) {
         page.specificInterventions1.setValue('Alcohol Related Violence Programme')
         page.specificInterventions2.setValue('Guided Skills Learning')
         page.specificInterventions3.setValue('Accommodation advocacy')
-        page.sentenceAdditionalLicenceConditions.setValue(params.maxStrings ? oasys.oasysString(4000) : 'Additional licence conditions')
+        page.sentenceAdditionalLicenceConditions.setValue(params.maxStrings ? utils.oasysString(4000) : 'Additional licence conditions')
     }
 
     page.dateOfActualRelease.setValue({ years: 3 })
     page.typeOfRelease.setValue('ACR')
-    page.anyLicenceRequirements.setValue(params.maxStrings ? oasys.oasysString(4000) : 'Some licence requirements')
+    page.anyLicenceRequirements.setValue(params.maxStrings ? utils.oasysString(4000) : 'Some licence requirements')
     page.homeDetentionCurfewDate.setValue({ months: 12 })
     page.automaticReleaseDate.setValue({ months: 13 })
     page.conditionalReleaseDate.setValue({ months: 14 })
@@ -97,11 +96,11 @@ export function fullyPopulated(params: PopulateAssessmentParams) {
     page.detainedUnderImmigrationAct.setValue('Yes')
     page.recommendedForDeportation.setValue('Yes')
     page.furtherChargesPending.setValue('Yes')
-    page.furtherChargesPendingDetails.setValue(params.maxStrings ? oasys.oasysString(4000) : 'There are some further charges')
+    page.furtherChargesPendingDetails.setValue(params.maxStrings ? utils.oasysString(4000) : 'There are some further charges')
     if (params.provider != 'pris') {
         page.appealPending.setValue('Yes')
-        page.appealPendingDetails.setValue(params.maxStrings ? oasys.oasysString(4000) : 'The offender might appeal')
+        page.appealPendingDetails.setValue(params.maxStrings ? utils.oasysString(4000) : 'The offender might appeal')
     }
 
-    
+
 }

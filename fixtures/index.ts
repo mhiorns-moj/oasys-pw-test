@@ -14,6 +14,7 @@ import { SentencePlan } from './sentencePlan/sentencePlan'
 import { Signing } from './signing/signing'
 import { Sara } from './sara/sara'
 import { OasysDateTime } from 'lib/oasysDateTime'
+import { Utils } from 'lib/utils'
 
 export { OasysDb } from './oasysDb/oasysDb'
 export { Oasys } from './oasys/oasys'
@@ -31,23 +32,24 @@ export { Sara } from './sara/sara'
 
 const oasysLog: Log[] = []
 
-globalThis.log = (logtext: string, type?: string) => {
-
-    oasysLog.push({ logText: logtext, type: type })
-}
-
-globalThis.oasysDateTime = new OasysDateTime()
 globalThis.expect = expect
+globalThis.oasysDateTime = new OasysDateTime()
+globalThis.utils = new Utils()
 
-globalThis.waitForPageUpdate = async (page: Page) => {
-
+globalThis.waitForPageUpdate = async (page: Page, initialDelay?: number) => {
+    
     let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
 
-    await page.waitForTimeout(250)
+    await page.waitForTimeout( initialDelay ?? 200)
     let pleaseWaitCount = await updatingElement.count()
     while (pleaseWaitCount > 0) {
         pleaseWaitCount = await updatingElement.count()
     }
+}
+
+globalThis.log = (logtext: string, type?: string) => {
+
+    oasysLog.push({ logText: logtext, type: type })
 }
 
 export const oasysDb = base.extend<{ oasysDb: OasysDb }>({
@@ -151,9 +153,9 @@ export const assessment = oasys.extend<{
     tasks: Tasks, san: San, risk: Risk, sentencePlan: SentencePlan, signing: Signing
 }>({
 
-    assessment: async ({ page, oasys, cms, offender, oasysDb, tasks, san, risk, sentencePlan, signing }, use: Function) => {
+    assessment: async ({ page, oasys, cms, offender, oasysDb, san, risk, sentencePlan }, use: Function) => {
 
-        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, tasks, san, risk, sentencePlan, signing)
+        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, san, risk, sentencePlan)
         await use(assessment)
     }
 })

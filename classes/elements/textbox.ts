@@ -5,7 +5,7 @@ export class Textbox<T> {
 
     selector: Locator
 
-    constructor(readonly page: Page, selector: string, readonly slowType: boolean = false) {
+    constructor(private readonly page: Page, selector: string, private readonly slowType: boolean = false) {
 
         this.selector = page.locator(selector)
     }
@@ -79,16 +79,18 @@ export class Textbox<T> {
 
         const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
         const count = await this.selector.count()
-        if (count > 0) { // If element exists in the DOM
 
+        if (count > 0) { // If element exists in the DOM
             const visible = await this.selector.isVisible()
             if (visible) {
 
                 let editable = await this.selector.isEditable()
                 if (editable) {
-                    const oasysReadonly = (await this.selector.getAttribute('input_readonly')) == 'true' ||
+                    const oasysReadonly =
+                        (await this.selector.getAttribute('class')).includes('input_readonly') ||
                         (await this.selector.getAttribute('readonly')) == 'true' ||
-                        (await this.selector.getAttribute('mimic_readonly')) == 'true'
+                        (await this.selector.getAttribute('mimic_readonly')) == 'true' ||
+                        (await this.selector.getAttribute('data-mimic_readonly')) == 'true'
                     result.status = oasysReadonly ? 'readonly' : 'enabled'
                 } else {
                     result.status = 'readonly'

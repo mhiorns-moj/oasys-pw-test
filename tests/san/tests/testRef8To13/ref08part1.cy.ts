@@ -9,7 +9,7 @@ describe('SAN integration - test ref 08 part 1', () => {
 
             const offender = JSON.parse(offenderData as string)
 
-            oasys.login(oasys.users.probSanUnappr)
+            await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             log(`Create a new assessment - defaults to PSR-SDR, Layer 3, PSR Outline Plan with SDR court report
@@ -52,7 +52,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                 new oasys.Pages.Assessment.OffenderInformation().checkCurrent()
                 await san.checkLayer3Menu(false)
 
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
 
                 const sp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 sp.signAndLock.click()
@@ -65,7 +65,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                         Check the database, ensure the OASYS_SET record still have the new field 'SAN_ASSESSMENT_LINKED_IND' set to 'N' AND there is NO section associated to it called 'SAN'
                         Check that on the SNS_MESSAGE table there are records for OGRS, RSR and AssSumm`)
 
-                const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto()
+                await assessment.offendingInformation.goto()
                 offendingInformation.setValues({
                     offence: '020', subcode: '01', count: '1', offenceDate: oasysDateTime.oasysDateAsString({ months: -4 }), sentence: 'Fine',
                     sentenceDate: oasysDateTime.oasysDateAsString({ months: -3 })
@@ -73,25 +73,25 @@ describe('SAN integration - test ref 08 part 1', () => {
                 oasys.Populate.Layer3Pages.Predictors.fullyPopulated({ r1_30PrePopulated: true, r1_41PrePopulated: true })
                 oasys.Populate.sections2To13NoIssues()
                 oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
-                oasys.Populate.Rosh.screeningNoRisks(true)
+                await risk.screeningNoRisks(true)
 
-                oasys.ArnsSp.runScript('populateMinimal')
+                await sentencePlan.populateMinimal()
                 await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
-                oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
+                await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
 
-                oasys.logout()
-                oasys.login(oasys.users.probSanHeadPdu)
-                oasys.Assessment.countersign({ offender: offender, comment: 'Test comment' })
+                await oasys.logout()
+                await oasys.login(oasys.users.probSanHeadPdu)
+                await signing.countersign({ offender: offender, comment: 'Test comment' })
 
-                oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
+                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
                 oasys.Db.selectCount(`select count(*) from eor.oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`, 'count')
                 cy.get<number>('@count').then((count) => {
                     if (count! > 0) {
                         throw new Error(`Unexpected SAN section found for pk ${pk}`)
                     }
                 })
-                oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
-                oasys.logout()
+                await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                await oasys.logout()
             })
         })
     })

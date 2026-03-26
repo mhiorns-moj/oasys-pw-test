@@ -16,12 +16,12 @@ describe('SAN integration - test ref 27', () => {
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
             // First delete the BCS as it prevents the transfer
-            oasys.login(oasys.users.admin, oasys.users.prisonSan)
+            await oasys.login(oasys.users.admin, oasys.users.prisonSan)
             await offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Assessment.deleteLatest()
-            oasys.logout()
+            await assessment.deleteLatest()
+            await oasys.logout()
 
-            oasys.login(oasys.users.prisSanUnappr)
+            await oasys.login(oasys.users.prisSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createPris({ purposeOfAssessment: 'Start custody', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
@@ -31,7 +31,7 @@ describe('SAN integration - test ref 27', () => {
                 await san.gotoSan()
                 await san.populateSanSections('TestRef27 part 1 complete SAN', oasys.Populate.San.ExampleTest.sanPopulation1)
                 await san.returnToOASys()
-                oasys.ArnsSp.runScript('populateMinimal')
+                await sentencePlan.populateMinimal()
                 await oasys.clickButton('Previous')
 
                 oasys.Db.checkSingleAnswer(pk, '9', '9.2', 'refAnswer', '0')  // above population sets binge drinking to no
@@ -55,14 +55,14 @@ describe('SAN integration - test ref 27', () => {
                     Return back to the Offender record`)
 
                 oasys.ArnsSp.runScript('addGoal', { openFromOffender: true })
-                oasys.logout()
+                await oasys.logout()
 
                 log(`Using the CMS stub submit an internal reception event to a NON SAN PILOT Prison area
                      - the transfer will stall due to the WIP OASys assessment, the new prison will be noted in the 'Awaiting prison' field on the Offender Management tab
                     Now log in as a user to the 'awaiting' NON SAN PILOT prison area.  
                     Search for and open up the Offender record currently owned by the SAN Pilot probation area - will have 'full' access to the offender record`)
 
-                oasys.login(oasys.users.prisHomds)
+                await oasys.login(oasys.users.prisHomds)
                 offender.receptionCode = 'TRANSFER IN FROM OTHER ESTABLISHMENT'
                 oasys.Offender.enterPrisonStubDetailsAndCreateReceptionEvent(offender)
                 await offender.searchAndSelectByPnc(offender.pnc, oasys.users.prisonSan)
@@ -104,13 +104,13 @@ describe('SAN integration - test ref 27', () => {
                         const lastUpdDate1 = oasysDateTime.stringToTimestamp(initialData[0][1])
                         const latestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(questions1[0][0])
 
-                        await san.checkSanGetAssessmentCall(pk, 0)
-                        await san.checkSanLockIncompleteCall(pk, oasys.users.prisHomds)
-                        await san.checkSanLockIncompleteTimestamp(pk)
+                        await san.queries.checkSanGetAssessmentCall(pk, 0)
+                        await san.queries.checkSanLockIncompleteCall(pk, oasys.users.prisHomds)
+                        await san.queries.checkSanLockIncompleteTimestamp(pk)
 
                         oasys.Db.checkSingleAnswer(pk, '9', '9.2', 'refAnswer', '2')  // change from offender record sets binge drinking
 
-                        oasys.Db.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                        await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                             SAN_ASSESSMENT_LINKED_IND: 'Y',
                             CLONED_FROM_PREV_OASYS_SAN_PK: null,
                         })
@@ -122,7 +122,7 @@ describe('SAN integration - test ref 27', () => {
                         cy.get<number>('@sections').then((sections) => {
                             expect(sections).equal(2)
                         })
-                        oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+                        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
                         log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
                         Click on the 'Open Strengths and Needs' button
@@ -164,7 +164,7 @@ describe('SAN integration - test ref 27', () => {
                                 expect(oasysDateTime.timestampDiff(lastUpdFromSan1, lastUpdFromSan2)).lte(0)
                                 expect(oasysDateTime.timestampDiff(lastUpdDate1, lastUpdDate2)).lte(0)
 
-                                oasys.logout()
+                                await oasys.logout()
                             })
                         })
                     })

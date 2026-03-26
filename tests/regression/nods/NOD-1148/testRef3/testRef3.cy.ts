@@ -1,11 +1,10 @@
 import { Ogrs4CalcResult } from 'lib/ogrs'
-import * as oasys from 'lib'
 
 describe('OGRS regression test ref 3', () => {
 
     it('Test ref 3 part 1', () => {
 
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
 
         // Get offender details
         cy.task('retrieveValue', 'offender').then((offenderData) => {
@@ -16,25 +15,25 @@ describe('OGRS regression test ref 3', () => {
             await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
 
             const predictors = new oasys.Pages.Assessment.RoshaPredictors().goto()
-            predictors.save.click() // generate a calculation
+            await assessment.predictors.save.click() // generate a calculation
             oasys.Ogrs.checkOgrs4CalcsOffender(offender, 'ogrs')
 
             oasys.Populate.RoshaPages.RoshaPredictors.fullyPopulated()
             oasys.Populate.Rosh.screeningFullyPopulated({ layer: 'Layer 1V2' })
             oasys.Populate.Rosh.fullAnalysisFullyPopulated({ layer: 'Layer 1V2' })
 
-            predictors.goto()
+            await assessment.predictors.goto()
 
             oasys.Ogrs.checkOgrs4CalcsOffender(offender, 'ogrs')
             cy.get<Ogrs4CalcResult>('@ogrs').then((ogrs) => {
-                predictors.arpText.checkValue(ogrs.arpText)
-                predictors.vrpText.checkValue(ogrs.vrpText)
-                predictors.svrpText.checkValue(ogrs.svrpText)
-                predictors.dcSrpBand.checkValue(ogrs.dcSrpBand)
-                predictors.iicSrpBand.checkValue(ogrs.iicSrpBand)
-                predictors.csrpBand.checkValue(ogrs.csrpBand)
-                predictors.csrpType.checkValue(ogrs.csrpType)
-                predictors.csrpScore.checkValue(ogrs.csrpScore)
+                await assessment.predictors.arpText.checkValue(ogrs.arpText)
+                await assessment.predictors.vrpText.checkValue(ogrs.vrpText)
+                await assessment.predictors.svrpText.checkValue(ogrs.svrpText)
+                await assessment.predictors.dcSrpBand.checkValue(ogrs.dcSrpBand)
+                await assessment.predictors.iicSrpBand.checkValue(ogrs.iicSrpBand)
+                await assessment.predictors.csrpBand.checkValue(ogrs.csrpBand)
+                await assessment.predictors.csrpType.checkValue(ogrs.csrpType)
+                await assessment.predictors.csrpScore.checkValue(ogrs.csrpScore)
 
                 const roshSummary = new oasys.Pages.Rosh.RoshSummary().goto()
                 roshSummary.dcSrpBand.checkValue(ogrs.dcSrpBand)
@@ -45,9 +44,9 @@ describe('OGRS regression test ref 3', () => {
 
 
                 await signing.signAndLock({ page: oasys.Pages.Rosh.RiskManagementPlan, expectRsrScore: true })
-                oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+                await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
-                oasys.logout()
+                await oasys.logout()
             })
         })
     })

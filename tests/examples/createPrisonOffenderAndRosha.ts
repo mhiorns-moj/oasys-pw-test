@@ -1,10 +1,9 @@
-import * as oasys from 'lib'
 
 describe('Example test - create a prison offender and a RoSHa assessment', () => {
 
 
     it('Create offender and assessment', () => {
-        oasys.login(oasys.users.prisHomds)
+        await oasys.login(oasys.users.prisHomds)
 
         oasys.Offender.createPris(oasys.OffenderLib.Prison.Male.burglary, 'offender1')
         await assessment.createPris({ purposeOfAssessment: 'Risk of Harm Assessment' })
@@ -15,7 +14,7 @@ describe('Example test - create a prison offender and a RoSHa assessment', () =>
 
         await signing.signAndLock({ expectRsrScore: true })
 
-        oasys.logout()
+        await oasys.logout()
     })
 
 })

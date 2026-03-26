@@ -1,8 +1,8 @@
-import * as oasys from 'lib'
 
-export function fullyPopulated(maxStrings: boolean = false) {
+async populateFull(maxStrings: boolean = false) {
 
-    const page = new oasys.Pages.Rosh.RoshFullAnalysisSection9().goto(true)
-    page.escapeAnalysis.setValue(maxStrings ? oasys.oasysString(4000) : 'EscapeAnalysis')
-    page.disruptionTrustAnalysis.setValue(maxStrings ? oasys.oasysString(4000) : 'DisruptionTrustAnalysis')
+    await this.goto(true)
+        .Rosh.RoshFullAnalysisSection9().goto(true)
+    await this.escapeAnalysis.setValue(maxStrings ? utils.oasysString(4000) : 'EscapeAnalysis')
+    await this.disruptionTrustAnalysis.setValue(maxStrings ? utils.oasysString(4000) : 'DisruptionTrustAnalysis')
 }

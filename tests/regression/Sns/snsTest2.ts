@@ -1,4 +1,3 @@
-import * as oasys from 'lib'
 
 const offender1: OffenderDef = {
     forename1: 'Autotest',
@@ -11,7 +10,7 @@ describe('Create assessments and check SNS messages - layer 1', () => {
 
     it('No countersigning required', () => {
 
-        oasys.login(oasys.users.probHeadPdu)
+        await oasys.login(oasys.users.probHeadPdu)
         oasys.Offender.createProb(offender1, 'offender1')
         cy.get<OffenderDef>('@offender1').then((offender) => {
 
@@ -20,10 +19,10 @@ describe('Create assessments and check SNS messages - layer 1', () => {
             oasys.Populate.minimal({ layer: 'Layer 1V2' })
 
             await signing.signAndLock({ page: oasys.Pages.Rosh.RoshScreeningSection5, expectRsrScore: true })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
 
             // First L1
-            oasys.Nav.history(offender)
+            await oasys.history(offender)
             await assessment.createProb({ purposeOfAssessment: 'Termination of Community Supervision', assessmentLayer: 'Basic (Layer 1)' })
             const offendingInformation = new oasys.Pages.Assessment.OffendingInformation().goto(true)
             offendingInformation.offence.setValue('030')
@@ -38,17 +37,17 @@ describe('Create assessments and check SNS messages - layer 1', () => {
 
             new oasys.Pages.SentencePlan.BasicSentencePlan().goto().terminationDate.setValue({})
             await signing.signAndLock()
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
             // Second RoSHA
-            oasys.Nav.history(offender)
+            await oasys.history(offender)
             await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' }, 'Yes')
 
             await signing.signAndLock({ page: oasys.Pages.Rosh.RoshScreeningSection5, expectRsrScore: true })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])  // Defect NOD-980
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])  // Defect NOD-980
 
             // Second L1
-            oasys.Nav.history(offender)
+            await oasys.history(offender)
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' })
             offendingInformation.goto(true)
             offendingInformation.offence.setValue('030')
@@ -64,7 +63,7 @@ describe('Create assessments and check SNS messages - layer 1', () => {
 
             new oasys.Pages.SentencePlan.BasicSentencePlan().goto()
             await signing.signAndLock({ page: oasys.Pages.SentencePlan.BasicSentencePlan })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS'])
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS'])
         })
 
     })
@@ -72,7 +71,7 @@ describe('Create assessments and check SNS messages - layer 1', () => {
     it('Countersigning required', () => {
 
         // Create an offender with minimally complete layer 1 to get OGRS and RSR
-        oasys.login(oasys.users.probPso)
+        await oasys.login(oasys.users.probPso)
         oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
         cy.get<OffenderDef>('@offender1').then((offender) => {
 
@@ -84,18 +83,18 @@ describe('Create assessments and check SNS messages - layer 1', () => {
 
             // Sign assessment and send for countersigning, then check SNS messages
             await signing.signAndLock({ page: oasys.Pages.SentencePlan.BasicSentencePlan, expectCountersigner: true, countersigner: oasys.users.probHeadPdu })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS'])
-            oasys.logout()
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS'])
+            await oasys.logout()
 
             // Countersign assessment then check SNS messages again
-            oasys.login(oasys.users.probHeadPdu)
-            oasys.Assessment.countersign({ offender: offender, comment: 'Test comment' })
+            await oasys.login(oasys.users.probHeadPdu)
+            await signing.countersign({ offender: offender, comment: 'Test comment' })
 
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
-            oasys.logout()
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+            await oasys.logout()
 
-            oasys.login(oasys.users.probPso)
-            oasys.Nav.history(offender)
+            await oasys.login(oasys.users.probPso)
+            await oasys.history(offender)
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' })
             oasys.Populate.CommonPages.OffendingInformation.minimal()
             oasys.Populate.Layer1Pages.Section2.minimal()
@@ -103,16 +102,16 @@ describe('Create assessments and check SNS messages - layer 1', () => {
 
             // Sign assessment, then check SNS messages
             await signing.signAndLock({ page: oasys.Pages.SentencePlan.BasicSentencePlan, expectCountersigner: true, countersigner: oasys.users.probHeadPdu })
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS'])
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS'])
 
-            oasys.logout()
+            await oasys.logout()
 
             // Countersign assessment then check SNS messages again
-            oasys.login(oasys.users.probHeadPdu)
-            oasys.Assessment.countersign({ offender: offender, comment: 'Test comment' })
+            await oasys.login(oasys.users.probHeadPdu)
+            await signing.countersign({ offender: offender, comment: 'Test comment' })
 
-            oasys.Sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
-            oasys.logout()
+            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+            await oasys.logout()
 
         })
 

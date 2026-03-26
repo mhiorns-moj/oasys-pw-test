@@ -13,7 +13,7 @@ describe('SAN integration - test ref 27', () => {
 
         log(`Check 'Lock Incomplete' - using the OASys application, different ways sends a notification to the SAN Service`)
 
-        oasys.login(oasys.users.prisSanUnappr)
+        await oasys.login(oasys.users.prisSanUnappr)
 
         oasys.Offender.createPris(offender, 'offender')
         cy.get<OffenderDef>('@offender').then((offender) => {
