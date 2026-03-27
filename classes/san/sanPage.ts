@@ -64,30 +64,6 @@ export abstract class SanPage {
     }
 
     /**
-     * Writes the value and status of all input and text elements on the page to the log.
-     * 
-     * Returns the page object so you can chain other commands.
-     */
-    logValuesAndStatuses(ignoreHidden: boolean = false): typeof this {
-
-        cy.groupedLogStart(`Element values and statuses ${ignoreHidden ? '(visible only) ' : ''}on page: ${this.name} `)
-        Object.keys(this).forEach((e) => {
-
-            let element = this[e]
-            if (element != null && typeof element.getStatusAndValue === 'function') {  // Check if it's a property that can return a status and value
-                element.getStatusAndValue('alias')
-                cy.get<ElementStatusAndValue>('@alias').then((result) => {
-                    if (!ignoreHidden || result.status != 'notVisible') {
-                        cy.groupedLog(`${e}: '${result.value}' (${result.status})`)
-                    }
-                })
-            }
-        })
-        cy.groupedLogEnd()
-        return this
-    }
-
-    /**
      * Navigates to the page according to the defined menu details, assuming the relevant menu is available.
      *
      * Returns the page object so you can chain other commands.

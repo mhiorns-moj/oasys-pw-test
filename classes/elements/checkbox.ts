@@ -20,33 +20,27 @@ export class Checkbox {
         }
     }
 
-    // checkValue(value: boolean) {
+    async checkValue(value: boolean) {
 
-    //     if (value) {
-    //         cy.get(this.selector).should('be.checked')
-    //     }
-    //     else {
-    //         cy.get(this.selector).should('not.be.checked')
-    //     }
-    // }
+        const statusAndValue = await this.getStatusAndValue()
+        const actualValue = statusAndValue.value == 'true'
+        expect(actualValue).toBe(value)
+    }
 
-    // checkStatus(status: ElementStatus) {
+    async checkStatus(status: ElementStatus) {
 
-    //     this.getStatusAndValue('result')
-    //     cy.get<ElementStatusAndValue>('@result').then((result) => {
-    //         if (status != result.status) {
-    //             throw new Error(`Incorrect status for ${this.selector}: expected ${status}, found ${result.status}`)
-    //         }
-    //     })
-    // }
+        const statusAndValue = await this.getStatusAndValue()    
+        expect(statusAndValue.status).toBe(status)
+    }
 
     /**
      * Gets the current value the checkbox, assumes it exists.
      */
-    // getValue() {
+    async getValue(): Promise<boolean> {
 
-    //     cy.get(this.selector).invoke('prop', 'checked').as(alias)
-    // }
+        const statusAndValue = await this.getStatusAndValue()
+        return (statusAndValue.value == 'true')
+    }
 
 
     /**

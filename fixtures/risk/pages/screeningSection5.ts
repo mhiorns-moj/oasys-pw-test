@@ -15,6 +15,12 @@ export class ScreeningSection5 extends BaseAssessmentPage {
     r5_2t = new Element.Textbox(this.page, '#textarea_R5_2a')
 
 
+    async noRisks() {
+
+        await this.goto()
+        await this.r5_1.setValue('No')
+    }
+
     async populateFull() {
 
         log('RoSH screening section 5 - fully populated')

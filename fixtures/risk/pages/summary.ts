@@ -32,7 +32,7 @@ export class Summary extends BaseAssessmentPage {
     details = new Element.Textbox(this.page, '#textarea_SUM8')
 
 
-    async specificRiskLevel(risk: RiskLevel) {
+    async populateWithSpecificRiskLevel(risk: RiskLevel) {
 
         log(`RoSH summary - ${risk} risk`)
         await this.goto(true)
@@ -53,7 +53,7 @@ export class Summary extends BaseAssessmentPage {
         await this.r10_6PrisonersCustody.setValue(risk)
     }
 
-    async fullyPopulated(maxStrings: boolean = false) {
+    async populateFull(maxStrings: boolean = false) {
 
         log('Fully populated RoSH summary')
         await this.goto(true)

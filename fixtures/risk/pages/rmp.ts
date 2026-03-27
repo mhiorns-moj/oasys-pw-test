@@ -71,7 +71,7 @@ export class Rmp extends BaseAssessmentPage {
         }
     }
 
-    async minimalWithTextFields(earlyAllocation: boolean = false) {
+    async populateMinimalWithTextFields(earlyAllocation: boolean = false) {
 
         await this.populateMinimal(earlyAllocation)
         await this.additionalComments.setValue('Some additional comments')
@@ -83,65 +83,66 @@ export class Rmp extends BaseAssessmentPage {
         await this.contingency.setValue('Contingency')
     }
 
-    // export function fullyPopulated(params?: PopulateAssessmentParams) {
+    async populateFull(params?: PopulateAssessmentParams) {
 
-    //     const page = new oasys.Pages.Rosh.RiskManagementPlan().goto(true)
-    //     page.r11_1a.setValue('Yes')
-    //     page.r11_1b.setValue('Yes')
-    //     page.r11_1c.setValue('Yes')
-    //     page.r11_1d.setValue('Yes')
-    //     if (params?.provider) {
-    //         page.r11_13.setValue('Automatic early allocation')
-    //     }
+        log('Minimally populating Risk Management Plan')
+        await this.goto(true)
+        await this.r11_1a.setValue('Yes')
+        await this.r11_1b.setValue('Yes')
+        await this.r11_1c.setValue('Yes')
+        await this.r11_1d.setValue('Yes')
+        if (params?.provider) {
+            await this.r11_13.setValue('Automatic early allocation')
+        }
 
-    //     if (params?.layer != 'Layer 1V2') {
-    //         rmpCheckboxes(page, params)
+        if (params?.layer != 'Layer 1V2') {
+            await this.populateCheckboxes(params)
 
-    //         page.additionalComments.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Some additional comments')
-    //         page.furtherConsiderations.setValue(params?.maxStrings ? utils.oasysString(4000) : 'FurtherConsiderations')
-    //         page.supervision.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Supervision')
-    //         page.monitoring.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Monitoring')
-    //         page.interventions.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Interventions')
-    //         page.victimSafety.setValue(params?.maxStrings ? utils.oasysString(4000) : 'VictimSafety')
-    //         page.contingency.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Contingency')
-    //     }
-    // }
+            await this.additionalComments.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Some additional comments')
+            await this.furtherConsiderations.setValue(params?.maxStrings ? utils.oasysString(4000) : 'FurtherConsiderations')
+            await this.supervision.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Supervision')
+            await this.monitoring.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Monitoring')
+            await this.interventions.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Interventions')
+            await this.victimSafety.setValue(params?.maxStrings ? utils.oasysString(4000) : 'VictimSafety')
+            await this.contingency.setValue(params?.maxStrings ? utils.oasysString(4000) : 'Contingency')
+        }
+    }
 
-    // function rmpCheckboxes(page: oasys.Pages.Rosh.RiskManagementPlan, params?: PopulateAssessmentParams) {
+    async populateCheckboxes(params?: PopulateAssessmentParams) {
 
-    //     if (params?.layer != 'Layer 1V2') {
-    //         page.weapons.setValue(true)
-    //         page.arson.setValue(true)
-    //         if (params?.layer == 'Layer 3') {
-    //             page.accommodation.setValue(true)
-    //             page.education.setValue(true)
-    //             page.finances.setValue(true)
-    //             page.relationships.setValue(true)
-    //             page.lifestyle.setValue(true)
-    //             page.drugs.setValue(true)
-    //             page.alcohol.setValue(true)
-    //             page.emotional.setValue(true)
-    //             page.thinking.setValue(true)
-    //             page.attitudes.setValue(true)
-    //         }
-    //         page.domesticAbuse.setValue(true)
-    //         page.hateCrime.setValue(true)
-    //         page.stalking.setValue(true)
-    //         page.selfHarm.setValue(true)
-    //         page.copingInCustody.setValue(true)
-    //         page.vulnerability.setValue(true)
-    //         page.escapeRisks.setValue(true)
-    //         page.riskToChildren.setValue(true)
-    //         page.riskToKnownAdult.setValue(true)
-    //         page.riskToPrisoners.setValue(true)
-    //         page.riskToStaff.setValue(true)
-    //         if (params?.layer == 'Layer 3') {
-    //             page.emotionalCongruence.setValue(true)
-    //             page.sexualPreOccupation.setValue(true)
-    //             page.sexualInterests.setValue(true)
-    //             page.victimSafetyPlanning.setValue(true)
-    //             page.hostileOrientation.setValue(true)
-    //         }
-    //     }
-    // }
+        if (params?.layer != 'Layer 1V2') {
+            await this.weapons.setValue(true)
+            await this.arson.setValue(true)
+            if (params?.layer == 'Layer 3') {
+                await this.accommodation.setValue(true)
+                await this.education.setValue(true)
+                await this.finances.setValue(true)
+                await this.relationships.setValue(true)
+                await this.lifestyle.setValue(true)
+                await this.drugs.setValue(true)
+                await this.alcohol.setValue(true)
+                await this.emotional.setValue(true)
+                await this.thinking.setValue(true)
+                await this.attitudes.setValue(true)
+            }
+            await this.domesticAbuse.setValue(true)
+            await this.hateCrime.setValue(true)
+            await this.stalking.setValue(true)
+            await this.selfHarm.setValue(true)
+            await this.copingInCustody.setValue(true)
+            await this.vulnerability.setValue(true)
+            await this.escapeRisks.setValue(true)
+            await this.riskToChildren.setValue(true)
+            await this.riskToKnownAdult.setValue(true)
+            await this.riskToPrisoners.setValue(true)
+            await this.riskToStaff.setValue(true)
+            if (params?.layer == 'Layer 3') {
+                await this.emotionalCongruence.setValue(true)
+                await this.sexualPreOccupation.setValue(true)
+                await this.sexualInterests.setValue(true)
+                await this.victimSafetyPlanning.setValue(true)
+                await this.hostileOrientation.setValue(true)
+            }
+        }
+    }
 }

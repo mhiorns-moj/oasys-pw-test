@@ -77,7 +77,7 @@ export class ScreeningSection1 extends BaseAssessmentPage {
     }
     
     
-    async populateFull(params: PopulateAssessmentParams) {
+    async populateFull(params?: PopulateAssessmentParams) {
         
         log('RoSH screening section 1 - fully populated')
         await this.goto(true)
@@ -99,7 +99,7 @@ export class ScreeningSection1 extends BaseAssessmentPage {
         await this.r1_2_16P.setValue('Yes')
         await this.r1_3_1.setValue('Yes')
         await this.r1_3_2.setValue('Yes')
-        if (params.layer != 'Layer 3') {
+        if (params?.layer != 'Layer 3') {
             await this.r1_3_20.setValue('Yes')    // pre-populated in fully popuplated layer 3
         }
         await this.r1_3_4.setValue('Yes')

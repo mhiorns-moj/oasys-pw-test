@@ -22,7 +22,7 @@
 
 import { Temporal } from '@js-temporal/polyfill'
 import { Db } from './data/db'
-import { userSuffix } from 'localSettings'
+import { testEnvironment, userSuffix } from 'localSettings'
 
 export class OasysDb {
 
@@ -182,52 +182,6 @@ export class OasysDb {
 
 
 
-    // /**
-    //  * Checks the value of a specified assessment question - by assessmentPk, section ref and question ref.
-    //  *
-    //  * An optional failedAlias parameter can be provided to return a true/false failure status.  If this is not provided, the test will halt on failure.
-    //  * 
-    //  * If used, the alias should already have been created with a boolean value, with the name passed without the @ symbol.
-    //  * Its value will be set to true in the case of failure, but left unchanged if the test passes.
-    //  * If logText is provided, pushes failure details into the array rather than reporting all passes and failures.
-    //  */
-    // async checkSingleAnswer(assessmentPk: number, section: string, questionRef: string, answerType: AnswerType, expectedResult: string,
-    //     failedAlias: string = null, logText: string[] = null, testCase: number = null) {
-
-    //     const answerSelect = answerType == 'refAnswer' ? 'a.ref_answer_code' : answerType == 'freeFormat' ? 'q.free_format_answer' : 'q.additional_note'
-    //     const query = `select ${answerSelect} from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
-    //                 where st.oasys_set_pk = s.oasys_set_pk
-    //                 and s.oasys_section_pk = q.oasys_section_pk
-    //                 and q.oasys_question_pk = a.oasys_question_pk(+)
-    //                 and s.ref_section_code = '${section}'
-    //                 and q.ref_question_code = '${questionRef}'
-    //                 and st.oasys_set_pk = ${assessmentPk}`
-
-    //     cy.task('getData', query).then((result: DbResponse) => {
-    //         if (result.error != null) { // database error
-    //             throw new Error(result.error)
-    //         } else {
-    //             const data = result.data as string[][]
-    //             const actualResult = data.length == 0 ? '' : data[0][0]
-    //             const failureMessage = actualResult == expectedResult ? '' : ' *** FAILED ***'
-    //             if (logText == null) {
-    //                 log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
-    //             } else if (actualResult != expectedResult) {
-    //                 logText.push(`Test case ${testCase}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
-    //             }
-    //             if (failedAlias == null) {
-    //                 expect(actualResult).to.equal(expectedResult)
-    //             } else {
-    //                 cy.get<boolean>(`@${failedAlias}`).then((aliasValue) => {
-    //                     const newValue = actualResult == expectedResult ? aliasValue : true
-    //                     cy.wrap(newValue).as(failedAlias)
-    //                 })
-    //             }
-    //         }
-    //     })
-
-    // }
-
     /**
      * Runs a count query and returns the count.
      */
@@ -289,9 +243,11 @@ export class OasysDb {
 
     async getLatestElogAndUnprocEventTime(mode: 'store' | 'check') {
 
+        const opdCondition = testEnvironment.ignoreOpdElogErrors ? `and error_stack not like '%network access denied by access control list (ACL)%'` : ''
         const elogQuery = `select to_char(time_stamp, 'YYYY-MM-DD HH24:MI:SS') from eor.elog 
                         where error_stack not like '%STUB:%'
                         and (username like 'AUTO%${userSuffix}' or username = 'EOR')
+                        ${opdCondition}
                         order by time_stamp desc fetch first 1 row only`
 
         const unprocEventQuery = `select to_char(create_date, 'YYYY-MM-DD HH24:MI:SS') from eor.san_unprocessed_events 
@@ -307,9 +263,7 @@ export class OasysDb {
             if (mode == 'store') {
                 this.lastElogTimeAtStart = lastElogTime
             } else {
-                if (lastElogTime != this.lastElogTimeAtStart && this.lastElogTimeAtStart != null) {
-                    throw new Error(`Error checking eLog - last entry was ${this.lastElogTimeAtStart} at start, now ${lastElogTime}`)
-                }
+                expect(lastElogTime).toBe(this.lastElogTimeAtStart)
             }
         }
 

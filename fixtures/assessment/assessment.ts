@@ -20,6 +20,7 @@ export class Assessment {
     readonly rollbackAssessment = new pages.RollbackAssessment(this.page)
     readonly rfis = new pages.Rfis(this.page)
     private readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
+    readonly printAssessment = new pages.PrintAssessment(this.page)
 
     // Common pages
     readonly offenderInformation = new pages.OffenderInformation(this.page)
@@ -126,71 +127,68 @@ export class Assessment {
 
     async populateMinimal(params?: PopulateAssessmentParams) {
 
-        await this.offendingInformation.populateMinimal()
-        await this.predictors.populateMinimal()
-        if (params?.layer != 'Layer 3V2') {
-            await this.selfAssessmentForm.populateMinimal()
-        }
-
         switch (params?.layer) {
             case 'Layer 1':
+                await this.predictors.populateMinimal()
+                await this.offendingInformation.populateMinimal()
                 await this.layer1Section2.populateMinimal()
+                await this.risk.screeningNoRisks()
+                await this.selfAssessmentForm.populateMinimal()
+                await this.sentencePlan.populateMinimal(params?.sentencePlan)
                 break
             case 'Layer 1V2':
                 await this.roshaPredictors.populateMinimal()
+                await this.risk.screeningNoRisks()
                 break
             case 'Layer 3':
+                await this.predictors.populateMinimal()
+                await this.offendingInformation.populateMinimal()
                 await this.sections2To13NoIssues(params)
+                await this.selfAssessmentForm.populateMinimal()
+                await this.risk.screeningNoRisks()
+                await this.sentencePlan.populateMinimal(params?.sentencePlan)
                 break
             case 'Layer 3V2':
+                await this.predictors.populateMinimal()
+                await this.offendingInformation.populateMinimal()
                 await this.san.populateMinimal()
+                await this.risk.screeningNoRisks()
+                await this.sentencePlan.populateMinimal(params?.sentencePlan)
                 break
         }
-        await this.risk.screeningNoRisks()
-        await this.sentencePlan.populateMinimal(params?.sentencePlan)
+        log(`Minimally populated assessment: ${JSON.stringify(params)}`)
     }
 
     async populateFull(params: PopulateAssessmentParams) {
 
-        // if (params.layer != 'Layer 1V2') {
-        //     populate.CommonPages.OffendingInformation.fullyPopulated(params)
-        // }
-
-        switch (params.layer) {
-            case 'Layer 1':
-                // populate.Layer1Pages.Predictors.minimal()
-                // populate.Layer1Pages.Section2.fullyPopulated(params.maxStrings)
-                break
+        switch (params?.layer) {
+            //     case 'Layer 1':
+            //         await this.predictors.populateFull()
+            //         await this.offendingInformation.populateFull()
+            //         await this.layer1Section2.populateFull()
+            //         await this.risk.populateFull()
+            //         await this.selfAssessmentForm.populateFull()
+            //         await this.sentencePlan.populateFull(params?.sentencePlan)
+            //         break
             case 'Layer 1V2':
                 await this.roshaPredictors.populateFull()
+                await this.risk.populateFull(params)
                 break
-            case 'Layer 3':
-                // populate.Layer3Pages.Predictors.fullyPopulated(params)
-                // sections2To13FullyPopulated(params)
-                break
-        }
-
-        if (params.layer != 'Layer 1V2') {
-            // populate.CommonPages.SelfAssessmentForm.fullyPopulated(params.maxStrings)
-        }
-
-        // Risk
-        await this.risk.populateFull(params)
-
-        // Sentence plan
-        switch (params.layer) {
-            case 'Layer 1':
-                // TODO
-                break
-            case 'Layer 1V2':
-                break
-            case 'Layer 3':
-                // if (params.sentencePlan == 'Review') {
-                //     rspFullyPopulated(params)
-                // } else {
-                //     ispFullyPopulated(params)
-                // }
-                break
+            //     case 'Layer 3':
+            //         await this.predictors.populateFull()
+            //         await this.offendingInformation.populateFull()
+            //         await this.sections2To1sections2To13populateFull3NoIssues(params)
+            //         await this.selfAssessmentForm.populateFull()
+            //         await this.risk.populateFull()
+            //         await this.sentencePlan.populateFull(params?.sentencePlan)
+            //         break
+            //     case 'Layer 3V2':
+            //         await this.predictors.populateFull()
+            //         await this.offendingInformation.populateFull()
+            //         await this.san.populateFull()
+            //         await this.risk.populateFull()
+            //         await this.sentencePlan.populateFull(params?.sentencePlan)
+            //         break
         }
 
         log(`Fully populated assessment: ${JSON.stringify(params)}`)
@@ -212,7 +210,7 @@ export class Assessment {
         await this.section12.populateNoIssues(true)
     }
 
-    // export function sections2To13FullyPopulated(params: PopulateAssessmentParams) {
+    // export function sections2To13populateFull(params: PopulateAssessmentParams) {
 
     //     populate.Layer3Pages.Section2.fullyPopulated(params.maxStrings)
     //     populate.Layer3Pages.Section3.fullyPopulated(params.maxStrings)

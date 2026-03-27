@@ -38,7 +38,7 @@ describe('SAN integration - test ref 08 part 2', () => {
                         Ensure the other navigation menus show correctly for Case ID, Section 1, RoSH Screening and Initial Sentence Plan`)
 
                 new oasys.Pages.Assessment.OffenderInformation().checkCurrent()
-                await san.checkLayer3Menu(true)
+                await san.checkLayer3Menu(true, assessment, sentencePlan)
                 new oasys.Pages.Assessment.SourcesOfInformation().checkMenuVisibility(true)
                 new oasys.Pages.Assessment.OffendingInformation().checkMenuVisibility(true)
                 new oasys.Pages.Assessment.Predictors().checkMenuVisibility(true)

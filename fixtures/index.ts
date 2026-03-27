@@ -120,11 +120,11 @@ export const san = oasys.extend<{ oasys: Oasys, san: San, oasysDb: OasysDb }>({
     }
 })
 
-export const risk = oasys.extend<{ oasys: Oasys, risk: Risk, oasysDb: OasysDb }>({
+export const risk = oasys.extend<{ oasys: Oasys, risk: Risk, oasysDb: OasysDb, sara: Sara }>({
 
-    risk: async ({ page, oasys }, use: Function) => {
+    risk: async ({ page, oasys, sara }, use: Function) => {
 
-        const risk = new Risk(page, oasys)
+        const risk = new Risk(page, oasys, sara)
         await use(risk)
     }
 })

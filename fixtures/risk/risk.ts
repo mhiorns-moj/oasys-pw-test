@@ -1,12 +1,12 @@
 import { Page, TestInfo } from '@playwright/test'
 
-import { Oasys } from 'fixtures'
+import { Oasys, Sara } from 'fixtures'
 import * as pages from './pages'
 
 
 export class Risk {
 
-    constructor(private readonly page: Page, private readonly oasys: Oasys) { }
+    constructor(private readonly page: Page, private readonly oasys: Oasys, private readonly sara: Sara) { }
 
     readonly screeningSection1 = new pages.ScreeningSection1(this.page)
     readonly screeningSection2to4 = new pages.ScreeningSection2to4(this.page)
@@ -23,6 +23,7 @@ export class Risk {
 
         await this.screeningSection1.populateMinimal()
         await this.screeningSection2to4.populateMinimal(withRationale)
+        await this.screeningSection5.noRisks()
     }
 
     /**
@@ -34,10 +35,10 @@ export class Risk {
         await this.screeningSection1.populateMinimal()
         await this.screeningSection1.r1_2_1P.setValue('Yes')
         await this.screeningSection2to4.populateMinimal(withRationale)
-        await this.summary.specificRiskLevel(risk)
+        await this.summary.populateWithSpecificRiskLevel(risk)
 
         if (risk != 'Low') {
-            await this.rmp.minimalWithTextFields(provider == 'pris')
+            await this.rmp.populateMinimalWithTextFields(provider == 'pris')
         }
     }
 
@@ -52,7 +53,7 @@ export class Risk {
         await this.screeningSection1.populateFull(params)
         if (params.layer == 'Layer 3') {
             await this.oasys.clickButton('Next')    // Trigger SARA prompt
-            // await this.cancelSara() // TODO
+            await this.sara.cancelSara()
         }
         await this.screeningSection2to4.populateFull()
         await this.screeningSection5.populateFull()

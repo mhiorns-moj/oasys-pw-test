@@ -1,5 +1,5 @@
 import { PractitionerAnalysis } from '../practitionerAnalysis'
-import * as SanElement from 'classes/san/sanElements'
+import * as SanElement from 'classes/elements/sanElements'
 
 export class DrugsPractitionerAnalysis extends PractitionerAnalysis {
 

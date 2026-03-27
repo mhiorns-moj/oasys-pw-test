@@ -14,6 +14,7 @@ declare type Environment = {
     iomStub: string,
     standardUserPassword: string,
     globalAdminUserPassword: string,
+    ignoreOpdElogErrors: boolean,
 }
 
 declare type AppConfig = {

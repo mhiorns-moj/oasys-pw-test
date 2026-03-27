@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test'
-import { OasysPage } from 'classes/oasysPage'
 
 
 export class Select<T extends string> {
@@ -35,44 +34,31 @@ export class Select<T extends string> {
         return await this.selector.textContent()
     }
 
-    // checkStatus(status: ElementStatus) {
+    async checkStatus(status: ElementStatus) {
 
-    //     this.getStatusAndValue('result')
-    //     cy.get<ElementStatusAndValue>('@result').then((result) => {
-    //         if (status != result.status) {
-    //             throw new Error(`Incorrect status for ${ this.selector }: expected ${ status }, found ${ result.status } `)
-    //         }
-    //     })
-    // }
+        const statusAndValue = await this.getStatusAndValue()
+        expect(statusAndValue.status).toBe(status)
+    }
 
-    // checkStatusAndValue(status: ElementStatus, value: T) {
+    async checkStatusAndValue(status: ElementStatus, value: T) {
 
-    //     this.getStatusAndValue('result')
-    //     cy.get<ElementStatusAndValue>('@result').then((result) => {
-    //         expect(result.status).to.equal(status)
-    //         if (status != 'notVisible') {
-    //             this.checkValue(value)
-    //         }
-    //     })
-    // }
+        const statusAndValue = await this.getStatusAndValue()
+        expect(statusAndValue.status).toBe(status)
+        expect(statusAndValue.value).toBe(value)
+    }
 
-    // checkOptions(expectedOptions: string[]) {
+    async checkOptions(expectedOptions: string[]) {
 
-    //     cy.get(this.selector).children('option').then((elements) => {
-    //         const actualOptions: string[] = []
-    //         for (let i = 0; i < elements.length; i++) {
-    //             actualOptions.push(elements[i].text)
-    //         }
-    //         if (actualOptions.length != expectedOptions.length) {
-    //             throw new Error(`${ this.selector }: expected ${ JSON.stringify(expectedOptions) }, actual: ${ JSON.stringify(actualOptions) } `)
-    //         }
-    //         for (let i = 0; i < actualOptions.length; i++) {
-    //             if (!expectedOptions.includes(actualOptions[i])) {
-    //                 throw new Error(`${ this.selector }: expected ${ JSON.stringify(expectedOptions) }, actual: ${ JSON.stringify(actualOptions) } `)
-    //             }
-    //         }
-    //     })
-    // }
+        const actualOptions = await this.getOptions()
+        if (actualOptions.length != expectedOptions.length) {
+            throw new Error(`${this.selector}: expected ${JSON.stringify(expectedOptions)}, actual: ${JSON.stringify(actualOptions)} `)
+        }
+        for (let i = 0; i < actualOptions.length; i++) {
+            if (!expectedOptions.includes(actualOptions[i])) {
+                throw new Error(`${this.selector}: expected ${JSON.stringify(expectedOptions)}, actual: ${JSON.stringify(actualOptions)} `)
+            }
+        }
+    }
 
     async checkOptionNotAvailable(option: T) {
 
@@ -89,7 +75,6 @@ export class Select<T extends string> {
 
         const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
         const count = await this.selector.count()
-
         if (count > 0) { // If element exists in the DOM
 
             const visible = await this.selector.isVisible()
@@ -108,7 +93,7 @@ export class Select<T extends string> {
                     const roVisible = await this.roSelector.isVisible()
                     if (roVisible) {
                         result.status = 'readonly'
-                        result.value = await this.roSelector.textContent()
+                        result.value = await this.roSelector.inputValue()
                     }
                 }
             }

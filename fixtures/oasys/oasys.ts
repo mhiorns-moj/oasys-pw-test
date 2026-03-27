@@ -13,7 +13,7 @@ import { OasysDb } from 'fixtures/oasysDb/oasysDb'
 
 export class Oasys {
 
-    constructor(private readonly page: Page, private readonly testInfo: TestInfo, private readonly oasysDb: OasysDb) { }
+    constructor(private readonly page: Page, public readonly testInfo: TestInfo, private readonly oasysDb: OasysDb) { }
 
 
     readonly queries = new Queries(this.oasysDb)

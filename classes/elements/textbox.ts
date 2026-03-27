@@ -5,7 +5,7 @@ export class Textbox<T> {
 
     selector: Locator
 
-    constructor(private readonly page: Page, selector: string, private readonly slowType: boolean = false) {
+    constructor(private readonly page: Page, selector: string, private readonly dateType: boolean = false) {
 
         this.selector = page.locator(selector)
     }
@@ -20,10 +20,11 @@ export class Textbox<T> {
         } else if (typeof value != 'string') {
             textValue = oasysDateTime.oasysDateAsString(value as OasysDate)
         }
-        if (this.slowType) {  // Handle date fields, the normal fill doesn't work for these
-            await this.selector.click()
-            await this.page.waitForTimeout(50)
-            await this.selector.pressSequentially(textValue, { delay: 50 })
+        if (this.dateType) {  // Handle date fields, the normal fill doesn't work for these
+            await this.page.waitForTimeout(200)
+            await this.selector.clear()
+            await this.page.waitForTimeout(200)
+            await this.selector.pressSequentially(textValue, { delay: 100 })
         } else {
             await this.selector.fill(textValue)
         }

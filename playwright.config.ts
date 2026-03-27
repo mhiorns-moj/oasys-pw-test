@@ -25,19 +25,14 @@ export default defineConfig({
     headless: true,
     actionTimeout: 10_000,
     navigationTimeout: 10_000,
-
+    launchOptions: { downloadsPath: './test-results/downloads'    }
   },
 
-  /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: 'startup',
-    //   testMatch: /global\.startup\.ts/,
-    // },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      // dependencies: ['startup'],
+      
     },
   ],
 })

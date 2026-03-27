@@ -148,8 +148,8 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
 
     await oasys.history(offender1, 'Non-statutory')
     await risk.screeningNoRisks(true)
-    await risk.summary.specificRiskLevel('High')
-    await risk.rmp.minimalWithTextFields()
+    await risk.summary.populateWithSpecificRiskLevel('High')
+    await risk.rmp.populateMinimalWithTextFields()
     await oasys.clickButton('Save')
 
     log(`Navigate out to the 'Sentence Plan Service' - complete entry with 2 goals/steps and ensure you 'Agree the Plan'	

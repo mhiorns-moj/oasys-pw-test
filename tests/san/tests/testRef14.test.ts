@@ -36,8 +36,8 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, san,
     await risk.screeningSection5.r5_1.setValue('Yes')
     await risk.screeningSection5.r5_1t.setValue('Want to do a full analysis')
     await oasys.clickButton('Save')
-    await risk.summary.fullyPopulated()
-    await risk.rmp.minimalWithTextFields()
+    await risk.summary.populateFull()
+    await risk.rmp.populateMinimalWithTextFields()
 
     await signing.signAndLock({ page: 'spService' })
 

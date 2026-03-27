@@ -50,7 +50,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                         Do not enter any data, go to a sentence plan screen and click on 'Sign and Lock' - ensure the errors reported are consistent with a 3.1 assessment type and there is nothing there to do with a SAN assessment`)
 
                 new oasys.Pages.Assessment.OffenderInformation().checkCurrent()
-                await san.checkLayer3Menu(false)
+                await san.checkLayer3Menu(false, assessment, sentencePlan)
 
                 await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
 

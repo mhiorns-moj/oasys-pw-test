@@ -3,7 +3,7 @@
 export class RoshaPredictors extends BaseAssessmentPage {
 
     name = 'RoshaPredictors'
-    title = 'Risk of Serious Recidivism'
+    title = 'Predictors'
     menu: Menu = { type: 'Floating', level1: 'Predictors' }
 
     offence = new Element.Textbox(this.page, '#P5_CT_OFFENCE_CODE_TEXT')
@@ -18,17 +18,17 @@ export class RoshaPredictors extends BaseAssessmentPage {
     o1_32 = new Element.Textbox(this.page, '#P5_QU_1_32')
     o1_26 = new Element.Textbox<number>(this.page, '#P5_QU_1_26')
     o1_40 = new Element.Textbox(this.page, '#P5_QU_1_40')
-    o1_29 = new Element.Textbox(this.page, '#P5_QU_1_29')
+    o1_29 = new Element.Textbox<OasysDate>(this.page, '#P5_QU_1_29', true)
     o1_30 = new Element.Select<YesNoAnswer>(this.page, '#P5_QU_1_30')
     o1_31 = new Element.Select<YesNoAnswer>(this.page, '#P5_QU_1_31')
     o1_41 = new Element.Select<YesNoAnswer>(this.page, '#P5_QU_1_41')
     o1_44 = new Element.Select<YesNoAnswer>(this.page, '#P5_QU_1_44')
-    o1_33 = new Element.Textbox(this.page, '#P5_QU_1_33')
+    o1_33 = new Element.Textbox<OasysDate>(this.page, '#P5_QU_1_33', true)
     o1_34 = new Element.Textbox(this.page, '#P5_QU_1_34')
     o1_45 = new Element.Textbox(this.page, '#P5_QU_1_45')
     o1_46 = new Element.Textbox(this.page, '#P5_QU_1_46')
     o1_37 = new Element.Textbox(this.page, '#P5_QU_1_37')
-    o1_38 = new Element.Textbox(this.page, '#P5_QU_1_38')
+    o1_38 = new Element.Textbox<OasysDate>(this.page, '#P5_QU_1_38', true)
     o1_38Audit = new Element.Textbox(this.page, '#P5_QU_1_38_T')
     o1_43 = new Element.Textbox(this.page, '#P5_QU_1_43')
     o1_39 = new Element.Select<YesNoAnswer>(this.page, '#P5_QU_1_39')
@@ -111,7 +111,7 @@ export class RoshaPredictors extends BaseAssessmentPage {
     csrpType = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(2):first")
     csrpScore = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(4):first")
 
-    async populateMinimal(withDateFirstSanction: boolean = true) {
+    async populateMinimal(withDateFirstSanction = true) {
 
         log('Minimally populating RoSHA Predictors page')
         await this.goto(true)
@@ -125,7 +125,7 @@ export class RoshaPredictors extends BaseAssessmentPage {
         await this.o1_38.setValue({ months: 18 })
     }
 
-    async populateFull(withDateFirstSanction: boolean = true) {
+    async populateFull(withDateFirstSanction = true) {
 
         log('Fully populating RoSHA Predictors page')
         await this.goto(true)
