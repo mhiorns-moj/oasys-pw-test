@@ -8,7 +8,7 @@ describe('Create or update admin user', () => {
     it('Create or update admin user', () => {
 
         // Check if user exists
-        oasys.Db.selectCount(`select count(*) from eor.oasys_user where oasys_user_code = '${oasys.users.admin.username}'`, 'userCount')
+        await oasysDb.selectCount(`select count(*) from eor.oasys_user where oasys_user_code = '${oasys.users.admin.username}'`, 'userCount')
 
         cy.get<number>('@userCount').then((userCount) => {
             let newUser = userCount == 0
@@ -58,7 +58,7 @@ describe('Create or update admin user', () => {
             })
 
             if (!t2) {
-                oasys.Db.setPassword(oasys.users.admin.username, testEnvironment.standardUserPassword)
+                await oasysDb.setPassword(oasys.users.admin.username, testEnvironment.standardUserPassword)
             }
         })
     })

@@ -25,7 +25,7 @@ describe('SAN integration - test ref 13 part 3', () => {
             createAssessmentPage.create.click()
             new oasys.Pages.Assessment.PreviousHistoric().yes.click()
 
-            oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
 
                 await san.queries.checkSanCreateAssessmentCall(pks[0], pks[1], oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')

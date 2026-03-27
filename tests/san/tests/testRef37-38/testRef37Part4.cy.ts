@@ -14,7 +14,7 @@ describe('SAN integration - test ref 37 part 4', () => {
 
             await oasys.login(oasys.users.probSanHeadPdu)
             await offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
 
@@ -24,7 +24,7 @@ describe('SAN integration - test ref 37 part 4', () => {
                 await oasys.logout()
                 await oasys.login(oasys.users.probSanHeadPdu)
                 await oasys.history()
-                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.gotoSanReadOnly()
                 await san.queries.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,

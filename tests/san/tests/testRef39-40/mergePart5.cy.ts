@@ -23,8 +23,8 @@ describe('SAN integration - tests 39-40', () => {
                 const offender2 = JSON.parse(offenderData as string)
 
                 // Get current assessment PKs
-                oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'currentOff1Pks')
-                oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'currentOff2Pks')
+                await oasysDb.getAllSetPksByProbationCrn(offender1.probationCrn, 'currentOff1Pks')
+                await oasysDb.getAllSetPksByProbationCrn(offender2.probationCrn, 'currentOff2Pks')
                 cy.get<number[]>('@currentOff1Pks').then((currentOff1Pks) => {
                     cy.get<number[]>('@currentOff2Pks').then((currentOff2Pks) => {
 
@@ -40,8 +40,8 @@ describe('SAN integration - tests 39-40', () => {
                         await oasys.logout()
 
                         // Get new assessment PKs
-                        oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'newOff1Pks')
-                        oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'newOff2Pks')
+                        await oasysDb.getAllSetPksByProbationCrn(offender1.probationCrn, 'newOff1Pks')
+                        await oasysDb.getAllSetPksByProbationCrn(offender2.probationCrn, 'newOff2Pks')
                         cy.get<number[]>('@newOff1Pks').then((newOff1Pks) => {
                             cy.get<number[]>('@newOff2Pks').then((newOff2Pks) => {
 

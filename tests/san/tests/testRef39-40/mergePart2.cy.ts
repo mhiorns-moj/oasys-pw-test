@@ -23,7 +23,7 @@ describe('SAN integration - tests 39-40', () => {
 
             // Create assessment
             await assessment.createProb({ purposeOfAssessment: 'Start of Suspended Sentence Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             // Complete section 1
             await sections.offendingInformation.goto()

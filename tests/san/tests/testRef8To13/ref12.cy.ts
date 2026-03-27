@@ -26,7 +26,7 @@ describe('SAN integration - test ref 12', () => {
                     just in case the next assessment they carry out is a 3.2. 
                     Change some of the data and fully complete the 3.1 assessment.`)
 
-            oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevSanPk = pks[2]

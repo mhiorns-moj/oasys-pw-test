@@ -11,13 +11,13 @@ describe('SAN integration - test ref 21 part 3', () => {
                 const offender2: OffenderDef = JSON.parse(offenderData as string)
 
                 // Check original cloning details
-                oasys.Db.getAllSetPksByPnc(offender2.pnc, 'originalOffender2Pks')
+                await oasysDb.getAllSetPksByPnc(offender2.pnc, 'originalOffender2Pks')
 
                 cy.get<number[]>('@originalOffender2Pks').then((originalOffender2Pks) => {
                     const oasysSetQuery = `select cloned_from_prev_oasys_san_pk from eor.oasys_set 
                                                 where cms_prob_number = '${offender2.probationCrn}'
                                                 and deleted_date is null order by initiation_date desc`
-                    oasys.Db.getData(oasysSetQuery, 'originalOffender2OasysSetData')
+                    await oasysDb.getData(oasysSetQuery, 'originalOffender2OasysSetData')
                     cy.get<number[]>('@originalOffender2OasysSetData').then((originalOffender2OasysSetData) => {
                         expect(originalOffender2OasysSetData[0] == originalOffender2Pks[1]) // Assessment 6
                         expect(originalOffender2OasysSetData[1] == originalOffender2Pks[3]) // Assessment 5
@@ -43,11 +43,11 @@ describe('SAN integration - test ref 21 part 3', () => {
                     oasys.Task.grantMerge(offender2.surname)
 
                     // Get new assessment PKs and oasys_set data
-                    oasys.Db.getAllSetPksByPnc(offender2.pnc, 'mergedOffenderPks', true)
+                    await oasysDb.getAllSetPksByPnc(offender2.pnc, 'mergedOffenderPks', true)
 
                     cy.get<number[]>('@mergedOffenderPks').then((mergedOffenderPks) => {
 
-                        oasys.Db.getData(oasysSetQuery, 'mergedOasysSetData')
+                        await oasysDb.getData(oasysSetQuery, 'mergedOasysSetData')
                         cy.get<number[]>('@mergedOasysSetData').then((mergedOasysSetData) => {
 
                             expect(mergedOasysSetData[0] == mergedOffenderPks[1]) // Assessment 6

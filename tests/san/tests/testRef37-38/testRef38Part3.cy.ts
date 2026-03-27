@@ -17,7 +17,7 @@ describe('SAN integration - test ref 38 part 3', () => {
             const offender = JSON.parse(offenderData as string)
 
 
-            oasys.Db.getAllSetPksByPnc(offender.pnc, '[pks]')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, '[pks]')
             cy.get<number[]>('@[pks]').then((pks) => {  // [0] = the second deleted assessment, [1] = the first one that will be rolled back
 
                 // Open the assessment and check status

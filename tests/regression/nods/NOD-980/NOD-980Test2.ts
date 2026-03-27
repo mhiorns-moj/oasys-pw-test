@@ -11,7 +11,7 @@ describe('NOD-980: Test for RA cloning 2', () => {
             // First RoSHA
             await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
 
-            oasys.Db.getLatestSetPk('@offender1', 'pk')
+            await oasysDb.getLatestSetPk('@offender1', 'pk')
             cy.get<number>('@pk').then((pk) => {
                 const failed = await oasys.queries.checkAnswers(pk, [{ section: 'RSR', q: 'RA', a: 'YES' }, { section: 'RSR', q: '1.39', a: 'NO' }], 'failed', true)
                 cy.get<boolean>('@failed').then((failed) => {
@@ -29,7 +29,7 @@ describe('NOD-980: Test for RA cloning 2', () => {
                 // Second RoSHA
                 await oasys.history(offender)
                 await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
-                oasys.Db.getLatestSetPk('@offender1', 'pk')
+                await oasysDb.getLatestSetPk('@offender1', 'pk')
                 cy.get<number>('@pk').then((pk) => {
                     const failed = await oasys.queries.checkAnswers(pk, [{ section: 'RSR', q: 'RA', a: 'YES' }, { section: 'RSR', q: '1.39', a: 'NO' }], 'failed', true)
                     cy.get<boolean>('@failed').then((failed) => {

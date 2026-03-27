@@ -19,7 +19,7 @@ describe('SAN integration - test ref 27', () => {
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createPris({ purposeOfAssessment: 'Start custody', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
                 await san.gotoSan()
@@ -44,13 +44,13 @@ describe('SAN integration - test ref 27', () => {
                     Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
                     Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`)
 
-                oasys.Db.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate1')
+                await oasysDb.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate1')
                 // TODO added workaround for NOD-1xxx, ignore R2.2.2 as it might get created
                 const questionsQuery = `select max(to_char(q.lastupd_date, '${oasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
                                                         where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
                                                         and q.ref_question_code <> 'R2.2.2'
                                                         and st.oasys_set_pk = ${pk}`
-                oasys.Db.getData(questionsQuery, 'questions1')
+                await oasysDb.getData(questionsQuery, 'questions1')
 
                 cy.get<string[][]>('@lastUpdDate1').then((initialData) => {
                     cy.get<string[][]>('@questions1').then((questions1) => {
@@ -67,7 +67,7 @@ describe('SAN integration - test ref 27', () => {
                         const sectionQuery = `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} 
                                                 and section_status_elm = 'COMPLETE_LOCKED' and ref_section_code in ('SAN', 'SSP')`
 
-                        oasys.Db.selectCount(sectionQuery, 'sections')
+                        await oasysDb.selectCount(sectionQuery, 'sections')
                         cy.get<number>('@sections').then((sections) => {
                             expect(sections).equal(2)
                         })
@@ -93,7 +93,7 @@ describe('SAN integration - test ref 27', () => {
                         Close the assessment - back to the offender record`)
 
                         oasys.Assessment.open(2)
-                        await san.gotoSanReadOnly('Accommodation', 'information')
+                        await san.gotoSanReadOnly()
                         await san.checkSanEditMode(false)
                         await san.returnToOASys()
 
@@ -104,8 +104,8 @@ describe('SAN integration - test ref 27', () => {
                         log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
                                 and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`)
 
-                        oasys.Db.getData(questionsQuery, 'questions')
-                        oasys.Db.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
+                        await oasysDb.getData(questionsQuery, 'questions')
+                        await oasysDb.getData(`select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}') from eor.oasys_set where oasys_set_pk = ${pk}`, 'lastUpdDate2')
                         cy.get<string[][]>('@questions').then((questions) => {
                             cy.get<string[][]>('@lastUpdDate2').then((updatedSetData) => {
 

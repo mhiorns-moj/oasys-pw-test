@@ -109,7 +109,7 @@ function drugTest(drugType: DrugType) {
         await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-        oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
+        await oasysDb.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
         cy.get<number>('@assessmentPk').then((assessmentPk) => {
 
             // Run all the scenarios for a single drug

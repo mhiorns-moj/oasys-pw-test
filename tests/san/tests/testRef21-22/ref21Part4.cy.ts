@@ -19,7 +19,7 @@ describe('SAN integration - test ref 21 part 4', () => {
 
         cy.task('retrieveValue', 'offender2').then((offenderData) => {
             const offender2: OffenderDef = JSON.parse(offenderData as string)
-            oasys.Db.getAllSetPksByPnc(offender2.pnc, 'mergedOffenderPks', true)
+            await oasysDb.getAllSetPksByPnc(offender2.pnc, 'mergedOffenderPks', true)
             cy.get<number[]>('@mergedOffenderPks').then((mergedOffenderPks) => {
                 await oasys.login(oasys.users.probSanHeadPdu)
                 await offender.searchAndSelectByPnc(offender2.pnc)
@@ -54,7 +54,7 @@ describe('SAN integration - test ref 21 part 4', () => {
 function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: number, spVersion: number) {
 
     log(`Checking assessment pk ${pk}`)
-    await san.gotoSanReadOnly('Accommodation', 'information')
+    await san.gotoSanReadOnly()
     await san.queries.checkSanOtlCall(pk,
         {
             'crn': offender.probationCrn,

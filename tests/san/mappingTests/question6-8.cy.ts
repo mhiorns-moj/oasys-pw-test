@@ -44,7 +44,7 @@ describe('Mapping test for question 6.8', () => {
             await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-            oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
+            await oasysDb.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
             cy.get<number>('@assessmentPk').then((assessmentPk) => {
                 const testCases: { accommodation: AccommodationOptions[], relationship: RelationshipOptions[], mapping: number }[] =
                     [
@@ -144,5 +144,5 @@ function checkMapping(assessmentPk: number, expectedValue: number, logText: stri
     await oasys.clickButton('Previous', true)
     await oasys.clickButton('Next', true)
 
-    oasys.Db.checkSingleAnswer(assessmentPk, '6', '6.8', 'refAnswer', expectedValue == null ? null : expectedValue.toString(), 'failed', logText, testCase)
+    await oasysDb.checkSingleAnswer(assessmentPk, '6', '6.8', 'refAnswer', expectedValue == null ? null : expectedValue.toString(), 'failed', logText, testCase)
 }

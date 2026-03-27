@@ -25,7 +25,7 @@ describe('SAN integration - test ref 10', () => {
 
             await assessment.createProb({ purposeOfAssessment: 'Review' })  // Assume SAN defaults to 'Yes'
 
-            oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevPk = pks[1]
@@ -124,7 +124,7 @@ describe('SAN integration - test ref 10', () => {
                 const sectionQuery = `select count(*) from eor.oasys_section 
                                     where oasys_set_pk = ${pk} and section_status_elm = 'COMPLETE_LOCKED'`
                 log(sectionQuery)
-                oasys.Db.selectCount(sectionQuery, 'sectionCount')
+                await oasysDb.selectCount(sectionQuery, 'sectionCount')
                 cy.get<number>('@sectionCount').then((sectionCount) => {
                     expect(sectionCount).equal(22)
                 })

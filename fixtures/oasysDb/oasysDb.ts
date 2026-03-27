@@ -1,5 +1,5 @@
 /**
- * __oasys.Db.*async*__  
+ * __await oasysDb.*async*__  
  * 
  * Functions for checking and retrieving database values.
  * 
@@ -9,7 +9,7 @@
  * The actual database interaction is in cypress/support/oasysDb.ts, called via cy.task asyncs defined in cypress.config.ts; this module provides a set of asyncs to
  * handle the cy.task calls.  Most either fail the test if checks find the wrong values, or require the use of Cypress aliases to get results back, e.g.
  * 
- *  > `oasys.Db.selectCount(``select count(*) from eor.offender where family_name = '${surname}'``, 'count')`  
+ *  > `await oasysDb.selectCount(``select count(*) from eor.offender where family_name = '${surname}'``, 'count')`  
  *  > `cy.get<number>('@count').then((count) => {`  
  *  > &nbsp;&nbsp;&nbsp;&nbsp;`log(count.toString())`  
  *  > &nbsp;&nbsp;&nbsp;&nbsp;`if (count > 1) {`  

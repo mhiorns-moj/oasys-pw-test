@@ -65,7 +65,7 @@ describe('RestAPI regression tests', () => {
                                         order by create_date desc)
                                         where rownum <= ${dateCondition.count}`
 
-        oasys.Db.getData(offenderQuery, 'offenderResult')
+        await oasysDb.getData(offenderQuery, 'offenderResult')
 
         cy.get<string[][]>('@offenderResult').then((offenders) => {
             runTest(offenders)

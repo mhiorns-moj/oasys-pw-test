@@ -23,7 +23,7 @@ describe('SAN integration - tests 39-40', () => {
 
             // Create assessment
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             await san.gotoSan()
             await san.populateSanSections('Merge test', testData.modifySanForAssessment3)

@@ -28,7 +28,7 @@ describe('SAN integration - test ref 08 part 2', () => {
             createAssessmentPage.includeSanSections.setValue('Yes')
             createAssessmentPage.create.click()
 
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<number>('@result').then((pk) => {
 
                 log(`An OASys-SAN assessment (3.2) is created showing the Case ID Offender Information screen

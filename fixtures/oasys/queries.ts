@@ -260,7 +260,7 @@ export class Queries {
 
     // async checkIfDeleted(pk: number, expectDeleted: boolean) {
 
-    //     this.oasys.Db.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'data')
+    //     this.await oasysDb.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'data')
     //     cy.get<string[][]>('@data').then((data) => {
     //         if (expectDeleted) {
     //             expect(data[0][0]).to.not.be.null
@@ -288,7 +288,7 @@ export class Queries {
         }
     }
 
-        // /**
+    // /**
     //  * Checks the value of a specified assessment question - by assessmentPk, section ref and question ref.
     //  *
     //  * An optional failedAlias parameter can be provided to return a true/false failure status.  If this is not provided, the test will halt on failure.

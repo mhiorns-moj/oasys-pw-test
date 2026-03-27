@@ -68,7 +68,7 @@ function createOrUpdateUser(user: User) {
             await oasys.logout()
 
             if (!t2) {
-                oasys.Db.setPassword(user.username, testEnvironment.standardUserPassword)
+                await oasysDb.setPassword(user.username, testEnvironment.standardUserPassword)
             }
         })
     }

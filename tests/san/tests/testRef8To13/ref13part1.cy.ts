@@ -19,7 +19,7 @@ describe('SAN integration - test ref 13 part 1', () => {
                 Check the OASYS_SET record; field CLONED_FROM_PREV_OASYS_SAN_PK has been cloned through from the 3.1 assessment, fields SAN_ASSESSMENT_LINKED_IND = 'Y',
                     LASTUPD_FROM_SAN is set from having obtained the SAN data and SAN_ASSESSMENT_VERSION_NO is NULL.`)
 
-            oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevSanPk = pks[3]

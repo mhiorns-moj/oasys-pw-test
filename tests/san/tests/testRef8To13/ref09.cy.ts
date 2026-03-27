@@ -23,7 +23,7 @@ describe('SAN integration - test ref 09', () => {
             await oasys.login(oasys.users.probSanUnappr)
             await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
 
                 await san.gotoSanFromOffender()
@@ -52,14 +52,14 @@ describe('SAN integration - test ref 09', () => {
                     Log out.`)
 
                 await assessment.openLatest()
-                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.gotoSanReadOnly()
                 await san.checkSanEditMode(false)
                 cy.get('#main-content').then((container) => {
                     expect(container.find('.summary__answer:contains("Settled"):visible').length).equal(1)
                     expect(container.find('.summary__answer--secondary:contains("Living with friends or family"):visible').length).equal(1)
                     await san.returnToOASys()
                     await oasys.clickButton('Next')
-                    oasys.Db.checkSingleAnswer(pk, '5', '5.4', 'refAnswer', '2')  // Should be 2 in the assessment (source of income = offending only).  Change in offender record would return 1 if it impacted the assessment.
+                    await oasysDb.checkSingleAnswer(pk, '5', '5.4', 'refAnswer', '2')  // Should be 2 in the assessment (source of income = offending only).  Change in offender record would return 1 if it impacted the assessment.
                     await oasys.logout()
                 })
             })

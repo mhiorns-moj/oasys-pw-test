@@ -12,7 +12,7 @@ describe('SAN integration - test ref 22 part 3', () => {
             await oasys.login(oasys.users.probSanHeadPdu)
             await offender.searchAndSelectByPnc(offender2.pnc)
 
-            oasys.Db.getAllSetPksByPnc(offender2.pnc, 'pks', true)
+            await oasysDb.getAllSetPksByPnc(offender2.pnc, 'pks', true)
             cy.get<number>('@pks').then((pks) => {
 
                 const assessmentsTab = new oasys.Pages.Offender.AssessmentsTab()
@@ -48,7 +48,7 @@ describe('SAN integration - test ref 22 part 3', () => {
 function checkAssessment(offender: OffenderDef, pk: number, assessmentVersion: number, spVersion: number, accommodation: string) {
 
     log(`Checking assessment pk ${pk}`)
-    await san.gotoSanReadOnly('Accommodation', 'information')
+    await san.gotoSanReadOnly()
     await san.queries.checkSanOtlCall(pk,
         {
             'crn': offender.probationCrn,

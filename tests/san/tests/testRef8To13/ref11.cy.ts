@@ -45,7 +45,7 @@ describe('SAN integration - test ref 11', () => {
             await san.checkLayer3Menu(false, true)
             await risk.fullAnalysisSection62.checkMenuVisibility(true)
 
-            oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, 'pks')
             cy.get<number[]>('@pks').then((pks) => {
                 const pk = pks[0]
                 const prevPk = pks[1]

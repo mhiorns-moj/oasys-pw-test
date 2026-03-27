@@ -18,12 +18,12 @@ describe('SAN integration - test ref 38 part 2', () => {
             await oasys.login(oasys.users.admin, oasys.users.probationSan)
             await offender.searchAndSelectByPnc(offender.pnc)
 
-            oasys.Db.getAllSetPksByPnc(offender.pnc, '[pks]')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, '[pks]')
             cy.get<number[]>('@[pks]').then((pks) => {  // [0] = the second deleted assessment, [1] = the first one that will be rolled back
 
                 await assessment.openLatest()
 
-                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.gotoSanReadOnly()
                 await san.queries.checkSanOtlCall(pks[1], {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,

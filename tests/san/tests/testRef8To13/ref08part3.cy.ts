@@ -109,7 +109,7 @@ describe('SAN integration - test ref 08 part 3', () => {
                 expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: '3.2 assessment needs countersigning'
             })
             await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
                 await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',

@@ -27,7 +27,7 @@ describe('SAN integration - test ref 21 part 1', () => {
 
             await oasys.logout()
 
-            oasys.Db.getLatestSetPkByPnc(offender1.pnc, 'pk')
+            await oasysDb.getLatestSetPkByPnc(offender1.pnc, 'pk')
             cy.get('@pk').then((pk) => {
                 await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,

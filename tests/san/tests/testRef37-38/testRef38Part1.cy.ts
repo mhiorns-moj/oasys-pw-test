@@ -21,7 +21,7 @@ describe('SAN integration - test ref 38 part 1', () => {
 
             // Create new assessment
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
-            oasys.Db.getAllSetPksByPnc(offender.pnc, 'pks')
+            await oasysDb.getAllSetPksByPnc(offender.pnc, 'pks')
 
             cy.get<number[]>('@pks').then((pks) => {
                 // Check values in OASYS_SET

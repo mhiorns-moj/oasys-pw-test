@@ -27,7 +27,7 @@ describe('SAN integration - test ref 13 part 2', () => {
 
             await assessment.openLatest()
 
-            await san.gotoSanReadOnly('Accommodation', 'information')
+            await san.gotoSanReadOnly()
             await san.checkSanEditMode(false)
             await san.returnToOASys()
             await oasys.clickButton('Close')

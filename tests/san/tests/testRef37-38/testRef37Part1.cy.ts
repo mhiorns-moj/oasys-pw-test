@@ -18,7 +18,7 @@ describe('SAN integration - test ref 37 part 1', () => {
 
             // Create first assessment
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
                 // Check values in OASYS_SET

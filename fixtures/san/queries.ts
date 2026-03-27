@@ -346,7 +346,7 @@ export class Queries {
 
     //     log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
     //     const query = `select log_text from eor.clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
-    //     oasys.Db.getData(query, 'clogData')
+    //     await oasysDb.getData(query, 'clogData')
     //     cy.get<string[][]>('@clogData').then((clogData) => {
     //         let failed = false
 
@@ -404,7 +404,7 @@ export class Queries {
     // async checkNoSanCall(pk: number) {
 
     //     const query = `select log_text from eor.clog where log_source like '%${pk}%' and log_text <> 'lv_previous_layer [LAYER3_1] || lv_current_layer [LAYER3_1]'`
-    //     oasys.Db.getData(query, 'clogData')
+    //     await oasysDb.getData(query, 'clogData')
     //     cy.get<string[][]>('@clogData').then((clogData) => {
     //         if (clogData && clogData.length > 0) {
     //             throw new Error(`Found unexpected clog entries for PK ${pk}`)
@@ -423,7 +423,7 @@ export class Queries {
     //                             and s.ref_section_code = '${section}' 
     //                             and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
     //                             and st.oasys_set_pk = ${pk}`
-    //     oasys.Db.selectCount(sanSectionQuery, 'result')
+    //     await oasysDb.selectCount(sanSectionQuery, 'result')
     //     cy.get<number>('@result').then((count) => {
     //         expect(count).equal(expectedCount)
     //     })
@@ -554,7 +554,7 @@ export class Queries {
     //                     and q.ref_question_code in ('IP.1', 'IP.2')
     //                     and st.oasys_set_pk = ${pk}`
 
-    //     oasys.Db.selectCount(query, 'count')
+    //     await oasysDb.selectCount(query, 'count')
     //     cy.get<number>('@count').then((count) => {
     //         if (count > 0) {
     //             throw new Error(`Unexpected ISP questions found for assessment ${pk}`)

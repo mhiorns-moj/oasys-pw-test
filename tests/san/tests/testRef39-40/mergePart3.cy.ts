@@ -19,8 +19,8 @@ describe('SAN integration - tests 39-40', () => {
                 const offender2 = JSON.parse(offenderData as string)
 
                 // Get original assessment PKs
-                oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'oldPksOff1')
-                oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'oldPksOff2')
+                await oasysDb.getAllSetPksByProbationCrn(offender1.probationCrn, 'oldPksOff1')
+                await oasysDb.getAllSetPksByProbationCrn(offender2.probationCrn, 'oldPksOff2')
                 await oasys.login(oasys.users.probSanHeadPdu)
                 await offender.searchAndSelectByPnc(offender1.pnc)
 
@@ -32,8 +32,8 @@ describe('SAN integration - tests 39-40', () => {
                 oasys.Task.grantMerge(offender2.surname)
 
                 // Get new assessment PKs
-                oasys.Db.getAllSetPksByProbationCrn(offender1.probationCrn, 'newPksOff1')
-                oasys.Db.getAllSetPksByProbationCrn(offender2.probationCrn, 'newPksOff2')
+                await oasysDb.getAllSetPksByProbationCrn(offender1.probationCrn, 'newPksOff1')
+                await oasysDb.getAllSetPksByProbationCrn(offender2.probationCrn, 'newPksOff2')
                 await san.queries.checkSanMergeCall(oasys.users.probSanHeadPdu, 3)
                 await oasys.logout()
             })

@@ -7,7 +7,7 @@ import { createAssessmentTestCase } from 'lib/ogrs/createAssessmentTestCase'
 
 export function checkOgrs4CalcsOffender(offender: OffenderDef, resultAlias?: string) {
 
-    oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
+    await oasysDb.getLatestSetPkByPnc(offender.pnc, 'pk')
     cy.get<number>('@pk').then((pk) => {
         checkOgrs4CalcsPk(pk, resultAlias)
     })

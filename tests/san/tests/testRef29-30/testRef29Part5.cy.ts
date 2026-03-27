@@ -16,7 +16,7 @@ describe('SAN integration - test ref 29/30', () => {
             await offender.searchAndSelectByPnc(offender.pnc)
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'pk')
 
             cy.get<number>('@pk').then((pk) => {
 

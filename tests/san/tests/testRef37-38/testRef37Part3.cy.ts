@@ -14,13 +14,13 @@ describe('SAN integration - test ref 37 part 3', () => {
 
             await oasys.login(oasys.users.admin, oasys.users.probationSan)
             await offender.searchAndSelectByPnc(offender.pnc)
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
 
                 await assessment.openLatest()
 
-                await san.gotoSanReadOnly('Accommodation', 'information')
+                await san.gotoSanReadOnly()
                 await san.queries.checkSanOtlCall(pk, {
                     'crn': offender.probationCrn,
                     'pnc': offender.pnc,

@@ -39,7 +39,7 @@ describe('SAN integration - test ref 08 part 1', () => {
             createAssessmentPage.includeSanSections.setValue('No')
 
             createAssessmentPage.create.click()
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
             cy.get<Number>('@result').then((pk) => {
 
                 log(`A normal Layer 3 Version 1 assessment is created showing the Case ID Offender Information screen 
@@ -84,7 +84,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                 await signing.countersign({ offender: offender, comment: 'Test comment' })
 
                 await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
-                oasys.Db.selectCount(`select count(*) from eor.oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`, 'count')
+                await oasysDb.selectCount(`select count(*) from eor.oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`, 'count')
                 cy.get<number>('@count').then((count) => {
                     if (count! > 0) {
                         throw new Error(`Unexpected SAN section found for pk ${pk}`)

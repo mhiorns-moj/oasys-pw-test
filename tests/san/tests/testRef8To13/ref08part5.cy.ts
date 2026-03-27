@@ -16,10 +16,10 @@ describe('SAN integration - test ref 08 part 5', () => {
                 Countersigner shown the correct 'Countersigning Overview' screen
                 Return back to the assessment - now on the first Initial Sentence Plan screen`)
 
-            oasys.Db.getLatestSetPkByPnc(offender.pnc, 'pk')
+            await oasysDb.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
                 const sanColumnsQuery = `select LASTUPD_FROM_SAN, SAN_ASSESSMENT_VERSION_NO from eor.oasys_set where oasys_set_pk = ${pk}`
-                oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
+                await oasysDb.getData(sanColumnsQuery, 'oasysSetData')
                 cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery1) => {
 
                     await oasys.login(oasys.users.probSanHeadPdu)
@@ -34,7 +34,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                             (outcome passed is 'COUNTERSIGNED' along with countersigners ID and name)
                         Check that on the SNS_MESSAGE table there are records for OGRS, RSR and AssSumm`)
 
-                    await san.gotoSanReadOnly('Accommodation', 'information')
+                    await san.gotoSanReadOnly()
                     await san.checkSanEditMode(false)
                     await san.returnToOASys()
                     await signing.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test comment' })
@@ -60,7 +60,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                         Ensure there is no Section 13
                         Ensure that the new SAN section has questions in it from the SAN assessment`)
 
-                    oasys.Db.getData(sanColumnsQuery, 'oasysSetData')
+                    await oasysDb.getData(sanColumnsQuery, 'oasysSetData')
                     cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery2) => {
                         expect(JSON.stringify(sanColumnsQuery2)).equal(JSON.stringify(sanColumnsQuery1))
                     })
