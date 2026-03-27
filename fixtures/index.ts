@@ -6,6 +6,7 @@ import { Oasys } from './oasys/oasys'
 import { Cms } from './cms/cms'
 import { Offender } from './offender/offender'
 import { Assessment } from './assessment/assessment'
+import { Sections } from './sections/sections'
 import { San } from './san/san'
 import { Sns } from './sns/sns'
 import { Tasks } from './tasks/tasks'
@@ -21,6 +22,7 @@ export { Oasys } from './oasys/oasys'
 export { Cms } from './cms/cms'
 export { Offender } from './offender/offender'
 export { Assessment } from './assessment/assessment'
+export { Sections } from './sections/sections'
 export { San } from './san/san'
 export { Sns } from './sns/sns'
 export { Tasks } from './tasks/tasks'
@@ -37,10 +39,10 @@ globalThis.oasysDateTime = new OasysDateTime()
 globalThis.utils = new Utils()
 
 globalThis.waitForPageUpdate = async (page: Page, initialDelay?: number) => {
-    
+
     let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
 
-    await page.waitForTimeout( initialDelay ?? 200)
+    await page.waitForTimeout(initialDelay ?? 200)
     let pleaseWaitCount = await updatingElement.count()
     while (pleaseWaitCount > 0) {
         pleaseWaitCount = await updatingElement.count()
@@ -111,6 +113,15 @@ export const offender = oasys.extend<{ oasys: Oasys, cms: Cms, offender: Offende
     }
 })
 
+export const sections = oasys.extend<{ oasys: Oasys, sections: Sections }>({
+
+    sections: async ({ page }, use: Function) => {
+
+        const sections = new Sections(page)
+        await use(sections)
+    }
+})
+
 export const san = oasys.extend<{ oasys: Oasys, san: San, oasysDb: OasysDb }>({
 
     san: async ({ page, oasys, oasysDb }, use: Function) => {
@@ -138,7 +149,6 @@ export const sentencePlan = oasys.extend<{ oasys: Oasys, sentencePlan: SentenceP
     }
 })
 
-
 export const signing = oasys.extend<{ oasys: Oasys, signing: Signing, oasysDb: OasysDb, tasks: Tasks }>({
 
     signing: async ({ page, oasys, tasks }, use: Function) => {
@@ -150,12 +160,12 @@ export const signing = oasys.extend<{ oasys: Oasys, signing: Signing, oasysDb: O
 
 export const assessment = oasys.extend<{
     oasys: Oasys, cms: Cms, offender: Offender, assessment: Assessment, oasysDb: OasysDb,
-    tasks: Tasks, san: San, risk: Risk, sentencePlan: SentencePlan, signing: Signing
+    tasks: Tasks, sections: Sections, san: San, risk: Risk, sentencePlan: SentencePlan, signing: Signing
 }>({
 
-    assessment: async ({ page, oasys, cms, offender, oasysDb, san, risk, sentencePlan }, use: Function) => {
+    assessment: async ({ page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan }, use: Function) => {
 
-        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, san, risk, sentencePlan)
+        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan)
         await use(assessment)
     }
 })
@@ -178,4 +188,4 @@ export const sara = oasys.extend<{ oasys: Oasys, sara: Sara }>({
     }
 })
 
-export const test = mergeTests(oasys, cms, offender, assessment, oasysDb, sns, tasks, san, risk, sentencePlan, signing, sara)
+export const test = mergeTests(oasys, cms, offender, assessment, oasysDb, sns, tasks, sections, san, risk, sentencePlan, signing, sara)

@@ -9,17 +9,17 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
         cy.get<OffenderDef>('@offender1').then((offender) => {
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-            await assessment.offendingInformation.goto()
+            await sections.offendingInformation.goto()
             offendingInformation.count.setValue(1)
             offendingInformation.offenceDate.setValue({ months: -6 })
 
-            await assessment.predictors.goto(true)
-            await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-            await assessment.predictors.o1_32.setValue(2)
-            await assessment.predictors.o1_40.setValue(0)
-            await assessment.predictors.o1_29.setValue({ months: -1 })
-            await assessment.predictors.o1_30.setValue('No')
-            await assessment.predictors.o1_38.setValue({})
+            await sections.predictors.goto(true)
+            await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+            await sections.predictors.o1_32.setValue(2)
+            await sections.predictors.o1_40.setValue(0)
+            await sections.predictors.o1_29.setValue({ months: -1 })
+            await sections.predictors.o1_30.setValue('No')
+            await sections.predictors.o1_38.setValue({})
 
             await san.gotoSan()
             await san.populateSanSections('Example test', oasys.Populate.San.ExampleTest.sanPopulation1)

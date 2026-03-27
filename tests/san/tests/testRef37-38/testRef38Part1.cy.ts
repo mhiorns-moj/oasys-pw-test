@@ -32,7 +32,7 @@ describe('SAN integration - test ref 38 part 1', () => {
                 await san.queries.checkSanGetAssessmentCall(pks[0], 1)
 
                 // Tweak section 1
-                await assessment.offendingInformation.goto()
+                await sections.offendingInformation.goto()
                 offendingInformation.offence.setValue('030')
                 offendingInformation.subcode.setValue('01')
                 offendingInformation.count.setValue(3)
@@ -40,12 +40,12 @@ describe('SAN integration - test ref 38 part 1', () => {
                 offendingInformation.sentence.setValue('Fine')
                 offendingInformation.sentenceDate.setValue({ months: -1 })
 
-                await assessment.predictors.goto(true)
-                await assessment.predictors.o1_32.setValue(4)
-                await assessment.predictors.o1_40.setValue(1)
-                await assessment.predictors.o1_29.setValue({ months: -1 })
-                await assessment.predictors.o1_30.setValue('No')
-                await assessment.predictors.o1_38.setValue({})
+                await sections.predictors.goto(true)
+                await sections.predictors.o1_32.setValue(4)
+                await sections.predictors.o1_40.setValue(1)
+                await sections.predictors.o1_29.setValue({ months: -1 })
+                await sections.predictors.o1_30.setValue('No')
+                await sections.predictors.o1_38.setValue({})
                 await oasys.clickButton('Save')
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan().checkIsNotOnMenu()
 

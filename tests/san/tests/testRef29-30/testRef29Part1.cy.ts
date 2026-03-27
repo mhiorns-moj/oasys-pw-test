@@ -27,15 +27,15 @@ describe('SAN integration - test ref 29/30', () => {
                 await sentencePlan.populateMinimal()
 
                 // Complete section 1
-                await assessment.offendingInformation.populateMinimal()
+                await sections.offendingInformation.populateMinimal()
 
-                await assessment.predictors.goto(true)
-                await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-                await assessment.predictors.o1_32.setValue(2)
-                await assessment.predictors.o1_40.setValue(0)
-                await assessment.predictors.o1_29.setValue({ months: -1 })
-                await assessment.predictors.o1_30.setValue('No')
-                await assessment.predictors.o1_38.setValue({})
+                await sections.predictors.goto(true)
+                await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+                await sections.predictors.o1_32.setValue(2)
+                await sections.predictors.o1_40.setValue(0)
+                await sections.predictors.o1_29.setValue({ months: -1 })
+                await sections.predictors.o1_30.setValue('No')
+                await sections.predictors.o1_38.setValue({})
 
                 await risk.screeningNoRisks(true)
 

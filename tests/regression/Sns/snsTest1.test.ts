@@ -21,10 +21,10 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
         await oasys.history(offender1)
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-        await assessment.predictors.goto()
-        await assessment.predictors.o1_30.setValue('No')
-        await assessment.predictors.o1_29.setValue({ months: -1 })
-        await assessment.predictors.o1_38.setValue({ years: 3 })
+        await sections.predictors.goto()
+        await sections.predictors.o1_30.setValue('No')
+        await sections.predictors.o1_29.setValue({ months: -1 })
+        await sections.predictors.o1_38.setValue({ years: 3 })
         await assessment.summarySheet.goto()
         await assessment.summarySheet.opdOverride.setValue('Yes')
         await assessment.summarySheet.opdOverrideReason.setValue('Testing')
@@ -43,10 +43,10 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
         const offender1 = await offender.createProbFromStandardOffender()
 
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-        await assessment.offendingInformation.populateMinimal()
-        await assessment.predictors.populateMinimal()
-        await assessment.sections2To13NoIssues({ populate6_11: 'No' })
-        await assessment.selfAssessmentForm.populateMinimal()
+        await sections.offendingInformation.populateMinimal()
+        await sections.predictors.populateMinimal()
+        await sections.sections2To13NoIssues({ populate6_11: 'No' })
+        await sections.selfAssessmentForm.populateMinimal()
 
         // Set to Medium risk to get countersigner
         await risk.populateWithSpecificRiskLevel('High')
@@ -70,10 +70,10 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
 
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-        await assessment.predictors.goto()
-        await assessment.predictors.o1_30.setValue('No')
-        await assessment.predictors.o1_29.setValue({ months: -1 })
-        await assessment.predictors.o1_38.setValue({ years: 3 })
+        await sections.predictors.goto()
+        await sections.predictors.o1_30.setValue('No')
+        await sections.predictors.o1_29.setValue({ months: -1 })
+        await sections.predictors.o1_38.setValue({ years: 3 })
         await assessment.summarySheet.goto()
         await assessment.summarySheet.opdOverride.setValue('Yes')
         await assessment.summarySheet.opdOverrideReason.setValue('Testing')

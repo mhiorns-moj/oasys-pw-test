@@ -9,12 +9,12 @@
 import { Page } from '@playwright/test'
 
 import { Element } from 'classes'
-import { Oasys, OasysDb, Assessment, SentencePlan } from 'fixtures'
+import { Oasys, OasysDb, Sections, SentencePlan } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
 import * as exampleTest from './exampleTest'
 import { Queries } from './queries'
-import { Predictors } from 'fixtures/assessment/pages/predictors'
+import { Predictors } from 'fixtures/sections/pages/predictors'
 
 
 export class San {
@@ -297,21 +297,21 @@ export class San {
      * Checks the floating menu to see if sections 2 to 13 and the self-assessment form are there or not, and checks for the SAN and SP sections.
      * Parameter is true for SAN mode, false for normal OASys mode (layer 3.1), the test fails if the menu is not as expected.
      */
-    async checkLayer3Menu(sanMode: boolean, assessment: Assessment, sentencePlan: SentencePlan) {
+    async checkLayer3Menu(sanMode: boolean, sections: Sections, sentencePlan: SentencePlan) {
 
-        await assessment.section2.checkMenuVisibility(!sanMode)
-        await assessment.section3.checkMenuVisibility(!sanMode)
-        await assessment.section4.checkMenuVisibility(!sanMode)
-        await assessment.section5.checkMenuVisibility(!sanMode)
-        await assessment.section6.checkMenuVisibility(!sanMode)
-        await assessment.section7.checkMenuVisibility(!sanMode)
-        await assessment.section8.checkMenuVisibility(!sanMode)
-        await assessment.section9.checkMenuVisibility(!sanMode)
-        await assessment.section10.checkMenuVisibility(!sanMode)
-        await assessment.section11.checkMenuVisibility(!sanMode)
-        await assessment.section12.checkMenuVisibility(!sanMode)
-        await assessment.section13.checkMenuVisibility(!sanMode)
-        await assessment.selfAssessmentForm.checkMenuVisibility(!sanMode)
+        await sections.section2.checkMenuVisibility(!sanMode)
+        await sections.section3.checkMenuVisibility(!sanMode)
+        await sections.section4.checkMenuVisibility(!sanMode)
+        await sections.section5.checkMenuVisibility(!sanMode)
+        await sections.section6.checkMenuVisibility(!sanMode)
+        await sections.section7.checkMenuVisibility(!sanMode)
+        await sections.section8.checkMenuVisibility(!sanMode)
+        await sections.section9.checkMenuVisibility(!sanMode)
+        await sections.section10.checkMenuVisibility(!sanMode)
+        await sections.section11.checkMenuVisibility(!sanMode)
+        await sections.section12.checkMenuVisibility(!sanMode)
+        await sections.section13.checkMenuVisibility(!sanMode)
+        await sections.selfAssessmentForm.checkMenuVisibility(!sanMode)
         await this.sanSections.checkMenuVisibility(sanMode)
         await sentencePlan.spService.sentencePlanService.checkMenuVisibility(true)
     }

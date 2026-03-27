@@ -4,7 +4,7 @@ import { test } from 'fixtures'
     New FEMALE Probation Offender in SAN Area - check functionality when say 'No' to cloning from an Historic OASys-SAN assessment.
  */
 
-test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessment, san, risk, sentencePlan, signing }) => {
+test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessment, sections, san, risk, sentencePlan, signing }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)
     const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefFortyNine' })
@@ -14,15 +14,15 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
     await sentencePlan.populateMinimal()
 
     // Complete section 1
-    await assessment.offendingInformation.populateMinimal()
+    await sections.offendingInformation.populateMinimal()
 
-    await assessment.predictors.goto()
-    await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -1 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({})
+    await sections.predictors.goto()
+    await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -1 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({})
 
     // Complete risk, sign and lock
     await risk.screeningNoRisks()
@@ -125,21 +125,21 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
 
     log(`Complete the 3.1 assessment and then fully sign and lock and countersign (if applicable) the 3.1 assessment.`)
 
-    await assessment.offendingInformation.goto()
-    await assessment.offendingInformation.count.setValue(1)
-    await assessment.predictors.goto()
-    await assessment.predictors.o1_32.setValue(3)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ days: -10 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({ months: 6 })
+    await sections.offendingInformation.goto()
+    await sections.offendingInformation.count.setValue(1)
+    await sections.predictors.goto()
+    await sections.predictors.o1_32.setValue(3)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ days: -10 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({ months: 6 })
 
-    await assessment.section2.goto()
-    await assessment.section2.briefOffenceDetails.checkValue('Offence description') // Confirms cloning from historic SAN
-    await assessment.section2.o2_14.setValue('No')
-    await assessment.sections2To13NoIssues()
+    await sections.section2.goto()
+    await sections.section2.briefOffenceDetails.checkValue('Offence description') // Confirms cloning from historic SAN
+    await sections.section2.o2_14.setValue('No')
+    await sections.sections2To13NoIssues()
 
-    await assessment.selfAssessmentForm.populateMinimal()
+    await sections.selfAssessmentForm.populateMinimal()
     await sentencePlan.populateMinimal()
     await signing.signAndLock()
 
@@ -277,7 +277,7 @@ test('SAN integration - test refs 49 and 42', async ({ oasys, offender, assessme
 
     log(`Complete the Fast Review assessment`, 'Test step')
 
-    await assessment.fastReview.populateNoChanges()
+    await sections.fastReview.populateNoChanges()
     await signing.signAndLock({ page: 'spService' })
 
     log(`Click on the <Create Assessment> button and go through the processing to land on the Create Assessment page - defaults POA to Fast Review

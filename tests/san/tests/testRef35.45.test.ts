@@ -6,7 +6,7 @@ import * as testData from '../data/testRef35'
     Includes Maturity Screening score
  */
 
-test('SAN integration - test refs 35 and 45', async ({ oasys, offender, assessment, signing, san, risk, sentencePlan }) => {
+test('SAN integration - test refs 35 and 45', async ({ oasys, offender, assessment, sections, signing, san, risk, sentencePlan }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)  // No countersigning for this test
     const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefThirtyFive' })
@@ -31,15 +31,15 @@ test('SAN integration - test refs 35 and 45', async ({ oasys, offender, assessme
     })
 
     // Complete section 1
-    await assessment.offendingInformation.populateMinimal()
+    await sections.offendingInformation.populateMinimal()
 
-    await assessment.predictors.goto(true)
-    await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -1 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({})
+    await sections.predictors.goto(true)
+    await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -1 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({})
 
     await risk.screeningNoRisks(true)
     await signing.signAndLock({ page: 'spService' })

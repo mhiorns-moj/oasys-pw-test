@@ -42,9 +42,9 @@ describe('Cloning test - standalone CSRP', () => {
             rsr.close.click()
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-            await assessment.predictors.goto()
-            await assessment.predictors.o1_32.checkValue(5)
-            await assessment.predictors.o1_40.checkValue(4)
+            await sections.predictors.goto()
+            await sections.predictors.o1_32.checkValue(5)
+            await sections.predictors.o1_40.checkValue(4)
 
             section2.goto()
             section2.o2_2Weapon.checkValue('Yes')

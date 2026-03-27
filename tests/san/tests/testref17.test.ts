@@ -1,7 +1,7 @@
 import { test } from 'fixtures'
 import * as testData from '../data/testRef17'
 
-test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment, san, signing, sentencePlan, risk, sns, tasks, oasysDb }) => {
+test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment, sections, san, signing, sentencePlan, risk, sns, tasks, oasysDb }) => {
 
     await oasys.login(oasys.users.probSanPso)
     const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefSeventeen', gender: 'Female' })
@@ -20,7 +20,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
         Complete Section 1 with a non-sexual offence and complete the predictors screen - RSR dynamic score can't be scored yet.`, 'TestStep')
 
     const pk1 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order' })
-    await san.checkLayer3Menu(true, assessment, sentencePlan)
+    await san.checkLayer3Menu(true, sections, sentencePlan)
 
     await san.queries.checkSanCreateAssessmentCall(pk1, null, null, oasys.users.probSanPso, oasys.users.probationSanCode, 'INITIAL')
     await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
@@ -30,18 +30,18 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
         SSP_PLAN_VERSION_NO: null,
     })
 
-    await assessment.offendingInformation.goto()
-    await assessment.offendingInformation.setValues({
+    await sections.offendingInformation.goto()
+    await sections.offendingInformation.setValues({
         offence: '030', subcode: '01', count: '1', offenceDate: oasysDateTime.oasysDateAsString({ months: -4 }),
         sentence: 'Fine', sentenceDate: oasysDateTime.oasysDateAsString({ months: -3 })
     })
-    await assessment.predictors.goto(true)
-    await assessment.predictors.dateFirstSanction.setValue({ years: -3 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -6 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({ months: -1 })
+    await sections.predictors.goto(true)
+    await sections.predictors.dateFirstSanction.setValue({ years: -3 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -6 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({ months: -1 })
 
     log(`Navigate out to the 'Strengths and Needs Sections' - complete the following questions in the SAN assessment that relate to Female OPD scoring.		
         The following set of SAN questions are for the FEMALE OPD score:	

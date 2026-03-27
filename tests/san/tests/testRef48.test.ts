@@ -6,7 +6,7 @@ import { test } from 'fixtures'
     Assessor creates a 3.2 assessment - does NOT get asked whether they wish to clone section 3 to 13 and sentence plan question (improved cloning)
  */
 
-test('SAN integration - test ref 48', async ({ oasys, offender, assessment, signing }) => {
+test('SAN integration - test ref 48', async ({ oasys, offender, assessment, sections, signing }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)
     const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefFortyEight' })
@@ -36,7 +36,7 @@ test('SAN integration - test ref 48', async ({ oasys, offender, assessment, sign
     await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
     // Check that the assessment has created without an additional prompt
-    await assessment.offenderInformation.checkCurrent()
+    await sections.offenderInformation.checkCurrent()
 
     await oasys.logout()
 })

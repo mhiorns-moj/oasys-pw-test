@@ -46,10 +46,10 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-            await assessment.predictors.goto()
-            await assessment.predictors.o1_29.setValue({ months: -1 })
-            await assessment.predictors.o1_30.setValue('No')
-            await assessment.predictors.o1_38.setValue({ years: 1 })
+            await sections.predictors.goto()
+            await sections.predictors.o1_29.setValue({ months: -1 })
+            await sections.predictors.o1_30.setValue('No')
+            await sections.predictors.o1_38.setValue({ years: 1 })
             const summarySheet = new oasys.Pages.Assessment.SummarySheet()
             summarySheet.goto().opdOverride.setValue('Yes')
             summarySheet.opdOverrideReason.setValue('Testing')

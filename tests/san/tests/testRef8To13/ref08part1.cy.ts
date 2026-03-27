@@ -65,7 +65,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                         Check the database, ensure the OASYS_SET record still have the new field 'SAN_ASSESSMENT_LINKED_IND' set to 'N' AND there is NO section associated to it called 'SAN'
                         Check that on the SNS_MESSAGE table there are records for OGRS, RSR and AssSumm`)
 
-                await assessment.offendingInformation.goto()
+                await sections.offendingInformation.goto()
                 offendingInformation.setValues({
                     offence: '020', subcode: '01', count: '1', offenceDate: oasysDateTime.oasysDateAsString({ months: -4 }), sentence: 'Fine',
                     sentenceDate: oasysDateTime.oasysDateAsString({ months: -3 })

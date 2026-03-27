@@ -26,7 +26,7 @@ describe('SAN integration - tests 39-40', () => {
             oasys.Db.getLatestSetPkByPnc(offender.pnc, 'result')
 
             // Complete section 1
-            await assessment.offendingInformation.goto()
+            await sections.offendingInformation.goto()
             offendingInformation.offence.setValue('030')
             offendingInformation.subcode.setValue('01')
             offendingInformation.count.setValue(1)
@@ -34,13 +34,13 @@ describe('SAN integration - tests 39-40', () => {
             offendingInformation.sentence.setValue('Fine')
             offendingInformation.sentenceDate.setValue({ months: -1 })
 
-            await assessment.predictors.goto(true)
-            await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-            await assessment.predictors.o1_32.setValue(2)
-            await assessment.predictors.o1_40.setValue(0)
-            await assessment.predictors.o1_29.setValue({ months: -1 })
-            await assessment.predictors.o1_30.setValue('No')
-            await assessment.predictors.o1_38.setValue({})
+            await sections.predictors.goto(true)
+            await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+            await sections.predictors.o1_32.setValue(2)
+            await sections.predictors.o1_40.setValue(0)
+            await sections.predictors.o1_29.setValue({ months: -1 })
+            await sections.predictors.o1_30.setValue('No')
+            await sections.predictors.o1_38.setValue({})
 
             await san.gotoSan()
             await san.populateSanSections('Merge test', testData.sanPopulation)

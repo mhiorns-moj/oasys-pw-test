@@ -15,25 +15,25 @@ describe('OGRS regression test ref 3', () => {
             await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
 
             const predictors = new oasys.Pages.Assessment.RoshaPredictors().goto()
-            await assessment.predictors.save.click() // generate a calculation
+            await sections.predictors.save.click() // generate a calculation
             oasys.Ogrs.checkOgrs4CalcsOffender(offender, 'ogrs')
 
             oasys.Populate.RoshaPages.RoshaPredictors.fullyPopulated()
             oasys.Populate.Rosh.screeningFullyPopulated({ layer: 'Layer 1V2' })
             oasys.Populate.Rosh.fullAnalysisFullyPopulated({ layer: 'Layer 1V2' })
 
-            await assessment.predictors.goto()
+            await sections.predictors.goto()
 
             oasys.Ogrs.checkOgrs4CalcsOffender(offender, 'ogrs')
             cy.get<Ogrs4CalcResult>('@ogrs').then((ogrs) => {
-                await assessment.predictors.arpText.checkValue(ogrs.arpText)
-                await assessment.predictors.vrpText.checkValue(ogrs.vrpText)
-                await assessment.predictors.svrpText.checkValue(ogrs.svrpText)
-                await assessment.predictors.dcSrpBand.checkValue(ogrs.dcSrpBand)
-                await assessment.predictors.iicSrpBand.checkValue(ogrs.iicSrpBand)
-                await assessment.predictors.csrpBand.checkValue(ogrs.csrpBand)
-                await assessment.predictors.csrpType.checkValue(ogrs.csrpType)
-                await assessment.predictors.csrpScore.checkValue(ogrs.csrpScore)
+                await sections.predictors.arpText.checkValue(ogrs.arpText)
+                await sections.predictors.vrpText.checkValue(ogrs.vrpText)
+                await sections.predictors.svrpText.checkValue(ogrs.svrpText)
+                await sections.predictors.dcSrpBand.checkValue(ogrs.dcSrpBand)
+                await sections.predictors.iicSrpBand.checkValue(ogrs.iicSrpBand)
+                await sections.predictors.csrpBand.checkValue(ogrs.csrpBand)
+                await sections.predictors.csrpType.checkValue(ogrs.csrpType)
+                await sections.predictors.csrpScore.checkValue(ogrs.csrpScore)
 
                 const roshSummary = new oasys.Pages.Rosh.RoshSummary().goto()
                 roshSummary.dcSrpBand.checkValue(ogrs.dcSrpBand)

@@ -4,7 +4,7 @@ import { test } from 'fixtures'
     New FEMALE Probation Offender in SAN Area - check functionality when say 'No' to cloning from an Historic OASys-SAN assessment.
  */
 
-test('SAN integration - test ref 14', async ({ oasys, offender, assessment, san, signing, sentencePlan, risk }) => {
+test('SAN integration - test ref 14', async ({ oasys, offender, assessment, sections, san, signing, sentencePlan, risk }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)
     const offender1 = await offender.createProbFromStandardOffender({ gender: 'Female', forename1: 'TestRefFourteen' })
@@ -21,15 +21,15 @@ test('SAN integration - test ref 14', async ({ oasys, offender, assessment, san,
             Fully sign and lock and countersign (if applicable) the 3.2 assessment.`, 'Test step')
 
     // Complete section 1
-    await assessment.offendingInformation.populateMinimal()
+    await sections.offendingInformation.populateMinimal()
 
-    await assessment.predictors.goto(true)
-    await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -1 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({})
+    await sections.predictors.goto(true)
+    await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -1 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({})
 
     await risk.screeningNoRisks()
     await risk.screeningSection5.goto()

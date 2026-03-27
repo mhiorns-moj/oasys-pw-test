@@ -2,7 +2,7 @@ import { test } from 'fixtures'
 import * as testData from '../data/testRef15'
 
 
-test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sentencePlan, san, risk, signing }) => {
+test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sections, sentencePlan, san, risk, signing }) => {
 
     await oasys.login(oasys.users.prisSanCAdm)
     const offender1 = await offender.createPrisFromStandardOffender({ forename1: 'TestRefFifteen' })
@@ -23,7 +23,7 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sent
 
     const pk1 = await assessment.createPris({ purposeOfAssessment: 'Start custody', selectAssessor: oasys.users.prisSanUnappr.lovLookup })
 
-    await san.checkLayer3Menu(true, assessment, sentencePlan)
+    await san.checkLayer3Menu(true, sections, sentencePlan)
 
     await san.queries.checkSanCreateAssessmentCall(pk1, null, null, oasys.users.prisSanCAdm, oasys.users.prisonSanCode, 'INITIAL')
     await san.queries.checkSanGetAssessmentCall(pk1, 0)
@@ -37,15 +37,15 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sent
 
     log(`Complete sections Case ID and Section 1 with a non-sexual offence`)
 
-    await assessment.offendingInformation.populateMinimal()
-    await assessment.predictors.goto()
-    await assessment.predictors.dateFirstSanction.setValue({ years: -3 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -6 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({ months: -1 })
-    await assessment.predictors.markCompleteAndCheck()
+    await sections.offendingInformation.populateMinimal()
+    await sections.predictors.goto()
+    await sections.predictors.dateFirstSanction.setValue({ years: -3 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -6 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({ months: -1 })
+    await sections.predictors.markCompleteAndCheck()
 
     log(`Navigate out to S&N section - check the OTL parameters (should go across as READ ONLY).  Check you cannot edit anything in the SAN Assessment
                     Return back to the OASys assessment.

@@ -1,6 +1,6 @@
 ﻿import { OasysPage, Element } from 'classes'
 import { SentencePlan } from './sentencePlan'
-import * as CommonTables from 'fixtures/assessment/commonTables'
+import * as CommonTables from 'classes/commonTables'
 
 export class IspSection5 extends SentencePlan {
 

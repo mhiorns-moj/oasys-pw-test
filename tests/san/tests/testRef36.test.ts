@@ -10,7 +10,7 @@ import * as testData from '../data/testRef36'
  * Check parameters (in particular PKs and versions) and cloning.  Does assessment 3 clone SAN content from 1 or 2????
  */
 
-test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sentencePlan, san, risk, signing, sns }) => {
+test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sections, sentencePlan, san, risk, signing, sns }) => {
 
     await oasys.login(oasys.users.probSanUnappr)
     const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefThirtySix', type: 'noEvent' })
@@ -26,21 +26,21 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sent
     await san.queries.checkSanGetAssessmentCall(pk1, 0)
 
     // Complete section 1
-    await assessment.offendingInformation.goto()
-    await assessment.offendingInformation.offence.setValue('030')
-    await assessment.offendingInformation.subcode.setValue('01')
-    await assessment.offendingInformation.count.setValue(1)
-    await assessment.offendingInformation.offenceDate.setValue({ months: -6 })
-    await assessment.offendingInformation.sentence.setValue('Fine')
-    await assessment.offendingInformation.sentenceDate.setValue({ months: -1 })
+    await sections.offendingInformation.goto()
+    await sections.offendingInformation.offence.setValue('030')
+    await sections.offendingInformation.subcode.setValue('01')
+    await sections.offendingInformation.count.setValue(1)
+    await sections.offendingInformation.offenceDate.setValue({ months: -6 })
+    await sections.offendingInformation.sentence.setValue('Fine')
+    await sections.offendingInformation.sentenceDate.setValue({ months: -1 })
 
-    await assessment.predictors.goto(true)
-    await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -1 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({})
+    await sections.predictors.goto(true)
+    await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -1 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({})
 
     await san.gotoSan()
     await san.queries.checkSanOtlCall(pk1, {

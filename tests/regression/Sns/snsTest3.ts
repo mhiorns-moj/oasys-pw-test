@@ -45,7 +45,7 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
             // First L1
             await oasys.history(offender)
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Basic (Layer 1)' })
-            await assessment.offendingInformation.goto()
+            await sections.offendingInformation.goto()
             offendingInformation.count.setValue(1)
             offendingInformation.offenceDate.setValue({ months: -9 })
             const additionalOffence = new oasys.Pages.Assessment.Other.AdditionalOffences().goto()

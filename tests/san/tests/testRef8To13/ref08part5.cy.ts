@@ -77,9 +77,9 @@ describe('SAN integration - test ref 08 part 5', () => {
 
                     await assessment.openLatest()
                     new oasys.Pages.Assessment.OffenderInformation().religion.checkStatus('readonly')
-                    await assessment.predictors.goto()
-                    await assessment.predictors.o1_32.checkStatus('readonly')
-                    await assessment.predictors.print.click()
+                    await sections.predictors.goto()
+                    await sections.predictors.o1_32.checkStatus('readonly')
+                    await sections.predictors.print.click()
                     const print = new oasys.Pages.Assessment.Other.PrintAssessment()
                     print.section2.checkStatus('notVisible')
                     print.section3.checkStatus('notVisible')

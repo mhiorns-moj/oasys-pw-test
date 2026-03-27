@@ -8,7 +8,7 @@ Test will check the reassigning of the WIP task - drop down only comprises of th
 Also incorporates check of Male OPD calculation AND Learning Screening Tool (data taken from the SAN assessment).
 */
 
-test('SAN integration - test ref 16', async ({ oasys, offender, assessment, tasks, san, risk }) => {
+test('SAN integration - test ref 16', async ({ oasys, offender, assessment, sections, tasks, san, risk }) => {
 
     await oasys.login(oasys.users.prisSanUnappr)
     const offender1 = await offender.createPrisFromStandardOffender({ forename1: 'TestRefSixteen' })
@@ -62,26 +62,26 @@ test('SAN integration - test ref 16', async ({ oasys, offender, assessment, task
         Navigate to the RoSH Summary screen and set 10.6 PUBLIC risk to 'High'
         Navigate back to Section 1 Predictors screen and answer the questions making sure 1.8 works out to be >18`, 'Test step')
 
-    await assessment.offendingInformation.goto()
-    await assessment.offendingInformation.setValues({
+    await sections.offendingInformation.goto()
+    await sections.offendingInformation.setValues({
         offence: '019', subcode: '08', count: '1', offenceDate: { months: -4 }
     })
     await risk.populateWithSpecificRiskLevel('Low')
     await risk.summary.r10_6PublicCommunity.setValue('High')
     await risk.summary.r10_6PublicCustody.setValue('High')
 
-    await assessment.predictors.goto(true)
-    await assessment.predictors.dateFirstSanction.setValue({ years: -3 })
-    await assessment.predictors.o1_32.setValue(1)
-    await assessment.predictors.o1_40.setValue(1)
-    await assessment.predictors.o1_29.setValue({ months: -6 })
-    await assessment.predictors.o1_44.setValue('No')
-    await assessment.predictors.o1_33.setValue({ months: -6 })
-    await assessment.predictors.o1_34.setValue(0)
-    await assessment.predictors.o1_45.setValue(0)
-    await assessment.predictors.o1_46.setValue(0)
-    await assessment.predictors.o1_37.setValue(0)
-    await assessment.predictors.o1_38.setValue({ months: -1 })
+    await sections.predictors.goto(true)
+    await sections.predictors.dateFirstSanction.setValue({ years: -3 })
+    await sections.predictors.o1_32.setValue(1)
+    await sections.predictors.o1_40.setValue(1)
+    await sections.predictors.o1_29.setValue({ months: -6 })
+    await sections.predictors.o1_44.setValue('No')
+    await sections.predictors.o1_33.setValue({ months: -6 })
+    await sections.predictors.o1_34.setValue(0)
+    await sections.predictors.o1_45.setValue(0)
+    await sections.predictors.o1_46.setValue(0)
+    await sections.predictors.o1_37.setValue(0)
+    await sections.predictors.o1_38.setValue({ months: -1 })
 
     log(`Navigate to the Summary Sheet screen - ensure that the OPD section has changed to 'This individual does not meet the criteria for the OPD pathway.'
         and the screen override field has defaulted to 'No'

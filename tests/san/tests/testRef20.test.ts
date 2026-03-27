@@ -7,7 +7,7 @@ import * as testData from '../data/testRef20'
     Countersigner rejects the signing - (check for NOD-950 in 6.51.release)
  */
 
-test('SAN integration - test ref 20', async ({ oasys, offender, assessment, signing, san, risk, sara, sentencePlan, sns }) => {
+test('SAN integration - test ref 20', async ({ oasys, offender, assessment, signing, sections, san, risk, sara, sentencePlan, sns }) => {
 
     await oasys.login(oasys.users.probSanPo)
     const offender1 = await offender.createProbFromStandardOffender({ type: 'sexual', forename1: 'TestRefTwenty' })
@@ -31,20 +31,20 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
     await san.queries.checkSanGetAssessmentCall(pk1, 0)
 
     // Complete section 1
-    await assessment.offendingInformation.populateMinimal()
+    await sections.offendingInformation.populateMinimal()
 
-    await assessment.predictors.goto(true)
-    await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -1 })
-    await assessment.predictors.o1_44.setValue('Yes')
-    await assessment.predictors.o1_33.setValue({ months: -6 })
-    await assessment.predictors.o1_34.setValue(1)
-    await assessment.predictors.o1_45.setValue(1)
-    await assessment.predictors.o1_46.setValue(1)
-    await assessment.predictors.o1_38.setValue({ months: -1 })
-    await assessment.predictors.o1_37.setValue(1)
+    await sections.predictors.goto(true)
+    await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -1 })
+    await sections.predictors.o1_44.setValue('Yes')
+    await sections.predictors.o1_33.setValue({ months: -6 })
+    await sections.predictors.o1_34.setValue(1)
+    await sections.predictors.o1_45.setValue(1)
+    await sections.predictors.o1_46.setValue(1)
+    await sections.predictors.o1_38.setValue({ months: -1 })
+    await sections.predictors.o1_37.setValue(1)
 
     await san.gotoSan()
     await san.queries.checkSanOtlCall(pk1, {

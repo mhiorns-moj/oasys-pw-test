@@ -7,7 +7,7 @@ import * as testData from '../data/testRef23'
     alcohol sections questions 9.1 and 9.2
  */
 
-test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessment, sentencePlan, san, risk, signing, sns }) => {
+test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessment, sections, sentencePlan, san, risk, signing, sns }) => {
 
     await oasys.login(oasys.users.probSanHeadPdu)  // No countersigning for this test
     const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefTwentyThree', gender: 'Not known' })
@@ -25,15 +25,15 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
     await san.populateSanSections('Test ref 23', testData.sanPopulation1, true)
     await san.returnToOASys()
 
-    await assessment.offendingInformation.populateMinimal()
+    await sections.offendingInformation.populateMinimal()
 
-    await assessment.predictors.goto()
-    await assessment.predictors.dateFirstSanction.setValue({ years: -2 })
-    await assessment.predictors.o1_32.setValue(2)
-    await assessment.predictors.o1_40.setValue(0)
-    await assessment.predictors.o1_29.setValue({ months: -1 })
-    await assessment.predictors.o1_30.setValue('No')
-    await assessment.predictors.o1_38.setValue({})
+    await sections.predictors.goto()
+    await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+    await sections.predictors.o1_32.setValue(2)
+    await sections.predictors.o1_40.setValue(0)
+    await sections.predictors.o1_29.setValue({ months: -1 })
+    await sections.predictors.o1_30.setValue('No')
+    await sections.predictors.o1_38.setValue({})
 
     await risk.screeningNoRisks(true)
 
@@ -66,8 +66,8 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
         OVP_2YEAR: null,
     })
 
-    await assessment.predictors.goto()
-    await assessment.predictors.rsrScore.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
+    await sections.predictors.goto()
+    await sections.predictors.rsrScore.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
 
     log(`Check that the Summary screen is showing the correct information for the Criminogenic Needs and threshold section and that in the Predictors Scores % 
         and Risk Category OGRS, OGP and OVP just show dashes, both OSP rows show N/A,  the RSR row shows N/A and then two dashes`, 'Test step')
