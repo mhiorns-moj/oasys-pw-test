@@ -185,7 +185,7 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
 
     await oasys.logout()
     await oasys.login(oasys.users.probSanHeadPdu)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
 
     await assessment.openLatest()
     await signing.gotoCountersignOverview('spService')

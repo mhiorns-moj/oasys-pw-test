@@ -303,7 +303,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
         Ensure the latest completed assessment shows an 'S&N/SSP' icon next to it
         Ensure the Offender record shows the new buttons called <Open S&N'> and <Open SPP> next to the <RSR> button`, 'Test step')
 
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await assessment.assessmentsTab.assessments.checkData([{ name: 'san', values: ['Includes Strengths and Needs / Sentence Plan Service'] }])
     await offender.offenderDetails.openSan.checkStatus('enabled')
     await offender.offenderDetails.openSp.checkStatus('enabled')

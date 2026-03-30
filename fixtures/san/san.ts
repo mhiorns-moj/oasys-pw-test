@@ -99,14 +99,12 @@ export class San {
      *   - label: the text label for the item to be checked
      *   - text: the text to check
      */
-    // async checkReadonlyText(label: string, value: string) {
+    async checkReadonlyText(label: string, value: string) {
 
-    //     cy.get('#main-content').then((container) => {
-    //         const div = container.find(`.govuk-summary-list__row:contains('${label}')`)
-    //         expect(div[0].innerHTML.search(value)).gt(0)
-    //         log(`Checked value for ${label}`)
-    //     })
-    // }
+        const count = await this.page.locator('#main-content').locator(`.govuk-summary-list__row:has-text('${label}')`).filter({ hasText: value }).count()
+        expect(count).toBeGreaterThan(0)
+        log(`Checked value for ${label}`)
+    }
 
     /**
      * Enter text in a date field.  Parameters are:

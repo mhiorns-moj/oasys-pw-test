@@ -150,7 +150,7 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
         Check that a new 'Assessment Work in Progress' task has been created`, 'Test step')
 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await assessment.openLatest()
 
     await assessment.rollBack()

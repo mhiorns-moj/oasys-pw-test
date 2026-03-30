@@ -3,6 +3,7 @@ import { Page } from '@playwright/test'
 import { Oasys, Cms, Offender, OasysDb, Sections, San, Risk, SentencePlan } from 'fixtures'
 import * as pages from './pages'
 import { BaseAssessmentPage } from 'classes'
+import { TaskManager } from 'fixtures/tasks/pages/taskManager'
 
 
 export class Assessment {
@@ -21,6 +22,7 @@ export class Assessment {
     readonly rfis = new pages.Rfis(this.page)
     private readonly markAssessmentHistoric = new pages.MarkAssessmentHistoric(this.page)
     readonly printAssessment = new pages.PrintAssessment(this.page)
+    readonly reverseDeletionPage = new pages.ReverseDeletion(this.page)
 
     readonly summarySheet = new pages.SummarySheet(this.page)
 
@@ -102,7 +104,7 @@ export class Assessment {
 
     async populateMinimal(params?: PopulateAssessmentParams) {
 
-        this.sections.populateMinimal(params)
+        await this.sections.populateMinimal(params)
 
         if (params?.layer == 'Layer 3V2') {
             await this.san.populateMinimal()
@@ -166,20 +168,20 @@ export class Assessment {
     /**
      * Reverses the deletion of an assessment or subassessment.  Optional comment (otherwise generic text is used)
      */
-    // async reverseDeletion(offender: OffenderDef, type: 'Assessment' | 'Basic Custody Screening' | 'Sub Assessment - SARA', assessment: string, comment?: string) {
+    async reverseDeletion(offender: OffenderDef, type: 'Assessment' | 'Basic Custody Screening' | 'Sub Assessment - SARA', assessment: string, comment?: string) {
 
-    //     const rev = new this.oasys.Pages.Admin.ReverseDeletion().goto()
-    //     rev.type.setValue(type)
-    //     rev.offenderSearch.setValue(offender.pnc)
-    //     cy.get('#P10_SIGNING_COMMENTS').click()  // Force refresh to show offender LOV
-    //     rev.offender.setValue(offender.surname)
-    //     rev.assessment.setValue(assessment)
-    //     rev.reason.setValue(comment ?? 'Reversing deletion')
-    //     rev.ok.click()
-    //     rev.ok.click()
-    //     new this.oasys.Pages.Tasks.TaskManager().checkCurrent()
-    //     log(`Reversed deletion for ${offender.pnc}, ${type}, ${assessment} `)
-    // }
+        await this.reverseDeletionPage.goto()
+        await this.reverseDeletionPage.type.setValue(type)
+        await this.reverseDeletionPage.offenderSearch.setValue(offender.pnc)
+        await this.page.locator('#P10_SIGNING_COMMENTS').click()  // Force refresh to show offender LOV
+        await this.reverseDeletionPage.offender.setValue(offender.surname)
+        await this.reverseDeletionPage.assessment.setValue(assessment)
+        await this.reverseDeletionPage.reason.setValue(comment ?? 'Reversing deletion')
+        await this.reverseDeletionPage.ok.click()
+        await this.reverseDeletionPage.ok.click()
+        await new TaskManager(this.page).checkCurrent()
+        log(`Reversed deletion for ${offender.pnc}, ${type}, ${assessment} `)
+    }
 
     /**
      * Roll back the assessment.  Assumes you are on an assessment page.
@@ -226,9 +228,9 @@ export class Assessment {
      */
     async lockIncomplete(pk?: number) {
 
-        this.page.on('dialog', dialog => {
+        this.page.once('dialog', async (dialog) => {
             expect(dialog.message()).toBe('Do you wish to lock the assessment as incomplete?')
-            dialog.accept()
+            await dialog.accept()
         })
 
         await this.oasys.clickButton('Lock Incomplete', true)

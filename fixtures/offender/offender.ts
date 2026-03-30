@@ -12,6 +12,7 @@ export class Offender {
 
     readonly offenderSearch = new pages.OffenderSearch(this.page)
     readonly offenderDetails = new pages.OffenderDetails(this.page)
+    readonly offenderManagementTab = new pages.OffenderManagementTab(this.page)
     readonly rfi = new pages.Rfi(this.page)
     readonly standaloneCsrp = new pages.StandaloneRsr(this.page)
     readonly lao = new pages.Lao(this.page)
@@ -20,21 +21,12 @@ export class Offender {
     /**
      * Create a probation offender using the details provided in an Offender type object.
      * 
-     * Any '#auto...' data items will be generated and updated in the object (without affecting the original instance of that object).
-     * A Cypress alias is required to allow the test to refer to the updated object to access the generated data.
+     * Any '#auto...' data items will be generated and updated in the object.
      * 
      * The object needs to include all mandatory items for a probation offender, but if there is no CRN property, a new one will be generated.
      * If there is a NOMIS ID this will be ignored.
      * 
      * Address lines 4 and 5 are automatically populated with the OASys version and test script name respectively.
-     * 
-     * The Cypress alias should be a string such as `offender1` but subsequent use requires the following code,
-     * where the values are only available within a `cy.get().then()` structure (note the `@` symbol):
-     * 
-     * > `cy.get('@offender1').then((result:object) => {`  
-     * > &nbsp;&nbsp;&nbsp;&nbsp;`let offender = result as lib.Offender`  
-     * > &nbsp;&nbsp;&nbsp;&nbsp;`log(offender.probationCrn)`  
-     * > `})`
      */
 
     getStandardOffenderDef(provider: Provider, params?: OffenderLibParams): OffenderDef {
@@ -72,13 +64,6 @@ export class Offender {
         await this.oasysDb.populateAutoData(offender)
         offender.dateOfBirth = oasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
-        // Delete the NOMIS Id if there is one to avoid attempting to populate it on the stub screen
-        let nomisId: string
-        if (offender.nomisId != undefined) {
-            nomisId = offender.nomisId
-            delete offender.nomisId
-        }
-
         await this.cms.createProbStub(offender)
 
         // Now create the offender record in OASys
@@ -92,11 +77,6 @@ export class Offender {
 
         log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', CRN: ${offender.probationCrn}, date of birth: ${offender.dateOfBirth}`)
 
-        // Reinstate the NOMIS ID on the offender object
-        if (nomisId != undefined) {
-            offender.nomisId = nomisId
-        }
-
         await this.addOffenderPk(offender)
         return offender
     }
@@ -104,20 +84,12 @@ export class Offender {
     /**
      * Create a prison offender using the details provided in an Offender type object.
      * 
-     * Any '#auto...' data items will be evaluated and updated in the object (without affecting the original instance of that object).
-     * A Cypress alias is required to allow the test to refer to the updated object to access the evaluated data.
+     * Any '#auto...' data items will be evaluated and updated in the object.
      * 
      * The object needs to include all mandatory items for a probation offender, but if there is no NOMISId property, a new one will be generated.
      * If there is a probation CRN this will be ignored.
      *  
      * Address lines 4 and 5 are automatically populated with the OASys version and test script name respectively.
-     * 
-     * The Cypress alias should be a string such as `offender1` but subsequent use requires the following code,
-     * where the values are only available within a `cy.get().then()` structure (note the `@` symbol):
-     * 
-     * > `cy.get<Offender>('@offender1').then((offender) => {`  
-     * > &nbsp;&nbsp;&nbsp;&nbsp;`log(offender.probationCrn)`  
-     * > `})`
      */
     async createPris(source: OffenderDef): Promise<OffenderDef> {
 
@@ -128,22 +100,10 @@ export class Offender {
         await this.oasysDb.populateAutoData(offender)
         offender.dateOfBirth = oasysDateTime.oasysDateAsString(offender.dateOfBirth) // Calculate date if a # value has been specified
 
-        // Delete the probation CRN if there is one to avoid attempting to populate it on the stub screen
-        let probationCrn: string
-        if (offender.probationCrn != undefined) {
-            probationCrn = offender.probationCrn
-            delete offender.probationCrn
-        }
-
         await this.cms.enterPrisonStubDetailsAndCreateReceptionEvent(offender)
         await this.searchAndSelectByNomisId(offender.nomisId, true)
 
         log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', NOMISId: ${offender.nomisId}, date of birth: ${offender.dateOfBirth}`, 'Offender')
-
-        // Reinstate the probation CRN on the offender object
-        if (probationCrn != undefined) {
-            offender.probationCrn = probationCrn
-        }
 
         await this.addOffenderPk(offender)
         return offender
@@ -211,26 +171,13 @@ export class Offender {
      *
      * Selects the first result if the search returns multiple rows.
      */
-    async searchAndSelect(alias: string): Promise<void>
+    async searchAndSelect(offender: OffenderDef): Promise<void>
     async searchAndSelect(data: PageData): Promise<void>
-    async searchAndSelect(p1: string | PageData) {
+    async searchAndSelect(p1: OffenderDef | PageData) {
 
-        if (typeof p1 == 'string') {
-
-            // cy.get<OffenderDef>(p1).then((offender) => {
-
-            //     if (offender.pnc != null) {
-            //         offenderSearchAndSelect({ pnc: offender.pnc })
-            //     }
-            //     else if (offender.probationCrn != null) {
-            //         offenderSearchAndSelect({ probationCrn: offender.probationCrn })
-            //     }
-            //     else if (offender.nomisId != null) {
-            //         offenderSearchAndSelect({ prisonNomisNumber: offender.nomisId })
-            //     }
-            // })
-        }
-        else {
+        if (p1['pnc']) {  // OffenderDef object
+            await this.searchAndSelectByPnc(p1['pnc'] as string)
+        } else {
             await this.offenderSearchAndSelect(p1)
         }
     }

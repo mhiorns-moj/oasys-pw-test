@@ -398,19 +398,15 @@ export class Queries {
 
 
 
-    // /**
-    //  * Confirms that there is nothing in cLog relating to any SAN API calls for the given PK
-    //  */
-    // async checkNoSanCall(pk: number) {
+    /**
+     * Confirms that there is nothing in cLog relating to any SAN API calls for the given PK
+     */
+    async checkNoSanCall(pk: number) {
 
-    //     const query = `select log_text from eor.clog where log_source like '%${pk}%' and log_text <> 'lv_previous_layer [LAYER3_1] || lv_current_layer [LAYER3_1]'`
-    //     await oasysDb.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         if (clogData && clogData.length > 0) {
-    //             throw new Error(`Found unexpected clog entries for PK ${pk}`)
-    //         }
-    //     })
-    // }
+        const query = `select log_text from eor.clog where log_source like '%${pk}%' and log_text <> 'lv_previous_layer [LAYER3_1] || lv_current_layer [LAYER3_1]'`
+        const clogData = await this.db.getData(query)
+        expect(clogData.length).toBe(0)
+    }
 
     // /**
     //  * Checks that the expected number of questions has a non-null answer for the given pk and OASys section.  Fails the test if there is a mismatch.
@@ -512,7 +508,7 @@ export class Queries {
                 }
             }
 
-            if (oasysSetSanData.spVersion) {
+            if (oasysSetSanData.spVersion && name != 'Delete' && name != 'Undelete') {
                 const spVersionNumber = findSpVersion(clogData[0][0])
                 if (spVersionNumber != oasysSetSanData.spVersion) {
                     log(`Expected SP version: ${oasysSetSanData.spVersion}, found ${spVersionNumber}`)
@@ -561,6 +557,32 @@ export class Queries {
     //         }
     //     })
     // }
+
+    async getOasysSetUpdateTimes(pk: number): Promise<string[]> {
+
+        const query = `select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}')
+                from eor.oasys_set where oasys_set_pk = ${pk}`
+        const data = await this.db.getData(query)
+        return data[0]
+    }
+
+    async getLatestQuestionUpdateTime(pk: number): Promise<string> {
+
+        // TODO added workaround for NOD-1xxx, ignore R2.2.2 as it might get created
+        const query = `select max(to_char(q.lastupd_date, '${oasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
+                where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
+                and q.ref_question_code <> 'R2.2.2'
+                and st.oasys_set_pk = ${pk}`
+        const data = await this.db.getData(query)
+        return data[0][0]
+    }
+
+    async getSanSectionsCount(pk: number): Promise<number> {
+
+        const query = `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} 
+                and section_status_elm = 'COMPLETE_LOCKED' and ref_section_code in ('SAN', 'SSP')`
+        return await this.db.selectCount(query)
+    }
 }
 
 

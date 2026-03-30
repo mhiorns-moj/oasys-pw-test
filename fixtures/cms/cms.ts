@@ -26,6 +26,8 @@ export class Cms {
         let stubDetails = JSON.parse(JSON.stringify(offender)) as PageData
         if (stubDetails.event) delete stubDetails.event
         if (stubDetails.aliases) delete stubDetails.aliases
+        if (stubDetails.nomisId) delete stubDetails.nomisId
+        if (stubDetails.pk) delete stubDetails.pk
 
         await this.maintainCmsStub.setValues(stubDetails, true)
         await this.maintainCmsStub.addressLine4.setValue(this.oasys.appConfig.currentVersion)
@@ -79,18 +81,13 @@ export class Cms {
 
     /**
      * Create a reception event for an offender.
-     * The offender should already have been created in Probation with a Cypress alias, this alias (beginning with '@') is used as the parameter for this function.
-     * 
-     * The offender should already have a NOMIS Id, but no stub record.
+     * The offender should already have been created in Probation, and have a NOMIS Id, but no stub record.
      */
-    // export function createReceptionEvent(offenderAlias: string) {
+    async createReceptionEvent(offender: OffenderDef) {
 
-    //     cy.get<OffenderDef>(offenderAlias).then((offender) => {
-
-    //         enterPrisonStubDetailsAndCreateReceptionEvent(offender)
-    //         log(`Created reception event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
-    //     })
-    // }
+        await this.enterPrisonStubDetailsAndCreateReceptionEvent(offender)
+        log(`Created reception event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
+    }
 
     /**
      * Enter prison offender details on the stub page, and trigger a reception event.
@@ -103,6 +100,8 @@ export class Cms {
         let stubDetails = JSON.parse(JSON.stringify(offender)) as PageData
         if (stubDetails.event) delete stubDetails.event
         if (stubDetails.aliases) delete stubDetails.aliases
+        if (stubDetails.probationCrn) delete stubDetails.probationCrn
+        if (stubDetails.pk) delete stubDetails.pk
 
         await this.maintainCmsStub.setValues(stubDetails, true)
         await this.maintainCmsStub.addressLine4.setValue(this.oasys.appConfig.currentVersion)
@@ -150,33 +149,18 @@ export class Cms {
     }
 
     /**
-     * Create a discharge event for an offender.
-     * The offender should already have been created with a Cypress alias, this alias (beginning with '@') is used as the parameter for this function.
-     * 
-     * Assumes that there is already a CMS stub record.
-     */
-    // export function createDischargeEvent(offenderAlias: string) {
-
-    //     cy.get<OffenderDef>(offenderAlias).then((offender) => {
-    //         createDischargeEventForOffenderObject(offender)
-    //     })
-    // }
-
-    /**
      * Open an existing offender on the CMS stub, and generate a discharge event.
      */
-    // export function createDischargeEventForOffenderObject(offender: OffenderDef) {
+    async createDischargeEvent(offender: OffenderDef) {
 
-    //     openStubByNomisId(offender.nomisId)
+        await this.openStubByNomisId(offender.nomisId)
 
-    //     const cms = new oasys.Pages.Stub.MaintainCmsStub()
-    //     cms.dischargeCode.setValue('END OF CUSTODY LICENCE')
-    //     cms.releaseEvent.click()
-    //     cy.contains('p', 'Are you sure you want to generate a release event for this stub?')
-    //     cy.get('#apexConfirmBtn').click()
+        await this.maintainCmsStub.dischargeCode.setValue('END OF CUSTODY LICENCE')
+        await this.maintainCmsStub.releaseEvent.click()
+        await this.page.locator('#apexConfirmBtn').click()
 
-    //     log(`Created discharge event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
-    // }
+        log(`Created discharge event for offender with PNC: ${offender.pnc}, surname: '${offender.surname}', NOMISId: ${offender.nomisId}`)
+    }
 
     /**
      * Navigates to the CMS stub, searches for a NOMIS Id and opens the stub record

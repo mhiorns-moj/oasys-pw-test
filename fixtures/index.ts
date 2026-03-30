@@ -179,11 +179,11 @@ export const sns = oasys.extend<{ oasys: Oasys, oasysDb: OasysDb, sns: Sns }>({
     }
 })
 
-export const sara = oasys.extend<{ oasys: Oasys, sara: Sara }>({
+export const sara = oasys.extend<{ oasysDb: OasysDb, sara: Sara }>({
 
-    sara: async ({ page, oasys }, use: Function) => {
+    sara: async ({ page, oasysDb }, use: Function) => {
 
-        const sara = new Sara(page, oasys)
+        const sara = new Sara(page, oasysDb)
         await use(sara)
     }
 })

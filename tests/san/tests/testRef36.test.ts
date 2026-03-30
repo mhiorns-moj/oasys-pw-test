@@ -91,7 +91,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
     await oasys.logout()
 
     await oasys.login(oasys.users.probSanUnappr)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
 
     log('Create second assessment and check SAN call', 'Test step')
 
@@ -138,7 +138,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
 
     // Delete the WIP assessment
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await assessment.deleteLatest()
     await san.queries.checkSanDeleteCall(pk2, oasys.users.admin)
     await oasys.logout()
@@ -146,7 +146,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
     log('Create third assessment and check SAN call and OASYS_SET', 'Test step')
 
     await oasys.login(oasys.users.probSanUnappr)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
 
     const pk3 = await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 

@@ -6,7 +6,7 @@ export class ReverseDeletion extends OasysPage {
     title = 'Reverse Deletion'
     menu: Menu = { type: 'Main', level1: 'Admin', level2: 'Reverse Deletions' }
 
-    type = new Element.Select<'Assessment' | 'Basic Custody Screening' | 'INTBDTTO' | 'Offender' | 'Sub Assessment - RM2000' | 'Sub Assessment - SARA'>('#P10_ACTION')
+    type = new Element.Select<'Assessment' | 'Basic Custody Screening' | 'INTBDTTO' | 'Offender' | 'Sub Assessment - RM2000' | 'Sub Assessment - SARA'>(this.page, '#P10_ACTION')
     offenderSearch = new Element.Textbox(this.page, '#P10_OFFENDER_SEARCH')
     offender = new Element.Lov(this.page, '#P10_OFFENDER_LABEL')
     assessment = new Element.Lov(this.page, '#P10_ASSESSMENT_LABEL')

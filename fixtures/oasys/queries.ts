@@ -245,32 +245,30 @@ export class Queries {
     /**
      * Checks that the given OASYS_SET pk is deleted (i.e. deleted_date is not null)
      */
-    // async checkDeleted(pk: number) {
+    async checkDeleted(pk: number) {
 
-    //     checkIfDeleted(pk, true)
-    // }
+        await this.checkIfDeleted(pk, true)
+    }
 
     /**
      * Checks that the given OASYS_SET pk is NOT deleted (i.e. deleted_date is null)
      */
-    // async checkNotDeleted(pk: number) {
+    async checkNotDeleted(pk: number) {
 
-    //     checkIfDeleted(pk, false)
-    // }
+        await this.checkIfDeleted(pk, false)
+    }
 
-    // async checkIfDeleted(pk: number, expectDeleted: boolean) {
+    async checkIfDeleted(pk: number, expectDeleted: boolean) {
 
-    //     this.await oasysDb.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`, 'data')
-    //     cy.get<string[][]>('@data').then((data) => {
-    //         if (expectDeleted) {
-    //             expect(data[0][0]).to.not.be.null
-    //             log(`Checked that assessment ${pk} has been deleted`)
-    //         } else {
-    //             expect(data[0][0]).to.be.null
-    //             log(`Checked that assessment ${pk} is NOT deleted`)
-    //         }
-    //     })
-    // }
+        const data = await this.oasysDb.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`)
+        if (expectDeleted) {
+            expect(data[0][0]).not.toBeNull()
+            log(`Checked that assessment ${pk} has been deleted`)
+        } else {
+            expect(data[0][0]).toBeNull()
+            log(`Checked that assessment ${pk} is NOT deleted`)
+        }
+    }
 
 
     /**
@@ -288,52 +286,37 @@ export class Queries {
         }
     }
 
-    // /**
-    //  * Checks the value of a specified assessment question - by assessmentPk, section ref and question ref.
-    //  *
-    //  * An optional failedAlias parameter can be provided to return a true/false failure status.  If this is not provided, the test will halt on failure.
-    //  * 
-    //  * If used, the alias should already have been created with a boolean value, with the name passed without the @ symbol.
-    //  * Its value will be set to true in the case of failure, but left unchanged if the test passes.
-    //  * If logText is provided, pushes failure details into the array rather than reporting all passes and failures.
-    //  */
-    // async checkSingleAnswer(assessmentPk: number, section: string, questionRef: string, answerType: AnswerType, expectedResult: string,
-    //     failedAlias: string = null, logText: string[] = null, testCase: number = null) {
+    /**
+     * Checks the value of a specified assessment question - by assessmentPk, section ref and question ref.
+     *
+     * An optional failedAlias parameter can be provided to return a true/false failure status.  If this is not provided, the test will halt on failure.
+     * 
+     * If used, the alias should already have been created with a boolean value, with the name passed without the @ symbol.
+     * Its value will be set to true in the case of failure, but left unchanged if the test passes.
+     * If logText is provided, pushes failure details into the array rather than reporting all passes and failures.
+     */
+    async checkSingleAnswer(assessmentPk: number, section: string, questionRef: string, answerType: AnswerType, expectedResult: string,
+        logText: string[] = null, testCase: number = null): Promise<boolean> {
 
-    //     const answerSelect = answerType == 'refAnswer' ? 'a.ref_answer_code' : answerType == 'freeFormat' ? 'q.free_format_answer' : 'q.additional_note'
-    //     const query = `select ${answerSelect} from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
-    //                 where st.oasys_set_pk = s.oasys_set_pk
-    //                 and s.oasys_section_pk = q.oasys_section_pk
-    //                 and q.oasys_question_pk = a.oasys_question_pk(+)
-    //                 and s.ref_section_code = '${section}'
-    //                 and q.ref_question_code = '${questionRef}'
-    //                 and st.oasys_set_pk = ${assessmentPk}`
+        const answerSelect = answerType == 'refAnswer' ? 'a.ref_answer_code' : answerType == 'freeFormat' ? 'q.free_format_answer' : 'q.additional_note'
+        const query = `select ${answerSelect} from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
+                    where st.oasys_set_pk = s.oasys_set_pk
+                    and s.oasys_section_pk = q.oasys_section_pk
+                    and q.oasys_question_pk = a.oasys_question_pk(+)
+                    and s.ref_section_code = '${section}'
+                    and q.ref_question_code = '${questionRef}'
+                    and st.oasys_set_pk = ${assessmentPk}`
 
-    //     cy.task('getData', query).then((result: DbResponse) => {
-    //         if (result.error != null) { // database error
-    //             throw new Error(result.error)
-    //         } else {
-    //             const data = result.data as string[][]
-    //             const actualResult = data.length == 0 ? '' : data[0][0]
-    //             const failureMessage = actualResult == expectedResult ? '' : ' *** FAILED ***'
-    //             if (logText == null) {
-    //                 log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
-    //             } else if (actualResult != expectedResult) {
-    //                 logText.push(`Test case ${testCase}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
-    //             }
-    //             if (failedAlias == null) {
-    //                 expect(actualResult).to.equal(expectedResult)
-    //             } else {
-    //                 cy.get<boolean>(`@${failedAlias}`).then((aliasValue) => {
-    //                     const newValue = actualResult == expectedResult ? aliasValue : true
-    //                     cy.wrap(newValue).as(failedAlias)
-    //                 })
-    //             }
-    //         }
-    //     })
-
-    // }
-
+        const data = await this.oasysDb.getData(query)
+        const actualResult = data.length == 0 ? '' : data[0][0]
+        const failureMessage = actualResult == expectedResult ? '' : ' *** FAILED ***'
+        if (logText == null) {
+            log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
+        } else if (actualResult != expectedResult) {
+            logText.push(`Test case ${testCase}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
+        }
+        return actualResult != expectedResult
+    }
 
 }
 

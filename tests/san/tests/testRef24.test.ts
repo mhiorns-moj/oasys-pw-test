@@ -8,7 +8,7 @@ test('SAN integration - test ref 24', async ({ oasys, offender, assessment, sect
     await oasys.logout()
 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await offender.setLaoReader(oasys.users.probSanHeadPdu)
     await oasys.logout()
 
@@ -18,7 +18,7 @@ test('SAN integration - test ref 24', async ({ oasys, offender, assessment, sect
         At this point there is NO button on the banner for 'Open S&N'
         At this point there is NO button on the banner for 'Open SP'`, 'Test step')
 
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await offender.offenderDetails.pnc.checkStatus('enabled')
     await offender.offenderDetails.openSan.checkStatus('notVisible')
     await offender.offenderDetails.openSp.checkStatus('notVisible')
@@ -81,7 +81,7 @@ test('SAN integration - test ref 24', async ({ oasys, offender, assessment, sect
         Log out`, 'Test step')
 
     await oasys.login(oasys.users.probSanUnappr)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
 
     await offender.offenderDetails.pnc.checkStatus('readonly')
     await offender.offenderDetails.assessmentsTab.checkStatus('notVisible')
@@ -95,7 +95,7 @@ test('SAN integration - test ref 24', async ({ oasys, offender, assessment, sect
         The only buttons on the offender banner is <RFI> and <Close>.  There are NO buttons for 'Open S&N' or 'Open SP'`, 'Test step')
 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await offender.offenderDetails.pnc.checkStatus('readonly')
     await offender.offenderDetails.assessmentsTab.checkStatus('notVisible')
     await offender.offenderDetails.createAssessment.checkStatus('notVisible')

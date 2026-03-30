@@ -14,7 +14,7 @@ describe('SAN integration - test ref 21 part 1', () => {
             const offender1 = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probHeadPdu)
-            await offender.searchAndSelectByPnc(offender1.pnc)
+            await offender.searchAndSelect(offender1)
             // new oasys.Pages.Offender.OffenderDetails().pnc.setValue('UNKNOWN PNC')
 
             // Create assessment

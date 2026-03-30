@@ -102,7 +102,7 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sect
 
     await oasys.logout()
     await oasys.login(oasys.users.prisSanUnappr)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await assessment.openLatest()
 
 
@@ -173,7 +173,7 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sect
 
 
     await oasys.login(oasys.users.prisSanPom)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await assessment.openLatest()
 
     log(`Countersign the assessment - Check that the countersigning option NO LONGER include 'Send for sentence board comments' 
@@ -191,7 +191,7 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sect
         OASys-SAN assessment now in read only mode - Print the whole of the assessment.  Ensure the printout is correct to the screens.`, 'Test step')
 
     await oasys.login(oasys.users.prisSanHomds)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await assessment.openLatest()
     await signing.countersign({ page: 'spService', comment: 'Countersigning test ref 15 second time' })
 

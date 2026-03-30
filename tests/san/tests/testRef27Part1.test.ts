@@ -1,7 +1,7 @@
 import { test } from 'fixtures'
 import * as testData from '../data/testRef27'
 
-test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessment, sections, san, sns, signing, sentencePlan, risk }) => {
+test('SAN integration - test ref 27 part 1', async ({ oasys, offender, assessment, san, sns, sentencePlan }) => {
 
     log(`Create an offender whose latest assessment is a WIP OASys-SAN assessment without a SARA.
         ALL the SAN data has been validated, sentence plan has been agreed.`, 'Test step')
@@ -23,6 +23,7 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
         Assessment now showing as locked incomplete
         Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`, 'Test step')
 
+    await san.queries.getSanApiTimeAndCheckDbValues(pk1, 'Y', null)
     await oasys.clickButton('Close')
     await assessment.lockIncomplete()
 
@@ -31,19 +32,18 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
         Ensure an 'AssSumm' SNS Message has been created containing a URL link for 'asssummsan'`, 'Test step')
 
-    await san.queries.getSanApiTimeAndCheckDbValues(pk1, 'Y', null)
     await san.queries.checkSanLockIncompleteCall(pk1, oasys.users.probSanUnappr)
 
-    const part1InitialData = await oasysDb.getData(setDataQuery(pk1))
-    const part1LastUpdFromSan = oasysDateTime.stringToTimestamp(part1InitialData[0][0])
-    const part1LastUpdDate = oasysDateTime.stringToTimestamp(part1InitialData[0][1])
+    const part1InitialData = await san.queries.getOasysSetUpdateTimes(pk1)
+    const part1LastUpdFromSan = oasysDateTime.stringToTimestamp(part1InitialData[0])
+    const part1LastUpdDate = oasysDateTime.stringToTimestamp(part1InitialData[1])
 
-    const part1SectionCount = await oasysDb.selectCount(sectionQuery(pk1))
+    const part1SectionCount = await san.queries.getSanSectionsCount(pk1)
     expect(part1SectionCount).toBe(2)
 
     await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])
 
-    const part1Questions1 = await oasysDb.getData(questionsQuery(pk1))
+    const part1Questions1 = await san.queries.getLatestQuestionUpdateTime(pk1)
 
     log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen
         Click on the 'Open Strengths and Needs' button
@@ -65,13 +65,13 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
     log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
         and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`, 'Test step')
 
-    const part1Questions2 = oasysDb.getData(questionsQuery(pk1))
-    const part1UpdatedSetData = await oasysDb.getData(setDataQuery(pk1))
+    const part1Questions2 = await san.queries.getLatestQuestionUpdateTime(pk1)
+    const part1UpdatedSetData = await san.queries.getOasysSetUpdateTimes(pk1)
 
-    const part1LatestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(part1Questions1[0][0])
-    const part1LatestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(part1Questions2[0][0])
-    const part1LastUpdFromSan2 = oasysDateTime.stringToTimestamp(part1UpdatedSetData[0][0])
-    const part1LastUpdDate2 = oasysDateTime.stringToTimestamp(part1UpdatedSetData[0][1])
+    const part1LatestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(part1Questions1)
+    const part1LatestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(part1Questions2)
+    const part1LastUpdFromSan2 = oasysDateTime.stringToTimestamp(part1UpdatedSetData[0])
+    const part1LastUpdDate2 = oasysDateTime.stringToTimestamp(part1UpdatedSetData[1])
 
     expect(oasysDateTime.timestampDiff(part1LatestQuestionUpdDate1, part1LatestQuestionUpdDate2)).toBeLessThanOrEqual(0)
     expect(oasysDateTime.timestampDiff(part1LastUpdFromSan, part1LastUpdFromSan2)).toBeLessThanOrEqual(0)
@@ -83,7 +83,7 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
 
     await oasys.logout()
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
     await assessment.openLatest()
     await assessment.rollBack('Test 27 part 1')
     await san.queries.checkSanRollbackCall(pk1, oasys.users.admin)
@@ -101,7 +101,7 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
         The SAN data is unvalidated and the sentence plan is NOT agreed`)
 
     await oasys.login(oasys.users.probSanUnappr)
-    await offender.searchAndSelectByPnc(offender1.pnc)
+    await offender.searchAndSelect(offender1)
 
     const pk2 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
@@ -126,6 +126,7 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
         Assessment now showing as locked incomplete
         Make a note of the date and time in the OASYS_SET field 'LASTUPD_DATE'`, 'Test step')
 
+    await san.queries.getSanApiTimeAndCheckDbValues(pk2, 'Y', null)
     await assessment.lockIncomplete()
 
     log(`A Lock API has been sent to the SAN Service - parameters of OASYS_SET_PK, user ID and name - a 200 response has been received back
@@ -133,17 +134,16 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`, 'Test step')
 
-    await san.queries.getSanApiTimeAndCheckDbValues(pk2, 'Y', null)
     await san.queries.checkSanLockIncompleteCall(pk2, oasys.users.probSanUnappr)
 
-    const part2InitialData = await oasysDb.getData(setDataQuery(pk2))
-    const part2Questions1 = await oasysDb.getData(questionsQuery(pk2))
+    const part2InitialData = await san.queries.getOasysSetUpdateTimes(pk2)
+    const part2Questions1 = await san.queries.getLatestQuestionUpdateTime(pk2)
 
-    const part2LastUpdFromSan1 = oasysDateTime.stringToTimestamp(part2InitialData[0][0])
-    const part2LastUpdDate1 = oasysDateTime.stringToTimestamp(part2InitialData[0][1])
-    const part2LatestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(part2Questions1[0][0])
+    const part2LastUpdFromSan1 = oasysDateTime.stringToTimestamp(part2InitialData[0])
+    const part2LastUpdDate1 = oasysDateTime.stringToTimestamp(part2InitialData[1])
+    const part2LatestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(part2Questions1)
 
-    const sectionCount2 = await oasysDb.selectCount(sectionQuery(pk2))
+    const sectionCount2 = await san.queries.getSanSectionsCount(pk2)
     expect(sectionCount2).toBe(2)
     await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])
 
@@ -167,12 +167,12 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
     log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
         and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`, 'Test step')
 
-    const part2Questions2 = await oasysDb.getData(questionsQuery(pk2))
-    const part2UpdatedSetData = await oasysDb.getData(setDataQuery(pk2))
+    const part2Questions2 = await san.queries.getLatestQuestionUpdateTime(pk2)
+    const part2UpdatedSetData = await san.queries.getOasysSetUpdateTimes(pk2)
 
-    const part2LatestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(part2Questions2[0][0])
-    const part2LastUpdFromSan2 = oasysDateTime.stringToTimestamp(part2UpdatedSetData[0][0])
-    const part2LastUpdDate2 = oasysDateTime.stringToTimestamp(part2UpdatedSetData[0][1])
+    const part2LatestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(part2Questions2)
+    const part2LastUpdFromSan2 = oasysDateTime.stringToTimestamp(part2UpdatedSetData[0])
+    const part2LastUpdDate2 = oasysDateTime.stringToTimestamp(part2UpdatedSetData[1])
 
     expect(oasysDateTime.timestampDiff(part2LatestQuestionUpdDate1, part2LatestQuestionUpdDate2)).toBeLessThanOrEqual(0)
     expect(oasysDateTime.timestampDiff(part2LastUpdFromSan1, part2LastUpdFromSan2)).toBeLessThanOrEqual(0)
@@ -186,10 +186,11 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
     const pk3 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
     await san.gotoSan()
-    await san.populateSanSections('Test 27 part 3 Complete SAN', testData.part3CompleteSan)
+    await san.populateSanSections('Test 27 part 3 Complete SAN', testData.part3CompleteSan, true)
     await san.returnToOASys()
     await oasys.logout()
 
+    await san.queries.getSanApiTimeAndCheckDbValues(pk3, 'Y', pk2)
     log(`Log in as a user in a different NON SAN PILOT probation area.  
         Search for and open up the Offender record in the SAN Pilot probation area - will currently have 'boilerplate' access
         Click on the <Create Assessment> button - shown 'This offender is currently controlled by….' message
@@ -209,17 +210,16 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
         Ensure the SAN section and the SSP section have both been set to 'COMPLETE_LOCKED'
         Ensure an 'AssSumm' SNS Message has been created containing a ULR link for 'asssummsan'`, 'Test step')
 
-    await san.queries.getSanApiTimeAndCheckDbValues(pk3, 'Y', pk2)
     await san.queries.checkSanLockIncompleteCall(pk3, oasys.users.probHeadPdu)
 
-    const part3InitialData = await oasysDb.getData(setDataQuery(pk3))
-    const part3Questions1 = await oasysDb.getData(questionsQuery(pk3))
+    const part3InitialData = await san.queries.getOasysSetUpdateTimes(pk3)
+    const part3Questions1 = await san.queries.getLatestQuestionUpdateTime(pk3)
 
-    const part3LastUpdFromSan1 = oasysDateTime.stringToTimestamp(part3InitialData[0][0])
-    const part3LastUpdDate1 = oasysDateTime.stringToTimestamp(part3InitialData[0][1])
-    const part3LatestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(part3Questions1[0][0])
+    const part3LastUpdFromSan1 = oasysDateTime.stringToTimestamp(part3InitialData[0])
+    const part3LastUpdDate1 = oasysDateTime.stringToTimestamp(part3InitialData[1])
+    const part3LatestQuestionUpdDate1 = oasysDateTime.stringToTimestamp(part3Questions1)
 
-    const part3Sections = await oasysDb.selectCount(sectionQuery(pk3))
+    const part3Sections = await san.queries.getSanSectionsCount(pk3)
     expect(part3Sections).toBe(2)
 
     await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])
@@ -248,12 +248,12 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
     log(`Check that NONE of the OASys-SAN assessment data has been updated - look at the last update dates in question and answers
         and also on the OASYS_SET record and ensure they are NOT after the date and time noted above`, 'Test step')
 
-    const part3Questions2 = await oasysDb.getData(questionsQuery(pk3))
-    const part3UpdatedSetdata = await oasysDb.getData(setDataQuery(pk3))
+    const part3Questions2 = await san.queries.getLatestQuestionUpdateTime(pk3)
+    const part3UpdatedSetdata = await san.queries.getOasysSetUpdateTimes(pk3)
 
-    const part3LatestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(part3Questions2[0][0])
-    const part3LastUpdFromSan2 = oasysDateTime.stringToTimestamp(part3UpdatedSetdata[0][0])
-    const part3LastUpdDate2 = oasysDateTime.stringToTimestamp(part3UpdatedSetdata[0][1])
+    const part3LatestQuestionUpdDate2 = oasysDateTime.stringToTimestamp(part3Questions2)
+    const part3LastUpdFromSan2 = oasysDateTime.stringToTimestamp(part3UpdatedSetdata[0])
+    const part3LastUpdDate2 = oasysDateTime.stringToTimestamp(part3UpdatedSetdata[1])
 
     expect(oasysDateTime.timestampDiff(part3LatestQuestionUpdDate1, part3LatestQuestionUpdDate2)).toBeLessThanOrEqual(0)
     expect(oasysDateTime.timestampDiff(part3LastUpdFromSan1, part3LastUpdFromSan2)).toBeLessThanOrEqual(0)
@@ -261,24 +261,3 @@ test('SAN integration - test ref 27', async ({ oasys, oasysDb, offender, assessm
 
     await oasys.logout()
 })
-
-function setDataQuery(pk: number): string {
-
-    return `select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}')
-                from eor.oasys_set where oasys_set_pk = ${pk}`
-}
-
-function questionsQuery(pk: number): string {
-
-    // TODO added workaround for NOD-1xxx, ignore R2.2.2 as it might get created
-    return `select max(to_char(q.lastupd_date, '${oasysDateTime.oracleTimestampFormat}')) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
-                where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
-                and q.ref_question_code <> 'R2.2.2'
-                and st.oasys_set_pk = ${pk}`
-}
-
-function sectionQuery(pk: number): string {
-
-    return `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} 
-                and section_status_elm = 'COMPLETE_LOCKED' and ref_section_code in ('SAN', 'SSP')`
-}

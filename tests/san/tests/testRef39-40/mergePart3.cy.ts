@@ -22,7 +22,7 @@ describe('SAN integration - tests 39-40', () => {
                 await oasysDb.getAllSetPksByProbationCrn(offender1.probationCrn, 'oldPksOff1')
                 await oasysDb.getAllSetPksByProbationCrn(offender2.probationCrn, 'oldPksOff2')
                 await oasys.login(oasys.users.probSanHeadPdu)
-                await offender.searchAndSelectByPnc(offender1.pnc)
+                await offender.searchAndSelect(offender1)
 
                 // Set the PNC to trigger a merge
                 const offenderDetails = new oasys.Pages.Offender.OffenderDetails()
