@@ -5,9 +5,9 @@ export class CreatePsr extends OasysPage {
     name = 'CreatePSR'
     menu: Menu = { type: 'Floating', level1: 'Pre-Sentence Report' }
 
-    dateReportRequested = new Element.Textbox<OasysDate>('#P100_DATE_REPORT_REQUESTED')
-    dateReportRequired = new Element.Textbox<OasysDate>('#P100_DATE_REPORT_REQUIRED')
-    sentenceDate = new Element.Textbox<OasysDate>('#P100_SENTENCE_DATE')
+    dateReportRequested = new Element.Textbox<OasysDate>(this.page, '#P100_DATE_REPORT_REQUESTED', true)
+    dateReportRequired = new Element.Textbox<OasysDate>(this.page, '#P100_DATE_REPORT_REQUIRED', true)
+    sentenceDate = new Element.Textbox<OasysDate>(this.page, '#P100_SENTENCE_DATE', true)
     proximity = new Element.Select(this.page, '#P100_COURT_PROXIMITY')
     courtName = new Element.Lov(this.page, '#P100_PSR_COURT_LABEL')
     courtType = new Element.Textbox(this.page, '#P100_COURT_TYPE')

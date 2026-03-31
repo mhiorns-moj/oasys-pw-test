@@ -1,7 +1,7 @@
 import { test } from 'fixtures'
 import * as testData from '../data/testRef29'
 
-test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, assessment, san, sections, sara, risk, sentencePlan, sns }) => {
+test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, assessment, san, sections, sara, risk, sentencePlan }) => {
 
     /**
         Check 'Soft Deleting' OASys-SAN assessments in various states sends a notification to the SAN Service

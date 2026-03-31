@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra'
 
-import { Oasys, Offender, Assessment, San } from 'fixtures'
+import { Oasys, Offender, Assessment, Sections, San } from 'fixtures'
 
 
 /**
@@ -9,7 +9,7 @@ import { Oasys, Offender, Assessment, San } from 'fixtures'
 
 export const mappingTestOffenderFile = 'tests/data/local/mappingTestsOffender.txt'
 
-export async function mappingTest(oasys: Oasys, offender: Offender, assessment: Assessment, san: San, script: SanScript, reset130: boolean = false) {
+export async function mappingTest(oasys: Oasys, offender: Offender, assessment: Assessment, sections: Sections, san: San, script: SanScript, reset130: boolean = false) {
 
     const offenderDetails = await fs.readFile(mappingTestOffenderFile)
     const mappingTestOffender = JSON.parse(offenderDetails.toString()) as OffenderDef
@@ -24,7 +24,7 @@ export async function mappingTest(oasys: Oasys, offender: Offender, assessment: 
 
     const assessmentPk = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-    const failed = await san.runScript(assessmentPk, script, reset130, assessment.predictors)
+    const failed = await san.runScript(assessmentPk, script, reset130, sections.predictors)
     expect(failed).toBeFalsy()
 
     await oasys.logout()

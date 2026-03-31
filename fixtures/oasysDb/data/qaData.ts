@@ -1,5 +1,3 @@
-import { jsonString, stringToFloat, stringToInt } from 'lib/utils'
-
 export class QaData {
 
     constructor(qa: string[][]) {
@@ -24,13 +22,13 @@ export class QaData {
                     this[question] = q[1]
                     break
                 case 'textarea':
-                    this[question] = jsonString(q[2], { remove002: true, removeFf: true })
+                    this[question] = utils.jsonString(q[2], { remove002: true, removeFf: true })
                     break
                 case 'integer':
-                    this[question] = stringToInt(q[1])
+                    this[question] = utils.stringToInt(q[1])
                     break
                 case 'float':
-                    this[question] = stringToFloat(q[1])
+                    this[question] = utils.stringToFloat(q[1])
                     break
                 case 'checkbox':
                     if (q[3] != null) {

@@ -7,7 +7,7 @@ export class AmendRoshaDate extends OasysPage {
 
     save = new Element.Button(this.page, 'Save')
     close = new Element.Button(this.page, 'Close')
-    o1_38 = new Element.Textbox<OasysDate>('#P3_DATE_IN_COMMUNITY')
+    o1_38 = new Element.Textbox<OasysDate>(this.page, '#P3_DATE_IN_COMMUNITY', true)
     auditText = new Element.Textbox(this.page, '#P3_QU_1_38_T')
     rsrScore = new Element.Textbox(this.page, '#P3_RSR')
 }

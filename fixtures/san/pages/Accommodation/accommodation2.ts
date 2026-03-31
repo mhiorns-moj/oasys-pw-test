@@ -6,10 +6,10 @@ export class Accommodation2 extends BaseSanEditPage {
     name = 'Accommodation2'
     title = 'Accommodation - Strengths and Needs'
 
-    livingWith = new Element.CheckboxGroup<'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'>('#living_with', ['family', 'friends', 'partner', 'child', 'other', 'unknown', '-', 'alone'])
-    locationSuitable = new Element.Radiogroup<'yes' | 'no'>('#suitable_housing_location', ['yes', 'no'])
-    accommodationSuitable = new Element.Radiogroup<'yes' | 'yesWithConcerns' | 'no'>('#suitable_housing', ['yes', 'yesWithConcerns', 'no'])
-    wantChanges = new Element.Radiogroup<SanWantChanges>('#accommodation_changes', ['madeChanges', 'makingChanges', 'wantToChange', 'needHelp', 'thinking', 'notWanted', 'notAnswering', '-', 'notPresent', 'notApplicable'])
+    livingWith = new Element.CheckboxGroup<'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'>(this.page, '#living_with', ['family', 'friends', 'partner', 'child', 'other', 'unknown', '-', 'alone'])
+    locationSuitable = new Element.Radiogroup<'yes' | 'no'>(this.page, '#suitable_housing_location', ['yes', 'no'])
+    accommodationSuitable = new Element.Radiogroup<'yes' | 'yesWithConcerns' | 'no'>(this.page, '#suitable_housing', ['yes', 'yesWithConcerns', 'no'])
+    wantChanges = new Element.Radiogroup<SanWantChanges>(this.page, '#accommodation_changes', ['madeChanges', 'makingChanges', 'wantToChange', 'needHelp', 'thinking', 'notWanted', 'notAnswering', '-', 'notPresent', 'notApplicable'])
 
 }
 /*

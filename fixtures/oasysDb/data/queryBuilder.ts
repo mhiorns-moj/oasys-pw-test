@@ -1,5 +1,3 @@
-import { stringToFloat, stringToInt } from 'lib/utils'
-
 
 export function buildQuery(columns: Columns, tables: Table[], whereCondition: string, orderBy: string): string {
 
@@ -54,11 +52,9 @@ export function assignValues(obj: {}, columns: Columns, data: string[], startInd
                 obj[key] = data[i++]
                 break
             case 'float':
-                obj[key] = stringToFloat(data[i++])
+                obj[key] = utils.stringToFloat(data[i++])
                 break
             case 'integer':
-                obj[key] = stringToInt(data[i++])
-                break
             case 'string':
                 obj[key] = data[i++]
                 break
