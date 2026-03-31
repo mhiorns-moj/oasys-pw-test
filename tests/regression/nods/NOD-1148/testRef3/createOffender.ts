@@ -10,13 +10,13 @@ describe('NOD-1148 OGRS4 regression test ref 3', () => {
 
         await oasys.login(oasys.users.probHeadPdu)
 
-        oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender')
-        cy.get<OffenderDef>('@offender').then((offender) => {
+        const offender1 = await offender.createProbFromStandardOffender()
 
-            // Save the offender details for use in later tests
-            cy.task('storeValue', { key: 'offender', value: JSON.stringify(offender) })
 
-            await oasys.logout()
-        })
+        // Save the offender details for use in later tests
+        cy.task('storeValue', { key: 'offender', value: JSON.stringify(offender) })
+
+        await oasys.logout()
     })
+})
 })

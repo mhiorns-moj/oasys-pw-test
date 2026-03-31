@@ -11,7 +11,7 @@ describe('SAN integration - test ref 08 part 3', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             await assessment.openLatest()
 
@@ -111,7 +111,7 @@ describe('SAN integration - test ref 08 part 3', () => {
             await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
             await oasysDb.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     SAN_ASSESSMENT_VERSION_NO: '0'

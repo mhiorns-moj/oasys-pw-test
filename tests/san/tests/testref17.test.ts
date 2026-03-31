@@ -23,7 +23,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
     await san.checkLayer3Menu(true, sections, sentencePlan)
 
     await san.queries.checkSanCreateAssessmentCall(pk1, null, null, oasys.users.probSanPso, oasys.users.probationSanCode, 'INITIAL')
-    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: null,
         SAN_ASSESSMENT_VERSION_NO: null,
@@ -142,7 +142,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
 
     // TODO restore OPD check
     // await assessment.summarySheet.opd.checkValue('This individual meets the criteria for the OPD pathway.')
-    // await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+    // await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
     //     OPD_SCORE: '11',
     //     OPD_RESULT: 'SCREEN IN',
     // })
@@ -315,7 +315,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
     const sanColumns2 = await oasysDb.getData(sanColumnsQuery)
     expect(JSON.stringify(sanColumns1)).toBe(JSON.stringify(sanColumns2))
 
-    const failed = await oasys.queries.checkAnswers(pk1, testData.dataFromSan, true)
+    const failed = await assessment.queries.checkAnswers(pk1, testData.dataFromSan, true)
     expect(failed).toBeFalsy()
 
     log(`Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13, SAQ and Skills Checker

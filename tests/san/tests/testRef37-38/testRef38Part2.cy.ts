@@ -16,7 +16,7 @@ describe('SAN integration - test ref 38 part 2', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.admin, oasys.users.probationSan)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             await oasysDb.getAllSetPksByPnc(offender.pnc, '[pks]')
             cy.get<number[]>('@[pks]').then((pks) => {  // [0] = the second deleted assessment, [1] = the first one that will be rolled back

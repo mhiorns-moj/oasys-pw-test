@@ -13,7 +13,7 @@ describe('SAN integration - test ref 37 part 4', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probSanHeadPdu)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {

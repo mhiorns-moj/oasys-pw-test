@@ -7,7 +7,7 @@ describe('NOD-1225', () => {
         await oasys.login(oasys.users.probHeadPdu)
 
         // Offender 1
-        oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
+        const offender1 = await offender.createProbFromStandardOffender()
         cy.get<OffenderDef>('@offender1').then((offender1) => {
 
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
@@ -15,7 +15,7 @@ describe('NOD-1225', () => {
             oasys.Populate.CommonPages.OffendingInformation.minimal()
             oasys.Populate.Layer3Pages.Predictors.minimal()
             oasys.Populate.sections2To13NoIssues({ populate6_11: 'No' })
-            oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
+            await sections.selfAssessmentForm.populateMinimal()
             await risk.screeningNoRisks()
 
             // Set 6.7 to trigger the SARA

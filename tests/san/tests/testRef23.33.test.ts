@@ -42,7 +42,7 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
         Check that OGRS, OGP and OVP have NOT calculated because of the offender's gender
         In the Predictors screen check that for RSR it hasn't calculated due to 'RSR can't be calculated on gender other than Male or Female'`, 'Test step')
 
-    const failed = await oasys.queries.checkAnswers(pk1, [
+    const failed = await assessment.queries.checkAnswers(pk1, [
         { section: '9', q: '9.1', a: '0' },
         { section: '9', q: '9.1.t', a: 'Only drinks once a month or less and consumes 1 to 2 units a day, when they drink.' },
         { section: '9', q: '9.2', a: '0' },
@@ -53,7 +53,7 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
     ], true)
     expect(failed).toBeFalsy()
 
-    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: null,
         SAN_ASSESSMENT_VERSION_NO: null,
@@ -154,7 +154,7 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
     await assessment.openLatest()
 
     await assessment.rollBack()
-    await oasys.queries.checkSigningRecord(pk1, ['ROLLBACK', 'SIGNING'])
+    await assessment.queries.checkSigningRecord(pk1, ['ROLLBACK', 'SIGNING'])
     await san.queries.checkSanRollbackCall(pk1, oasys.users.admin)
 
     await oasys.logout()

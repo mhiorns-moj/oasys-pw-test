@@ -17,7 +17,7 @@ describe('SAN integration - test ref 38 part 1', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             // Create new assessment
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
@@ -33,12 +33,12 @@ describe('SAN integration - test ref 38 part 1', () => {
 
                 // Tweak section 1
                 await sections.offendingInformation.goto()
-                offendingInformation.offence.setValue('030')
-                offendingInformation.subcode.setValue('01')
-                offendingInformation.count.setValue(3)
-                offendingInformation.offenceDate.setValue({ months: -2 })
-                offendingInformation.sentence.setValue('Fine')
-                offendingInformation.sentenceDate.setValue({ months: -1 })
+                await sections.offendingInformation.offence.setValue('030')
+                await sections.offendingInformation.subcode.setValue('01')
+                await sections.offendingInformation.count.setValue(3)
+                await sections.offendingInformation.offenceDate.setValue({ months: -2 })
+                await sections.offendingInformation.sentence.setValue('Fine')
+                await sections.offendingInformation.sentenceDate.setValue({ months: -1 })
 
                 await sections.predictors.goto(true)
                 await sections.predictors.o1_32.setValue(4)
@@ -78,7 +78,7 @@ describe('SAN integration - test ref 38 part 1', () => {
                 await oasys.logout()
                 // Delete the WIP assessment
                 await oasys.login(oasys.users.admin, oasys.users.probationSan)
-                await offender.searchAndSelectByPnc(offender.pnc)
+                await offender.searchAndSelect(offender1)
                 await assessment.deleteLatest()
                 await san.queries.checkSanDeleteCall(pks[0], oasys.users.admin)
                 await oasys.logout()

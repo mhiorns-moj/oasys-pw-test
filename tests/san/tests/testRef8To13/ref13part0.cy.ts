@@ -26,7 +26,7 @@ describe('SAN integration - test ref 13 part 0', () => {
             await oasys.logout()
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             oasys.Assessment.getToCreateAssessmentPage()
             let createAssessmentPage = new oasys.Pages.Assessment.CreateAssessment()
             createAssessmentPage.purposeOfAssessment.setValue('Review')

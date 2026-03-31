@@ -7,6 +7,34 @@ export class Queries {
 
     constructor(readonly oasysDb: OasysDb) { }
 
+    async getAllSetPksByProbationCrn(probationCrn: string, ignoreDeleted: boolean = false): Promise<number[]> {
+
+        const query = ignoreDeleted ?
+            `select oasys_set_pk from eor.oasys_set where cms_prob_number = '${probationCrn}' and deleted_date is null order by initiation_date`
+            : `select oasys_set_pk from eor.oasys_set where cms_prob_number = '${probationCrn}' order by initiation_date`
+
+        const pks = await this.getPk(query, true) as number[]
+        return pks
+    }
+
+    async getPk(query: string, returnAll: boolean = false): Promise<number | number[]> {
+
+        const data = await this.oasysDb.getData(query)
+        if (data.length > 0) {
+            if (returnAll) {
+                const pks: number[] = []
+                data.forEach((pk) => pks.push(Number.parseInt(pk[0])))
+                log(`Assessment pks: ${JSON.stringify(pks)}`)
+                return pks
+            } else {
+                const pk = Number.parseInt(data[0][0])
+                log(`Assessment pk: ${pk}`)
+                return pk
+            }
+        } else {
+            return null
+        }
+    }
 
     async checkAnswers(assessmentPk: number, expectedAnswers: OasysAnswer[], suppressLog = false): Promise<boolean> {
 

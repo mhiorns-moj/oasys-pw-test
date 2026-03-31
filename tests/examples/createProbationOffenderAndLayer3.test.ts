@@ -5,7 +5,7 @@ test('Example test - create a probation offender and a layer 3 assessment using 
 
     await oasys.login(oasys.users.probSpHeadPdu)
 
-    await offender.createProbFromStandardOffender()
+    const offender1 = await offender.createProbFromStandardOffender()
     await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
     // Use one of the following two lines to populate the assessment.  maxStrings paramater can be set to populate text fields to maximum length

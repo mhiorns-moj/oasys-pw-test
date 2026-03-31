@@ -21,7 +21,7 @@ describe('SAN integration - test ref 10', () => {
                     Sections 2 to 13 and SAN exist in the background and have been updated with the data from the Updated SAN Assessment carried out in Test Ref 9.`)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             await assessment.createProb({ purposeOfAssessment: 'Review' })  // Assume SAN defaults to 'Yes'
 
@@ -31,12 +31,12 @@ describe('SAN integration - test ref 10', () => {
                 const prevPk = pks[1]
                 await san.queries.checkSanCreateAssessmentCall(pk, prevPk, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
 
-                await oasys.queries.checkCloning(pk, prevPk, [
+                await assessment.queries.checkCloning(pk, prevPk, [
                     '2', '7', '8', '9', '10', '11', '12', '13',
                     'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SAN',
                 ])
 
-                await oasys.queries.checkCloningExpectMismatch(pk, prevPk, [
+                await assessment.queries.checkCloningExpectMismatch(pk, prevPk, [
                     '1', '3', '4', '5', '6', 'SKILLSCHECKER'     // These sections were modified in the offender record prior to creating this assessment, so will not match the previous one 
                 ])
 
@@ -48,7 +48,7 @@ describe('SAN integration - test ref 10', () => {
                         The SAN 'Strengths and Needs Sections' menu option has a green tick against it for the data being complete.`)
 
                 await san.queries.getSanApiTimeAndCheckDbValues(pk, 'Y', prevPk)
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     RSR_PERCENTAGE_SCORE: '9.96',
                     RSR_STATIC_OR_DYNAMIC: 'DYNAMIC',
                     RSR_ERROR_COUNT: '0',

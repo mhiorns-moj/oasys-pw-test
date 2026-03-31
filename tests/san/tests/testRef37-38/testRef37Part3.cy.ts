@@ -13,7 +13,7 @@ describe('SAN integration - test ref 37 part 3', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.admin, oasys.users.probationSan)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             await oasysDb.getLatestSetPkByPnc(offender.pnc, 'result')
 
             cy.get<number>('@result').then((pk) => {
@@ -80,7 +80,7 @@ describe('SAN integration - test ref 37 part 3', () => {
                 await san.queries.checkSanSigningCall(pk, oasys.users.probSanUnappr, 'COUNTERSIGN')
                 await san.queries.checkSanGetAssessmentCall(pk, 0)
                 await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     SAN_ASSESSMENT_VERSION_NO: '0'

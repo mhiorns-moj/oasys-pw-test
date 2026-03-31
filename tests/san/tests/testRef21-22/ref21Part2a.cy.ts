@@ -26,7 +26,7 @@ describe('SAN integration - test ref 21 part 2a', () => {
 
             await assessment.createProb({ purposeOfAssessment: 'Review', assessmentLayer: 'Full (Layer 3)' })
             oasys.Populate.sections2To13NoIssues()
-            oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
+            await sections.selfAssessmentForm.populateMinimal()
             new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
             await signing.signAndLock({ expectRsrWarning: true })
             await oasys.logout()

@@ -17,7 +17,7 @@ describe('SAN integration - test ref 37 part 2', () => {
 
                 // Open as countersigner
                 await oasys.login(oasys.users.probSanHeadPdu)
-                await offender.searchAndSelectByPnc(offender.pnc)
+                await offender.searchAndSelect(offender1)
                 await assessment.openLatest()
 
                 await san.gotoSanReadOnly()

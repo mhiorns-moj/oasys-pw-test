@@ -11,7 +11,7 @@ describe('OGRS regression test ref 3', () => {
 
             const offender: OffenderDef = JSON.parse(offenderData as string)
 
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
 
             const predictors = new oasys.Pages.Assessment.RoshaPredictors().goto()

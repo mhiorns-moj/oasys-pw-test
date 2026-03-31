@@ -10,7 +10,7 @@ describe('SAN integration - test ref 08 part 1', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             log(`Create a new assessment - defaults to PSR-SDR, Layer 3, PSR Outline Plan with SDR court report
                     Ensure the new SAN question is not showing on the screen (cannot do SAN with a PSR type assessment)`)
@@ -52,7 +52,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                 new oasys.Pages.Assessment.OffenderInformation().checkCurrent()
                 await san.checkLayer3Menu(false, assessment, sentencePlan)
 
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
 
                 const sp = new oasys.Pages.SentencePlan.SentencePlanService().goto()
                 sp.signAndLock.click()
@@ -66,13 +66,13 @@ describe('SAN integration - test ref 08 part 1', () => {
                         Check that on the SNS_MESSAGE table there are records for OGRS, RSR and AssSumm`)
 
                 await sections.offendingInformation.goto()
-                offendingInformation.setValues({
+                await sections.offendingInformation.setValues({
                     offence: '020', subcode: '01', count: '1', offenceDate: oasysDateTime.oasysDateAsString({ months: -4 }), sentence: 'Fine',
                     sentenceDate: oasysDateTime.oasysDateAsString({ months: -3 })
                 })
                 oasys.Populate.Layer3Pages.Predictors.fullyPopulated({ r1_30PrePopulated: true, r1_41PrePopulated: true })
                 oasys.Populate.sections2To13NoIssues()
-                oasys.Populate.CommonPages.SelfAssessmentForm.minimal()
+                await sections.selfAssessmentForm.populateMinimal()
                 await risk.screeningNoRisks(true)
 
                 await sentencePlan.populateMinimal()
@@ -83,7 +83,7 @@ describe('SAN integration - test ref 08 part 1', () => {
                 await oasys.login(oasys.users.probSanHeadPdu)
                 await signing.countersign({ offender: offender, comment: 'Test comment' })
 
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, { SAN_ASSESSMENT_LINKED_IND: 'N' })
                 await oasysDb.selectCount(`select count(*) from eor.oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`, 'count')
                 cy.get<number>('@count').then((count) => {
                     if (count! > 0) {

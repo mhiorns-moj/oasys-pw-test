@@ -11,7 +11,7 @@ describe('SAN integration - test ref 13 part 3', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             log(`Now create a new 3.2 OASys-SAN Assessment, the new SAN question defaults to 'Yes' and during the Create process say 'Yes' to cloning from the historic assessment.
                     Check the CreateAssessment API to ensure that it posts TWO PKs across to the SAN service and the user ID and name.
@@ -36,9 +36,9 @@ describe('SAN integration - test ref 13 part 3', () => {
                         Leave the 3.2 OASys-SAN assessment as WIP.  This test proves the cloning through from a 'historic' 3.2 assessment.`)
 
                 await sections.offendingInformation.goto()
-                offendingInformation.offence.checkValue('')
-                offendingInformation.sentence.checkValue('')
-                offendingInformation.sentenceDate.checkValue('')
+                await sections.offendingInformation.offence.checkValue('')
+                await sections.offendingInformation.sentence.checkValue('')
+                await sections.offendingInformation.sentenceDate.checkValue('')
 
                 await sections.predictors.goto()
                 await sections.predictors.ageFirstSanction.checkValue('37')
@@ -53,7 +53,7 @@ describe('SAN integration - test ref 13 part 3', () => {
                 await sections.predictors.ospDc.checkValue('Unable to calculate', true)
                 await sections.predictors.ospIic.checkValue('Unable to calculate', true)
 
-                const failed = await oasys.queries.checkAnswers(pks[0], testData.clonedAndModifiedData, 'answerCheck', true)
+                const failed = await assessment.queries.checkAnswers(pks[0], testData.clonedAndModifiedData, 'answerCheck', true)
                 cy.get<boolean>('@answerCheck').then((answerCheck) => {
                     expect(answerCheck).equal(false)
                 })

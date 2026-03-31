@@ -42,7 +42,7 @@ globalThis.waitForPageUpdate = async (page: Page, initialDelay?: number) => {
 
     let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
 
-    await page.waitForTimeout(initialDelay ?? 200)
+    await page.waitForTimeout(initialDelay ?? 250)
     let pleaseWaitCount = await updatingElement.count()
     while (pleaseWaitCount > 0) {
         pleaseWaitCount = await updatingElement.count()
@@ -54,20 +54,31 @@ globalThis.log = (logtext: string, type?: string) => {
     oasysLog.push({ logText: logtext, type: type })
 }
 
-export const oasysDb = base.extend<{ oasysDb: OasysDb }>({
+type OasysFixtures = {
+    oasysDb: OasysDb,
+    oasys: Oasys,
+    cms: Cms,
+    offender: Offender,
+    assessment: Assessment,
+    tasks: Tasks,
+    sections: Sections,
+    san: San, risk: Risk,
+    sentencePlan: SentencePlan,
+    signing: Signing,
+    sara: Sara,
+    sns: Sns,
+}
+
+
+export const test = base.extend<OasysFixtures>({
 
     oasysDb: async ({ }, use: Function) => {
-
         const oasysDb = new OasysDb()
         await use(oasysDb)
-    }
-})
-
-export const oasys = base.extend<{ oasys: Oasys, oasysDb: OasysDb }>({
+    },
 
     oasys: async ({ page, oasysDb }, use, testInfo) => {
-
-        const oasys = new Oasys(page, testInfo, oasysDb)
+        const oasys = new Oasys(page, testInfo)
 
         oasys.appConfig = await oasysDb.getAppConfig()
 
@@ -82,110 +93,60 @@ export const oasys = base.extend<{ oasys: Oasys, oasysDb: OasysDb }>({
         for (let log of oasysLog) {
             testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
         }
-    }
-})
-
-
-export const cms = oasys.extend<{ oasys: Oasys, cms: Cms }>({
+    },
 
     cms: async ({ page, oasys }, use: Function, testInfo: TestInfo) => {
-
         const cms = new Cms(page, testInfo, oasys)
         await use(cms)
-    }
-})
-
-export const tasks = oasys.extend<{ oasys: Oasys, tasks: Tasks }>({
+    },
 
     tasks: async ({ page, oasys }, use: Function, testInfo: TestInfo) => {
-
         const tasks = new Tasks(page, testInfo, oasys)
         await use(tasks)
-    }
-})
-
-export const offender = oasys.extend<{ oasys: Oasys, cms: Cms, offender: Offender, oasysDb: OasysDb }>({
+    },
 
     offender: async ({ page, oasys, cms, oasysDb }, use: Function, testInfo: TestInfo) => {
-
         const offender = new Offender(page, testInfo, oasys, cms, oasysDb)
         await use(offender)
-    }
-})
-
-export const sections = oasys.extend<{ oasys: Oasys, sections: Sections }>({
+    },
 
     sections: async ({ page }, use: Function) => {
-
         const sections = new Sections(page)
         await use(sections)
-    }
-})
-
-export const san = oasys.extend<{ oasys: Oasys, san: San, oasysDb: OasysDb }>({
+    },
 
     san: async ({ page, oasys, oasysDb }, use: Function) => {
-
         const san = new San(page, oasys, oasysDb)
         await use(san)
-    }
-})
-
-export const risk = oasys.extend<{ oasys: Oasys, risk: Risk, oasysDb: OasysDb, sara: Sara }>({
+    },
 
     risk: async ({ page, oasys, sara }, use: Function) => {
-
         const risk = new Risk(page, oasys, sara)
         await use(risk)
-    }
-})
-
-export const sentencePlan = oasys.extend<{ oasys: Oasys, sentencePlan: SentencePlan, oasysDb: OasysDb }>({
+    },
 
     sentencePlan: async ({ page, oasys }, use: Function) => {
-
         const sentencePlan = new SentencePlan(page, oasys)
         await use(sentencePlan)
-    }
-})
-
-export const signing = oasys.extend<{ oasys: Oasys, signing: Signing, oasysDb: OasysDb, tasks: Tasks }>({
+    },
 
     signing: async ({ page, oasys, tasks }, use: Function) => {
-
         const signing = new Signing(page, oasys, tasks)
         await use(signing)
-    }
-})
-
-export const assessment = oasys.extend<{
-    oasys: Oasys, cms: Cms, offender: Offender, assessment: Assessment, oasysDb: OasysDb,
-    tasks: Tasks, sections: Sections, san: San, risk: Risk, sentencePlan: SentencePlan, signing: Signing
-}>({
+    },
 
     assessment: async ({ page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan }, use: Function) => {
-
         const assessment = new Assessment(page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan)
         await use(assessment)
-    }
-})
-
-export const sns = oasys.extend<{ oasys: Oasys, oasysDb: OasysDb, sns: Sns }>({
+    },
 
     sns: async ({ page, oasys, oasysDb }, use: Function) => {
-
         const sns = new Sns(page, oasys, oasysDb)
         await use(sns)
-    }
-})
-
-export const sara = oasys.extend<{ oasysDb: OasysDb, sara: Sara }>({
+    },
 
     sara: async ({ page, oasysDb }, use: Function) => {
-
         const sara = new Sara(page, oasysDb)
         await use(sara)
-    }
+    },
 })
-
-export const test = mergeTests(oasys, cms, offender, assessment, oasysDb, sns, tasks, sections, san, risk, sentencePlan, signing, sara)

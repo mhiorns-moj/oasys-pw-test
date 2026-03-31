@@ -12,7 +12,7 @@ describe('SAN integration - test ref 13 part 1', () => {
 
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             await assessment.openLatest()
 
             log(`It will clone from the previous 3.1 assessment BUT then clear out all section 2 to 13 and SAQ data as it has been obtained from the living SAN assessment.
@@ -24,7 +24,7 @@ describe('SAN integration - test ref 13 part 1', () => {
                 const pk = pks[0]
                 const prevSanPk = pks[3]
 
-                const failed = await oasys.queries.checkAnswers(pk, testData.clonedData, 'answerCheck', true)
+                const failed = await assessment.queries.checkAnswers(pk, testData.clonedData, 'answerCheck', true)
                 cy.get<boolean>('@answerCheck').then((answerCheck) => {
                     expect(answerCheck).equal(false)
                 })

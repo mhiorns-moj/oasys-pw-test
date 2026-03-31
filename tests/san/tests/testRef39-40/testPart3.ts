@@ -1,0 +1,70 @@
+import { Assessment, Oasys, Offender, San } from 'fixtures'
+import { MergeTestData } from '../testRef39.40.test'
+
+export async function demerge(mergeTestData: MergeTestData, oasys: Oasys, offender: Offender, san: San) {
+
+    log('Merge tests part 5 - demerge offenders', 'Test step')
+
+    await oasys.login(oasys.users.admin, oasys.users.probationSan)
+    await offender.searchAndSelectByPnc(mergeTestData.offender2.pnc)
+
+    await offender.demerge(oasys)
+    await oasys.clickButton('Close')
+    await oasys.logout()
+
+    await san.queries.checkSanMergeCall(oasys.users.admin, 3)  // TODO fix this
+}
+
+export async function checkOffender1AndCreateAssessment(mergeTestData: MergeTestData, oasys: Oasys, offender: Offender, assessment: Assessment, san: San) {
+
+    log('Merge tests part 6 - check assessment on offender 1, and create a new one', 'Test step')
+
+    await oasys.login(oasys.users.probSanHeadPdu)
+
+    await offender.searchAndSelectByCrn(mergeTestData.offender1.probationCrn)
+    await assessment.assessmentsTab.assessments.checkData([{ name: 'purposeOfAssessment', values: ['Start of Community Order (Full) '] }])
+
+    await assessment.openLatest()
+    await san.gotoSanReadOnly('Offence analysis')
+    await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
+    await san.returnToOASys()
+    await oasys.clickButton('Close')
+
+    // Create a new one, check cloning
+    if (!oasys.appConfig.probForceCrn) {
+        // Need to set PNC to avoid error creating assessment
+        await offender.offenderDetails.pnc.setValue(mergeTestData.offender1.pnc)
+    }
+    await assessment.createProb({ purposeOfAssessment: 'Review' })
+    await san.gotoSan('Offence analysis')
+    await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description for assessment 1')
+    await san.returnToOASys()
+}
+
+export async function checkOffender2AndCreateAssessment(mergeTestData: MergeTestData, oasys: Oasys, offender: Offender, assessment: Assessment, san: San) {
+
+    log('Merge tests part 7 - check assessments on offender 2, and create a new one', 'Test step')
+
+    await offender.searchAndSelectByCrn(mergeTestData.offender2.probationCrn)
+    await assessment.assessmentsTab.assessments.checkData([{ name: 'purposeOfAssessment', values: ['Review (Full) ', 'Start of Suspended Sentence Order (Full) '] }])
+
+    // Check first assessment
+    await assessment.assessmentsTab.assessments.purposeOfAssessment.clickRowContaining('Start of Suspended Sentence Order (Full) ')
+    await san.gotoSanReadOnly('Offence analysis')
+    await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for offender 2')
+    await san.returnToOASys()
+    await oasys.clickButton('Close')
+
+    // Check second assessment
+    await assessment.openLatest()
+    await san.gotoSanReadOnly('Offence analysis')
+    await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
+    await san.returnToOASys()
+    await oasys.clickButton('Close')
+
+    await assessment.createProb({ purposeOfAssessment: 'Review' })
+    await san.gotoSan('Offence analysis')
+    await san.checkReadonlyText('Enter a brief description of the current index offence(s)', 'Offence description modified for 3rd assessment on merged offender')
+    await san.returnToOASys()
+    await oasys.logout()
+}

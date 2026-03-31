@@ -12,8 +12,7 @@ export class Tasks {
     readonly taskManager = new pages.TaskManager(this.page)
     readonly assessmentWipTask = new pages.AssessmentWipTask(this.page)
     readonly countersignatureTask = new pages.CountersignatureTask(this.page)
-
-
+    readonly mergeTask = new pages.MergeTask(this.page)
 
 
     /**
@@ -80,13 +79,12 @@ export class Tasks {
      * Search the tasks page for a merge task for the given offender surname,
      * then grants the merge.  Assumes you are already on the task manager page.
      */
-    // async grantMerge(surname: string) {
+    async grantMerge(surname: string) {
 
-    //     const page = new oasys.Pages.Tasks.TaskManager()
-    //     search({ taskName: 'Pending Merge - Decision Required', offenderName: surname })
-    //     page.taskList.clickFirstRow()
+        await this.search({ taskName: 'Pending Merge - Decision Required', offenderName: surname })
+        await this.selectFirstTask()
 
-    //     await oasys.clickButton('Grant but Retain Ownership')
-    //     log(`Granted merge for ${surname}`)
-    // }
+        await this.mergeTask.grantButRetainOwnership.click()
+        log(`Granted merge for ${surname}`)
+    }
 }

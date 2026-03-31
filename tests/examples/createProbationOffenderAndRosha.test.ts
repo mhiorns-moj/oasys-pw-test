@@ -5,7 +5,7 @@ test('Example test - create a probation offender and RoSHA assessment', async ({
 
     await oasys.login(oasys.users.probHeadPdu)
 
-    await offender.createProbFromStandardOffender()
+    const offender1 = await offender.createProbFromStandardOffender()
     await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
 
     // Use one of the following two lines to populate the assessment.  maxStrings paramater can be set to populate text fields to maximum length

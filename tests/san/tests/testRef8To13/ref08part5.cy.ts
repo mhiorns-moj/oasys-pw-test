@@ -23,7 +23,7 @@ describe('SAN integration - test ref 08 part 5', () => {
                 cy.get<string[][]>('@oasysSetData').then((sanColumnsQuery1) => {
 
                     await oasys.login(oasys.users.probSanHeadPdu)
-                    await offender.searchAndSelectByPnc(offender.pnc)
+                    await offender.searchAndSelect(offender1)
                     await assessment.openLatest()
 
                     log(`Navigate to the 'Strengths and Needs Sections' screen - 

@@ -21,7 +21,7 @@ describe('SAN integration - test ref 09', () => {
                     Return back to OASys.`)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             await oasysDb.getLatestSetPkByPnc(offender.pnc, 'pk')
             cy.get<number>('@pk').then((pk) => {

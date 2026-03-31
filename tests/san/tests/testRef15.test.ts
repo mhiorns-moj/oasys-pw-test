@@ -28,7 +28,7 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sect
     await san.queries.checkSanCreateAssessmentCall(pk1, null, null, oasys.users.prisSanCAdm, oasys.users.prisonSanCode, 'INITIAL')
     await san.queries.checkSanGetAssessmentCall(pk1, 0)
 
-    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: null,
         SAN_ASSESSMENT_VERSION_NO: null,
@@ -111,7 +111,7 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sect
     await san.returnToOASys()
     await oasys.clickButton('Next')
 
-    const failed = await oasys.queries.checkAnswers(pk1, testData.dataFromSan, true)
+    const failed = await assessment.queries.checkAnswers(pk1, testData.dataFromSan, true)
     expect(failed).toBeFalsy()
     await san.sanSections.checkCompletionStatus(true)
 

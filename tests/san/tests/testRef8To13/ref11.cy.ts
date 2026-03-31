@@ -39,7 +39,7 @@ describe('SAN integration - test ref 11', () => {
                     Check that the LAST THREE questions in Sections 7, 11 and 12 have ALL been set by the SAN data and are the same;  'identify' text box, 'linked to risk of serious harm...' 
                     and 'linked to reoffending...'  (note: this is coming from the TBA section in the SAN Assessment and, rightly or wrongly, Cindy wanted it mapped to ALL 3 sections in OASys).`)
 
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             await assessment.createProb({ purposeOfAssessment: 'Review' })
 
             await san.checkLayer3Menu(false, true)
@@ -52,7 +52,7 @@ describe('SAN integration - test ref 11', () => {
 
                 await san.queries.getSanApiTimeAndCheckDbValues(pk, null, prevPk)
 
-                const failed = await oasys.queries.checkAnswers(pk, testData.nonOASysQuestions, 'nonOASysQuestionsResult', true)
+                const failed = await assessment.queries.checkAnswers(pk, testData.nonOASysQuestions, 'nonOASysQuestionsResult', true)
                 cy.get<boolean>('@nonOASysQuestionsResult').then((failed) => {
                     expect(failed).equal(false)
                 })
@@ -68,7 +68,7 @@ describe('SAN integration - test ref 11', () => {
                 })
 
                 // Complete remaining mandatory fields that didn't get cloned from the previous assessment
-                const section2 = new oasys.Pages.Assessment.Section2().goto()
+                await sections.section3.goto()
 
                 section2.o2_2Weapon.setValue('No')
                 section2.o2_2Arson.setValue('No')
@@ -81,10 +81,10 @@ describe('SAN integration - test ref 11', () => {
                 victim.close.click()
 
                 new oasys.Pages.Assessment.Section3().goto().o3_5.setValue('0-No problems')
-                const section4 = new oasys.Pages.Assessment.Section4().goto()
+                await sections.section4.goto()
                 section4.o4_5.setValue('0-No problems')
                 section4.o4_5.setValue('0-No problems')
-                section4.identifyIssues.setValue('No issues')
+                await sections.section4.identifyIssues.setValue('No issues')
                 new oasys.Pages.Assessment.Section5().goto().identifyIssues.setValue('No issues')
                 new oasys.Pages.Assessment.Section6().goto().identifyIssues.setValue('No issues')
                 const section9 = new oasys.Pages.Assessment.Section9().goto()
@@ -105,7 +105,7 @@ describe('SAN integration - test ref 11', () => {
 
                 new oasys.Pages.SentencePlan.RspSection72to10().goto().agreeWithPlan.setValue('Yes')
                 await signing.signAndLock()
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
                     CLONED_FROM_PREV_OASYS_SAN_PK: prevPk.toString(),
                     SAN_ASSESSMENT_VERSION_NO: null,

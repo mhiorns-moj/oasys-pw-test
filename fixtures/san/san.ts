@@ -9,12 +9,13 @@
 import { Page } from '@playwright/test'
 
 import { Element } from 'classes'
-import { Oasys, OasysDb, Sections, SentencePlan } from 'fixtures'
+import {  Oasys, OasysDb, Sections, SentencePlan } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
 import * as exampleTest from './exampleTest'
 import { Queries } from './queries'
 import { Predictors } from 'fixtures/sections/pages/predictors'
+import { Queries as AssessmentQueries } from 'fixtures/assessment/queries'
 
 
 export class San {
@@ -145,7 +146,7 @@ export class San {
 
             const updateTimeFailed = await this.queries.checkLastUpdateTime(assessmentPk)
             const getAssessmentCallFailed = await this.queries.checkSanGetAssessmentCall(assessmentPk, 0, true)
-            const answersFailed = await this.oasys.queries.checkAnswers(assessmentPk, scenario.oasysAnswers, true)
+            const answersFailed = await new AssessmentQueries(this.oasysDb).checkAnswers(assessmentPk, scenario.oasysAnswers, true)
 
             if (updateTimeFailed || getAssessmentCallFailed || answersFailed) {
                 failed = true

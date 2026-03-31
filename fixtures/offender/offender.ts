@@ -75,7 +75,7 @@ export class Offender {
 
         await this.cms.cmsOffenderSearch()
 
-        log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', CRN: ${offender.probationCrn}, date of birth: ${offender.dateOfBirth}`)
+        log(`Created offender with PNC: ${offender.pnc}, surname: '${offender.surname}', forename: '${offender.forename1}', CRN: ${offender.probationCrn}, date of birth: ${offender.dateOfBirth}`, 'Offender')
 
         await this.addOffenderPk(offender)
         return offender
@@ -202,6 +202,14 @@ export class Offender {
         await this.lao.save.click()
         log('Set LAO reader')
         await this.lao.close.click()
+    }
+
+    async demerge(oasys: Oasys) {
+        // TODO create a demerge page
+        await oasys.clickButton('Demerge')
+        await oasys.clickButton('Confirm Demerge')
+        await oasys.clickButton('Demerge')
+        await this.page.locator('#apexConfirmBtn').click()
     }
 
     /**

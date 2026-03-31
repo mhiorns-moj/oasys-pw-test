@@ -169,7 +169,7 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
         In the database ensure the field OASYS_SET.SAN_ASSESSMENT_VERSION_NO and OASYS_SET.SSP_PLAN_VERSION_NO have been populated`, 'Test step')
 
     await san.queries.checkSanSigningCall(pk1, oasys.users.probSanPo, 'COUNTERSIGN')
-    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: null,
     })
@@ -206,7 +206,7 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
     await signing.countersignReject({ comment: 'Rejecting test 20 for rework' })
 
     await san.queries.checkSanCountersigningCall(pk1, oasys.users.probSanHeadPdu, 'REJECTED')
-    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: null,
         SAN_ASSESSMENT_VERSION_NO: null,
@@ -258,7 +258,7 @@ test('SAN integration - test ref 20', async ({ oasys, offender, assessment, sign
     await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])
 
     await san.queries.checkSanCountersigningCall(pk1, oasys.users.probSanHeadPdu, 'COUNTERSIGNED')
-    oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: null,
     })

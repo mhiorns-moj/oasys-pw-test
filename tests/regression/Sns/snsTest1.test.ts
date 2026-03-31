@@ -3,7 +3,7 @@ import { test } from 'fixtures'
 
 test.describe('Create assessments and check SNS messages - layer 3', () => {
 
-    test('No countersigning required', async ({ oasys, offender, assessment, sns, signing }) => {
+    test('No countersigning required', async ({ oasys, offender, assessment, sns, signing, sections }) => {
 
         // Create an offender with minimally complete layer 3
         await oasys.login(oasys.users.probSpHeadPdu)
@@ -36,7 +36,7 @@ test.describe('Create assessments and check SNS messages - layer 3', () => {
 
     })
 
-    test('Countersigning required', async ({ oasys, offender, assessment, sns, signing, risk, sentencePlan }) => {
+    test('Countersigning required', async ({ oasys, offender, assessment, sns, signing, risk, sentencePlan, sections }) => {
 
         // Create an offender with minimally complete layer 3 to get OGRS and RSR
         await oasys.login(oasys.users.probSpPso)

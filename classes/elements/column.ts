@@ -19,12 +19,11 @@ export class Column {
     /**
      * Finds text within a column element and clicks it
      */
-    // clickRowContaining(text: string) {
+    async clickRowContaining(text: string) {
 
-    //     this.getColumnHeaderId().then((id) => {
-    //         cy.contains(`[headers="${id}"]`, text).click()
-    //     })
-    // }
+        const id = await this.getColumnHeaderId()
+        await this.page.locator(`[headers="${id}"]`).filter({hasText: text}).click()
+    }
 
     /**
      * Clicks the first row of a column element.

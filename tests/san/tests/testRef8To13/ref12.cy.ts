@@ -16,7 +16,7 @@ describe('SAN integration - test ref 12', () => {
 
             await oasys.login(oasys.users.probHeadPdu)
 
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             await assessment.createProb({ purposeOfAssessment: 'Review' })
 
             log(`It does NOT call for any SAN data.
@@ -32,14 +32,14 @@ describe('SAN integration - test ref 12', () => {
                 const prevSanPk = pks[2]
                 await san.checkNoSanCall(pk)
 
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: null,
                     CLONED_FROM_PREV_OASYS_SAN_PK: prevSanPk.toString(),
                     SAN_ASSESSMENT_VERSION_NO: null,
                     LASTUPD_FROM_SAN: null,
                 })
 
-                const section2 = new oasys.Pages.Assessment.Section2().goto()
+                await sections.section3.goto()
                 section2.o2_2Weapon.setValue('Yes')
                 section2.o2_2SpecifyWeapon.setValue('A big knife')
                 section2.o2_2Violence.setValue('Yes')
@@ -49,14 +49,14 @@ describe('SAN integration - test ref 12', () => {
                 section2.o2_3Direct.setValue(true)
                 section2.o2_3Hate.setValue(true)
 
-                const section3 = new oasys.Pages.Assessment.Section3().goto()
+                await sections.section3.goto()
                 section3.o3_3.setValue('Yes')
                 section3.o3_4.setValue('2-Significant problems')
                 section3.o3_5.setValue('2-Significant problems')
                 section3.o3_6.setValue('2-Significant problems')
                 section3.save.click()
 
-                const section4 = new oasys.Pages.Assessment.Section4().goto()
+                await sections.section4.goto()
                 section4.o4_2.setValue('2 - Yes')
                 section4.o4_3.setValue('2-Significant problems')
                 section4.o4_4.setValue('2-Significant problems')

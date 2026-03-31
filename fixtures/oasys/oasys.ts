@@ -7,16 +7,14 @@ import { User } from 'classes'
 import * as users from './users'
 import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan'
 import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
-import { Queries } from './queries'
-import { OasysDb } from 'fixtures/oasysDb/oasysDb'
+import { ScreeningSection5 } from 'fixtures/risk/pages'
 
 
 export class Oasys {
 
-    constructor(private readonly page: Page, public readonly testInfo: TestInfo, private readonly oasysDb: OasysDb) { }
+    constructor(private readonly page: Page, public readonly testInfo: TestInfo) { }
 
 
-    readonly queries = new Queries(this.oasysDb)
     appConfig: AppConfig
     readonly users = users.Users
     readonly loginPage = new pages.Login(this.page)
@@ -145,6 +143,8 @@ export class Oasys {
             case 'spService':
                 await new SentencePlanService(this.page).goto(true)
                 break
+            case 'riskScreening':
+                await new ScreeningSection5(this.page).goto(true)
         }
 
 

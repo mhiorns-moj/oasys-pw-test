@@ -75,7 +75,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
     await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
     await san.queries.checkSanSigningCall(pk1, oasys.users.probSanUnappr, 'COUNTERSIGN')
     await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['OGRS', 'RSR'])
-    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: null,
         SAN_ASSESSMENT_VERSION_NO: '0'
@@ -102,7 +102,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
 
     await san.queries.checkSanCreateAssessmentCall(pk2, pk1, pk1, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
     await san.queries.checkSanGetAssessmentCall(pk2, 1)
-    await oasys.queries.checkCloning(pk2, pk1, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
+    await assessment.queries.checkCloning(pk2, pk1, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
         'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SKILLSCHECKER', 'SAN',])
 
     // Modify SAN content
@@ -128,7 +128,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
     await oasys.clickButton('Next')
 
     // Check API calls and OASYS_SET
-    await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk2}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk2}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         CLONED_FROM_PREV_OASYS_SAN_PK: pk1.toString(),
         SAN_ASSESSMENT_VERSION_NO: null
@@ -156,7 +156,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
     await san.queries.checkSanGetAssessmentCall(pk3, 2)
 
     // Check cloning from first assessment to second (non-deleted)
-    await oasys.queries.checkCloning(pk3, pk1, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
+    await assessment.queries.checkCloning(pk3, pk1, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
         'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SKILLSCHECKER',])
 
     // Open SAN, check OTL call and subsequent GetAssessment

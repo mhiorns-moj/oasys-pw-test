@@ -4,6 +4,7 @@ import { Oasys, Cms, Offender, OasysDb, Sections, San, Risk, SentencePlan } from
 import * as pages from './pages'
 import { BaseAssessmentPage } from 'classes'
 import { TaskManager } from 'fixtures/tasks/pages/taskManager'
+import { Queries } from './queries'
 
 
 export class Assessment {
@@ -14,6 +15,8 @@ export class Assessment {
 
     assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
+    readonly queries = new Queries(this.oasysDb)
+    
     readonly baseAssessmentPage = new BaseAssessmentPage(this.page)
     readonly createAssessmentPage = new pages.CreateAssessment(this.page)
     readonly assessmentsTab = new pages.AssessmentsTab(this.page)
@@ -224,12 +227,12 @@ export class Assessment {
 
     /**
      * Assuming you have the offender details open with assessment tab showing, clicks the Lock Incomplete button,
-     * then checks and accepts the alert message.  Optionally pass an assessment PK to check the OGRS4 calculation
+     * then checks and accepts the alert message (using a default if not specified).  Optionally pass an assessment PK to check the OGRS4 calculation
      */
-    async lockIncomplete(pk?: number) {
+    async lockIncomplete(pk?: number, message = 'Do you wish to lock the assessment as incomplete?') {
 
         this.page.once('dialog', async (dialog) => {
-            expect(dialog.message()).toBe('Do you wish to lock the assessment as incomplete?')
+            expect(dialog.message()).toBe(message)
             await dialog.accept()
         })
 

@@ -25,7 +25,7 @@ test('SAN integration - test ref 27 part 2', async ({ oasys, cms, offender, asse
     await sentencePlan.populateMinimal()
     await oasys.clickButton('Previous')
 
-    let failed = await oasys.queries.checkSingleAnswer(pk1, '9', '9.2', 'refAnswer', '0')  // above population sets binge drinking to no
+    let failed = await assessment.queries.checkSingleAnswer(pk1, '9', '9.2', 'refAnswer', '0')  // above population sets binge drinking to no
     expect(failed).toBeFalsy()
 
     log(`Open up the offender record
@@ -88,7 +88,7 @@ test('SAN integration - test ref 27 part 2', async ({ oasys, cms, offender, asse
     expect(sectionCount).toBe(2)
 
     await san.queries.checkSanGetAssessmentCall(pk1, 0)
-    failed = await oasys.queries.checkSingleAnswer(pk1, '9', '9.2', 'refAnswer', '2')  // change from offender record sets binge drinking
+    failed = await assessment.queries.checkSingleAnswer(pk1, '9', '9.2', 'refAnswer', '2')  // change from offender record sets binge drinking
     expect(failed).toBeFalsy()
 
     log(`Open up the now read only assessment, navigate to the 'Strengths and Needs' screen

@@ -22,7 +22,7 @@ describe('SAN integration - test ref 38 part 3', () => {
 
                 // Open the assessment and check status
                 await oasys.login(oasys.users.probSanUnappr)
-                await offender.searchAndSelectByPnc(offender.pnc)
+                await offender.searchAndSelect(offender1)
                 await assessment.openLatest()
 
                 const rmp = new oasys.Pages.Rosh.RiskManagementPlan()
@@ -61,7 +61,7 @@ describe('SAN integration - test ref 38 part 3', () => {
                 await san.queries.checkSanSigningCall(pks[1], oasys.users.probSanUnappr, 'COUNTERSIGN')
                 await san.queries.checkSanGetAssessmentCall(pks[1], 2)
                 await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pks[1]}`, {
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pks[1]}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     SAN_ASSESSMENT_VERSION_NO: '2'

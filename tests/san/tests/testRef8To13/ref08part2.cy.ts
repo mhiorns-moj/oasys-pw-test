@@ -10,7 +10,7 @@ describe('SAN integration - test ref 08 part 2', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             log(`Create another assessment - defaults to Review
                         The new SAN question is NOT shown on the screen due to the default of PSR with 'PSR Outline' plan
@@ -104,9 +104,9 @@ describe('SAN integration - test ref 08 part 2', () => {
                 const sourcesOfInformation = new oasys.Pages.Assessment.SourcesOfInformation().goto()
                 sourcesOfInformation.sourcesOther.setValue('Some other sources')
                 await sections.offendingInformation.goto()
-                offendingInformation.communityPunishmentHours.setValue('200')
-                offendingInformation.additionalRequirements1.setValue('Citizenship')
-                offendingInformation.sentenceAdditionalLicenceConditions.setValue('Some additional conditions')
+                await sections.offendingInformation.communityPunishmentHours.setValue('200')
+                await sections.offendingInformation.additionalRequirements1.setValue('Citizenship')
+                await sections.offendingInformation.sentenceAdditionalLicenceConditions.setValue('Some additional conditions')
                 await sections.predictors.goto()
                 await sections.predictors.o1_32.setValue(4)
                 await sections.predictors.o1_40.setValue(0)

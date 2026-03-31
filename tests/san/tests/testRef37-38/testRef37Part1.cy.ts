@@ -14,7 +14,7 @@ describe('SAN integration - test ref 37 part 1', () => {
             const offender = JSON.parse(offenderData as string)
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             // Create first assessment
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
@@ -30,12 +30,12 @@ describe('SAN integration - test ref 37 part 1', () => {
 
                 // Complete section 1
                 await sections.offendingInformation.goto()
-                offendingInformation.offence.setValue('030')
-                offendingInformation.subcode.setValue('01')
-                offendingInformation.count.setValue(1)
-                offendingInformation.offenceDate.setValue({ months: -6 })
-                offendingInformation.sentence.setValue('Fine')
-                offendingInformation.sentenceDate.setValue({ months: -1 })
+                await sections.offendingInformation.offence.setValue('030')
+                await sections.offendingInformation.subcode.setValue('01')
+                await sections.offendingInformation.count.setValue(1)
+                await sections.offendingInformation.offenceDate.setValue({ months: -6 })
+                await sections.offendingInformation.sentence.setValue('Fine')
+                await sections.offendingInformation.sentenceDate.setValue({ months: -1 })
 
                 await sections.predictors.goto(true)
                 await sections.predictors.dateFirstSanction.setValue({ years: -2 })
@@ -79,7 +79,7 @@ describe('SAN integration - test ref 37 part 1', () => {
                 await signing.signAndLock({ expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu, countersignComment: 'Test 37 part 1 signing' })
                 await san.queries.checkSanSigningCall(pk, oasys.users.probSanUnappr, 'COUNTERSIGN')
                 await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
-                await oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+                await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
                     SAN_ASSESSMENT_LINKED_IND: 'Y',
                     CLONED_FROM_PREV_OASYS_SAN_PK: null,
                     SAN_ASSESSMENT_VERSION_NO: '0'

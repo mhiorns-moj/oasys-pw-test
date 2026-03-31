@@ -5,48 +5,48 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
 
         // Create an offender with minimally complete layer 3.2
         await oasys.login(oasys.users.probSanHeadPdu)
-        oasys.Offender.createProb(oasys.OffenderLib.Probation.Male.burglary, 'offender1')
-        cy.get<OffenderDef>('@offender1').then((offender) => {
+        const offender1 = await offender.createProbFromStandardOffender()
 
-            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-            await sections.offendingInformation.goto()
-            offendingInformation.count.setValue(1)
-            offendingInformation.offenceDate.setValue({ months: -6 })
 
-            await sections.predictors.goto(true)
-            await sections.predictors.dateFirstSanction.setValue({ years: -2 })
-            await sections.predictors.o1_32.setValue(2)
-            await sections.predictors.o1_40.setValue(0)
-            await sections.predictors.o1_29.setValue({ months: -1 })
-            await sections.predictors.o1_30.setValue('No')
-            await sections.predictors.o1_38.setValue({})
+        await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+        await sections.offendingInformation.goto()
+        await sections.offendingInformation.count.setValue(1)
+        await sections.offendingInformation.offenceDate.setValue({ months: -6 })
 
-            await san.gotoSan()
-            await san.populateSanSections('Example test', oasys.Populate.San.ExampleTest.sanPopulation1)
-            await san.returnToOASys()
+        await sections.predictors.goto(true)
+        await sections.predictors.dateFirstSanction.setValue({ years: -2 })
+        await sections.predictors.o1_32.setValue(2)
+        await sections.predictors.o1_40.setValue(0)
+        await sections.predictors.o1_29.setValue({ months: -1 })
+        await sections.predictors.o1_30.setValue('No')
+        await sections.predictors.o1_38.setValue({})
 
-            await risk.screeningNoRisks(true)
+        await san.gotoSan()
+        await san.populateSanSections('Example test', oasys.Populate.San.ExampleTest.sanPopulation1)
+        await san.returnToOASys()
 
-            // Complete SP
-            await sentencePlan.populateMinimal()
+        await risk.screeningNoRisks(true)
 
-            // Sign assessment, then check SNS messages
-            await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
-            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+        // Complete SP
+        await sentencePlan.populateMinimal()
 
-            // Create another assessment (cloning from the one above), this one with OPD override
-            await oasys.history('@offender1')
-            await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+        // Sign assessment, then check SNS messages
+        await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
+        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
-            const summarySheet = new oasys.Pages.Assessment.SummarySheet()
-            summarySheet.goto().opdOverride.setValue('Yes')
-            summarySheet.opdOverrideReason.setValue('Testing')
+        // Create another assessment (cloning from the one above), this one with OPD override
+        await oasys.history('@offender1')
+        await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-            // Sign assessment, then check SNS messages again
-            await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
-            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR', 'OPD'])
+        const summarySheet = new oasys.Pages.Assessment.SummarySheet()
+        summarySheet.goto().opdOverride.setValue('Yes')
+        summarySheet.opdOverrideReason.setValue('Testing')
 
-            await oasys.logout()
-        })
+        // Sign assessment, then check SNS messages again
+        await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
+        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR', 'OPD'])
+
+        await oasys.logout()
     })
+})
 })

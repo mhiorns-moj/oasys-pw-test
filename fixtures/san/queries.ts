@@ -3,6 +3,7 @@ import { Temporal } from '@js-temporal/polyfill'
 import { OasysDb } from '../oasysDb/oasysDb'
 import { User } from 'classes'
 import { Oasys } from 'fixtures'
+import { Queries as AssessmentQueries } from 'fixtures/assessment/queries'
 
 type OasysSetSanData = {
     sanIndicator: string,
@@ -14,7 +15,7 @@ type OasysSetSanData = {
 
 export class Queries {
 
-    constructor(readonly db: OasysDb, readonly oasys: Oasys) { }
+    constructor(readonly oasysDb: OasysDb, readonly oasys: Oasys) { }
 
 
     async getOasysSetSanData(pk: number): Promise<OasysSetSanData> {
@@ -24,7 +25,7 @@ export class Queries {
                             san_assessment_version_no, ssp_plan_version_no
                             from eor.oasys_set where oasys_set_pk = ${pk}`
 
-        const oasysSetData = await this.db.getData(query)
+        const oasysSetData = await this.oasysDb.getData(query)
         return {
             sanIndicator: oasysSetData[0][0],
             spIndicator: oasysSetData[0][1],
@@ -37,14 +38,14 @@ export class Queries {
     async checkNoSanSections(pk: number) {
 
         const query = `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} and ref_section_code = 'SAN'`
-        const count = await this.db.selectCount(query)
+        const count = await this.oasysDb.selectCount(query)
         expect(count).toBe(0)
     }
 
     async checkNoSanSectionScores(pk: number) {
 
         const query = `select count(*) from eor.oasys_section where san_crim_need_score is not null and oasys_set_pk = ${pk}`
-        const count = await this.db.selectCount(query)
+        const count = await this.oasysDb.selectCount(query)
         expect(count).toBe(0)
     }
 
@@ -58,7 +59,7 @@ export class Queries {
         const query = `select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(sysdate, '${oasysDateTime.oracleTimestampFormat}') 
                             from eor.oasys_set where oasys_set_pk = ${pk}`
 
-        const updateTimes = await this.db.getData(query)
+        const updateTimes = await this.oasysDb.getData(query)
         const diff = oasysDateTime.timestampDiffString(updateTimes[0][0], updateTimes[0][1])  // ms
 
         if (diff > 10000) {  // 10 seconds - allows time from updating SAN, returning to OASys and updating the db.
@@ -77,7 +78,7 @@ export class Queries {
             log(`Checking GetAssessment call for ${pk}`)
         }
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_GET_ASS%' order by time_stamp desc fetch first 2 rows only`
-        const clogData = await this.db.getData(query)
+        const clogData = await this.oasysDb.getData(query)
         let failed = false
 
         if (clogData.length != 2) {
@@ -105,7 +106,7 @@ export class Queries {
     async getSanApiTime(pk: number, type: 'SAN_GET_ASSESSMENT' | 'SAN_CREATE_ASSESSMENT' | 'SAN_LOCK_INCOMPLETE'): Promise<Temporal.PlainDateTime> {
 
         const query = `select to_char(time_stamp, '${oasysDateTime.oracleTimestampFormatMs}') from eor.clog where log_source like '%${pk}%${type}%' order by time_stamp desc`
-        const clogData = await this.db.getData(query)
+        const clogData = await this.oasysDb.getData(query)
         let result: Temporal.PlainDateTime = null
         if (clogData.length > 0) {
             result = oasysDateTime.stringToTimestamp(clogData[0][0])
@@ -129,7 +130,7 @@ export class Queries {
 
         log('', `Check CreateAssessment API call for ${pk}, previous ${previousSanPk}`)
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
-        const clogData = await this.db.getData(query)
+        const clogData = await this.oasysDb.getData(query)
         let failed = false
 
         if (clogData.length != 2) {
@@ -277,7 +278,7 @@ export class Queries {
         }
 
         const query = `select log_text from eor.clog where log_source like '%${pk}%onetime%' order by time_stamp desc fetch first 2 rows only`
-        const clogData = await this.db.getData(query)
+        const clogData = await this.oasysDb.getData(query)
 
         const oasysSetSanData = await this.getOasysSetSanData(pk)
 
@@ -336,65 +337,59 @@ export class Queries {
         expect(failed).toBeFalsy()
     }
 
-    // /**
-    //  * Checks cLog for expected entries following a merge call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
-    //  * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
-    //  *  - expectedUser: OASys User Id for the user rolling back the assessment
-    //  *  - pkPairs: an array of \{ old: number, new: number \}, each pair contains expected values for the old and new assessment PKs.
-    //  */
-    // async checkSanMergeCall(expectedUser: User, pkPairs: number) {
+    /**
+     * Checks cLog for expected entries following a merge call to SAN, to confirm that the correct values are passed to SAN, and the appropriate response is received
+     * (including the 200 status). The test will fail if anything is not as expected. Parameters are:
+     *  - expectedUser: OASys User Id for the user merging the offenders
+     *  - pkPairs: an array of \{ old: number, new: number \}, each pair contains expected values for the old and new assessment PKs.
+     */
+    async checkSanMergeCall(expectedUser: User, pkPairs: number) {  // TODO fix/finish this
 
-    //     log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
-    //     const query = `select log_text from eor.clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
-    //     await oasysDb.getData(query, 'clogData')
-    //     cy.get<string[][]>('@clogData').then((clogData) => {
-    //         let failed = false
+        log(`Checking Merge call for ${JSON.stringify(pkPairs)}`)
+        const query = `select log_text from eor.clog where log_source like '%${expectedUser.username}%SAN_MERGE_DEMERGE_URL%' order by time_stamp desc fetch first 2 rows only`
+        const clogData = await this.oasysDb.getData(query)
+        let failed = false
 
-    //         if (clogData.length != 2) {
-    //             log(`Expected 2 rows in CLog, found ${clogData.length}`)
-    //             failed = true
-    //         } else {
-    //             const call = clogData[1][0].split('\n')
-    //             if (call[1].substring(call[1].length - 11) != `oasys/merge`) {
-    //                 log(`Expected call url to include 'oasys/merge', found ${call[1].substring(call[1].length - 11)}`)
-    //                 failed = true
-    //             }
+        if (clogData.length != 2) {
+            log(`Expected 2 rows in CLog, found ${clogData.length}`)
+            failed = true
+        } else {
+            const call = clogData[1][0].split('\n')
+            if (call[1].substring(call[1].length - 11) != `oasys/merge`) {
+                log(`Expected call url to include 'oasys/merge', found ${call[1].substring(call[1].length - 11)}`)
+                failed = true
+            }
 
-    //             const jsonStart = clogData[1][0].search('p_json') + 16
-    //             const jsonEnd = clogData[1][0].search('p_token') - 1
-    //             const callData = JSON.parse(clogData[1][0].substring(jsonStart, jsonEnd))
+            const jsonStart = clogData[1][0].search('p_json') + 16
+            const jsonEnd = clogData[1][0].search('p_token') - 1
+            const callData = JSON.parse(clogData[1][0].substring(jsonStart, jsonEnd))
 
-    //             const mergeData = callData['merge']
-    //             mergeData.sort(arraySort)
+            const mergeData = callData['merge']
+            mergeData.sort(arraySort)
 
-    //             if (mergeData.length != pkPairs) {
-    //                 log(`Expected ${pkPairs} pairs, found ${mergeData.length}`)
-    //                 failed = true
-    //             }
+            if (mergeData.length != pkPairs) {
+                log(`Expected ${pkPairs} pairs, found ${mergeData.length}`)
+                failed = true
+            }
 
-    //             if (callData['userDetails']['id'] != expectedUser.username) {
-    //                 log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
-    //                 failed = true
-    //             }
-    //             if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
-    //                 log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
-    //                 failed = true
-    //             }
+            if (callData['userDetails']['id'] != expectedUser.username) {
+                log(`Expected user ID: ${expectedUser.username}, found ${callData['userDetails']['id']}`)
+                failed = true
+            }
+            if (callData['userDetails']['name'] != expectedUser.forenameSurname) {
+                log(`Expected user name: ${expectedUser.forenameSurname}, found ${callData['userDetails']['name']}`)
+                failed = true
+            }
 
-    //             const response = clogData[0][0].split('\n')
-    //             if (response[2].substring(response[2].length - 3) != '200') {
-    //                 log(`Expected 200 response, found ${response[2]} `)
-    //                 failed = true
-    //             }
-    //         }
+            const response = clogData[0][0].split('\n')
+            if (response[2].substring(response[2].length - 3) != '200') {
+                log(`Expected 200 response, found ${response[2]} `)
+                failed = true
+            }
+        }
 
-    //         cy.then(() => {
-    //             if (failed) {
-    //                 throw new Error('Error checking Merge API call')
-    //             }
-    //         })
-    //     })
-    // }
+        expect(failed).toBeFalsy()
+    }
 
 
 
@@ -404,7 +399,7 @@ export class Queries {
     async checkNoSanCall(pk: number) {
 
         const query = `select log_text from eor.clog where log_source like '%${pk}%' and log_text <> 'lv_previous_layer [LAYER3_1] || lv_current_layer [LAYER3_1]'`
-        const clogData = await this.db.getData(query)
+        const clogData = await this.oasysDb.getData(query)
         expect(clogData.length).toBe(0)
     }
 
@@ -431,7 +426,7 @@ export class Queries {
     async getSanApiTimeAndCheckDbValues(pk: number, linkedInd: 'Y' | 'N', clonedPk: number) {
 
         const sanDataTime = await this.getSanApiTime(pk, 'SAN_GET_ASSESSMENT')
-        await this.oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
+        await new AssessmentQueries(this.oasysDb).checkDbValues('oasys_set', `oasys_set_pk = ${pk}`, {
             san_assessment_linked_ind: linkedInd,
             cloned_from_prev_oasys_san_pk: clonedPk?.toString() ?? null,
             lastupd_from_san: sanDataTime
@@ -458,7 +453,7 @@ export class Queries {
         log(`Checking ${name} call for ${pk}`)
 
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_${sourceFilter}%' order by time_stamp desc`
-        const clogData = await this.db.getData(query)
+        const clogData = await this.oasysDb.getData(query)
         const oasysSetSanData = await this.getOasysSetSanData(pk)
 
         let failed = false
@@ -500,15 +495,16 @@ export class Queries {
                 failed = true
             }
 
-            if (oasysSetSanData.sanVersion) {
-                const sanVersionNumber = findSanVersion(clogData[0][0])
-                if (sanVersionNumber != oasysSetSanData.sanVersion) {
-                    log(`Expected version: ${oasysSetSanData.sanVersion}, found ${sanVersionNumber}`)
-                    failed = true
-                }
-            }
-
             if (oasysSetSanData.spVersion && name != 'Delete' && name != 'Undelete') {
+
+                if (oasysSetSanData.sanVersion) {
+                    const sanVersionNumber = findSanVersion(clogData[0][0])
+                    if (sanVersionNumber != oasysSetSanData.sanVersion) {
+                        log(`Expected version: ${oasysSetSanData.sanVersion}, found ${sanVersionNumber}`)
+                        failed = true
+                    }
+                }
+
                 const spVersionNumber = findSpVersion(clogData[0][0])
                 if (spVersionNumber != oasysSetSanData.spVersion) {
                     log(`Expected SP version: ${oasysSetSanData.spVersion}, found ${spVersionNumber}`)
@@ -534,7 +530,7 @@ export class Queries {
                     and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
                     and st.oasys_set_pk = ${pk}`
 
-        const count = await this.db.selectCount(query)
+        const count = await this.oasysDb.selectCount(query)
         expect(count).toBeLessThanOrEqual(3)   // Expect 3 questions to be populated by getAssessment (8.4, 8.5 and 8.6)
     }
 
@@ -562,7 +558,7 @@ export class Queries {
 
         const query = `select to_char(lastupd_from_san, '${oasysDateTime.oracleTimestampFormat}'), to_char(lastupd_date, '${oasysDateTime.oracleTimestampFormat}')
                 from eor.oasys_set where oasys_set_pk = ${pk}`
-        const data = await this.db.getData(query)
+        const data = await this.oasysDb.getData(query)
         return data[0]
     }
 
@@ -573,7 +569,7 @@ export class Queries {
                 where st.oasys_set_pk = s.oasys_set_pk and s.oasys_section_pk = q.oasys_section_pk
                 and q.ref_question_code <> 'R2.2.2'
                 and st.oasys_set_pk = ${pk}`
-        const data = await this.db.getData(query)
+        const data = await this.oasysDb.getData(query)
         return data[0][0]
     }
 
@@ -581,7 +577,7 @@ export class Queries {
 
         const query = `select count(*) from eor.oasys_section where oasys_set_pk = ${pk} 
                 and section_status_elm = 'COMPLETE_LOCKED' and ref_section_code in ('SAN', 'SSP')`
-        return await this.db.selectCount(query)
+        return await this.oasysDb.selectCount(query)
     }
 }
 
@@ -604,4 +600,22 @@ function findSpVersion(data: string): number {
     const vEnd = spVersionNumber.search('}')
     const number = parseInt(spVersionNumber.substring(0, vEnd))
     return number
+}
+
+function arraySort(a: object, b: object): number {
+
+    const aString = concatObject(a)
+    const bString = concatObject(b)
+
+    return aString > bString ? 1 : aString < bString ? -1 : 0
+}
+
+function concatObject(obj: object): string {
+
+    // Concatenate all properties in an object to create a sort order
+    let result = ''
+    Object.keys(obj).sort().forEach((key) => {
+        result += obj[key]
+    })
+    return result
 }

@@ -17,13 +17,13 @@ describe('SAN integration - test ref 13 part 2', () => {
                     Return back to the Offender record in OASys.`)
 
             await oasys.login(oasys.users.admin, oasys.users.probationSan)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
             await assessment.openLatest()
             new oasys.Pages.Assessment.Other.MarkAssessmentHistoric().goto().ok.click()
             await oasys.logout()
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByPnc(offender.pnc)
+            await offender.searchAndSelect(offender1)
 
             await assessment.openLatest()
 

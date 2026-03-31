@@ -34,15 +34,15 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
     await offender.searchAndSelect(offender1)
     await assessment.deleteLatest()
-    await oasys.queries.checkDeleted(o1pk1)
-    await oasys.queries.checkSigningRecord(o1pk1, ['ASSMT_DEL_SIGNING', 'SIGNING'])
+    await assessment.queries.checkDeleted(o1pk1)
+    await assessment.queries.checkSigningRecord(o1pk1, ['ASSMT_DEL_SIGNING', 'SIGNING'])
     await san.queries.checkSanDeleteCall(o1pk1, oasys.users.admin)
 
     log(`Test ref 30 - reverse deletion test`, 'Test step')
     await assessment.reverseDeletion(offender1, 'Assessment', 'Start of Community Order', 'Test ref 30 part 1 deletion reversal')
 
-    await oasys.queries.checkNotDeleted(o1pk1)
-    await oasys.queries.checkSigningRecord(o1pk1, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'SIGNING'])
+    await assessment.queries.checkNotDeleted(o1pk1)
+    await assessment.queries.checkSigningRecord(o1pk1, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'SIGNING'])
     await san.queries.checkSanUndeleteCall(o1pk1, oasys.users.admin)
 
     await oasys.logout()
@@ -68,16 +68,16 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
     await offender.searchAndSelect(offender1)
     await assessment.deleteLatest()
-    await oasys.queries.checkDeleted(o1pk2)
-    await oasys.queries.checkSigningRecord(o1pk2, ['ASSMT_DEL_SIGNING'])
+    await assessment.queries.checkDeleted(o1pk2)
+    await assessment.queries.checkSigningRecord(o1pk2, ['ASSMT_DEL_SIGNING'])
     await san.queries.checkSanDeleteCall(o1pk2, oasys.users.admin)
 
 
     log(`Test ref 30 - reverse deletion test`)
     await assessment.reverseDeletion(offender1, 'Assessment', 'Review', 'Test ref 30 part 2 deletion reversal')
 
-    await oasys.queries.checkNotDeleted(o1pk2)
-    await oasys.queries.checkSigningRecord(o1pk2, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING'])
+    await assessment.queries.checkNotDeleted(o1pk2)
+    await assessment.queries.checkSigningRecord(o1pk2, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING'])
     await san.queries.checkSanUndeleteCall(o1pk2, oasys.users.admin)
 
     // Leave the offender ready for part 4
@@ -150,8 +150,8 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
     await assessment.open(2)  // SARA is second on the list
     await sara.deleteSara()
 
-    await oasys.queries.checkDeleted(saraPk)
-    await oasys.queries.checkSigningRecord(saraPk, ['SARA_DEL_SIGNING', 'SARA_SIGNING'])
+    await assessment.queries.checkDeleted(saraPk)
+    await assessment.queries.checkSigningRecord(saraPk, ['SARA_DEL_SIGNING', 'SARA_SIGNING'])
     await san.queries.checkNoSanCall(saraPk)
 
     log(`Now open up the OASys-SAN assessment
@@ -163,17 +163,17 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
     await oasys.history(offender2)
     await assessment.deleteLatest()
     await san.queries.checkSanDeleteCall(o2pk1, oasys.users.admin)
-    await oasys.queries.checkDeleted(o2pk1)
-    await oasys.queries.checkSigningRecord(o2pk1, ['ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
+    await assessment.queries.checkDeleted(o2pk1)
+    await assessment.queries.checkSigningRecord(o2pk1, ['ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
 
     log(`Test ref 30 - reverse deletion test`)
     await assessment.reverseDeletion(offender2, 'Assessment', 'Start', 'Test ref 30 part 3 deletion reversal')
 
-    await oasys.queries.checkNotDeleted(o2pk1)
-    await oasys.queries.checkSigningRecord(o2pk1, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
+    await assessment.queries.checkNotDeleted(o2pk1)
+    await assessment.queries.checkSigningRecord(o2pk1, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'COUNTERSIGNING', 'SIGNING'])
     await san.queries.checkSanUndeleteCall(o2pk1, oasys.users.admin)
-    await oasys.queries.checkNotDeleted(saraPk)
-    await oasys.queries.checkSigningRecord(saraPk, ['SARA_DEL_RESTORE', 'SARA_DEL_SIGNING', 'SARA_SIGNING'])
+    await assessment.queries.checkNotDeleted(saraPk)
+    await assessment.queries.checkSigningRecord(saraPk, ['SARA_DEL_RESTORE', 'SARA_DEL_SIGNING', 'SARA_SIGNING'])
     await san.queries.checkNoSanCall(saraPk)
 
     await oasys.logout()
@@ -186,7 +186,7 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
 
     await offender.searchAndSelect(offender1)
     const o1pk3 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
-    await signing.signAndLock({ page: 'spService', expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
+    await signing.signAndLock({ page: 'spService', expectRsrWarning: true, expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
     await oasys.logout()
 
     log(`Log into the SAN Pilot area as an Administrator
@@ -199,20 +199,20 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
     await offender.searchAndSelect(offender1)
     await assessment.deleteLatest()
-    await oasys.queries.checkDeleted(o1pk3)
-    await oasys.queries.checkSigningRecord(o1pk3, ['ASSMT_DEL_SIGNING', 'SIGNING'])
+    await assessment.queries.checkDeleted(o1pk3)
+    await assessment.queries.checkSigningRecord(o1pk3, ['ASSMT_DEL_SIGNING', 'SIGNING'])
     await san.queries.checkSanDeleteCall(o1pk3, oasys.users.admin)
 
     log(`Test ref 30 - reverse deletion test`)
     await assessment.reverseDeletion(offender1, 'Assessment', 'Start', 'Test ref 30 part 4 deletion reversal')
 
-    await oasys.queries.checkNotDeleted(o1pk3)
-    await oasys.queries.checkSigningRecord(o1pk3, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'SIGNING'])
+    await assessment.queries.checkNotDeleted(o1pk3)
+    await assessment.queries.checkSigningRecord(o1pk3, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'SIGNING'])
     await san.queries.checkSanUndeleteCall(o1pk3, oasys.users.admin)
 
     // Leave the offender ready for part 5
     await oasys.history(offender1)
-    await assessment.lockIncomplete()
+    await assessment.lockIncomplete(o1pk3, 'Do you wish to lock the assessment as incomplete? This assessment is currently awaiting countersignature')
 
     await oasys.logout()
 
@@ -240,16 +240,16 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
     await offender.searchAndSelectByPnc(offender1.pnc)
     await assessment.deleteLatest()
-    await oasys.queries.checkDeleted(o1pk4)
-    await oasys.queries.checkSigningRecord(o1pk4, ['ASSMT_DEL_SIGNING', 'LOCKED_INCOMPLETE'])
+    await assessment.queries.checkDeleted(o1pk4)
+    await assessment.queries.checkSigningRecord(o1pk4, ['ASSMT_DEL_SIGNING', 'LOCKED_INCOMPLETE'])
     await san.queries.checkSanDeleteCall(o1pk4, oasys.users.admin)
 
 
     log(`Test ref 30 - reverse deletion test`)
     await assessment.reverseDeletion(offender1, 'Assessment', 'Start', 'Test ref 30 part 5 deletion reversal')
 
-    await oasys.queries.checkNotDeleted(o1pk4)
-    await oasys.queries.checkSigningRecord(o1pk4, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'LOCKED_INCOMPLETE'])
+    await assessment.queries.checkNotDeleted(o1pk4)
+    await assessment.queries.checkSigningRecord(o1pk4, ['ASS_DEL_RESTORE', 'ASSMT_DEL_SIGNING', 'LOCKED_INCOMPLETE'])
     await san.queries.checkSanUndeleteCall(o1pk4, oasys.users.admin)
 
     await oasys.logout()

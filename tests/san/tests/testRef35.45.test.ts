@@ -24,7 +24,7 @@ test('SAN integration - test refs 35 and 45', async ({ oasys, offender, assessme
     await assessment.summarySheet.goto()
     await assessment.summarySheet.maturityScreening.checkValue('This individual is likely to need support or services aimed at promoting maturation.', true)
 
-    oasys.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
+    await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
         SAN_ASSESSMENT_LINKED_IND: 'Y',
         MATURITY_SCORE: '14',
         MATURITY_FLAG: '1',
@@ -44,7 +44,7 @@ test('SAN integration - test refs 35 and 45', async ({ oasys, offender, assessme
     await risk.screeningNoRisks(true)
     await signing.signAndLock({ page: 'spService' })
 
-    let failed = await oasys.queries.checkAnswers(pk1, testData.preRsrDataCheck, true)
+    let failed = await assessment.queries.checkAnswers(pk1, testData.preRsrDataCheck, true)
     expect(failed).toBeFalsy()
 
     log(`Then create a standalone RSR changing some data for the section 1 parameters and R1.2 fields.  
@@ -95,7 +95,7 @@ test('SAN integration - test refs 35 and 45', async ({ oasys, offender, assessme
     await offender.standaloneCsrp.close.click()
 
     const pk2 = await assessment.createProb({ purposeOfAssessment: 'Review', includeSanSections: 'Yes' })
-    failed = await oasys.queries.checkAnswers(pk2, testData.postRsrDataCheck, true)
+    failed = await assessment.queries.checkAnswers(pk2, testData.postRsrDataCheck, true)
     expect(failed).toBeFalsy()
     await oasys.clickButton('Close')
 
