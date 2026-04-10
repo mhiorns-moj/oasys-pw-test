@@ -13,6 +13,7 @@ export class Tasks {
     readonly assessmentWipTask = new pages.AssessmentWipTask(this.page)
     readonly countersignatureTask = new pages.CountersignatureTask(this.page)
     readonly mergeTask = new pages.MergeTask(this.page)
+    readonly transferDecisionTask = new pages.TransferDecisionTask(this.page)
 
 
     /**
@@ -86,5 +87,14 @@ export class Tasks {
 
         await this.mergeTask.grantButRetainOwnership.click()
         log(`Granted merge for ${surname}`)
+    }
+
+        async grantTransfer(surname: string) {
+
+        await this.search({ taskName: 'Transfer Request Received - Decision Required', offenderName: surname })
+        await this.selectFirstTask()
+        await this.transferDecisionTask.grantTransfer.click()
+
+        log(`Granted transfer for ${surname}`)
     }
 }

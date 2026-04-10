@@ -23,7 +23,7 @@ test('SAN integration - RFI test', async ({ oasys, offender, assessment }) => {
     await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)', includeSanSections: 'Yes' })
 
     await assessment.rfis.goto()
-    await assessment.rfis.rfiTable.checkCount(1)
+    await assessment.rfis.rfiTable.checkRowCount(1)
     await assessment.rfis.rfiTable.clickFirstRow()
     await offender.rfi.save.checkStatus('notVisible')
     log('Checked readonly (save button not visible)')

@@ -5,7 +5,7 @@ export class Button {
 
     selector: Locator
 
-    constructor(page: Page, selector: string) {
+    constructor(readonly page: Page, selector: string) {
 
         this.selector = selector.startsWith('#') || selector.includes('[')
             ? page.locator(selector).first()
@@ -14,6 +14,7 @@ export class Button {
 
     async click() {
         await this.selector.click()
+        await waitForPageUpdate(this.page, 100)
     }
 
     async checkStatus(status: ElementStatus) {

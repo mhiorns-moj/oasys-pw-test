@@ -20,7 +20,7 @@ describe('NOD-980: Test for RA cloning 1', () => {
 
             await assessment.populateMinimal({ layer: 'Layer 1V2' })
             await signing.signAndLock({ page: oasys.Pages.Rosh.RoshScreeningSection5, expectRsrScore: true })
-            await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+            await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
             // Second RoSHA
             await oasys.history(offender1)
@@ -37,7 +37,7 @@ describe('NOD-980: Test for RA cloning 1', () => {
                 cy.get<boolean>('@failed').then((failed) => {
                     expect(failed).equal(false)
                 })
-                await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+                await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
             })
 
         })

@@ -16,6 +16,7 @@ export class Offender {
     readonly rfi = new pages.Rfi(this.page)
     readonly standaloneCsrp = new pages.StandaloneRsr(this.page)
     readonly lao = new pages.Lao(this.page)
+    readonly requestTransferPage = new pages.RequestTransfer(this.page)
 
 
     /**
@@ -123,7 +124,7 @@ export class Offender {
      */
     async searchAndSelectByPnc(pnc: string, provider?: string) {
 
-        const params = { pnc: pnc }
+        const params: { [key: string]: string } = { pnc: pnc }
         if (provider != undefined) {
             params['provider'] = provider
         }
@@ -210,6 +211,12 @@ export class Offender {
         await oasys.clickButton('Confirm Demerge')
         await oasys.clickButton('Demerge')
         await this.page.locator('#apexConfirmBtn').click()
+    }
+
+    async requestTransfer() {
+
+        await this.offenderDetails.requestTransfer.click()
+        await this.requestTransferPage.submit.click()
     }
 
     /**

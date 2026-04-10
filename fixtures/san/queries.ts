@@ -403,22 +403,21 @@ export class Queries {
         expect(clogData.length).toBe(0)
     }
 
-    // /**
-    //  * Checks that the expected number of questions has a non-null answer for the given pk and OASys section.  Fails the test if there is a mismatch.
-    //  */
-    // async checkCountOfQuestionsInSection(pk: number, section: string, expectedCount: number) {
-    //     const sanSectionQuery = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
-    //                             where st.oasys_set_pk = s.oasys_set_pk
-    //                             and s.oasys_section_pk = q.oasys_section_pk
-    //                             and q.oasys_question_pk = a.oasys_question_pk(+)
-    //                             and s.ref_section_code = '${section}' 
-    //                             and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
-    //                             and st.oasys_set_pk = ${pk}`
-    //     await oasysDb.selectCount(sanSectionQuery, 'result')
-    //     cy.get<number>('@result').then((count) => {
-    //         expect(count).equal(expectedCount)
-    //     })
-    // }
+    /**
+     * Checks that the expected number of questions has a non-null answer for the given pk and OASys section.  Fails the test if there is a mismatch.
+     */
+    async checkCountOfQuestionsInSection(pk: number, section: string, expectedCount: number) {
+
+        const sanSectionQuery = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
+                                where st.oasys_set_pk = s.oasys_set_pk
+                                and s.oasys_section_pk = q.oasys_section_pk
+                                and q.oasys_question_pk = a.oasys_question_pk(+)
+                                and s.ref_section_code = '${section}' 
+                                and (a.ref_answer_code is not null or q.free_format_answer is not null or q.additional_note is not null)
+                                and st.oasys_set_pk = ${pk}`
+        const count = await this.oasysDb.selectCount(sanSectionQuery)
+        expect(count).toBe(expectedCount)
+    }
 
     /**
      * Gets the SAN update tiem from clog, then checks the SAN update details in oasys_set
@@ -534,25 +533,21 @@ export class Queries {
         expect(count).toBeLessThanOrEqual(3)   // Expect 3 questions to be populated by getAssessment (8.4, 8.5 and 8.6)
     }
 
-    // /**
-    //  * Check that IP.1 and IP.2 have not been created in the database.
-    //  */
-    // async checkNoIspQuestions1Or2(pk: number) {
+    /**
+     * Check that IP.1 and IP.2 have not been created in the database.
+     */
+    async checkNoIspQuestions1Or2(pk: number) {
 
-    //     const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
-    //                     where st.oasys_set_pk = s.oasys_set_pk
-    //                     and s.oasys_section_pk = q.oasys_section_pk
-    //                     and s.ref_section_code = 'ISP'
-    //                     and q.ref_question_code in ('IP.1', 'IP.2')
-    //                     and st.oasys_set_pk = ${pk}`
+        const query = `select count(*) from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q
+                        where st.oasys_set_pk = s.oasys_set_pk
+                        and s.oasys_section_pk = q.oasys_section_pk
+                        and s.ref_section_code = 'ISP'
+                        and q.ref_question_code in ('IP.1', 'IP.2')
+                        and st.oasys_set_pk = ${pk}`
 
-    //     await oasysDb.selectCount(query, 'count')
-    //     cy.get<number>('@count').then((count) => {
-    //         if (count > 0) {
-    //             throw new Error(`Unexpected ISP questions found for assessment ${pk}`)
-    //         }
-    //     })
-    // }
+        const count = await this.oasysDb.selectCount(query)
+        expect(count).toBe(0)
+    }
 
     async getOasysSetUpdateTimes(pk: number): Promise<string[]> {
 
@@ -602,7 +597,7 @@ function findSpVersion(data: string): number {
     return number
 }
 
-function arraySort(a: object, b: object): number {
+function arraySort(a: { [key: string]: string }, b: { [key: string]: string }): number {
 
     const aString = concatObject(a)
     const bString = concatObject(b)
@@ -610,7 +605,7 @@ function arraySort(a: object, b: object): number {
     return aString > bString ? 1 : aString < bString ? -1 : 0
 }
 
-function concatObject(obj: object): string {
+function concatObject(obj: { [key: string]: string }): string {
 
     // Concatenate all properties in an object to create a sort order
     let result = ''

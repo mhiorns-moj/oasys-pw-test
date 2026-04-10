@@ -26,8 +26,8 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
         oasys.Populate.San.NewSpService.minimal()
 
         // Sign assessment and send for countersigning, then check SNS messages
-        await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService, expectCountersigner: true, expectRsrWarning: true, countersigner: oasys.users.probSanHeadPdu })
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS'])
+        await signing.signAndLock({ page: 'spService', expectCountersigner: true, expectRsrWarning: true, countersigner: oasys.users.probSanHeadPdu })
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['OGRS'])
         await oasys.logout()
 
         // Countersign assessment then check SNS messages again
@@ -35,9 +35,9 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
 
         await offender.searchAndSelect('@offender1')
         await assessment.openLatest()
-        await signing.countersign({ page: oasys.Pages.SentencePlan.SentencePlanService, comment: 'Test comment' })
+        await signing.countersign({ page: 'spService', comment: 'Test comment' })
 
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm'])
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])
         await oasys.logout()
 
         // Create another assessment, this one with OPD override and RSR
@@ -51,19 +51,19 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
         await sections.predictors.o1_30.setValue('No')
         await sections.predictors.o1_38.setValue({ years: 1 })
         const summarySheet = new oasys.Pages.Assessment.SummarySheet()
-        summarySheet.goto().opdOverride.setValue('Yes')
-        summarySheet.opdOverrideReason.setValue('Testing')
+        await assessment.summarySheet.goto().opdOverride.setValue('Yes')
+        await assessment.summarySheet.opdOverrideReason.setValue('Testing')
 
         // Sign assessment and check SNS messages
         await signing.signAndLock({ page: oasys.Pages.SentencePlan.IspSection52to8, expectCountersigner: true, countersigner: oasys.users.probSanHeadPdu })
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['OGRS', 'RSR'])
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['OGRS', 'RSR'])
         await oasys.logout()
 
         // Countersign assessment then check SNS messages again
         await oasys.login(oasys.users.probSanHeadPdu)
         await signing.countersign({ offender: offender, comment: 'Test comment' })
 
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OPD'])
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OPD'])
         await oasys.logout()
 
     })

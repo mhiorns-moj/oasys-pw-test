@@ -39,11 +39,11 @@ export class Predictors extends BaseAssessmentPage {
     o1_43 = new Element.Textbox<OasysDate>(this.page, '#itm_1_43', true)
 
     /** All reoffending predictor */
-    arp = new Element.Text(this.page, "td:contains('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    arp = new Element.Text(this.page, "td:has-text('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
     /** Violent reoffending predictor */
-    vrp = new Element.Text(this.page, "td:contains('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td:first")
+    vrp = new Element.Text(this.page, ":nth-match(td:has-text('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td,1)")
     /** Servious violent reoffending predictor */
-    svrp = new Element.Text(this.page, "td:contains('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    svrp = new Element.Text(this.page, "td:has-text('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
     ospDc = new Element.Textbox<string>(this.page, '#textarea_D6')
     ospIic = new Element.Textbox<string>(this.page, '#textarea_D5')
     rsrScore = new Element.Textbox<string>(this.page, '#textarea_D3')
@@ -57,6 +57,33 @@ export class Predictors extends BaseAssessmentPage {
         await this.dateFirstSanction.setValue({ years: -2 })
         await this.o1_32.setValue(2)
         await this.o1_40.setValue(0)
+    }
+
+
+    async populateFull(params: PopulateAssessmentParams) {
+
+        log(`Fully populating Predictors page, parameters = ${JSON.stringify(params)}`)
+        await this.goto()
+        await this.dateFirstSanction.setValue({ years: -3 })
+        await this.o1_32.setValue(2)
+        await this.o1_40.setValue(0)
+        await this.o1_29.setValue({ months: -6 })
+        if (params.r1_30PrePopulated != true) {
+            await this.o1_30.setValue('Yes')
+        }
+        if (params.r1_41PrePopulated != true) {
+            await this.o1_41.setValue('Yes')
+        }
+        await this.o1_44.setValue('Yes')
+        await this.o1_33.setValue({ months: -6 })
+        await this.o1_34.setValue(1)
+        await this.o1_45.setValue(1)
+        await this.o1_46.setValue(1)
+        await this.o1_38.setValue({ months: -1 })
+        await this.o1_37.setValue(1)
+        if (params.provider != 'pris') {
+            await this.o1_43.setValue({ days: -5 })
+        }
     }
 }
 

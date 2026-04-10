@@ -98,6 +98,7 @@ export class Assessment {
     async getToCreateAssessmentPage(suppressLog: boolean = false) {
 
         await this.offender.offenderDetails.createAssessment.click()
+        await waitForPageUpdate(this.page)
         if (this.oasys.appConfig.probForceCrn) {
             await this.cms.cmsAssessmentSearch()
         }

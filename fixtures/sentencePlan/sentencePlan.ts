@@ -11,6 +11,8 @@ export class SentencePlan {
     constructor(private readonly page: Page, private readonly oasys: Oasys) { }
 
     readonly basicSentencePlan = new pages.BasicSentencePlan(this.page)
+    readonly ispSection52to8 = new pages.IspSection52to8(this.page)
+    readonly rspSection72to10 = new pages.RspSection72to10(this.page)
     readonly spService = new SpService(this.page, this.oasys)
 
     /**

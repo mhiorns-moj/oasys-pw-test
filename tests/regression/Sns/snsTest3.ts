@@ -40,7 +40,7 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
         roshScreening2.next.click()
 
         await signing.signAndLock({ expectRsrScore: true })
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
         // First L1
         await oasys.history(offender1)
@@ -64,7 +64,7 @@ describe('Create assessments and check SNS messages - RoSHA plus layer 1', () =>
         await sections.selfAssessmentForm.populateMinimal()
 
         await signing.signAndLock({ page: oasys.Pages.SentencePlan.BasicSentencePlan, })
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
     })
 

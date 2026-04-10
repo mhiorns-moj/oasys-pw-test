@@ -9,7 +9,7 @@
 import { Page } from '@playwright/test'
 
 import { Element } from 'classes'
-import {  Oasys, OasysDb, Sections, SentencePlan } from 'fixtures'
+import { Oasys, OasysDb, Risk, Sections, SentencePlan } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
 import * as exampleTest from './exampleTest'
@@ -106,24 +106,6 @@ export class San {
         expect(count).toBeGreaterThan(0)
         log(`Checked value for ${label}`)
     }
-
-    /**
-     * Enter text in a date field.  Parameters are:
-     *   - item: a SanId defining a San date group of textboxes (with an id that doesn't have the -day etc suffixes)
-     *   - text: the date to enter - should be in 'DD/MM/YYYY' format
-     */
-    // async enterDate(item: SanId, value: string) {
-
-    //     const dateValues = value.split('/')
-    //     cy.get(`${item.id}-day`).clear()
-    //     cy.get(`${item.id}-month`).clear()
-    //     cy.get(`${item.id}-year`).clear()
-    //     if (value) {
-    //         cy.get(`${item.id}-day`).type(dateValues[0])
-    //         cy.get(`${item.id}-month`).type(dateValues[1])
-    //         cy.get(`${item.id}-year`).type(dateValues[2])
-    //     }
-    // }
 
     /**
      * Run the specified script to enter values in the SAN assessment, return to OASys and check values in the database.
@@ -296,7 +278,7 @@ export class San {
      * Checks the floating menu to see if sections 2 to 13 and the self-assessment form are there or not, and checks for the SAN and SP sections.
      * Parameter is true for SAN mode, false for normal OASys mode (layer 3.1), the test fails if the menu is not as expected.
      */
-    async checkLayer3Menu(sanMode: boolean, sections: Sections, sentencePlan: SentencePlan) {
+    async checkLayer3Menu(sanMode: boolean, sections: Sections) {
 
         await sections.section2.checkMenuVisibility(!sanMode)
         await sections.section3.checkMenuVisibility(!sanMode)
@@ -312,10 +294,7 @@ export class San {
         await sections.section13.checkMenuVisibility(!sanMode)
         await sections.selfAssessmentForm.checkMenuVisibility(!sanMode)
         await this.sanSections.checkMenuVisibility(sanMode)
-        await sentencePlan.spService.sentencePlanService.checkMenuVisibility(true)
     }
-
-
 
     // /**
     //  * Checks that the sections (plus SAF) are all either marked as complete on not.
@@ -337,35 +316,31 @@ export class San {
     //     new oasys.Pages.Assessment.SelfAssessmentForm().checkCompletionStatus(expectedStatus)
     // }
 
-    // /**
-    //  * Checks that the sections in an OASys SAN assessment are all marked complete or not on the floating menu.
-    //  */
-    // async checkSanAssessmentCompletionStatus(expectedStatus: boolean) {
+    /**
+     * Checks that the sections in an OASys SAN assessment are all marked complete or not on the floating menu.
+     */
+    async checkSanAssessmentCompletionStatus(expectedStatus: boolean, sections: Sections, san: San, risk: Risk) {
 
-    //     new oasys.Pages.Assessment.OffenderInformation().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.SourcesOfInformation().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.OffendingInformation().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Predictors().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.SanSections().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Rosh.RoshScreeningSection1().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Rosh.RoshScreeningSection2to4().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Rosh.RoshScreeningSection5().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.SentencePlan.SentencePlanService().checkCompletionStatus(expectedStatus)
-    // }
+        await sections.offenderInformation.checkCompletionStatus(expectedStatus)
+        await sections.sourcesOfInformation.checkCompletionStatus(expectedStatus)
+        await sections.offendingInformation.checkCompletionStatus(expectedStatus)
+        await sections.predictors.checkCompletionStatus(expectedStatus)
+        await san.sanSections.checkCompletionStatus(expectedStatus)
+        await risk.screeningSection1.checkCompletionStatus(expectedStatus)
+        await risk.screeningSection2to4.checkCompletionStatus(expectedStatus)
+        await risk.screeningSection5.checkCompletionStatus(expectedStatus)
+    }
 
-    // /**
-    //  * Assuming you are in the SAN assessment, check that the specified number of SAN sections are showing as complete.
-    //  */
-    // async checkSanSectionsCompletionStatus(expectComplete: number) {
+    /**
+     * Assuming you are in the SAN assessment, check that the specified number of SAN sections are showing as complete.
+     */
+    async checkSanSectionsCompletionStatus(expectComplete: number) {
 
-    //     cy.get('.moj-side-navigation__list').then((container) => {
-    //         const ticks = container.find('.section-complete').length
-    //         if (ticks != expectComplete) {
-    //             throw new Error(`Expected ${expectComplete} sections to be complete, found ${ticks}`)
-    //         }
-    //         log(`Checked SAN sections completion status: ${expectComplete} sections complete.`)
-    //     })
-    // }
+        await waitForPageUpdate(this.page)
+        const count = await this.page.locator('.moj-side-navigation__list').locator('.section-complete').count()
+        expect(count).toBe(expectComplete)
+        log(`Checked SAN sections completion status: ${expectComplete} sections complete.`)
+    }
 
     /**
      * Assuming you are in a SAN screen (not the section landing screen), checks that it is in edit mode (true) or readonly mode (false).  Test fails if not.
@@ -384,23 +359,6 @@ export class San {
         log(`Checked SAN edit mode: ${expectEdit}.`)
     }
 
-}
-function arraySort(a: object, b: object): number {
-
-    const aString = concatObject(a)
-    const bString = concatObject(b)
-
-    return aString > bString ? 1 : aString < bString ? -1 : 0
-}
-
-function concatObject(obj: object): string {
-
-    // Concatenate all properties in an object to create a sort order
-    let result = ''
-    Object.keys(obj).sort().forEach((key) => {
-        result += obj[key]
-    })
-    return result
 }
 
 // Change SAN values to allow 1.30 to be editable in OASys

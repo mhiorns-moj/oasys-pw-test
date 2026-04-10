@@ -47,4 +47,10 @@ export class SummarySheetLikelihoodHarmOthersTable extends Element.Table {
 export class SummarySheetConcernsTable extends Element.Table {
 
     concern = new Element.Column(this.page, Element.ColumnType.Column, '', this.id)
+
+    async getRowCount(): Promise<number> {
+
+        const rows = await super.getRowCount()
+        return rows == 0 ? 0 : rows - 1  // This table includes a header in the table body
+    }
 }

@@ -61,16 +61,6 @@ export class Textbox<T> {
         expect(statusAndValue.status).toBe(status)
     }
 
-    // checkLabel(label: string) {
-
-    //     cy.get(this.selector).parent().parent().parent().find('label').then((labelElement) => {
-    //         const actualLabel = labelElement[0].textContent
-    //         if (actualLabel != label) {
-    //             throw new Error(`Incorrect label for ${this.selector}: expected '${label}', found '${actualLabel}'`)
-    //         }
-    //     })
-    // }
-
     /**
      * Gets the current status and value of a text element, assumes it exists
      * 
@@ -88,7 +78,7 @@ export class Textbox<T> {
                 let editable = await this.selector.isEditable()
                 if (editable) {
                     const oasysReadonly =
-                        (await this.selector.getAttribute('class')).includes('input_readonly') ||
+                        (await this.selector.getAttribute('class'))?.includes('input_readonly') ||
                         (await this.selector.getAttribute('readonly')) == 'true' ||
                         (await this.selector.getAttribute('mimic_readonly')) == 'true' ||
                         (await this.selector.getAttribute('data-mimic_readonly')) == 'true'

@@ -4,29 +4,25 @@ import { Column } from './column'
 
 export class Table {
 
-    id: string
-    name: string
+    selector: Locator
 
-    constructor(readonly page: Page, id: string, name: string) {
+    constructor(readonly page: Page, readonly id: string, readonly name: string) {
 
-        this.id = id
-        this.name = name
+        this.selector = this.page.locator(`#${id}`)
     }
 
     /**
      * Gets data from all visible rows in an array of ColumnValues objects, each containing the column name and a string array of values, returned using an alias.
      */
-    // getData(resultAlias: string) {
+    async getData(): Promise<ColumnValues[]> {
 
-    //     const result: ColumnValues[] = []
-    //     Object.keys(this).filter((k) => !['id', 'name'].includes(k)).forEach((key) => {
-    //         (this[key] as Column).getValues('values')
-    //         cy.get<string[]>('@values').then((values) => {
-    //             result.push({ name: key, values: values })
-    //         })
-    //     })
-    //     cy.wrap(result).as(resultAlias)
-    // }
+        const result: ColumnValues[] = []
+        for (const key of Object.keys(this).filter((k) => !['page', 'id', 'name', 'selector'].includes(k))) {
+            const values = await (this[key as keyof this] as Column).getValues()
+            result.push({ name: key, values: values })
+        }
+        return result
+    }
 
     /** 
      * Checks the content of one or more columns in a table.  Expected values should be passed as an array of ColumnValues objects,
@@ -40,21 +36,15 @@ export class Table {
         let failed = false
 
         for (let exp of expectedValues) {
-            if (this[exp.name].getValues == undefined) {
-                log(`Invalid column name: ${exp.name}`)
+            const values = await (this[exp.name as keyof this] as Column).getValues()
+            if (values.length != exp.values.length) {
+                log(`Mismatched row count on column ${exp.name}: expected ${exp.values.length}, found ${values.length}`)
                 failed = true
-
             } else {
-                const values = await (this[exp.name] as Column).getValues()
-                if (values.length != exp.values.length) {
-                    log(`Mismatched row count on column ${exp.name}: expected ${exp.values.length}, found ${values.length}`)
-                    failed = true
-                } else {
-                    for (let i = 0; i < exp.values.length; i++) {
-                        if (values[i] != exp.values[i]) {
-                            log(`Column ${exp.name} row ${i}: expected ${exp.values[i]}, found ${values[i]}`)
-                            failed = true
-                        }
+                for (let i = 0; i < exp.values.length; i++) {
+                    if (values[i] != exp.values[i]) {
+                        log(`Column ${exp.name} row ${i}: expected ${exp.values[i]}, found ${values[i]}`)
+                        failed = true
                     }
                 }
             }
@@ -66,27 +56,28 @@ export class Table {
     /** 
      * Check if the table is visible (true) or not (false)
      */
-    // checkVisibility(expectVisible: boolean) {
+    async checkVisibility(expectVisible: boolean) {
 
-    //     cy.get(`#${this.id}`).should(expectVisible ? 'be.visible' : 'not.exist')
-    // }
+        await expect(this.selector).toBeVisible({ visible: expectVisible })
+    }
 
     /** 
      * Check if the table has the expected number of rows
      */
-    async checkCount(expectedRows: number) {
+    async checkRowCount(expectedRows: number) {
 
         log(`Checking table row count, expected count = ${expectedRows}`)
-        await this.firstColumn().checkCount(expectedRows)  // Get first column property to check the row count
+        const rows = await this.getRowCount()
+        expect(rows).toBe(expectedRows)
     }
 
     /**
      * Check if the table contains text
      */
-    // checkText(text: string) {
+    async checkText(text: string) {
 
-    //     cy.get(`#${this.id}`).should('contain', text)
-    // }
+        await expect(this.selector).toContainText(text)
+    }
 
     /**
      * Click the first row in a table
@@ -104,8 +95,18 @@ export class Table {
         await this.firstColumn().clickNthRow(n)
     }
 
+    async getRowCount(): Promise<number> {
+
+        await this.selector.waitFor()
+        const noData = await this.selector.locator('.nodatafound').count()
+        if (noData) {
+            return 0
+        }
+        return await this.selector.locator('tbody').locator('tr').count()
+    }
+
     firstColumn(): Column {
-        return (this[Object.keys(this).filter((k) => !['page', 'id', 'name'].includes(k))[0]] as Column)
+        return (this[Object.keys(this).filter((k) => !['page', 'id', 'name', 'selector'].includes(k))[0] as keyof this] as Column)
     }
 
 }

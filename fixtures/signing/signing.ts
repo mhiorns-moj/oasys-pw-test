@@ -1,4 +1,5 @@
 import { Page, TestInfo } from '@playwright/test'
+import * as fs from 'fs-extra'
 
 import { Oasys, Assessment, Tasks } from 'fixtures'
 import * as pages from './pages'
@@ -98,12 +99,12 @@ export class Signing {
 
         if (params?.offender) {
             await this.tasks.openAssessmentFromCountersigningTask(params.offender)
-            await this.oasys.clickButton('Return to Assessment')
+            await this.oasys.clickButton('Return to Assessment', true)
         }
 
         await this.oasys.gotoSigningPage(params?.page)
 
-        await this.oasys.clickButton('Countersign')
+        await this.oasys.clickButton('Countersign', true)
         await this.countersigning.selectAction.setValue('Countersign')
         await this.countersigning.comments.setValue(params?.comment ?? 'Countersigning the assessment')
         await this.countersigning.ok.click()
@@ -115,6 +116,7 @@ export class Signing {
         }
 
         await this.tasks.taskManager.checkCurrent(true)
+        log('Countersigned assessment')
     }
 
     /**
@@ -160,41 +162,53 @@ export class Signing {
      * 
      * Assumes that the file is in data/errorText; the parameter passed should be just the filename without folder or extension.
      */
-    // async checkSignAndLockErrorsVisible(errorFile: string) {
+    async checkSignAndLockErrorsVisible(errorFile: string) {
 
-    //     log(`Checking for errors listed in data/errorText/${errorFile}`)
-    //     cy.fixture<string[]>(`errorText/${errorFile}`).then((errors) => {
-    //         errors.forEach((error) => {
-    //             cy.contains('td', error).should('be.visible')
-    //         })
-    //     })
-    // }
+        log(`Checking for errors listed in data/errorText/${errorFile}`)
+        let failed = false
+        const errorFileContents = await fs.readFile(`tests/data/errorText/${errorFile}.json`)
+        const errors = JSON.parse(errorFileContents.toString())
+
+        for (let error of errors) {
+            const count = await this.page.locator('td').filter({ hasText: error }).count()
+            if (count == 0) {
+                failed = true
+                log(`Expected error text not found: ${error}`)
+            }
+        }
+        expect(failed).toBeFalsy()
+    }
 
     /**
      * Checks that the errors listed in the specified data file are NOT visible on the sign & lock page.  Fails the test if any are visible.
      * 
      * Assumes that the file is in data/errorText; the parameter passed should be just the filename without folder or extension.
      */
-    // async checkSignAndLockErrorsNotVisible(errorFile: string) {
+    async checkSignAndLockErrorsNotVisible(errorFile: string) {
 
-    //     log(`Checking for errors listed in data/errorText/${errorFile}`)
-    //     cy.fixture<string[]>(`errorText/${errorFile}`).then((errors) => {
-    //         errors.forEach((error) => {
-    //             cy.contains('td', error).should('not.exist')
-    //         })
-    //     })
-    // }
+        log(`Checking for errors listed in data/errorText/${errorFile}`)
+        let failed = false
+        const errorFileContents = await fs.readFile(`tests/data/errorText/${errorFile}.json`)
+        const errors = JSON.parse(errorFileContents.toString())
+
+        for (let error of errors) {
+            const count = await this.page.locator('td').filter({ hasText: error }).count()
+            failed = count != 0 || failed
+        }
+        expect(failed).toBeFalsy()
+    }
 
     /**
      * Checks that single given error is visible/not visible on the sign & lock page, fails the test if not.
      */
-    // async checkSingleSignAndLockError(error: string, expectVisible: boolean) {
+    async checkSingleSignAndLockError(error: string, expectVisible: boolean) {
 
-    //     if (expectVisible) {
-    //         cy.contains('td', error).should('be.visible')
-    //     } else {
-    //         cy.contains('td', error).should('not.exist')
-    //     }
-    // }
+        const count = await this.page.locator('td').filter({ hasText: error }).count()
+        if (expectVisible) {
+            expect(count).toBe(1)
+        } else {
+            expect(count).toBe(0)
+        }
+    }
 
 }

@@ -31,20 +31,20 @@ describe('Create assessments and check SNS messages - SAN assessment', () => {
         await sentencePlan.populateMinimal()
 
         // Sign assessment, then check SNS messages
-        await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
+        await signing.signAndLock({ page: 'spService' })
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
         // Create another assessment (cloning from the one above), this one with OPD override
         await oasys.history('@offender1')
         await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
         const summarySheet = new oasys.Pages.Assessment.SummarySheet()
-        summarySheet.goto().opdOverride.setValue('Yes')
-        summarySheet.opdOverrideReason.setValue('Testing')
+        await assessment.summarySheet.goto().opdOverride.setValue('Yes')
+        await assessment.summarySheet.opdOverrideReason.setValue('Testing')
 
         // Sign assessment, then check SNS messages again
-        await signing.signAndLock({ page: oasys.Pages.SentencePlan.SentencePlanService })
-        await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR', 'OPD'])
+        await signing.signAndLock({ page: 'spService' })
+        await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR', 'OPD'])
 
         await oasys.logout()
     })

@@ -129,7 +129,7 @@ export class Cms {
 
             if (offender.event.offences != null) {
                 // Use first offence only for prison offenders if there is more than one
-                let offence = offender.event.offences.constructor.name == 'Array' ? offender.event.offences[0] : offender.event.offences
+                let offence = offender.event.offences.constructor.name == 'Array' ? (offender.event.offences as Offence[])[0] : offender.event.offences as Offence
                 await this.cmsStubEvent.offences.click()
                 await this.enterOffence(offence)
             }
@@ -178,29 +178,25 @@ export class Cms {
     /**
      * Add an existing offender to the stub (used when transferring to another probation provider).
      */
-    // export function addProbationOffenderToStub(offender: OffenderDef) {
+    async addProbationOffenderToStub(offender: OffenderDef) {
 
-    //     const cmsStub = new oasys.Pages.Stub.CmsStub()
-    //     cmsStub.goto(true)
-    //     cmsStub.createStub.click()
+        await this.cmsStub.goto(true)
+        await this.cmsStub.createStub.click()
 
-    //     const maintainCmsStub = new oasys.Pages.Stub.MaintainCmsStub()
+        let stubDetails = JSON.parse(JSON.stringify(offender)) as PageData
+        if (stubDetails.event) delete stubDetails.event
+        if (stubDetails.aliases) delete stubDetails.aliases
+        if (stubDetails.nomisId) delete stubDetails.nomisId
+        if (stubDetails.pk) delete stubDetails.pk
 
-    //     let stubDetails = JSON.parse(JSON.stringify(offender)) as PageData
-    //     if (stubDetails.event) delete stubDetails.event
-    //     if (stubDetails.aliases) delete stubDetails.aliases
-    //     if (stubDetails.nomisId) delete stubDetails.nomisId
+        await this.maintainCmsStub.setValues(stubDetails, true)
+        await this.maintainCmsStub.addressLine4.setValue(this.oasys.appConfig.currentVersion)
+        await this.maintainCmsStub.addressLine5.setValue(this.testInfo.title)
+        await this.maintainCmsStub.save.click()
+        await this.maintainCmsStub.close.click()
 
-    //     maintainCmsStub.setValues(stubDetails, true)
-    //     cy.get<string>('@appVersion').then((version) => {
-    //         maintainCmsStub.addressLine4.setValue(version)
-    //     })
-    //     maintainCmsStub.addressLine5.setValue(Cypress.currentTest.title)
-    //     maintainCmsStub.save.click()
-    //     maintainCmsStub.close.click()
-
-    //     log(`Added offender ${JSON.stringify(offender)} to stub`)
-    // }
+        log(`Added offender ${JSON.stringify(offender)} to stub`)
+    }
 
     async enterSentenceDetails(sentenceDetails: SentenceDetails | SentenceDetails[]) {
 

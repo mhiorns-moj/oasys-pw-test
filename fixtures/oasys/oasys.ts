@@ -8,6 +8,7 @@ import * as users from './users'
 import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan'
 import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
 import { ScreeningSection5 } from 'fixtures/risk/pages'
+import { RspSection1to2 } from 'fixtures/sentencePlan/pages'
 
 
 export class Oasys {
@@ -73,6 +74,7 @@ export class Oasys {
     async clickButton(label: string, suppressLog: Boolean = false) {
 
         await this.page.getByRole('button', { name: label }).first().click()
+        await waitForPageUpdate(this.page, 50)
         if (!suppressLog) log(`Click button: ${label}`)
     }
 
@@ -139,6 +141,9 @@ export class Oasys {
         switch (signingPage) {
             case 'basic':
                 await new BasicSentencePlan(this.page).goto(true)
+                break
+            case 'rsp':
+                await new RspSection1to2(this.page).goto(true)
                 break
             case 'spService':
                 await new SentencePlanService(this.page).goto(true)

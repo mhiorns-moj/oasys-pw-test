@@ -7,6 +7,10 @@ export class Queries {
 
     constructor(readonly oasysDb: OasysDb) { }
 
+    /**
+     * Returns all assessment PKs for a given offender, including deleted unless the optional second parameter is true.
+     * Oldest assessment first
+     */
     async getAllSetPksByProbationCrn(probationCrn: string, ignoreDeleted: boolean = false): Promise<number[]> {
 
         const query = ignoreDeleted ?
@@ -412,6 +416,6 @@ const answerTypes: { [keys: string]: AnswerType } = {
 
 
 // Filter used to get a list of OASys sections from a list of questions
-function onlyUnique(value, index, array) {
+function onlyUnique(value: any, index: number, array: any[]) {
     return array.indexOf(value) === index
 }

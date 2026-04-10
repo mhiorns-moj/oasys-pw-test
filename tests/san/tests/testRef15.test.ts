@@ -23,7 +23,7 @@ test('SAN integration - test ref 15', async ({ oasys, offender, assessment, sect
 
     const pk1 = await assessment.createPris({ purposeOfAssessment: 'Start custody', selectAssessor: oasys.users.prisSanUnappr.lovLookup })
 
-    await san.checkLayer3Menu(true, sections, sentencePlan)
+    await san.checkLayer3Menu(true, sections)
 
     await san.queries.checkSanCreateAssessmentCall(pk1, null, null, oasys.users.prisSanCAdm, oasys.users.prisonSanCode, 'INITIAL')
     await san.queries.checkSanGetAssessmentCall(pk1, 0)

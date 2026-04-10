@@ -7,7 +7,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
     const offender1 = await offender.createProbFromStandardOffender({ forename1: 'TestRefSeventeen', gender: 'Female' })
 
     // TODO implement IOM stub and remove elog workaround
-    // oasys.Offender.createIomStub(offender.probationCrn, 'Y', 1, 'OK', 'Y')
+    // oasys.Offender.createIomStub(offender1.probationCrn, 'Y', 1, 'OK', 'Y')
 
     log(`Create a Start of Community Order, layer 3, initial sentence plan.  
         The SAN question appears asking if they want to 'Include strengths and needs sections' which has defaulted to 'Yes' 
@@ -20,7 +20,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
         Complete Section 1 with a non-sexual offence and complete the predictors screen - RSR dynamic score can't be scored yet.`, 'TestStep')
 
     const pk1 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order' })
-    await san.checkLayer3Menu(true, sections, sentencePlan)
+    await san.checkLayer3Menu(true, sections)
 
     await san.queries.checkSanCreateAssessmentCall(pk1, null, null, oasys.users.probSanPso, oasys.users.probationSanCode, 'INITIAL')
     await assessment.queries.checkDbValues('oasys_set', `oasys_set_pk = ${pk1}`, {
@@ -294,7 +294,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
 
     await signing.countersign({ page: 'spService', comment: 'Countersigning test ref 17' })
     // TODO restore OPD check (needs IOM stub) 
-    // await sns.testSnsMessageData(offender.probationCrn, 'assessment', ['AssSumm', 'OPD'])    // Others checked at signing
+    // await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OPD'])    // Others checked at signing
     await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])
 
     await san.queries.checkSanCountersigningCall(pk1, oasys.users.probSanPo, 'COUNTERSIGNED')

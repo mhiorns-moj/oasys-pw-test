@@ -15,6 +15,7 @@ export class Sections {
     // Common pages
     readonly offenderInformation = new pages.OffenderInformation(this.page)
     readonly offendingInformation = new pages.OffendingInformation(this.page)
+    readonly sourcesOfInformation = new pages.SourcesOfInformation(this.page)
     readonly predictors = new pages.Predictors(this.page)
     readonly selfAssessmentForm = new pages.SelfAssessmentForm(this.page)
 
@@ -25,6 +26,7 @@ export class Sections {
 
     // Layer 3
     readonly section2 = new pages.Section2(this.page)
+    readonly victim = new pages.Victim(this.page)
     readonly section3 = new pages.Section3(this.page)
     readonly section4 = new pages.Section4(this.page)
     readonly section5 = new pages.Section5(this.page)

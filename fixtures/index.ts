@@ -78,8 +78,9 @@ export const test = base.extend<OasysFixtures>({
     },
 
     oasys: async ({ page, oasysDb }, use, testInfo) => {
-        const oasys = new Oasys(page, testInfo)
 
+        const oasys = new Oasys(page, testInfo)
+        oasysLog.length = 0
         oasys.appConfig = await oasysDb.getAppConfig()
 
         log(`OASys ${oasys.appConfig.currentVersion} (${testEnvironment.name})`, 'Environment')

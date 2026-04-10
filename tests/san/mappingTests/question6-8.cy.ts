@@ -36,15 +36,15 @@ describe('Mapping test for question 6.8', () => {
             const mappingTestOffender = JSON.parse(offenderDetails) as OffenderDef
 
             await oasys.login(oasys.users.admin, oasys.users.probationSan)
-            await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
-            oasys.Assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
+            await offender.searchAndSelectByCrn(mappingTestoffender1.probationCrn)
+            oasys.Assessment.deleteAll(mappingTestoffender1.surname, mappingTestoffender1.forename1)
             await oasys.logout()
 
             await oasys.login(oasys.users.probSanUnappr)
-            await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
+            await offender.searchAndSelectByCrn(mappingTestoffender1.probationCrn)
             await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-            await oasysDb.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
+            await oasysDb.getLatestSetPkByPnc(mappingTestoffender1.pnc, 'assessmentPk')
             cy.get<number>('@assessmentPk').then((assessmentPk) => {
                 const testCases: { accommodation: AccommodationOptions[], relationship: RelationshipOptions[], mapping: number }[] =
                     [

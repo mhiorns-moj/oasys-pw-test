@@ -15,7 +15,6 @@ export class Select<T extends string> {
     async setValue(value: T) {
 
         await this.selector.selectOption(value as string)
-        await waitForPageUpdate(this.page, 10)
     }
 
     async setValueByIndex(index: number) {
@@ -70,9 +69,10 @@ export class Select<T extends string> {
      * Gets the current status and value of a select element, assumes it exists
      * 
      * The return value is an ElementStatusAndValue object, containing status and value properties.
-     */
+    */
     async getStatusAndValue(): Promise<ElementStatusAndValue> {
 
+        await waitForPageUpdate(this.page, 10)
         const result: ElementStatusAndValue = { status: 'notVisible', value: '' }
         const count = await this.selector.count()
         if (count > 0) { // If element exists in the DOM
@@ -80,10 +80,10 @@ export class Select<T extends string> {
             const visible = await this.selector.isVisible()
             if (visible) {
                 result.status = 'enabled'
-                result.value = await this.selector.evaluate((sel: HTMLSelectElement) => sel.options[sel.options.selectedIndex].textContent)
+                result.value = (await this.selector.evaluate((sel: HTMLSelectElement) => sel.options[sel.options.selectedIndex].textContent)).trim()
 
-                let readonly = await this.selector.isEditable()
-                if (readonly) {
+                const editable = await this.selector.isEditable()
+                if (!editable) {
                     result.status = 'readonly'
                 }
             } else {
@@ -93,7 +93,7 @@ export class Select<T extends string> {
                     const roVisible = await this.roSelector.isVisible()
                     if (roVisible) {
                         result.status = 'readonly'
-                        result.value = await this.roSelector.inputValue()
+                        result.value = (await this.roSelector.inputValue()).trim()
                     }
                 }
             }
@@ -104,6 +104,7 @@ export class Select<T extends string> {
 
     async getOptions(): Promise<string[]> {
 
+        await waitForPageUpdate(this.page, 10)
         return await this.selector.locator('option').allTextContents()
     }
 
