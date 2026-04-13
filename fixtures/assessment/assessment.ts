@@ -214,6 +214,7 @@ export class Assessment {
     async openLatest() {
 
         await this.assessmentsTab.assessments.clickFirstRow()
+        await waitForPageUpdate(this.page)
         log('Opened latest assessment')
     }
 

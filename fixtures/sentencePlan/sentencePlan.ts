@@ -23,10 +23,17 @@ export class SentencePlan {
      */
     async populateMinimal(sentencePlan: SpType = 'spService', from: 'assessment' | 'offender' = 'assessment') {
 
-        if (sentencePlan == 'spService') { // TODO others
-
-            await this.spService.gotoSpService(from)
-            await this.spService.populateMinimal()
+        switch (sentencePlan) {
+            case 'spService':  // TODO others
+                await this.spService.gotoSpService(from)
+                await this.spService.populateMinimal()
+                break
+            case 'isp':
+                await this.ispSection52to8.populateMinimal()
+                break
+            case 'rsp':
+                await this.rspSection72to10.populateMinimal()
+                break
         }
     }
 

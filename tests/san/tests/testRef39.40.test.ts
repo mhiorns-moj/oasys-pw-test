@@ -1,7 +1,7 @@
 import { test } from 'fixtures'
-import { createOffendersAndAssessments } from './testRef39-40/testPart1'
-import { additionalAssessment, merge } from './testRef39-40/testPart2'
-import { checkOffender1AndCreateAssessment, checkOffender2AndCreateAssessment, demerge } from './testRef39-40/testPart3'
+import { createOffendersAndAssessments } from './testParts/testRef39Part1'
+import { mergeAndCreateAssessment } from './testParts/testRef39Part2'
+import { demergeAndCheckOffenders } from './testParts/testRef40'
 
 /**
  * Merge - where BOTH offenders have OASys-SAN assessments
@@ -22,29 +22,20 @@ export type MergeTestData = {
 test.describe.serial('SAN integration test - test refs 39 and 40', () => {
 
     const mergeTestData: MergeTestData = {
-        offender1: null, offender2: null, offender1Pks: [], offender2Pks: [], crn1AfterMergePks: [], crn2AfterMergePks: []
+        offender1: {
+            forename1: 'MergeOne',
+            gender: 'Male',
+            dateOfBirth: { years: -20 }
+        }, offender2: {
+            forename1: 'MergeTwo',
+            gender: 'Male',
+            dateOfBirth: { years: -20 },
+        },
+        offender1Pks: [], offender2Pks: [], crn1AfterMergePks: [], crn2AfterMergePks: []
     }
 
-    test('Create offenders and assessments', async ({ oasys, signing, offender, assessment, san, sections, risk, sentencePlan }) => {
-
-        await createOffendersAndAssessments(mergeTestData, oasys, signing, offender, assessment, san, sections, risk, sentencePlan)
-    })
-
-    test('Merge offenders and create a new assessment', async ({ page, oasys, signing, offender, tasks, assessment, san }) => {
-
-        await merge(page, mergeTestData, oasys, offender, tasks, assessment, san)
-        await additionalAssessment(mergeTestData, oasys, offender, assessment, san, signing)
-    })
-
-    test('Demerge offenders', async ({ oasys, offender, san }) => {
-
-        await demerge(mergeTestData, oasys, offender, san)
-    })
-
-    test('Check offenders after demerge and create assessment', async ({ oasys, offender, assessment, san }) => {
-
-        await checkOffender1AndCreateAssessment(mergeTestData, oasys, offender, assessment, san)
-        await checkOffender2AndCreateAssessment(mergeTestData, oasys, offender, assessment, san)
-    })
+    createOffendersAndAssessments(mergeTestData)
+    mergeAndCreateAssessment(mergeTestData)
+    demergeAndCheckOffenders(mergeTestData)
 
 })

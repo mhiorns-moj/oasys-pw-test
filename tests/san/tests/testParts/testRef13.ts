@@ -3,7 +3,7 @@ import * as testData from '../../data/testRef13'
 
 export function testRef13(offender1: OffenderDef, pks: number[]) {
 
-    test('SAN integration - test ref 13 - Another 3.2 assessment in pilot area', async ({ offender, tasks, oasys, assessment, sections, san, risk, signing }) => {
+    test('SAN integration - test ref 13 - Another 3.2 assessment in pilot area', async ({ offender, tasks, oasys, assessment, sections, san, signing }) => {
 
         log(`Log in as an Assessor that has the SAN function to the PILOT probation area
             Open up the offender record from Test Ref 12.  Transfer the offender back to the SAN PILOT probation area.

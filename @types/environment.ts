@@ -20,8 +20,8 @@ declare type Environment = {
 declare type AppConfig = {
 
     probForceCrn: boolean,
-    offences: {},
-    appVersions: {},
+    offences: { [key: string]: string },
+    appVersions: { [key: string]: {} },
     currentVersion: string,
 }
 

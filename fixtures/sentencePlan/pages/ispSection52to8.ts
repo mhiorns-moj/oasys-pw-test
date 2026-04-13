@@ -33,4 +33,11 @@ export class IspSection52to8 extends SentencePlan {
     countersignerComments = new Element.Textbox(this.page, '#textarea_IP_40')
     countersignerSupervisor = new Element.Textbox(this.page, '#itm_IP_41')
     dateAgreed = new Element.Textbox<OasysDate>(this.page, '#itm_IP_42', true)
+
+    async populateMinimal() {
+
+        log('Minimally populated ISP section 5.2 to 8')
+        await this.goto(true)
+        this.agreeWithPlan.setValue('Yes')
+    }
 }

@@ -21,6 +21,26 @@ export class Queries {
         return pks
     }
 
+    /**
+     * Returns all assessment PKs for a given offender, including deleted unless the optional second parameter is true.
+     * Oldest assessment first
+     */
+    async getAllSetPksByPnc(pnc: string, ignoreDeleted: boolean = false): Promise<number[]> {
+
+        const deletion = ignoreDeleted ? ' and o.deleted_date is null ' : ''
+
+        const query = `select os.oasys_set_pk from eor.offender o, eor.oasys_assessment_group oag, eor.oasys_set os 
+                                    where o.pnc = '${pnc}'
+                                    and o.deleted_date is null
+                                    and oag.offender_pk = o.offender_pk
+                                    and os.oasys_assessment_group_pk = oag.oasys_assessment_group_pk
+                                    ${deletion}
+                                    order by os.initiation_date`
+
+        const pks = await this.getPk(query, true) as number[]
+        return pks
+    }
+
     async getPk(query: string, returnAll: boolean = false): Promise<number | number[]> {
 
         const data = await this.oasysDb.getData(query)
@@ -28,11 +48,11 @@ export class Queries {
             if (returnAll) {
                 const pks: number[] = []
                 data.forEach((pk) => pks.push(Number.parseInt(pk[0])))
-                log(`Assessment pks: ${JSON.stringify(pks)}`)
+                log(`Assessment pks: ${JSON.stringify(pks)} `)
                 return pks
             } else {
                 const pk = Number.parseInt(data[0][0])
-                log(`Assessment pk: ${pk}`)
+                log(`Assessment pk: ${pk} `)
                 return pk
             }
         } else {
@@ -94,7 +114,7 @@ export class Queries {
             if (dataRow.length > 0) {
                 if (answerType == 'multipleRefAnswer') {
                     actualResult = ''
-                    dataRow.forEach(r => { actualResult += `${r[1]},` })
+                    dataRow.forEach(r => { actualResult += `${r[1]}, ` })
                     if (actualResult == 'null,') { actualResult = null }
                 } else {
                     actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]
@@ -131,14 +151,14 @@ export class Queries {
             return false
         }
         if (expectedVictims.length != data.length) {
-            log(`Victims FAILED - Expected ${expectedVictims.length} victims, found ${data.length}`)
+            log(`Victims FAILED - Expected ${expectedVictims.length} victims, found ${data.length} `)
             failed = true
         } else {
             let expectedVictimsConcatenated: string[] = []
             let actualVictimsConcatenated: string[] = []
             for (let i = 0; i < expectedVictims.length; i++) {
-                expectedVictimsConcatenated.push(`Age: ${expectedVictims[i].age}, Gender: ${expectedVictims[i].gender}, Ethnic category: ${expectedVictims[i].ethnicCat}, Relationship: ${expectedVictims[i].relationship}`)
-                actualVictimsConcatenated.push(`Age: ${data[i][0]}, Gender: ${data[i][1]}, Ethnic category: ${data[i][2]}, Relationship: ${data[i][3]}`)
+                expectedVictimsConcatenated.push(`Age: ${expectedVictims[i].age}, Gender: ${expectedVictims[i].gender}, Ethnic category: ${expectedVictims[i].ethnicCat}, Relationship: ${expectedVictims[i].relationship} `)
+                actualVictimsConcatenated.push(`Age: ${data[i][0]}, Gender: ${data[i][1]}, Ethnic category: ${data[i][2]}, Relationship: ${data[i][3]} `)
             }
             expectedVictimsConcatenated.sort()
             actualVictimsConcatenated.sort()
@@ -188,18 +208,18 @@ export class Queries {
             expectedValues.push(values[name])
         })
 
-        query += ` from eor.${table} where ${where}`
+        query += ` from eor.${table} where ${where} `
 
         const data = await this.oasysDb.getData(query)
         log('', `Checking database values`)
-        log(`Table: ${table}, where: ${where}`)
-        log(`Expected values: ${JSON.stringify(values)}`)
+        log(`Table: ${table}, where: ${where} `)
+        log(`Expected values: ${JSON.stringify(values)} `)
 
         if (data.length != 1) {
-            log(`Error in query - expected 1 row, got ${data.length}`)
+            log(`Error in query - expected 1 row, got ${data.length} `)
             failed = true
         } else if (data[0].length != expectedValues.length) {
-            log(`Error in query - expected ${expectedValues.length} columns, got ${data[0].length}`)
+            log(`Error in query - expected ${expectedValues.length} columns, got ${data[0].length} `)
             failed = true
         } else {
             for (let col = 0; col < expectedValues.length; col++) {
@@ -213,7 +233,7 @@ export class Queries {
                 } else {
                     const actual = oasysDateTime.stringToTimestamp(data[0][col])
                     if (Math.abs(oasysDateTime.timestampDiff(actual, expectedValues[col] as Temporal.PlainDateTime)) > 15000) {
-                        log(`Expected ${columnNames[col]} to be ${expectedValues[col].toLocaleString()}, got ${actual}`)
+                        log(`Expected ${columnNames[col]} to be ${expectedValues[col].toLocaleString()}, got ${actual} `)
                         failed = true
                     }
                 }
@@ -228,7 +248,7 @@ export class Queries {
      */
     async checkCloning(newPk: number, oldPk: number, sections: string[]) {
 
-        log(`Checking cloning from ${oldPk} to ${newPk}`)
+        log(`Checking cloning from ${oldPk} to ${newPk} `)
         let failed = false
         for (let section of sections) {
             failed = await this.checkSectionCloning(newPk, oldPk, section) || failed
@@ -257,14 +277,14 @@ export class Queries {
         const oldData = await this.oasysDb.getData(sectionQuery(oldPk, section))
 
         if (newData.length != oldData.length) {
-            log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0}`)
+            log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0} `)
             failed = true
         } else {
             for (let i = 0; i < newData.length; i++) {
                 const newQ = JSON.stringify(newData[i])
                 const oldQ = JSON.stringify(oldData[i])
                 if (newQ != oldQ) {
-                    log(`New question: ${newQ}, old question: ${oldQ}`)
+                    log(`New question: ${newQ}, old question: ${oldQ} `)
                     failed = true
                 }
             }
@@ -292,7 +312,7 @@ export class Queries {
 
     async checkIfDeleted(pk: number, expectDeleted: boolean) {
 
-        const data = await this.oasysDb.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk}`)
+        const data = await this.oasysDb.getData(`select deleted_date from eor.oasys_set where oasys_set_pk = ${pk} `)
         if (expectDeleted) {
             expect(data[0][0]).not.toBeNull()
             log(`Checked that assessment ${pk} has been deleted`)
@@ -337,15 +357,15 @@ export class Queries {
                     and q.oasys_question_pk = a.oasys_question_pk(+)
                     and s.ref_section_code = '${section}'
                     and q.ref_question_code = '${questionRef}'
-                    and st.oasys_set_pk = ${assessmentPk}`
+                    and st.oasys_set_pk = ${assessmentPk} `
 
         const data = await this.oasysDb.getData(query)
         const actualResult = data.length == 0 ? '' : data[0][0]
         const failureMessage = actualResult == expectedResult ? '' : ' *** FAILED ***'
         if (logText == null) {
-            log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
+            log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage} `)
         } else if (actualResult != expectedResult) {
-            logText.push(`Test case ${testCase}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage}`)
+            logText.push(`Test case ${testCase}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage} `)
         }
         return actualResult != expectedResult
     }

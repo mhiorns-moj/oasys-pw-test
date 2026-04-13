@@ -30,4 +30,12 @@ export class RspSection72to10 extends SentencePlan {
     countersignerComments = new Element.Textbox(this.page, '#textarea_RP_96')
     countersignerSupervisor = new Element.Textbox(this.page, '#itm_RP_97')
     dateAgreed = new Element.Textbox<OasysDate>(this.page, '#itm_RP_98', true)
+
+    
+    async populateMinimal() {
+
+        log('Minimally populated RSP section 7.2 to 10')
+        await this.goto(true)
+        this.agreeWithPlan.setValue('Yes')
+    }
 }

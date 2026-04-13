@@ -9,6 +9,7 @@ import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan
 import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
 import { ScreeningSection5 } from 'fixtures/risk/pages'
 import { RspSection1to2 } from 'fixtures/sentencePlan/pages'
+import { IspSection1to4 } from 'fixtures/sentencePlan/pages'
 
 
 export class Oasys {
@@ -141,6 +142,9 @@ export class Oasys {
         switch (signingPage) {
             case 'basic':
                 await new BasicSentencePlan(this.page).goto(true)
+                break
+            case 'isp':
+                await new IspSection1to4(this.page).goto(true)
                 break
             case 'rsp':
                 await new RspSection1to2(this.page).goto(true)

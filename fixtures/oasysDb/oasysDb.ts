@@ -211,8 +211,8 @@ export class OasysDb {
 
         const result: AppConfig = {
             probForceCrn: false,
-            offences: [],
-            appVersions: [],
+            offences: {},
+            appVersions: {},
             currentVersion: '',
         }
 

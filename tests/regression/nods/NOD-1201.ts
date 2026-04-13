@@ -15,7 +15,7 @@ describe('NOD-1201', () => {
 
             oasys.Populate.CommonPages.OffendingInformation.minimal()
             oasys.Populate.Layer3Pages.Predictors.minimal()
-            oasys.Populate.sections2To13NoIssues({ populate6_11: 'No' })
+            await sections.sections2To13NoIssues({ populate6_11: 'No' })
             await sections.selfAssessmentForm.populateMinimal()
             await risk.screeningNoRisks()
 

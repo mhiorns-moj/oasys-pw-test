@@ -1,12 +1,6 @@
 ﻿import * as ContributorDetails from './contributorDetails'
 
 
-export function minimal() {
-
-    const page = new oasys.Pages.SentencePlan.RspSection72to10().goto(true)
-    page.agreeWithPlan.setValue('Yes')
-}
-
 export function fullyPopulated(maxStrings: boolean = false) {
 
     const page = new oasys.Pages.SentencePlan.RspSection72to10().goto(true)

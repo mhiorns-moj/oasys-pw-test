@@ -85,6 +85,7 @@ export class Table {
     async clickFirstRow() {
 
         await this.firstColumn().clickFirstRow()
+        await waitForPageUpdate(this.page)
     }
 
     /**
@@ -93,6 +94,7 @@ export class Table {
     async clickNthRow(n: number) {
 
         await this.firstColumn().clickNthRow(n)
+        await waitForPageUpdate(this.page)
     }
 
     async getRowCount(): Promise<number> {
@@ -102,7 +104,7 @@ export class Table {
         if (noData) {
             return 0
         }
-        return await this.selector.locator('tbody').locator('tr').count()
+        return await this.selector.locator('tbody').first().locator('tr').count()
     }
 
     firstColumn(): Column {
