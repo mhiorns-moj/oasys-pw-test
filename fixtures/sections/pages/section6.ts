@@ -36,6 +36,29 @@ export class Section6 extends BaseAssessmentPage {
         }
         await this.identifyIssues.setValue('Section 6 no issues')
     }
+
+    async populateFull(maxStrings: boolean = false) {
+
+        log('Fully populating section ')
+        await this.goto(true)
+        await this.o6_1.setValue('2-Significant problems')
+        await this.o6_3.setValue('2-Significant problems')
+        await this.o6_8.setValue('Not in a relationship')
+        await this.o6_4.setValue('2-Significant problems')
+        await this.o6_6.setValue('2-Significant problems')
+        // page.o6_7.setValue('Yes')     pre - populated from section 2
+        await this.o6_7VictimPartner.setValue('Yes')
+        await this.o6_7VictimFamily.setValue('Yes')
+        await this.o6_7PerpetratorPartner.setValue('Yes')
+        await this.o6_7PerpetratorFamily.setValue('Yes')
+        await this.o6_9.setValue('Yes')
+        await this.o6_10.setValue('Some problems')
+        //page.o6_11.setValue('Yes')    not relevant due to other answers
+        await this.o6_12.setValue('2-Significant problems')
+        await this.identifyIssues.setValue(maxStrings ? utils.oasysString(4000) : 'Section 6 issues')
+        await this.linkedToRisk.setValue('Yes')
+        await this.linkedToBehaviour.setValue('Yes')
+    }
 }
 
 

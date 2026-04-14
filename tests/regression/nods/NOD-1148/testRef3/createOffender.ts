@@ -6,7 +6,7 @@ describe('NOD-1148 OGRS4 regression test ref 3', () => {
         Administrator flags the offender as LAO and grants access to this offender for an Assessor who has the SAN Service role
      */
 
-    it('Test ref 3 part 0 - create probation offender', () => {
+    test('Test ref 3 part 0 - create probation offender', () => {
 
         await oasys.login(oasys.users.probHeadPdu)
 

@@ -37,6 +37,21 @@ export class SentencePlan {
         }
     }
 
+    async populateFull(sentencePlan: SpType = 'spService', from: 'assessment' | 'offender' = 'assessment') {
+
+        switch (sentencePlan) {
+            case 'spService':  // TODO others
+                await this.spService.gotoSpService(from)
+                // await this.spService.populateFull()  // TODO
+                break
+            case 'isp':
+                // await this.ispSection52to8.populateFull()  // TODO
+                break
+            case 'rsp':
+                // await this.rspSection72to10.populateFull()  // TODO
+                break
+        }
+    }
 
     async goto(planType: SpType, suppressLog = false) {
 

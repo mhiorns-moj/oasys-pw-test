@@ -14,7 +14,7 @@ describe('Tier calculations test', () => {
         reportAll: true,
     }
 
-    it(`Tiering calculation`, () => {
+    test(`Tiering calculation`, () => {
 
         let failed = false
         cy.task('tieringTest', testParams, { timeout: timeout }).then((result: TieringTestResult) => {

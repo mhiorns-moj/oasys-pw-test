@@ -5,11 +5,8 @@ import * as pages from './pages'
 import { testEnvironment } from 'localSettings'
 import { User } from 'classes'
 import * as users from './users'
-import { BasicSentencePlan } from 'fixtures/sentencePlan/pages/basicSentencePlan'
-import { SentencePlanService } from 'fixtures/sentencePlan/spService/pages/sentencePlanService'
-import { ScreeningSection5 } from 'fixtures/risk/pages'
-import { RspSection1to2 } from 'fixtures/sentencePlan/pages'
-import { IspSection1to4 } from 'fixtures/sentencePlan/pages'
+import { ScreeningSection5, Rmp } from 'fixtures/risk/pages'
+import { BasicSentencePlan, IspSection1to4, RspSection1to2, SentencePlanService } from 'fixtures/sentencePlan/pages'
 
 
 export class Oasys {
@@ -154,6 +151,10 @@ export class Oasys {
                 break
             case 'riskScreening':
                 await new ScreeningSection5(this.page).goto(true)
+                break
+            case 'rmp':
+                await new Rmp(this.page).goto(true)
+                break
         }
 
 

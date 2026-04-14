@@ -44,6 +44,34 @@ export class Layer1Section2 extends BaseAssessmentPage {
         await this.o2_2Arson.setValue('No')
         await this.impactRecognised.setValue('Yes')
     }
+
+    async populateFull(maxStrings: boolean = false) {
+
+        log('Fully populating layer 1 section2')
+        await this.goto(true)
+
+        await this.briefOffenceDetails.setValue(maxStrings ? utils.oasysString(4000) : 'Brief offence details')
+        await this.o2_2Weapon.setValue('Yes')
+        await this.o2_2SpecifyWeapon.setValue(maxStrings ? utils.oasysString(96) : 'A big weapon')
+        await this.o2_2Violence.setValue('Yes')
+        await this.o2_2ExcessiveViolence.setValue('Yes')
+        await this.o2_2Arson.setValue('Yes')
+        await this.o2_2PhysicalDamage.setValue('Yes')
+        await this.o2_2Sexual.setValue('Yes')
+        await this.o2_2DomesticAbuse.setValue('Yes')
+        await this.o2_3Direct.setValue(true)
+        await this.o2_3Hate.setValue(true)
+        await this.o2_3ResponseToVictim.setValue(true)
+        await this.o2_3PhysicalViolence.setValue(true)
+        await this.o2_3RepeatVictimisation.setValue(true)
+        await this.o2_3Strangers.setValue(true)
+        await this.o2_3Stalking.setValue(true)
+        await this.o2_4Relationship.setValue(maxStrings ? utils.oasysString(4000) : 'Victim - perpetrator relationship')
+        await this.o2_4OtherInformation.setValue(maxStrings ? utils.oasysString(4000) : 'Any other information of specific note, consider vulnerability')
+        await this.impactOnVictim.setValue(maxStrings ? utils.oasysString(4000) : 'Impact on the victim')
+        await this.impactRecognised.setValue('Yes')
+    }
+
 }
 
 

@@ -151,8 +151,8 @@ export class Sns {
 
         // Flatten out to a single object using the library linked above.
         // Each property of this object has a multi-level key (e.g. messageData.occurredAt) plus the value
-        const expectedElements = flatten(expected)
-        const actualElements = flatten(received)
+        const expectedElements: { [key: string]: string } = flatten(expected)
+        const actualElements: { [key: string]: string } = flatten(received)
 
         // Check that all expected elements have been received and are correct
         Object.keys(expectedElements).forEach((key) => {

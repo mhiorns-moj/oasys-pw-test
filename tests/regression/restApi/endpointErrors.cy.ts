@@ -7,7 +7,7 @@ import { restErrorResults } from '../../../cypress/support/restApi/restApiUrls'
 describe('RestAPI regression tests', () => {
 
 
-    it('Error conditions - all endpoints', () => {
+    test('Error conditions - all endpoints', () => {
 
         const v1Endpoints: Endpoint[] = [
             'offences',

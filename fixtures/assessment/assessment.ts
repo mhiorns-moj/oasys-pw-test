@@ -16,7 +16,7 @@ export class Assessment {
     assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
     readonly queries = new Queries(this.oasysDb)
-    
+
     readonly baseAssessmentPage = new BaseAssessmentPage(this.page)
     readonly createAssessmentPage = new pages.CreateAssessment(this.page)
     readonly assessmentsTab = new pages.AssessmentsTab(this.page)
@@ -123,15 +123,15 @@ export class Assessment {
 
     async populateFull(params: PopulateAssessmentParams) {
 
-        this.sections.populateFull(params)
+        await this.sections.populateFull(params)
+        await this.risk.populateFull(params)
 
-        // if (params?.layer == 'Layer 3V2') {
-        //     await this.san.populateFull()
-        // }
-        // await this.risk.screeningNoRisks()
-        // if (params.layer != 'Layer 1V2') {
-        //     await this.sentencePlan.populateFull(params?.sentencePlan)
-        // }
+        if (params?.layer == 'Layer 3V2') {
+            // await this.san.populateFull()  // TODO
+        }
+        if (params.layer != 'Layer 1V2') {
+            await this.sentencePlan.populateFull(params?.sentencePlan)
+        }
 
         log(`Fully populated assessment: ${JSON.stringify(params)}`)
     }

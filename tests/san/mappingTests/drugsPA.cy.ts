@@ -17,7 +17,7 @@ const drugsAnalysis = new oasys.Pages.San.Drugs.DrugsPractitionerAnalysis()
 
 describe('Mapping test for drugs practitioner analysis', () => {
 
-    it('Drugs', () => { paTest() })
+    test('Drugs', () => { paTest() })
 })
 
 function paTest() {

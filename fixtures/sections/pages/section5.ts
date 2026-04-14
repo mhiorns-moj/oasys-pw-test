@@ -24,6 +24,20 @@ export class Section5 extends BaseAssessmentPage {
         await this.noIssues.click()
         await this.identifyIssues.setValue('Section 5 no issues')
     }
+
+    async populateFull(maxStrings: boolean = false) {
+
+        log('Fully populating section 5')
+        await this.goto(true)
+        await this.o5_2.setValue('2-Significant problems')
+        await this.o5_3.setValue('2-Significant problems')
+        await this.o5_4.setValue('2-Significant problems')
+        await this.o5_5.setValue('2-Significant problems')
+        await this.o5_6.setValue('2-Significant problems')
+        await this.identifyIssues.setValue(maxStrings ? utils.oasysString(4000) : 'Section 5 issues')
+        await this.linkedToRisk.setValue('Yes')
+        await this.linkedToBehaviour.setValue('Yes')
+    }
 }
 
 

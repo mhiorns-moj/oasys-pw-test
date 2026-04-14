@@ -1,3 +1,4 @@
+export { AdditionalOffences } from './additionalOffences'
 export { OffenderInformation } from './offenderInformation'
 export { OffendingInformation } from './offendingInformation'
 export { Predictors } from './predictors'

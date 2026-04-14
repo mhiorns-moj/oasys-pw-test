@@ -15,7 +15,7 @@ describe('RestAPI regression tests', () => {
 
     ]
 
-    it(`All endpoint regression tests - extra test for specific cases`, () => {
+    test(`All endpoint regression tests - extra test for specific cases`, () => {
         runTest(testCases)
     })
 

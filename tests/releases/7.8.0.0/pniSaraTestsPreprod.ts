@@ -20,7 +20,7 @@ describe('Pre-prod tests for PNI SARA parameters', () => {
         [null, 'A2144FH'],          //  - 1.30 not reported missing
     ]
 
-    it(`Pre-prod tests for PNI SARA parameters`, () => {
+    test(`Pre-prod tests for PNI SARA parameters`, () => {
         runTest(testCases)
     })
 

@@ -25,6 +25,21 @@ export class Section9 extends BaseAssessmentPage {
         await this.noIssues.click()
         await this.identifyIssues.setValue('Section 9 no issues')
     }
+
+    async populateFull(maxStrings: boolean = false) {
+
+        log('Fully populating section 9')
+        await this.goto(true)
+        await this.o9_1.setValue('2-Significant problems')
+        await this.o9_1Details.setValue(maxStrings ? utils.oasysString(4000) : '9.1 Details')
+        await this.o9_2.setValue('2-Significant problems')
+        await this.o9_3.setValue('2-Significant problems')
+        await this.o9_4.setValue('Yes')
+        await this.o9_5.setValue('2-Significant problems')
+        await this.identifyIssues.setValue(maxStrings ? utils.oasysString(4000) : 'Section 9 issues')
+        await this.linkedToRisk.setValue('Yes')
+        await this.linkedToBehaviour.setValue('Yes')
+    }
 }
 
 

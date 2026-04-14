@@ -13,4 +13,29 @@ export class Victim extends OasysPage {
     relationship = new Element.Select(this.page, '#P3_VICTIM_RELATION_ELM')
     delete = new Element.Button(this.page, 'Delete')
     addAnotherVictim = new Element.Button(this.page, 'Add Another Victim')
+
+
+    async victim1() {
+
+        log('Populating victim 1')
+        await this.goto(true)
+        await this.approxAge.setValue('5-11')
+        await this.gender.setValue('Male')
+        await this.raceEthnicity.setValue('White - Irish')
+        await this.relationship.setValue('Son/Daughter - child')
+        await this.save.click()
+        await this.close.click()
+    }
+
+    async victim2() {
+
+        log('Populating victim 2')
+        await this.goto(true)
+        await this.approxAge.setValue('21-25')
+        await this.gender.setValue('Female')
+        await this.raceEthnicity.setValue('Not stated')
+        await this.relationship.setValue('Ex-partner')
+        await this.save.click()
+        await this.close.click()
+    }
 }

@@ -2,7 +2,7 @@ import { Ogrs4CalcResult } from 'lib/ogrs'
 
 describe('OGRS regression test ref 3', () => {
 
-    it('Test ref 3 part 1', () => {
+    test('Test ref 3 part 1', () => {
 
         await oasys.login(oasys.users.probHeadPdu)
 

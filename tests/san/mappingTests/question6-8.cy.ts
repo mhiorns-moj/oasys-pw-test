@@ -11,7 +11,7 @@ type RelationshipOptions = 'partner' | 'ownChildren' | 'otherChildren' | 'family
 
 describe('Mapping test for question 6.8', () => {
 
-    it('Mapping test for question 6.8', () => {
+    test('Mapping test for question 6.8', () => {
 
         /*
         Who is [subject] living with?

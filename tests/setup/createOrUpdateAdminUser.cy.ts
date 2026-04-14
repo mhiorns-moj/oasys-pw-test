@@ -5,7 +5,7 @@ const t2 = testEnvironment.name.includes('T2')
 
 describe('Create or update admin user', () => {
 
-    it('Create or update admin user', () => {
+    test('Create or update admin user', () => {
 
         // Check if user exists
         await oasysDb.selectCount(`select count(*) from eor.oasys_user where oasys_user_code = '${oasys.users.admin.username}'`, 'userCount')

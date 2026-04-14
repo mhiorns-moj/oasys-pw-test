@@ -27,6 +27,19 @@ export class Section3 extends BaseAssessmentPage {
         await this.noIssues.click()
         await this.identifyIssues.setValue('Section 3 no issues')
     }
+
+    async populateFull(maxStrings: boolean = false) {
+
+        log('Fully populating section 3')
+        await this.goto(true)
+        await this.o3_3.setValue('Yes')
+        await this.o3_4.setValue('2-Significant problems')
+        await this.o3_5.setValue('2-Significant problems')
+        await this.o3_6.setValue('2-Significant problems')
+        await this.identifyIssues.setValue(maxStrings ? utils.oasysString(4000) : 'Section 3 issues')
+        await this.linkedToRisk.setValue('Yes')
+        await this.linkedToBehaviour.setValue('Yes')
+    }
 }
 
 

@@ -33,6 +33,29 @@ export class Section10 extends BaseAssessmentPage {
         await this.noIssues.click()
         await this.identifyIssues.setValue('Section 10 no issues')
     }
+
+    async populateFull(maxStrings: boolean = false) {
+
+        log('Fully populating section 10')
+        await this.goto(true)
+        await this.o10_1.setValue('2-Significant problems')
+        await this.o10_2.setValue('2-Significant problems')
+        await this.o10_3.setValue('2-Significant problems')
+        await this.o10_4.setValue('2-Significant problems')
+        await this.o10_5.setValue('Yes - 2')
+        await this.o10_6.setValue('2-Significant problems')
+        await this.o10_7Childhood.setValue('Yes')
+        await this.o10_7HeadInjuries.setValue('Yes')
+        await this.o10_7Psychiatric.setValue('Yes')
+        await this.o10_7Medication.setValue('Yes')
+        await this.o10_7FailedCoOp.setValue('Yes')
+        await this.o10_7Patient.setValue('Yes')
+        await this.o10_7Treatment.setValue('Yes')
+        await this.o10_8.setValue('Yes')
+        await this.identifyIssues.setValue(maxStrings ? utils.oasysString(4000) : 'Section 10 issues')
+        await this.linkedToRisk.setValue('Yes')
+        await this.linkedToBehaviour.setValue('Yes')
+    }
 }
 
 

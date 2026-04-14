@@ -34,6 +34,32 @@ export class Section4 extends BaseAssessmentPage {
         await this.noIssues.click()
         await this.identifyIssues.setValue('Section 4 no issues')
     }
+
+    async populateFull(params: PopulateAssessmentParams) {
+
+        log('Fully populating section 4')
+        await this.goto(true)
+        await this.o4_2.setValue('2 - Yes')
+        await this.o4_3.setValue('2-Significant problems')
+        await this.o4_4.setValue('2-Significant problems')
+        await this.o4_5.setValue('2-Significant problems')
+        await this.o4_6.setValue('2-Significant problems')
+        await this.o4_7.setValue('2-Significant problems')
+        await this.o4_7Reading.setValue(true)
+        await this.o4_7Writing.setValue(true)
+        await this.o4_7Numeracy.setValue(true)
+        await this.o4_8.setValue('2-Significant problems')
+        await this.o4_9.setValue('2 - No qualifications')
+        await this.o4_10.setValue('2-Significant problems')
+        if (params.provider == 'pris') {
+            await this.basicSkillsScore.setValue('8')
+        } else {
+            await this.skillsCheckerScore.setValue('40-59')
+        }
+        await this.identifyIssues.setValue(params.maxStrings ? utils.oasysString(4000) : 'Section 4 issues')
+        await this.linkedToRisk.setValue('Yes')
+        await this.linkedToBehaviour.setValue('Yes')
+    }
 }
 
 

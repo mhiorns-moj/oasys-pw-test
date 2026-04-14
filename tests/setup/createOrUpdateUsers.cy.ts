@@ -7,7 +7,7 @@ const t2 = testEnvironment.name.includes('T2')
 
 describe('Create or update users', () => {
 
-    it('Create or update users', () => {
+    test('Create or update users', () => {
 
         // NOTE: Admin user is handled by a separate script.
 

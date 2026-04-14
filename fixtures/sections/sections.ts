@@ -18,6 +18,7 @@ export class Sections {
     readonly sourcesOfInformation = new pages.SourcesOfInformation(this.page)
     readonly predictors = new pages.Predictors(this.page)
     readonly selfAssessmentForm = new pages.SelfAssessmentForm(this.page)
+    readonly additionalOffences = new pages.AdditionalOffences(this.page)
 
     // Layer 1
     readonly layer1Section2 = new pages.Layer1Section2(this.page)
@@ -70,21 +71,24 @@ export class Sections {
     async populateFull(params: PopulateAssessmentParams) {
 
         switch (params?.layer) {
-            //     case 'Layer 1':
-            //         await this.predictors.populateFull()
-            //         await this.offendingInformation.populateFull()
-            //         await this.layer1Section2.populateFull()
-            //         await this.selfAssessmentForm.populateFull()
-            //         break
+            case 'Layer 1':
+                await this.predictors.populateFull(params)
+                await this.offendingInformation.populateFull(params)
+                await this.layer1Section2.populateFull()
+
+                await this.victim.victim1()
+                await this.victim.victim2()
+                await this.selfAssessmentForm.populateFull()
+                break                                                                                                                                                                                                                                                                             
             case 'Layer 1V2':
                 await this.roshaPredictors.populateFull()
                 break
-            //     case 'Layer 3':
-            //         await this.predictors.populateFull()
-            //         await this.offendingInformation.populateFull()
-            //         await this.sections2To1sections2To13populateFull3NoIssues(params)
-            //         await this.selfAssessmentForm.populateFull()
-            //         break
+            case 'Layer 3':
+                await this.predictors.populateFull(params)
+                await this.offendingInformation.populateFull(params)
+                await this.sections2To13populateFull(params)
+                await this.selfAssessmentForm.populateFull(params.maxStrings)
+                break
             //     case 'Layer 3V2':
             //         await this.predictors.populateFull()
             //         await this.offendingInformation.populateFull()
@@ -109,21 +113,23 @@ export class Sections {
         await this.section12.populateNoIssues(true)
     }
 
-    // export function sections2To13populateFull(params: PopulateAssessmentParams) {
+    async sections2To13populateFull(params: PopulateAssessmentParams) {
 
-    //     populate.Layer3Pages.Section2.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section3.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section4.fullyPopulated(params)
-    //     populate.Layer3Pages.Section5.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section6.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section7.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section8.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section9.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section10.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section11.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section12.fullyPopulated(params.maxStrings)
-    //     populate.Layer3Pages.Section13.fullyPopulated(params.maxStrings)
-    // }
+        await this.section2.populateFull(params.maxStrings)
+        await this.victim.victim1()
+        await this.victim.victim2()
+        await this.section3.populateFull(params.maxStrings)
+        await this.section4.populateFull(params)
+        await this.section5.populateFull(params.maxStrings)
+        await this.section6.populateFull(params.maxStrings)
+        await this.section7.populateFull(params.maxStrings)
+        await this.section8.populateFull(params.maxStrings)
+        await this.section9.populateFull(params.maxStrings)
+        await this.section10.populateFull(params.maxStrings)
+        await this.section11.populateFull(params.maxStrings)
+        await this.section12.populateFull(params.maxStrings)
+        await this.section13.populateFull(params.maxStrings)
+    }
 
 
 }

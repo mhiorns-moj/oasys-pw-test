@@ -108,6 +108,104 @@ export class OffendingInformation extends BaseAssessmentPage {
         await this.goto(true)
         await this.count.setValue(1)
     }
+
+    /** 
+ * This attempts to populate everything on the page, but might need tweaking in some scenarios.  The significant parameters are:
+ *  - provider (pris or prob)
+ *  - maxStrings (bool) - to enter everything to maximum length
+ */
+    async populateFull(params: PopulateAssessmentParams) {
+
+        log('Fully populating offending information page')
+        await this.goto()
+        await this.count.setValue(5)
+        await this.offenceDate.setValue({ months: -6 })
+        await this.resentencingForBreach.setValue('Yes')
+        await this.orderAmended.setValue('Yes')
+        await this.dateAmended.setValue({ months: -1 })
+        if (params.provider != 'pris') {
+            await this.sentence.setValue(params.maxStrings ? 'Services Suspended Sentence Order' : 'Fine')
+        }
+        await this.disqualificationOrder.setValue('Yes')
+        if (params.provider != 'pris') {
+            await this.custodyInMonths.setValue('6')
+            await this.sentenceLengthInDays.setValue('365')
+        }
+        await this.communityPunishmentHours.setValue('200')
+        if (params.provider != 'pris') {
+            await this.sentenceDate.setValue({ months: -2 })
+            await this.courtProximity.setValue('Local Court')
+            await this.courtName.setValue('Bedford County Court')
+        }
+
+        if (params.maxStrings && params.provider != 'pris') {
+            await this.orderLengthMonths.setValue('24')
+            await this.unpaidWork.setValue('Yes')
+            await this.unpaidWorkHours.setValue('200')
+            await this.activity.setValue('Yes')
+            await this.victimReparation.setValue('Yes')
+            await this.education.setValue('Yes')
+            await this.financial.setValue('Yes')
+            await this.accommodation.setValue('Yes')
+            await this.other.setValue('Yes')
+            await this.otherDescription.setValue(utils.oasysString(4000))
+            await this.accreditedProgramme.setValue('Yes')
+            await this.accreditedProgramme1.setValue('Cognitive Self Change Programme (CSCP) Blocks 1-5')
+            await this.accreditedProgramme2.setValue('Sex Offender Treatment Programme (SOTP)')
+            await this.accreditedProgramme3.setValue(`Programme for Reducing Individual's Substance Misuse (PRISM)`)
+            await this.accreditedProgramme4.setValue('One to One Programme')
+            await this.prohibitedActivity.setValue('Yes')
+            await this.prohibitedActivity1.setValue(utils.oasysString(4000))
+            await this.prohibitedActivity2.setValue(utils.oasysString(4000))
+            await this.prohibitedActivity3.setValue(utils.oasysString(4000))
+            await this.curfew.setValue('Yes')
+            await this.exclusion.setValue('Yes')
+            await this.residence.setValue('Yes')
+            await this.mentalHealthTreatment.setValue('Yes')
+            await this.drugRehabilitation.setValue('Yes')
+            await this.alcoholTreatment.setValue('Yes')
+            await this.supervision.setValue('Yes')
+            await this.supervisionMonths.setValue('36')
+            await this.attendanceCentre.setValue('Yes')
+            await this.electronicMonitoring.setValue('Yes')
+            await this.drugTesting.setValue('Yes')
+            await this.intoxicatingSubstanceTreatment.setValue('Yes')
+        } else {
+            await this.additionalRequirements1.setValue('Citizenship')
+            await this.additionalRequirements2.setValue('Other')
+            await this.additionalRequirements3.setValue('Electronic Monitoring')
+            await this.additionalRequirements4.setValue('Participate in specified activities')
+            await this.additionalRequirements5.setValue('Residential - other')
+            await this.specificInterventions1.setValue('Alcohol Related Violence Programme')
+            await this.specificInterventions2.setValue('Guided Skills Learning')
+            await this.specificInterventions3.setValue('Accommodation advocacy')
+            await this.sentenceAdditionalLicenceConditions.setValue(params.maxStrings ? utils.oasysString(4000) : 'Additional licence conditions')
+        }
+
+        await this.dateOfActualRelease.setValue({ years: 3 })
+        await this.typeOfRelease.setValue('ACR')
+        await this.anyLicenceRequirements.setValue(params.maxStrings ? utils.oasysString(4000) : 'Some licence requirements')
+        await this.homeDetentionCurfewDate.setValue({ months: 12 })
+        await this.automaticReleaseDate.setValue({ months: 13 })
+        await this.conditionalReleaseDate.setValue({ months: 14 })
+        await this.paroleEligibilityDate.setValue({ months: 15 })
+        await this.nonParoleDate.setValue({ months: 16 })
+        await this.licenceExpiryDate.setValue({ months: 17 })
+        await this.resettlementLicenceEligibilityDate.setValue({ months: 19 })
+        await this.sentenceExpiryDate.setValue({ months: 20 })
+        await this.recallDate.setValue({ months: 21 })
+        await this.postSentenceSupervisionExpiryDate.setValue({ months: 22 })
+        await this.detainedUnderImmigrationAct.setValue('Yes')
+        await this.recommendedForDeportation.setValue('Yes')
+        await this.furtherChargesPending.setValue('Yes')
+        await this.furtherChargesPendingDetails.setValue(params.maxStrings ? utils.oasysString(4000) : 'There are some further charges')
+        if (params.provider != 'pris') {
+            await this.appealPending.setValue('Yes')
+            await this.appealPendingDetails.setValue(params.maxStrings ? utils.oasysString(4000) : 'The offender might appeal')
+        }
+
+    }
+
 }
 
 

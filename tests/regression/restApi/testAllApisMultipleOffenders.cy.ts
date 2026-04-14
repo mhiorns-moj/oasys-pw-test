@@ -45,7 +45,7 @@ describe('RestAPI regression tests', () => {
     ]
 
     for (let i = 0; i < dateConditions.length; i++) {
-        it(`All endpoint regression tests - part ${i + 1}: ${dateConditions[i].count} offenders created before ${dateConditions[i].date}`, () => {
+        test(`All endpoint regression tests - part ${i + 1}: ${dateConditions[i].count} offenders created before ${dateConditions[i].date}`, () => {
             testOffenderSet(dateConditions[i])
         })
     }
@@ -108,7 +108,7 @@ describe('RestAPI regression tests', () => {
 
     // 
     if (testEnvironment.name.includes('system') || testEnvironment.name.includes('informal')) {
-        it(`All endpoint regression tests - extra test for specific cases`, () => {
+        test(`All endpoint regression tests - extra test for specific cases`, () => {
             runTest(extraTestCases)
         })
     }
@@ -158,7 +158,7 @@ describe('RestAPI regression tests', () => {
     let totalApiTimeMs = 0
     let totalDbTimeMs = 0
 
-    it('Summary info', () => {
+    test('Summary info', () => {
 
         cy.groupedLogStart('Timing stats')
 
