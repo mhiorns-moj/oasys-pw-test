@@ -39,6 +39,6 @@ export class Sdr extends OasysPage {
     officialTitle = new Element.Textbox(this.page, '#P0_AUTHOR_POSITION')
     officeLocation = new Element.Textbox(this.page, '#P0_OFFICE_DETAILS')
     dateReportSigned = new Element.Textbox<OasysDate>(this.page, '#P0_DATE_REPORT_SIGNED', true)
-    sourcesOfInformation = new Element.TextEditor('#P200_SOURCES_OF_INFO_LABEL')
-    offenceAnalysis = new Element.TextEditor('#P200_OFFENCE_ANALYSIS_LABEL')
+    sourcesOfInformation = new Element.TextEditor(this.page, '#P200_SOURCES_OF_INFO_LABEL')
+    offenceAnalysis = new Element.TextEditor(this.page, '#P200_OFFENCE_ANALYSIS_LABEL')
 }

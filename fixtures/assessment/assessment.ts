@@ -99,7 +99,7 @@ export class Assessment {
 
         await this.offender.offenderDetails.createAssessment.click()
         await waitForPageUpdate(this.page)
-        if (this.appConfig.probForceCrn) {
+        if (appConfig.probForceCrn) {
             await this.cms.cmsAssessmentSearch()
         }
 

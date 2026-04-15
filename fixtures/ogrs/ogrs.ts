@@ -1,9 +1,9 @@
-import { calculate } from 'lib/ogrs/calculateScore'
-import { createOutputObject } from 'lib/ogrs/createOutput'
-import { ospRsrCalc } from 'lib/ogrs/ospRsr'
+import { calculate } from 'fixtures/ogrs/calculateScore'
+import { createOutputObject } from 'fixtures/ogrs/createOutput'
+import { ospRsrCalc } from 'fixtures/ogrs/ospRsr'
 import { TestCaseParameters, OutputParameters } from './ogrs/types'
 import { OgrsAssessment } from '../../cypress/support/ogrs/getTestData/dbClasses'
-import { createAssessmentTestCase } from 'lib/ogrs/createAssessmentTestCase'
+import { createAssessmentTestCase } from 'fixtures/ogrs/createAssessmentTestCase'
 
 export function checkOgrs4CalcsOffender(offender: OffenderDef, resultAlias?: string) {
 

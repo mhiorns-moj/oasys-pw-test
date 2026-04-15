@@ -5,7 +5,7 @@ import { testEnvironment } from 'localSettings'
 
 export class Db {
 
-    connection
+    connection: any
 
     /** 
      * Connect to the Oracle database using parameters configured in environments.ts and localSettings.ts, returns a null string for success, or an error for failure.
@@ -39,7 +39,6 @@ export class Db {
         if (this.connection != null) {
             this.connection.close()
         }
-        return null
     }
 
     /** 

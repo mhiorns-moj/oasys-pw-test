@@ -21,7 +21,7 @@
 */
 
 import { Temporal } from '@js-temporal/polyfill'
-import { Db } from './data/db'
+import { Db } from './db'
 import { testEnvironment, userSuffix } from 'localSettings'
 
 export class OasysDb {

@@ -15,5 +15,5 @@ export class MaintainOffice extends OasysPage {
     officePostcode = new Element.Textbox(this.page, '#P10_OFFICE_POSTCODE')
     officeTelephone = new Element.Textbox(this.page, '#P10_OFFICE_TELEPHONE')
     officeFax = new Element.Textbox(this.page, '#P10_OFFICE_FAX')
-    status = new Element.Radiogroup('#P10_ACTIVE')
+    status = new Element.Radiogroup(this.page, '#P10_ACTIVE')
 }

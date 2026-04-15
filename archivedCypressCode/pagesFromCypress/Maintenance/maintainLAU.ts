@@ -8,5 +8,5 @@ export class MaintainLau extends OasysPage {
     save = new Element.Button(this.page, 'Save')
     close = new Element.Button(this.page, 'Close')
     lauName = new Element.Textbox(this.page, '#P10_DIVISION_NAME')
-    status = new Element.Radiogroup('#P10_ACTIVE')
+    status = new Element.Radiogroup(this.page, '#P10_ACTIVE')
 }

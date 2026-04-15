@@ -102,7 +102,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     return { status: missing.length > 0 ? 'E' : 'Y', count: missing.length, errorText: result }
 }
 
-function standardCheck(params: TestCaseParameters, required: string[], missing: string[], param: string) {
+function standardCheck(params: TestCaseParameters, required: string[], missing: string[], param: keyof TestCaseParameters) {
     if (params[param] == null && required.includes(param)) {
         missing.push(getErrorText(param))
     }
@@ -285,7 +285,7 @@ export const requiredParams = {
     ],
 }
 
-export const missingText = {
+export const missingText: { [key: string]: string } = {
     DOB: 'Missing Date of birth',
     LAST_SANCTION_DATE: 'Missing 1.29 Date of current conviction',
     AGE_AT_FIRST_SANCTION: 'Missing age at first sanction',

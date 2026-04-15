@@ -177,9 +177,25 @@ export class VictimDetails {
 
     constructor(dbVictim: dbClasses.DbVictim) {
 
-        if (dbVictim.age != undefined) this.age = dbVictim.age
-        if (dbVictim.gender != undefined) this.gender = dbVictim.gender
-        if (dbVictim.ethnicCategory != undefined) this.ethnicCategory = dbVictim.ethnicCategory
-        if (dbVictim.victimRelation != undefined) this.victimRelation = dbVictim.victimRelation
+        if (dbVictim.age) {
+            this.age = dbVictim.age
+        } else {
+            delete this.age
+        }
+        if (dbVictim.gender) {
+            this.gender = dbVictim.gender
+        } else {
+            delete this.gender
+        }
+        if (dbVictim.ethnicCategory) {
+            this.ethnicCategory = dbVictim.ethnicCategory
+        } else {
+            delete this.ethnicCategory
+        }
+        if (dbVictim.victimRelation) {
+            this.victimRelation = dbVictim.victimRelation
+        } else {
+            delete this.victimRelation
+        }
     }
 }

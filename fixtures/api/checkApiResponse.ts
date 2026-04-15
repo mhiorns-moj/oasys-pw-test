@@ -106,12 +106,6 @@ export async function checkApiResponse(expectedValues: EndpointResponse | RestEr
         })
     }
 
-    if (failed || reportPasses) {
-        for (const text of logText) {
-            log(text)
-        }
-    }
-
     if (failed) {
         fileLog('************* FAILED *************')
         fileLog(`    expect: ${JSON.stringify(expectedValues)}`)
@@ -125,6 +119,12 @@ export async function checkApiResponse(expectedValues: EndpointResponse | RestEr
         }
     }
     logText.push('')
+
+    if (failed || reportPasses) {
+        for (const text of logText) {
+            log(text)
+        }
+    }
     return failed
 
 }

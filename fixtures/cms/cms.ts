@@ -30,7 +30,7 @@ export class Cms {
         if (stubDetails.pk) delete stubDetails.pk
 
         await this.maintainCmsStub.setValues(stubDetails, true)
-        await this.maintainCmsStub.addressLine4.setValue(this.appConfig.currentVersion)
+        await this.maintainCmsStub.addressLine4.setValue(appConfig.currentVersion)
         await this.maintainCmsStub.addressLine5.setValue(this.testInfo.title)
         await this.maintainCmsStub.save.click()
 
@@ -104,7 +104,7 @@ export class Cms {
         if (stubDetails.pk) delete stubDetails.pk
 
         await this.maintainCmsStub.setValues(stubDetails, true)
-        await this.maintainCmsStub.addressLine4.setValue(this.appConfig.currentVersion)
+        await this.maintainCmsStub.addressLine4.setValue(appConfig.currentVersion)
         await this.maintainCmsStub.addressLine5.setValue(this.testInfo.title)
 
         // Set a default reception code if not defined in the offender
@@ -190,7 +190,7 @@ export class Cms {
         if (stubDetails.pk) delete stubDetails.pk
 
         await this.maintainCmsStub.setValues(stubDetails, true)
-        await this.maintainCmsStub.addressLine4.setValue(this.appConfig.currentVersion)
+        await this.maintainCmsStub.addressLine4.setValue(appConfig.currentVersion)
         await this.maintainCmsStub.addressLine5.setValue(this.testInfo.title)
         await this.maintainCmsStub.save.click()
         await this.maintainCmsStub.close.click()

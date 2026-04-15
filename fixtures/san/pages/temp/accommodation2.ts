@@ -13,8 +13,8 @@ export class Accommodation2 extends BaseSanEditPage {
 
 }
 /*
-futurePlanned = new Element.Radiogroup('#suitable_housing_planned', ['yes', 'no'])
-futureType = new Element.Radiogroup('#future_accommodation_type', ['awaitingAssessment', 'awatingPlacement', 'buyHouse', 'friends', 'privateRent', 'socialRent', 'healthcare', 'supported', 'other')
+futurePlanned = new Element.Radiogroup(this.page, '#suitable_housing_planned', ['yes', 'no'])
+futureType = new Element.Radiogroup(this.page, '#future_accommodation_type', ['awaitingAssessment', 'awatingPlacement', 'buyHouse', 'friends', 'privateRent', 'socialRent', 'healthcare', 'supported', 'other')
 
 
 accommodationStrengths: {

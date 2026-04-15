@@ -3,7 +3,7 @@ import { Api, test } from 'fixtures'
 
 // Number of offenders for each date range
 const offenderCountEarly = 25     // Used for pre-2023
-const offenderCount = 50          // 2023 and later
+const offenderCount = 75          // 2023 and later
 
 // Response time thresholds
 const slow = 100

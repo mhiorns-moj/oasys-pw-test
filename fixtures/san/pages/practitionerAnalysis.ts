@@ -32,7 +32,7 @@ export class PractitionerAnalysis extends OasysPage {
     }
 }
 
-const idPrefixes = {
+const idPrefixes: { [key: string]: string } = {
     'Accommodation': 'accommodation',
     'Employment and education': 'emplyment_education',
     'Finances': 'finance',

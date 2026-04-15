@@ -1,10 +1,9 @@
-import { Page, TestInfo } from '@playwright/test'
+import { Page } from '@playwright/test'
 import * as fs from 'fs-extra'
 
 import { Oasys, Assessment, Tasks } from 'fixtures'
 import * as pages from './pages'
 import { User } from 'classes/user'
-import { checkOgrs4CalcsPk } from 'lib/ogrs'
 
 export class Signing {
 

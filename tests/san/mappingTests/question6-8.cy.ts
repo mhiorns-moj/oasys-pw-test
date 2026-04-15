@@ -1,10 +1,6 @@
 import { mappingTestOffenderFile } from './xMappingTest'
 
-const accommodation1 = new oasys.Pages.San.Accommodation.Accommodation1()
-const accommodation2 = new oasys.Pages.San.Accommodation.Accommodation2()
-const relationshipsLanding = new oasys.Pages.San.SectionLandingPage('Personal relationships and community')
-const relationships1 = new oasys.Pages.San.Relationships.Relationships1()
-const relationships2 = new oasys.Pages.San.Relationships.Relationships2()
+
 
 type AccommodationOptions = 'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'
 type RelationshipOptions = 'partner' | 'ownChildren' | 'otherChildren' | 'family' | 'friends' | 'other'

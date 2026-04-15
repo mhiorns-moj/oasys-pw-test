@@ -39,5 +39,5 @@ export class PsrAddendum extends OasysPage {
     officialTitle = new Element.Textbox(this.page, '#P0_AUTHOR_POSITION')
     officeLocation = new Element.Textbox(this.page, '#P0_OFFICE_DETAILS')
     dateReportSigned = new Element.Textbox<OasysDate>(this.page, '#P0_DATE_REPORT_SIGNED', true)
-    comments = new Element.TextEditor('#P200_COMMENTS_LABEL')
+    comments = new Element.TextEditor(this.page, '#P200_COMMENTS_LABEL')
 }

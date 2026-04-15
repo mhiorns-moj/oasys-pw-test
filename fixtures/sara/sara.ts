@@ -13,6 +13,7 @@ export class Sara {
     readonly sara = new pages.Sara(this.page)
     readonly reasonNoSara = new pages.ReasonNoSara(this.page)
     readonly deleteSaraPage = new pages.DeleteSara(this.page)
+    readonly createSara = new pages.CreateSara(this.page)
 
     readonly queries = new Queries(this.oasysDb)
     
