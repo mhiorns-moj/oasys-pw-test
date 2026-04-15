@@ -138,7 +138,7 @@ function drugTest(drugType: DrugType) {
                 ]
 
             let firstRun = true
-            cy.task('consoleLog', `Testing ${drugType}`)
+            console.log(`Testing ${drugType}`)
 
             expectedAnswers = JSON.parse(JSON.stringify(expectedAnswersTemplate)) as OasysAnswer[]  // take a copy to modify for this drug
             for (const test of testCases) {
@@ -166,7 +166,7 @@ function drugTest(drugType: DrugType) {
                             } else {
                                 cy.groupedLog('Passed')
                             }
-                            cy.task('consoleLog', `Ref ${test.ref} ${scenarioFailed ? 'FAILED' : 'Passed'}`)
+                            console.log(`Ref ${test.ref} ${scenarioFailed ? 'FAILED' : 'Passed'}`)
                         }).then(() => {
                             cy.groupedLogEnd()
                         })

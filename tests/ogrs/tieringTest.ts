@@ -26,7 +26,7 @@ describe('Tier calculations test', () => {
                 cy.groupedLog(log)
             })
             cy.groupedLogEnd()
-            cy.task('consoleLog', `Passed: ${result.passed}, failed: ${result.failed}`)
+            console.log(`Passed: ${result.passed}, failed: ${result.failed}`)
             failed = result.failed > 0
 
         }).then(() => {

@@ -97,7 +97,7 @@ function paTest() {
                         } else {
                             cy.groupedLog('Passed')
                         }
-                        cy.task('consoleLog', `Ref ${test.ref} ${scenarioFailed ? 'FAILED' : 'Passed'}`)
+                        console.log(`Ref ${test.ref} ${scenarioFailed ? 'FAILED' : 'Passed'}`)
                     }).then(() => {
                         cy.groupedLogEnd()
                     })

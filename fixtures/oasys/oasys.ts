@@ -13,8 +13,6 @@ export class Oasys {
 
     constructor(private readonly page: Page, public readonly testInfo: TestInfo) { }
 
-
-    appConfig: AppConfig
     readonly users = users.Users
     readonly loginPage = new pages.Login(this.page)
     readonly selectProviderPage = new pages.SelectProvider(this.page)

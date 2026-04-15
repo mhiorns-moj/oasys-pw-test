@@ -139,4 +139,9 @@ export class Utils {
         return `${result}${'.'.repeat(length - i)}`
     }
 
+    // Filter used to deduplicate a list
+    onlyUnique(value: any, index: number, array: any[]) {
+        return array.indexOf(value) === index
+    }
+
 }

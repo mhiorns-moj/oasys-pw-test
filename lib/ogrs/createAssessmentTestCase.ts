@@ -7,8 +7,8 @@ import { TestCaseParameters } from './types'
 export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {}, versions: {},
     dateParam: string | Temporal.PlainDate = null): TestCaseParameters {
 
-    const after6_30 = oasysDateTime.checkIfAfterRelease(versions, '6.30', assessment.initiationDate)
-    const after6_35 = oasysDateTime.checkIfAfterRelease(versions, '6.35', assessment.initiationDate)
+    const after6_30 = oasysDateTime.checkIfAfterRelease('6.30', assessment.initiationDate)
+    const after6_35 = oasysDateTime.checkIfAfterRelease('6.35', assessment.initiationDate)
 
     const drugs = getDrugsUsage(assessment.qaData)
     const q81 = lookupString('8.1', assessment.qaData)

@@ -29,7 +29,7 @@ export function demergeAndCheckOffenders(mergeTestData: MergeTestData) {
         await oasys.clickButton('Close')
 
         // Create a new one, check cloning
-        if (!oasys.appConfig.probForceCrn) {
+        if (!appConfig.probForceCrn) {
             // Need to set PNC to avoid error creating assessment
             await offender.offenderDetails.pnc.setValue(mergeTestData.offender1.pnc)
         }

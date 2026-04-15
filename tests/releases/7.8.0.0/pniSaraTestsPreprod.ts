@@ -30,13 +30,13 @@ describe('Pre-prod tests for PNI SARA parameters', () => {
         let count = 1
 
         offenders.forEach((offender) => {
-            cy.task('consoleLog', `Offender ${count++}: ${offender[0]} / ${offender[1]}`)
+            console.log(`Offender ${count++}: ${offender[0]} / ${offender[1]}`)
 
             if (offender[0] != null) {  // call with probation CRN
                 oasys.Api.testOneOffender(offender[0], 'prob', 'probationFailedAlias', false, true)
                 cy.get<boolean>('@probationFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
-                        cy.task('consoleLog', 'Failed')
+                        console.log('Failed')
                         failed = true
                     }
                 })
@@ -45,7 +45,7 @@ describe('Pre-prod tests for PNI SARA parameters', () => {
                 oasys.Api.testOneOffender(offender[1], 'pris', 'prisonFailedAlias', offender[0] != null, true)  // skipPrisSubsequents if already done for prob crn
                 cy.get<boolean>('@prisonFailedAlias').then((offenderFailed) => {
                     if (offenderFailed) {
-                        cy.task('consoleLog', 'Failed')
+                        console.log('Failed')
                         failed = true
                     }
                 })

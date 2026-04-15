@@ -65,7 +65,7 @@ export class Queries {
         let failed = false
 
         // Filter the expected answers to get a list of OASys sections to check
-        const sections = expectedAnswers.map((answer) => answer.section).filter(onlyUnique)
+        const sections = expectedAnswers.map((answer) => answer.section).filter(utils.onlyUnique)
         let expectedVictims: Victim[] = []
 
         // Then check the answers section by section.  Pull out the victims stuff to check separately.
@@ -434,8 +434,3 @@ const answerTypes: { [keys: string]: AnswerType } = {
 
 }
 
-
-// Filter used to get a list of OASys sections from a list of questions
-function onlyUnique(value: any, index: number, array: any[]) {
-    return array.indexOf(value) === index
-}

@@ -73,7 +73,7 @@ declare type OffenderApisResult = {
 declare type RestResponse = {
     url: string,
     statusCode: RestStatus,
-    result: object,
+    result: { [key: string]: any },
     message: string,
     responseTime: number,
 }

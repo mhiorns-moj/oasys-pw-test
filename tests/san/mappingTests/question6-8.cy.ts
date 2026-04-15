@@ -85,7 +85,7 @@ describe('Mapping test for question 6.8', () => {
                 let first = true
                 let i = 1
                 for (const test of testCases) {
-                    cy.task('consoleLog', `Test case ${i}`)
+                    console.log(`Test case ${i}`)
                     if (first) {
                         // Extra case 0 without any accommodation
                         await san.gotoSan('Accommodation', 'information', true)

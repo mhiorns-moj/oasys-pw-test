@@ -1,67 +1,10 @@
-/**
- * __oasys.Api.*function*__  
- * 
-### Rest API testing
+import { Oasys, OasysDb } from 'fixtures'
+import * as rest from './apiClasses'
+import * as dbClasses from './data/dbClasses'
+import * as restApi from './getApiResponse'
+import * as checkApiResponse from './checkApiResponse'
+import * as restApiDb from './data/restApiDb'
 
-The `oasys\tests\regression\restAPI` folder contains two tests which aim to carry out a comprehensive regression test on all endpoints.
-
-#### `oasys\tests\regression\restAPI\endpointErrors.cy.ts`
-
-This test calls each endpoint with parameters designed to generate an error condition, including:
-  - duplicate CRN
-  - invalid CRN
-  - invalid LAO parameter
-  - access denied due to LAO status
-  - no assessment found
-
-#### `oasys\tests\regression\restAPI\testAllApisMultipleOffenders.cy.ts`
-
-This runs a regression test for all endpoints for a sample of offenders extracted from the database.  Offenders are selected on a partially random basis - 
-there are 10 groups of offenders, each created prior to a random date in each of the last 10 years.  There is also another set of specific offenders that are known to have certain
-data to ensure good test coverage.
-
-For each selected offender, and each assessment for that offender, all necessary data is extracted from the database and used to build an expected response for each endpoint.
-These expected responses are then compared against the actual responses, to identify missing properties, extra properties and incorrect values.
-
-### Adding new APIs
-
-The following steps are required to add any new endpoints to the API tests:
-
-  - if any new data from the OASys database is required, update or add the appropriate class in `oasys\restAPI\dbClasses.ts`.  Each class here contains the relevant SQL query
-    as well as a constructor to create an object using the data returned by that query.  If new classes/queries are added, you will also have to update the code in
-    `cypress\support\restAPIdb.ts` that runs the queries.
-  - add the new endpoint (assigning an appropriate name) to the `Endpoint` enum in `oasys\restAPI\callAPI.ts`.
-  - use that name to add the url to the `restAPIUrls` const in `cypress\support\environments.ts`.
-  - create a new class to define the expected endpoint response (details below).
-  - add the new endpoint to the list of function calls in `getSingleResponse` in `oasys\restAPI\getExpectedResponses.ts`.
-  - add the new endpoint to the appropriate list in `oasys\restAPI\testOneOffender.ts`.
-  - add the new endpoint to the appropriate list in `oasys\tests\regression\restAPI\endpointErrors.cy.ts`.
-
-#### Endpoint classes
-
-Expected responses are constructed using Typescript classes to define all the properties; there is a class for each endpoint in one of the folders under `oasys\restAPI`.
-Common values (such as the assessment timeline and common assessment details) are added by the base classes, e.g. `oasys\restAPI\v4\v4Common.ts` which in turn inherits from 
-`oasys\restAPI\common.ts`.
-
-Each class file must be referenced in the `index.ts` file in the same folder, and must contain the items described below.  In general the best approach is to copy an existing class
-file and modify it to fit the new specification; most new endpoints will be similar others in the `oasys\restAPI\v4` folder so one of these is likely to be a good starting point.
-
-#### `function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: api.EndpointParams, resultAlias: string)`
-
-This function is called from `oasys\restAPI\getExpectedResponses.ts`, and returns the expected endpoint response using a Cypress alias. The required parameters are:
-  - a `DbOffenderWithAssessments` object, this will contain all necessary offender and assessment data
-  - the endpoint parameters (e.g. endpoint name, CRN, assessment PK etc)
-
-It identifies the relevant assessment details, then creates a response object using classes like these examples:
-
-#### `class RoshSummEndpointResponse extends v4Common.V4EndpointResponse`
-#### `RoshSummAssessment extends v4Common.V4AssessmentCommon`
-
-These, together with any other classes appropriate to each endpoint, contain property names that match the expected JSON property names, and are populated with the supplied 
-offender and assessment data.
- * 
- * @module API
- */
 
 /** 
  * Tests all endpoints for all assessments for given offender probation CRN; uses a result alias to return a true/false result (true if any tests fail).
@@ -70,66 +13,211 @@ offender and assessment data.
  * Parameters:
  *  - crn (either probation or prison CRN as specified by the next parameter)
  *  - crnSource - 'prob' or 'pris'
- *  - resultAlias - a Cypress alias name used to return the result
  *  - skipPkOnlyCalls - if true, any APIs that are called with just an assessment PK will be skipped on the basis that the calling script is repeating an offender 
  *                      (selected this time using the prison CRN instead of probation) so these calls will be identical.
  *  - stats - optional array of EndpointStat objects to collect timing stats
  */
 
-export function testOneOffender(crn: string, crnSource: Provider, resultAlias: string, skipPkOnlyCalls: boolean,
-  reportPasses: boolean, stats: EndpointStat[] = null) {
+export class Api {
 
-  cy.task('testApisForOffender', { crn: crn, crnSource: crnSource, skipPkOnlyCalls: skipPkOnlyCalls, stats: stats, reportPasses: reportPasses })
-    .then((result: OffenderApisResult) => {
+    constructor(readonly oasys: Oasys, readonly oasysDb: OasysDb) { }
 
-      cy.groupedLogStart(result.report[0])
-      result.report.slice(1).forEach((reportLine) => {
-        cy.groupedLog(reportLine)
-      })
-      cy.groupedLogEnd()
+    /** 
+     * Tests all endpoints for all assessments for given offender CRN; returns an OffenderApisResult object including pass/fail, reporting output and timing stats.
+     * All necessary data is pulled from the database to build expected responses.
+     * 
+     * Parameters:
+     *  - crn (either probation or prison CRN as specified by the next parameter)
+     *  - crnSource - 'prob' or 'pris'
+     *  - skipPkOnlyCalls - if true, any APIs that are called with just an assessment PK will be skipped on the basis that the calling script is repeating an offender 
+     *                      (selected this time using the prison CRN instead of probation) so these calls will be identical.
+     */
+    async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean, stats: EndpointStat[] = null): Promise<boolean> {
 
-      if (stats) result.stats.forEach((stat) => { stats.push(stat) })
+        const v1Endpoints: Endpoint[] = [
+            'offences',
+            'riskScores',
+            'allRiskScores',
+            'rmp',
+        ]
 
-      cy.wrap(result.failed).as(resultAlias)
-    })
+        const apEndpoints: Endpoint[] = [
+            'apOffence',
+            'apNeeds',
+            'apRmp',
+            'apRoshSum',
+            'apRiskInd',
+            'apRiskAss',
+            'apHealth',
+            'apRosh',
+        ]
 
-}
+        const v4AssessmentEndpoints: Endpoint[] = [
+            'v4section1',
+            'v4section2',
+            'v4section3',
+            'v4section4',
+            'v4section5',
+            'v4section6',
+            'v4section7',
+            'v4section8',
+            'v4section9',
+            'v4section10',
+            'v4section11',
+            'v4section12',
+            'v4section13',
+            'v4Rmp',
+            'v4RoshFull',
+            'v4RoshSumm',
+            'v4Victim',
+            'v4RiskIndividual',
+            'v4RiskScoresAss',
+            'crimNeeds',
+        ]
 
-/**
- * Calls an endpoint and checks the error conditions where a status code other than OK is expected, along with an error message.
- * Parameters are:
- *      1) an EndpointParams object including the endpoint and associated parameters such as CRN
- *      2) a RestErrorResult object defining the expected result, standard responses are defined in the RestErrorResult class in this module.
- *      3) an optional ouptut alias to return results.
- * 
- * If the last parameter is included, the test will not fail.  The output that can be accessed via the supplied alias
- * is a boolean, set to true if the check failed. 
- */
-export function checkAPIError(parameters: EndpointParams, expectedResult: RestErrorResult, resultAlias: string = '') {
+        const v4RsrEndpoints: Endpoint[] = [
+            'v4RiskScoresRsr',
+        ]
 
-  cy.task('getRestData', parameters).then((response: RestResponse) => {
+        let failed = false
 
-    let failed = false
-    cy.groupedLogStart(`Checking RestAPI response for: ${response.url}, expecting ${expectedResult.statusCode}`)
-    cy.groupedLog(`result: ${JSON.stringify(response.result)}`)
+        // Get all relevant data from the OASys database
+        const offenderData = await restApiDb.getOffenderWithAssessments(crnSource, crn)
+        log('', '')
+        log('', `Offender ${crnSource == 'prob' ? 'CRN' : 'NOMIS Id'}: ${crn}`)
 
-    if (response.statusCode != expectedResult.statusCode) {
-      cy.groupedLog(`Error checking API ${response.url}: expected status ${expectedResult.statusCode}, got ${response.statusCode}`)
-      failed = true
-    }
+        if (offenderData == null) {  // null return indicates no offender data or multiple offenders with the same CRN.  Tests for these cases are covered elsewhere in the regression pack
+            log('Skipping this offender - no offender data or multiple offender records with the same CRN')
+            log('')
 
-    if (response.message != expectedResult.message) {
-      cy.groupedLog(`Error checking API ${response.url}: expected '${expectedResult.message}', got '${response.message}'`)
-      failed = true
-    }
-    cy.groupedLogEnd().then(() => {
-      if (resultAlias == '') {
-        if (failed) {
-          throw new Error('Failed checking RestAPI response')
+        } else {
+            // Store the elapsed time for database querying
+            stats?.push({ endpoint: 'database', responseTime: offenderData.dbElapsedTime })
+
+            ////////////////////////////////////////////////////////////
+            // Compile a set of parameters for calling the API functions
+            const apiParams: EndpointParams[] = []
+
+            if (crnSource == 'prob') { // Ignore 'pris' offenders for versions 1 to 3 endpoints
+
+                // Add parameters for the V1 endpoints
+                v1Endpoints.forEach((endpoint) => {
+                    const params: EndpointParams = { endpoint: endpoint, crn: offenderData.probationCrn, laoPrivilege: 'ALLOW' }
+                    apiParams.push(params)
+                })
+
+                // Add AP Initial
+                const params: EndpointParams = { endpoint: 'apAsslist', crn: offenderData.probationCrn, laoPrivilege: 'ALLOW' }
+                apiParams.push(params)
+
+                // Add other AP endpoint params if the offender has assessments
+                const apAssessments = offenderData.assessments.filter(rest.Ap.ApCommon.assessmentFilter)
+                if (apAssessments.length > 0) {
+                    apAssessments.forEach((assessment) => this.addAssessment(apEndpoints, apiParams, offenderData.probationCrn, assessment))
+                }
+
+                // Use latest complete or locked incomplete assessment for the AssSumm - only if initiated after 2020 to avoid incompatible data. In reality should only be used from release 6.46
+                const assSummAssessments = offenderData.assessments.filter((ass) =>
+                    !['SARA', 'RM2000', 'BCS', 'TR_BCS', 'STANDALONE'].includes(ass.assessmentType)
+                    && ['COMPLETE', 'LOCKED_INCOMPLETE'].includes(ass.status)
+                    && ass.initiationDate > '2020')
+                if (assSummAssessments.length > 0) {
+                    const assessment = assSummAssessments[assSummAssessments.length - 1]
+                    apiParams.push({
+                        endpoint: assessment['sanIndicator' as keyof dbClasses.DbAssessmentOrRsr] == 'Y' || assessment['spIndicator' as keyof dbClasses.DbAssessmentOrRsr] == 'Y' ? 'assSummSan' : 'assSumm', crn: offenderData.probationCrn, laoPrivilege: 'ALLOW',
+                        assessmentPk: assessment.assessmentPk, expectedStatus: assessment.status
+                    })
+                }
+            }
+
+            // Add V4 asslist
+            const v4Asslistparams: EndpointParams = {
+                endpoint: 'v4AssList',
+                crnSource: crnSource,
+                crn: crnSource == 'prob' ? offenderData.probationCrn : offenderData.nomisId,
+                laoPrivilege: 'ALLOW'
+            }
+            apiParams.push(v4Asslistparams)
+
+            // Add other V4 endpoint params if the offender has assessments and if skipPkOnlyCalls parameter is false
+            if (!skipPkOnlyCalls) {
+                // V4 timeline includes layer2 but the subsequents do not
+                const relevantAssessments = offenderData.assessments.filter(rest.V4Common.assessmentFilter).filter((ass) => ass.assessmentType != 'LAYER2')
+                relevantAssessments.forEach((assessment) => this.addAssessment(v4AssessmentEndpoints, apiParams, offenderData.probationCrn, assessment))
+
+                // Add RSRs
+                const standaloneRsrs = offenderData.assessments.filter((ass) => ass.assessmentType == 'STANDALONE')
+                standaloneRsrs.forEach((assessment) => this.addAssessment(v4RsrEndpoints, apiParams, offenderData.probationCrn, assessment))
+            }
+
+            // Add PNI - only if initiated after 2020 to avoid incompatible data
+            const pniRelevantAssessments = offenderData.assessments.filter(rest.V4Common.pni.pniFilter).filter((ass) => ass.initiationDate > '2021')
+            if (pniRelevantAssessments.length > 0) {
+                const v4PniParams: EndpointParams = {
+                    endpoint: 'pni',
+                    crnSource: crnSource,
+                    crn: crnSource == 'prob' ? offenderData.probationCrn : offenderData.nomisId,
+                    additionalParameter: 'Y',
+                    laoPrivilege: 'ALLOW'
+                }
+                apiParams.push(v4PniParams)
+                const custodyParams = JSON.parse(JSON.stringify(v4PniParams)) as EndpointParams
+                custodyParams.additionalParameter = 'N'
+                apiParams.push(custodyParams)
+            }
+
+            ///////////////////////////////////////////////////////////
+            // Work out the expected responses, then call the endpoints
+            const expectedValues = await rest.GetExpectedResponses.getExpectedResponses(offenderData, apiParams)
+            const actualValues = await restApi.getMultipleRestData(apiParams)
+
+            ////////////////////////////////////
+            // Compare results for each endpoint
+            let lastPkReported = 0
+            for (let i = 0; i < apiParams.length; i++) {
+                if (apiParams[i].endpoint == 'apAsslist' || apiParams[i].endpoint == 'v4AssList') {
+                    delete actualValues[i].result['assessments']  // spurious empty array object gets added to the asslist and allasslist endpoints, ignore for this test
+                }
+
+
+                // Compare expected vs actuals and write results to the log
+                const result = await checkApiResponse.checkApiResponse(expectedValues[i], actualValues[i], reportPasses)
+
+                if (result) {
+                    failed = true
+                }
+
+                if (apiParams[i].assessmentPk && apiParams[i].assessmentPk != lastPkReported && (result || reportPasses)) {
+                    // Write some assessment details to the log, including OASys version at initiation date
+                    const assessmentData = offenderData.assessments.filter((ass) => ass.assessmentPk == apiParams[i].assessmentPk)[0]
+                    const assVersion = assessmentData.assessmentType == 'STANDALONE' ? '' : ` v${(assessmentData as dbClasses.DbAssessment).assessmentVersion}`
+                    log('', `\n${assessmentData.assessmentType}${assVersion} assessment (${assessmentData.assessmentPk}), initiation date ${assessmentData.initiationDate.substring(0, 10)} (${assessmentData.appVersion})`)
+                    fileLog(`${assessmentData.assessmentType}${assVersion} assessment (${assessmentData.assessmentPk}), initiation date ${assessmentData.initiationDate.substring(0, 10)} (${assessmentData.appVersion})`)
+                    lastPkReported = apiParams[i].assessmentPk
+                }
+
+                // Check response time and add to stats table, mark as SLOW if > 99ms
+                let slow = actualValues[i].responseTime > 500 ? '**** VERY SLOW ****' : actualValues[i].responseTime > 99 ? '**** SLOW ****' : ''
+                if (slow != '' || reportPasses) {
+                    log(`${actualValues[i].responseTime}ms ${slow}`)
+                }
+                stats?.push({ endpoint: apiParams[i].endpoint, responseTime: actualValues[i].responseTime })
+                log('')
+            }
         }
-      } else {
+
         return failed
-      }
-    })
-  })
+    }
+
+    private addAssessment(endpoints: Endpoint[], parameters: EndpointParams[], crn: string, assessment: dbClasses.DbAssessmentOrRsr) {
+
+        endpoints.forEach((endpoint) => {
+            const params: EndpointParams = {
+                endpoint: endpoint, crn: crn,
+                laoPrivilege: 'ALLOW', assessmentPk: assessment.assessmentPk, expectedStatus: assessment.status
+            }
+            parameters.push(params)
+        })
+    }
+
 }

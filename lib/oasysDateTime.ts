@@ -1,9 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill'
 
-export type AppVersions = { [keys: string]: Temporal.PlainDateTime }
-export const appVersions: AppVersions = {}
-export let currentVersion = ''
-
 export class OasysDateTime {
 
     testStartDate = Temporal.Now.plainDateISO()
@@ -160,33 +156,33 @@ export class OasysDateTime {
 
     checkIfAfterReleaseNode(version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
 
-        return checkIfAfter(version, date, appVersions)
+        return this.checkIfAfter(version, date)
     }
 
     // Generic version for use in code that could be called from either Cypress or Node
-    checkIfAfterRelease(versions: {}, version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
+    checkIfAfterRelease(version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
 
-        return checkIfAfter(version, date, versions)
+        return this.checkIfAfter(version, date)
     }
 
     dateToVersion(date: string | Temporal.PlainDateTime): string {
 
         const testDate = typeof date == 'string' ? this.stringToTimestamp(date) : date
 
-        for (let key of Object.keys(appVersions)) {
-            if (Temporal.PlainDateTime.compare(testDate, appVersions[key]) >= 0) {
+        for (let key of Object.keys(appConfig.appVersions)) {
+            if (Temporal.PlainDateTime.compare(testDate, appConfig.appVersions[key]) >= 0) {
                 return key
             }
         }
         return 'unknown version'
     }
-}
 
-function checkIfAfter(version: SignificantAppVersions, date: Temporal.PlainDateTime | string, appVersions: AppVersions): boolean {
+    checkIfAfter(version: SignificantAppVersions, date: Temporal.PlainDateTime | string): boolean {
 
-    const versionDate = appVersions[versionLookup[version]]
-    const testDate = typeof date == 'string' ? this.stringToTimestamp(date) : date
-    return versionDate ? Temporal.PlainDateTime.compare(testDate, versionDate) == 1 : null
+        const versionDate = appConfig.appVersions[versionLookup[version]]
+        const testDate = typeof date == 'string' ? this.stringToTimestamp(date) : date
+        return versionDate ? Temporal.PlainDateTime.compare(testDate, versionDate) == 1 : null
+    }
 }
 
 const versionLookup = {
@@ -194,9 +190,4 @@ const versionLookup = {
     '6.30': '6.30.0.0',
     '6.35': '6.35.0.0',
     '6.49': '6.49.0.0',
-}
-
-export function setCurrentVersion(version: string) {
-
-    currentVersion = version
 }

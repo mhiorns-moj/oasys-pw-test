@@ -1,4 +1,5 @@
-import { test as base, mergeTests, TestInfo, expect, Page } from '@playwright/test'
+import { test as base, TestInfo, expect, Page } from '@playwright/test'
+import * as fs from 'fs-extra'
 
 import { OasysDb } from './oasysDb/oasysDb'
 import { testEnvironment } from 'localSettings'
@@ -14,6 +15,7 @@ import { Risk } from './risk/risk'
 import { SentencePlan } from './sentencePlan/sentencePlan'
 import { Signing } from './signing/signing'
 import { Sara } from './sara/sara'
+import { Api } from './api/api'
 import { OasysDateTime } from 'lib/oasysDateTime'
 import { Utils } from 'lib/utils'
 
@@ -30,9 +32,11 @@ export { Risk } from './risk/risk'
 export { SentencePlan } from './sentencePlan/sentencePlan'
 export { Signing } from './signing/signing'
 export { Sara } from './sara/sara'
+export { Api } from './api/api'
 
 
 const oasysLog: Log[] = []
+const fileLog: string[] = []
 
 globalThis.expect = expect
 globalThis.oasysDateTime = new OasysDateTime()
@@ -54,6 +58,13 @@ globalThis.log = (logtext: string, type?: string) => {
     oasysLog.push({ logText: logtext, type: type })
 }
 
+globalThis.fileLog = (logtext: string) => {
+
+    fileLog.push(logtext)
+}
+
+globalThis.appConfig = null
+
 type OasysFixtures = {
     oasysDb: OasysDb,
     oasys: Oasys,
@@ -67,8 +78,10 @@ type OasysFixtures = {
     signing: Signing,
     sara: Sara,
     sns: Sns,
+    api: Api,
 }
 
+const fileLogFilename = 'test-results/fileLog.txt'
 
 export const test = base.extend<OasysFixtures>({
 
@@ -79,11 +92,12 @@ export const test = base.extend<OasysFixtures>({
 
     oasys: async ({ page, oasysDb }, use, testInfo) => {
 
+        fs.remove(fileLogFilename)
         const oasys = new Oasys(page, testInfo)
         oasysLog.length = 0
-        oasys.appConfig = await oasysDb.getAppConfig()
+        appConfig = await oasysDb.getAppConfig()
 
-        log(`OASys ${oasys.appConfig.currentVersion} (${testEnvironment.name})`, 'Environment')
+        log(`OASys ${appConfig.currentVersion} (${testEnvironment.name})`, 'Environment')
         await oasysDb.getLatestElogAndUnprocEventTime('store')
 
         await page.goto(testEnvironment.url)
@@ -93,6 +107,9 @@ export const test = base.extend<OasysFixtures>({
         await oasysDb.closeConnection()
         for (let log of oasysLog) {
             testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
+        }
+        if (fileLog.length > 0) {
+            fs.writeFile(fileLogFilename, fileLog.join('\n'))
         }
     },
 
@@ -149,5 +166,10 @@ export const test = base.extend<OasysFixtures>({
     sara: async ({ page, oasysDb }, use: Function) => {
         const sara = new Sara(page, oasysDb)
         await use(sara)
+    },
+
+    api: async ({ oasys, oasysDb }, use: Function) => {
+        const api = new Api(oasys, oasysDb)
+        await use(api)
     },
 })
