@@ -24,10 +24,11 @@ export class San {
 
     readonly sanSections = new pages.SanSections(this.page)
     readonly landingPage = new pages.LandingPage(this.page)
-    readonly accommodation1 = new pages.Accommodation.Accommodation1()
-    readonly accommodation2 = new pages.Accommodation.Accommodation2()
-    readonly relationships1 = new pages.Relationships.Relationships1()
-    readonly relationships2 = new pages.Relationships.Relationships2()
+    readonly accommodation1 = new pages.Accommodation1(this.page)
+    readonly accommodation2 = new pages.Accommodation2(this.page)
+    readonly relationships1 = new pages.Relationships1(this.page)
+    readonly relationships2 = new pages.Relationships2(this.page)
+    readonly relationshipsLanding = new pages.SectionLandingPage(this.page, 'Personal relationships and community')
 
     readonly queries = new Queries(this.oasysDb, this.oasys)
 

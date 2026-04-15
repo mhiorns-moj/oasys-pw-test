@@ -30,7 +30,7 @@ export abstract class OasysPage {
 
         for (let elementName of Object.keys(elementValues)) {
 
-            const element = this[elementName]
+            const element = this[elementName as keyof this]
             if (element == null) {
                 throw new Error(`Invalid element name on ${this.name} - ${elementName}`)
             }

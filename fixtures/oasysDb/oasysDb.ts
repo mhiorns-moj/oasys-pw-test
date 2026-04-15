@@ -1,26 +1,3 @@
-/**
- * __await oasysDb.*async*__  
- * 
- * Functions for checking and retrieving database values.
- * 
- * Querying the Oracle database during a test in Cypress is relatively complex due to timing considerations and the fact that the Javascript test code is executed in the
- * browser and cannot access the database.
- * 
- * The actual database interaction is in cypress/support/oasysDb.ts, called via cy.task asyncs defined in cypress.config.ts; this module provides a set of asyncs to
- * handle the cy.task calls.  Most either fail the test if checks find the wrong values, or require the use of Cypress aliases to get results back, e.g.
- * 
- *  > `await oasysDb.selectCount(``select count(*) from eor.offender where family_name = '${surname}'``, 'count')`  
- *  > `cy.get<number>('@count').then((count) => {`  
- *  > &nbsp;&nbsp;&nbsp;&nbsp;`log(count.toString())`  
- *  > &nbsp;&nbsp;&nbsp;&nbsp;`if (count > 1) {`  
- *  > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`....`  
- *  > &nbsp;&nbsp;&nbsp;&nbsp;`}`  
- *  > `})`
- * 
- * @module Database
-*/
-
-import { Temporal } from '@js-temporal/polyfill'
 import { Db } from './db'
 import { testEnvironment, userSuffix } from 'localSettings'
 

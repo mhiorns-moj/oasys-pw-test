@@ -1,12 +1,12 @@
 import { Element } from 'classes'
-import { BaseSanEditPage } from '../baseSanEditPage'
+import { BaseSanEditPage } from './baseSanEditPage'
 
 export class Relationships2 extends BaseSanEditPage {
 
     name = 'Relationships2'
     title = 'Personal relationships and community - Strengths and Needs'
 
-    importantPeople = new Element.CheckboxGroup<'partner' | 'ownChildren' | 'otherChildren' | 'family' | 'friends' | 'other'>('#personal_relationships_community_important_people', ['partner', 'ownChildren', 'otherChildren', 'family', 'friends', 'other'])
+    importantPeople = new Element.CheckboxGroup<'partner' | 'ownChildren' | 'otherChildren' | 'family' | 'friends' | 'other'>(this.page, '#personal_relationships_community_important_people', ['partner', 'ownChildren', 'otherChildren', 'family', 'friends', 'other'])
     // importantOtherDetails: {
     //     type: 'textbox', id: '#personal_relationships_community_important_people_other_details'
     // },

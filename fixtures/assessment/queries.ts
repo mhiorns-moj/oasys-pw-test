@@ -347,8 +347,7 @@ export class Queries {
      * Its value will be set to true in the case of failure, but left unchanged if the test passes.
      * If logText is provided, pushes failure details into the array rather than reporting all passes and failures.
      */
-    async checkSingleAnswer(assessmentPk: number, section: string, questionRef: string, answerType: AnswerType, expectedResult: string,
-        logText: string[] = null, testCase: number = null): Promise<boolean> {
+    async checkSingleAnswer(assessmentPk: number, section: string, questionRef: string, answerType: AnswerType, expectedResult: string, testCase: number = null): Promise<boolean> {
 
         const answerSelect = answerType == 'refAnswer' ? 'a.ref_answer_code' : answerType == 'freeFormat' ? 'q.free_format_answer' : 'q.additional_note'
         const query = `select ${answerSelect} from eor.oasys_set st, eor.oasys_section s, eor.oasys_question q, eor.oasys_answer a
@@ -362,11 +361,9 @@ export class Queries {
         const data = await this.oasysDb.getData(query)
         const actualResult = data.length == 0 ? '' : data[0][0]
         const failureMessage = actualResult == expectedResult ? '' : ' *** FAILED ***'
-        if (logText == null) {
-            log(`Checking answer: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage} `)
-        } else if (actualResult != expectedResult) {
-            logText.push(`Test case ${testCase}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage} `)
-        }
+
+        const logDesc = testCase == null ? 'Checking answer' : `Test case ${testCase}`
+        log(`${logDesc}: section ${section} question ${questionRef} - expected '${expectedResult}', actual '${actualResult}'${failureMessage} `)
         return actualResult != expectedResult
     }
 

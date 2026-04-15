@@ -1,5 +1,5 @@
 import { Element } from 'classes'
-import { BaseSanEditPage } from '../baseSanEditPage'
+import { BaseSanEditPage } from './baseSanEditPage'
 
 export class Accommodation2 extends BaseSanEditPage {
 
