@@ -1,7 +1,6 @@
 import * as v4Common from './v4Common'
 import * as dbClasses from 'fixtures/api/data/dbClasses'
 import * as env from '../../restApiUrls'
-import { SanCrimNeedScore } from '../common'
 
 export function getExpectedResponse(offenderData: dbClasses.DbOffenderWithAssessments, parameters: EndpointParams) {
 
@@ -127,7 +126,11 @@ export class CrimNeedsAssessment extends v4Common.V4AssessmentCommon {
         addSectionDetails(this.think, dbAssessment, 'think', '11', '11.98', '11.99')
         addSectionDetails(this.att, dbAssessment, 'att', '12', '12.98', '12.99')
 
-        this.sanCrimNeedScore = new SanCrimNeedScore(dbAssessment)
+        if (dbAssessment.assessmentType == 'LAYER3') {
+            this.sanCrimNeedScore = new SanCrimNeedScore(dbAssessment)
+        } else {
+            this.sanCrimNeedScore = null
+        }
     }
 }
 
@@ -140,3 +143,107 @@ function addSectionDetails(result: { [key: string]: any }, dbAssessment: dbClass
     result[`${prefix}OtherWeightedScore`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.otherWeightedScore
 }
 
+export class SanCrimNeedScore {
+
+    accomSan: {
+        accomSanThreshold?: number
+        accomSanScore?: number
+        accomSanLinkedToHarm?: string
+        accomSanLinkedToReoffending?: string
+        accomSanStrength?: string
+    } = {}
+
+    empAndEduSan: {
+        empAndEduSanThreshold?: number
+        empAndEduSanScore?: number
+        empAndEduSanLinkedToHarm?: string
+        empAndEduSanLinkedToReoffending?: string
+        empAndEduSanStrength?: string
+    } = {}
+
+    persRelAndCommSan: {
+        persRelAndCommSanThreshold?: number
+        persRelAndCommSanScore?: number
+        persRelAndCommSanLinkedToHarm?: string
+        persRelAndCommSanLinkedToReoffending?: string
+        persRelAndCommSanStrength?: string
+    } = {}
+
+    lifeAndAssocSan: {  // TODO is this correct?
+        lifeAndAssocSanThreshold?: number
+        lifeAndAssocSanScore?: number
+    } = {}
+
+    drugUseSan: {
+        drugUseSanThreshold?: number
+        drugUseSanScore?: number
+        drugUseSanLinkedToHarm?: string
+        drugUseSanLinkedToReoffending?: string
+        drugUseSanStrength?: string
+    } = {}
+
+    alcoUseSan: {
+        alcoUseSanThreshold?: number
+        alcoUseSanScore?: number
+        alcoUseSanLinkedToHarm?: string
+        alcoUseSanLinkedToReoffending?: string
+        alcoUseSanStrength?: string
+    } = {}
+
+    thinkBehavAndAttiSan: {
+        thinkBehavAndAttiSanThreshold?: number
+        thinkBehavAndAttiSanScore?: number
+        thinkBehavAndAttiSanLinkedToHarm?: string
+        thinkBehavAndAttiSanLinkedToReoffending?: string
+        thinkBehavAndAttiSanStrength?: string
+    } = {}
+
+    financeSan: {
+        financeSanThreshold?: number
+        financeSanScore?: number
+        financeSanLinkedToHarm?: string
+        financeSanLinkedToReoffending?: string
+        financeSanStrength?: string
+    } = {}
+
+    healthAndWellbeingSan: {
+        healthAndWellbeingSanThreshold?: number
+        healthAndWellbeingSanScore?: number
+        healthAndWellbeingSanLinkedToHarm?: string
+        healthAndWellbeingSanLinkedToReoffending?: string
+        healthAndWellbeingSanStrength?: string
+    } = {}
+
+    constructor(dbAssessment: dbClasses.DbAssessment) {
+
+        addSanSectionDetails(this.accomSan, dbAssessment, 'accomSan', '3', '3.98', '3.99')
+        addSanSectionDetails(this.empAndEduSan, dbAssessment, 'empAndEduSan', '4', '4.96', '4.98')
+        addSanSectionDetails(this.persRelAndCommSan, dbAssessment, 'persRelAndCommSan', '6', '6.98', '6.99')
+        addSanSectionDetails(this.lifeAndAssocSan, dbAssessment, 'lifeAndAssocSan', '7', '7.98', '7.99')
+        addSanSectionDetails(this.drugUseSan, dbAssessment, 'drugUseSan', '8', '8.98', '8.99')
+        addSanSectionDetails(this.alcoUseSan, dbAssessment, 'alcoUseSan', '9', '9.98', '9.99')
+        addSanSectionDetails(this.thinkBehavAndAttiSan, dbAssessment, 'thinkBehavAndAttiSan', 'SAN', '11.98', '11.99')
+        addSanSectionDetails(this.financeSan, dbAssessment, 'financeSan', '5', '5.98', '5.99')
+        addSanSectionDetails(this.healthAndWellbeingSan, dbAssessment, 'healthAndWellbeingSan', '10', '10.98', '10.99')
+
+    }
+}
+
+function addSanSectionDetails(result: { [key: string]: any }, dbAssessment: dbClasses.DbAssessment, prefix: string, sectionCode: string, harm: string, reoffending: string) {
+
+    result[`${prefix}Threshold`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.crimNeedScoreThreshold
+    if (dbAssessment.sanIndicator == 'Y') {
+        result[`${prefix}Score`] = dbAssessment.sections.find((s) => s.sectionCode == sectionCode)?.sanCrimNeedScore
+    } else {
+        result[`${prefix}Score`] = null
+    }
+    if (dbAssessment.sanIndicator != 'Y' && sectionCode == 'SAN') {
+        result[`${prefix}LinkedToHarm`] = null
+        result[`${prefix}LinkedToReoffending`] = null
+        result[`${prefix}Strength`] = null
+    } else if (sectionCode != '7') {
+        result[`${prefix}LinkedToHarm`] = dbAssessment.qaData.getString(harm)?.toUpperCase()        // TODO remove workaround when fixed
+        result[`${prefix}LinkedToReoffending`] = dbAssessment.qaData.getString(reoffending)?.toUpperCase()      // TODO remove workaround when fixed
+        result[`${prefix}Strength`] = dbAssessment.qaData.getString(`${sectionCode == 'SAN' ? 'TBA' : sectionCode}_SAN_STRENGTH`)?.toUpperCase()       // TODO remove workaround when fixed
+    }
+}
