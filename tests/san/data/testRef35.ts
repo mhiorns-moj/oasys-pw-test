@@ -1,4 +1,3 @@
-import * as oasys from 'oasys'
 
 export const sanPopulation1: SanPopulation = [
     {
@@ -200,8 +199,8 @@ export const preRsrDataCheck: OasysAnswer[] = [
 
     { section: '1', q: '1.32', a: `2` },
     { section: '1', q: '1.40', a: `0` },
-    { section: '1', q: '1.29', a: oasys.OasysDateTime.oasysDateAsString({ months: -1 }) },
-    { section: '1', q: '1.38', a: oasys.OasysDateTime.oasysDateAsString() },
+    { section: '1', q: '1.29', a: oasysDateTime.oasysDateAsString({ months: -1 }) },
+    { section: '1', q: '1.38', a: oasysDateTime.oasysDateAsString() },
     { section: '3', q: '3.4', a: `0` },
     { section: '4', q: '4.2', a: `NO` },
     { section: '6', q: '6.4', a: `2` },
@@ -218,8 +217,8 @@ export const postRsrDataCheck: OasysAnswer[] = [
 
     { section: '1', q: '1.32', a: `4` },
     { section: '1', q: '1.40', a: `1` },
-    { section: '1', q: '1.29', a: oasys.OasysDateTime.oasysDateAsString() },
-    { section: '1', q: '1.38', a: oasys.OasysDateTime.oasysDateAsString({ months: 6 }) },
+    { section: '1', q: '1.29', a: oasysDateTime.oasysDateAsString() },
+    { section: '1', q: '1.38', a: oasysDateTime.oasysDateAsString({ months: 6 }) },
     { section: '3', q: '3.4', a: `0` },
     { section: '4', q: '4.2', a: `NO` },
     { section: '6', q: '6.4', a: `2` },

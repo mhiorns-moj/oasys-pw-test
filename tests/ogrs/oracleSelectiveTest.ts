@@ -8,7 +8,7 @@ const reportMode: ReportMode = 'verbose'
 
 describe('OGRS calculator test', () => {
 
-    it(`Assessment pk ${pk}`, () => {
+    test(`Assessment pk ${pk}`, () => {
 
         const dbTestParams: OgrsTestParameters = {
             testType: 'db',

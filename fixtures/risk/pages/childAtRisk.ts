@@ -1,0 +1,113 @@
+﻿import { OasysPage, Element } from 'classes'
+
+export class ChildAtRisk extends OasysPage {
+
+    name = 'ChildAtRisk'
+    menu: Menu = { type: 'Subform', level1: 'Enter Child Details' }
+
+    save = new Element.Button(this.page, 'Save')
+    close = new Element.Button(this.page, 'Close')
+    childName = new Element.Textbox(this.page, '#P3_NAME_OF_CHILD')
+    dateOfBirth = new Element.Textbox<OasysDate>(this.page, '#P3_DATE_OF_BIRTH', true)
+    age = new Element.Select(this.page, '#P3_AGE_OF_CHILD_ELM')
+    gender = new Element.Select(this.page, '#P3_GENDER_ELM')
+    address = new Element.Textbox(this.page, '#P3_ADDRESS_OF_CHILD')
+    relationship = new Element.Select(this.page, '#P3_REL_TO_INDIVIDUAL_ELM')
+    relationshipOther = new Element.Textbox(this.page, '#P3_REL_TO_INDIVIDUAL_OTHER')
+    contact = new Element.Select(this.page, '#P3_HAS_OR_SEEK_CONTACT')
+    worried = new Element.Select(this.page, '#P3_WORRIED_ABOUT')
+    worriedAbout = new Element.Textbox(this.page, '#P3_WORRIED_ABOUT_TEXT')
+    knownToServices = new Element.Select(this.page, '#P3_EVER_KNOWN_CHILD_SERVICES')
+
+    earlyHelpCurrent = new Element.Checkbox(this.page, '#P3_EARLY_HELP_0')
+    earlyHelpPrevious = new Element.Checkbox(this.page, '#P3_EARLY_HELP_1')
+    childInNeedCurrent = new Element.Checkbox(this.page, '#P3_CHILD_NEED_0')
+    childInNeedPrevious = new Element.Checkbox(this.page, '#P3_CHILD_NEED_1')
+    cppCurrent = new Element.Checkbox(this.page, '#P3_CHILD_PROT_PLAN_0')
+    cppPrevious = new Element.Checkbox(this.page, '#P3_CHILD_PROT_PLAN_1')
+
+    currentNeglect = new Element.Checkbox(this.page, '#itm2353C')
+    currentPhysical = new Element.Checkbox(this.page, '#itm2354C')
+    currentSexual = new Element.Checkbox(this.page, '#itm2355C')
+    currentEmotional = new Element.Checkbox(this.page, '#itm2356C')
+    previousNeglect = new Element.Checkbox(this.page, '#itm2353P')
+    previousPhysical = new Element.Checkbox(this.page, '#itm2354P')
+    previousSexual = new Element.Checkbox(this.page, '#itm2355P')
+    previousEmotional = new Element.Checkbox(this.page, '#itm2356P')
+    briefDetails = new Element.Textbox(this.page, '#P3_CATG_ABUSE_DETAILS')
+    shareWithServices = new Element.Select(this.page, '#P3_SHARE_WITH_CHILD_SERVICES')
+    recordRationale = new Element.Textbox(this.page, '#P3_SHARE_CHILD_SERV_DETAILS')
+
+    delete = new Element.Button(this.page, 'Delete')
+    addAnotherChild = new Element.Button(this.page, 'Add Another Child at Risk')
+
+
+    async populateFullChild1(maxStrings: boolean = false) {
+
+        log('Populating details for child 1')
+        await this.goto(true)
+        await this.childName.setValue(maxStrings ? utils.oasysString(96) : 'Child 1')
+        await this.dateOfBirth.setValue({ years: -5 })
+        await this.gender.setValue('Male')
+        await this.address.setValue(maxStrings ? utils.oasysString(256) : 'The home address')
+        await this.relationship.setValue('Other')
+        await this.relationshipOther.setValue(maxStrings ? utils.oasysString(100) : 'Some other relationship')
+        await this.contact.setValue('Yes')
+        await this.worried.setValue('Yes')
+        await this.worriedAbout.setValue(maxStrings ? utils.oasysString(4000) : 'Loads of worrying stuff')
+        await this.knownToServices.setValue('Yes')
+        await this.earlyHelpCurrent.setValue(true)
+        await this.earlyHelpPrevious.setValue(true)
+        await this.childInNeedCurrent.setValue(true)
+        await this.childInNeedPrevious.setValue(true)
+        await this.cppCurrent.setValue(true)
+        await this.cppPrevious.setValue(true)
+        await this.currentNeglect.setValue(true)
+        await this.currentPhysical.setValue(true)
+        await this.currentSexual.setValue(true)
+        await this.currentEmotional.setValue(true)
+        await this.previousNeglect.setValue(true)
+        await this.previousPhysical.setValue(true)
+        await this.previousSexual.setValue(true)
+        await this.previousEmotional.setValue(true)
+        await this.briefDetails.setValue(maxStrings ? utils.oasysString(500) : 'Some brief details')
+        await this.shareWithServices.setValue('No')
+        await this.recordRationale.setValue(maxStrings ? utils.oasysString(200) : 'There must be a reason')
+        await this.save.click()
+        await this.close.click()
+    }
+
+    async populateFullChild2(maxStrings: boolean = false) {
+        
+        log('Populating details for child 2')
+        await this.goto(true)
+        await this.childName.setValue(maxStrings ? utils.oasysString(96) : 'Child 2')
+        await this.age.setValue('8')
+        await this.gender.setValue('Female')
+        await this.address.setValue(maxStrings ? utils.oasysString(256) : 'Somewhere else')
+        await this.relationship.setValue('Carer')
+        await this.contact.setValue('Yes')
+        await this.worried.setValue('Yes')
+        await this.worriedAbout.setValue(maxStrings ? utils.oasysString(4000) : 'More worrying stuff')
+        await this.knownToServices.setValue('Yes')
+        await this.earlyHelpCurrent.setValue(true)
+        await this.earlyHelpPrevious.setValue(false)
+        await this.childInNeedCurrent.setValue(true)
+        await this.childInNeedPrevious.setValue(false)
+        await this.cppCurrent.setValue(false)
+        await this.cppPrevious.setValue(true)
+        await this.currentNeglect.setValue(false)
+        await this.currentPhysical.setValue(true)
+        await this.currentSexual.setValue(true)
+        await this.currentEmotional.setValue(false)
+        await this.previousNeglect.setValue(true)
+        await this.previousPhysical.setValue(false)
+        await this.previousSexual.setValue(false)
+        await this.previousEmotional.setValue(true)
+        await this.briefDetails.setValue(maxStrings ? utils.oasysString(500) : 'Some more brief details')
+        await this.shareWithServices.setValue('Yes')
+        await this.save.click()
+        await this.close.click()
+    }
+
+}

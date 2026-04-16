@@ -1,24 +1,24 @@
 {
     "compilerOptions": {
-        "target": "es2021",
+        "target": "esnext",
         "lib": [
-            "es2021",
+            "esnext",
             "dom"
         ],
-        "types": [
-            "cypress",
-            "node",
-            "./cypress/support/index.d.ts"
-        ],
         "rootDir": ".",
-        "baseUrl": "oasys",
+        "baseUrl": ".",
+        "module": "esnext",
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "useDefineForClassFields": false,
+        "strictNullChecks": false,
+        "ignoreDeprecations": "6.0"
     },
     "include": [
-        "**/*.ts",
-        "cypress/support/commands.js"
+        "**/*.ts"
     ],
-    "exclude": [],
+    "exclude": [
+        "archivedCypressCode"
+    ],
 }

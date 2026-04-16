@@ -1,5 +1,0 @@
-export { Drugs1 } from './drugs1'
-export { Drugs2 } from './drugs2'
-export { Drugs3 } from './drugs3'
-export { Drugs4 } from './drugs4'
-export { DrugsPractitionerAnalysis } from './drugsPractitionerAnalysis'

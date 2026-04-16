@@ -1,7 +1,0 @@
-export * as Accommodation from './Accommodation'
-export * as Drugs from './Drugs'
-export * as Relationships from './Relationships'
-export { InformationSummary } from './informationSummary'
-export { LandingPage } from './landingPage'
-export { PractitionerAnalysis } from './practitionerAnalysis'
-export { SectionLandingPage } from './sectionLandingPage'

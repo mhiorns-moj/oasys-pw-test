@@ -1,4 +1,7 @@
-import * as oasys from 'oasys'
+import * as fs from 'fs-extra'
+
+import { Oasys, Offender, Assessment, Sections, San } from 'fixtures'
+
 
 /**
  * Test script used by all of the mapping tests.  Need to run the aaSanMappingTestOffender script first to create an offender and store the details in a local file.
@@ -6,36 +9,23 @@ import * as oasys from 'oasys'
 
 export const mappingTestOffenderFile = 'tests/data/local/mappingTestsOffender.txt'
 
-export function mappingTest(script: SanScript, reset130: boolean = false) {
+export async function mappingTest(oasys: Oasys, offender: Offender, assessment: Assessment, sections: Sections, san: San, script: SanScript, reset130: boolean = false) {
 
-    // Occasional error in SAN 'Cannot read properties of null (reading 'postMessage')'.  Need to workaround it with the following:
-    Cypress.on('uncaught:exception', () => {
-        cy.log('Cypress Exception')
-        return false
-    })
+    const offenderDetails = await fs.readFile(mappingTestOffenderFile)
+    const mappingTestOffender = JSON.parse(offenderDetails.toString()) as OffenderDef
 
-    cy.readFile(mappingTestOffenderFile).then((offenderDetails) => {
-        const mappingTestOffender = JSON.parse(offenderDetails) as OffenderDef
+    await oasys.login(oasys.users.admin, oasys.users.probationSan)
+    await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
+    await assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
+    await oasys.logout()
 
-        oasys.login(oasys.Users.admin, oasys.Users.probationSan)
-        oasys.Offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
-        oasys.Assessment.deleteAll(mappingTestOffender.surname, mappingTestOffender.forename1)
-        oasys.logout()
+    await oasys.login(oasys.users.probSanHeadPdu)
+    await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
 
-        oasys.login(oasys.Users.probSanUnappr)
-        oasys.Offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
-        oasys.Assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+    const assessmentPk = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
 
-        oasys.Db.getLatestSetPkByPnc(mappingTestOffender.pnc, 'assessmentPk')
-        cy.get<number>('@assessmentPk').then((assessmentPk) => {
-            cy.log(`Assessment PK: ${assessmentPk}`)
+    const failed = await san.runScript(assessmentPk, script, reset130, sections.predictors)
+    expect(failed).toBeFalsy()
 
-            oasys.San.runScript(assessmentPk, script, 'result', reset130)
-            cy.get<boolean>('@result').then((failed) => {
-                expect(failed).to.be.false
-            })
-
-            oasys.logout()
-        })
-    })
+    await oasys.logout()
 }

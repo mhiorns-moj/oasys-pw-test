@@ -1,4 +1,3 @@
-import * as oasys from 'oasys'
 import { testEnvironment } from '../../localSettings'
 
 
@@ -6,25 +5,25 @@ const t2 = testEnvironment.name.includes('T2')
 
 describe('Create or update admin user', () => {
 
-    it('Create or update admin user', () => {
+    test('Create or update admin user', () => {
 
         // Check if user exists
-        oasys.Db.selectCount(`select count(*) from eor.oasys_user where oasys_user_code = '${oasys.Users.admin.username}'`, 'userCount')
+        await oasysDb.selectCount(`select count(*) from eor.oasys_user where oasys_user_code = '${oasys.users.admin.username}'`, 'userCount')
 
         cy.get<number>('@userCount').then((userCount) => {
             let newUser = userCount == 0
 
-            oasys.Users.adminProfiles.forEach((profile) => {
+            oasys.users.adminProfiles.forEach((profile) => {
 
-                oasys.login(oasys.Users.globalAdminUser, testEnvironment.globalAdminUserPassword, profile.provider)
+                await oasys.login(oasys.Users.globalAdminUser, testEnvironment.globalAdminUserPassword, profile.provider)
 
                 if (newUser) {
                     new oasys.Pages.Maintenance.UserAccounts().goto().createAccount.click()
                     const maintainUser = new oasys.Pages.Maintenance.MaintainUser()
-                    maintainUser.userName.setValue(oasys.Users.admin.username)
-                    maintainUser.surname.setValue(oasys.Users.admin.surname)
-                    maintainUser.forename1.setValue(oasys.Users.admin.forename1)
-                    maintainUser.emailAddress.setValue(`${oasys.Users.admin.username}@eor.${t2 ? 'localdomain' : 'local'}`)
+                    maintainUser.userName.setValue(oasys.users.admin.username)
+                    maintainUser.surname.setValue(oasys.users.admin.surname)
+                    maintainUser.forename1.setValue(oasys.users.admin.forename1)
+                    maintainUser.emailAddress.setValue(`${oasys.users.admin.username}@eor.${t2 ? 'localdomain' : 'local'}`)
                     maintainUser.save.click()
                     newUser = false
                 } else {
@@ -32,7 +31,7 @@ describe('Create or update admin user', () => {
                     const userProfile = new oasys.Pages.Maintenance.UserProfile().goto()
 
                     userProfile.providerEstablishment.setValue('<All Provider / Establishments>')
-                    userProfile.userName.setValue(oasys.Users.admin.username)
+                    userProfile.userName.setValue(oasys.users.admin.username)
                     userProfile.surname.setValue('')
                     userProfile.forename1.setValue('')
                     userProfile.search.click()
@@ -40,8 +39,8 @@ describe('Create or update admin user', () => {
                 }
 
                 const maintainProfile = new oasys.Pages.Maintenance.MaintainFullUserProfile()
-                maintainProfile.forename1.setValue(oasys.Users.admin.forename1)
-                maintainProfile.surname.setValue(oasys.Users.admin.surname)
+                maintainProfile.forename1.setValue(oasys.users.admin.forename1)
+                maintainProfile.surname.setValue(oasys.users.admin.surname)
                 maintainProfile.lau.setValueByIndex(1)
                 maintainProfile.mainTeam.setValueByIndex(1)
                 if (profile.frameworkRole != null) {
@@ -55,11 +54,11 @@ describe('Create or update admin user', () => {
                 maintainProfile.save.click()
                 maintainProfile.close.click()
 
-                oasys.logout()
+                await oasys.logout()
             })
 
             if (!t2) {
-                oasys.Db.setPassword(oasys.Users.admin.username, testEnvironment.standardUserPassword)
+                await oasysDb.setPassword(oasys.users.admin.username, testEnvironment.standardUserPassword)
             }
         })
     })

@@ -7,7 +7,7 @@ describe('OGRS rescoring datafix test', () => {
 
 function test(part: number) {
 
-    it(`Rescoring test, part ${part}`, () => {
+    test(`Rescoring test, part ${part}`, () => {
 
         cy.get<AppConfig>('@appConfig').then((appConfig) => {
 

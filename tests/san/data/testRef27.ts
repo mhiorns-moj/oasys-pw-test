@@ -218,6 +218,7 @@ export const test4ModifyAlcohol: SanPopulation = [
         section: 'Alcohol use',
         steps: [
             { item: 'change' },
+            { item: 'everDrank', value: 'yesNotLast3' },
             { item: 'saveAndContinue' },
             { item: 'bingeDrinking', value: 'evidence' },
         ],

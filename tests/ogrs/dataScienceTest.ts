@@ -11,7 +11,7 @@ describe('OGRS calculator test - data science test cases', () => {
 
 function test(part: number, staticFlag: 'Y' | 'N') {
 
-    it(`Data science test cases - static ${staticFlag}, part ${part}`, () => {
+    test(`Data science test cases - static ${staticFlag}, part ${part}`, () => {
 
         const csvTestParams: OgrsTestParameters = {
             testType: 'csv',
