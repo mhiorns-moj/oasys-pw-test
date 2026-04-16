@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra'
 
-import { Assessment, Oasys, San, test } from 'fixtures'
+import { test, Oasys, Assessment, San } from 'fixtures'
 import { mappingTestOffenderFile } from './xMappingTest'
 
 
@@ -111,8 +111,7 @@ async function setAccommodationOptions(options: AccommodationOptions[], firstRun
 
 async function setRelationshipOptions(options: RelationshipOptions[], firstRun: boolean, san: San) {
 
-    await san.relationshipsLanding.goto(true)
-    // relationshipsLanding.information.click()  Removed for ARNS release 1.11, might come back later
+    await san.goto('Personal relationships and community')
     if (firstRun) {
         await san.relationships1.anyChildren.setValue(['no'])
         await san.relationships1.saveAndContinue.click()

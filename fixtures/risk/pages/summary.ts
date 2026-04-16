@@ -13,7 +13,7 @@ export class Summary extends BaseAssessmentPage {
     dcSrpBand = new Element.Text(this.page, "svg:contains('DC-SRP')>text:first")
     iicSrpBand = new Element.Text(this.page, "svg:contains('IIC-SRP')>text:first")
     csrpBand = new Element.Text(this.page, "svg:contains('CSRP')>text:first")
-    csrpType = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(2):first")
+    csrpType = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(2):first")  // TODO change to :nth-match(), and contains to has-text
     csrpScore = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(4):first")
 
     riskFactorAnslysis = new Element.Textbox(this.page, '#textarea_SUM9')

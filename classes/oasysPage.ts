@@ -34,6 +34,7 @@ export abstract class OasysPage {
             if (element == null) {
                 throw new Error(`Invalid element name on ${this.name} - ${elementName}`)
             }
+            // @ts-expect-error // check above will avoid the type error reported here
             await element.setValue(elementValues[elementName])
         }
 

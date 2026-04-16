@@ -7,5 +7,5 @@ export class InformationSummary extends BaseSanEditPage {
     title = 'Information summary - Strengths and Needs'
 
     change = new Element.Link(this.page, '.govuk-link:visible:contains("Change")[0]')
-    analysis = new Element.Link(this.page, 'Practitioner analysis')
+    analysis = new Element.Link(this.page, '#tab_practitioner-analysis')
 }

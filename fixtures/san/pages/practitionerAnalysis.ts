@@ -5,7 +5,11 @@ export class PractitionerAnalysis extends OasysPage {
 
     name = 'PractitionerAnalysis'
     title = 'Strengths and needs'
-    idPrefix = ''
+
+    constructor(page: Page, section: SanSection, readonly idPrefix: string) {
+        super(page)
+        this.title = `${section} - Strengths and needs`
+    }
 
     change = new Element.Link(this.page, 'a[href*="summary#practitioner-analysis"]')
 
@@ -21,24 +25,8 @@ export class PractitionerAnalysis extends OasysPage {
     riskOfReoffendingYesDetails = new Element.Textbox(this.page, `#${this.idPrefix}_practitioner_analysis_risk_of_reoffending_yes_details`)
     riskOfReoffendingNoDetails = new Element.Textbox(this.page, `#${this.idPrefix}_practitioner_analysis_risk_of_reoffending_no_details`)
 
-    saveAndContinue = new Element.Button(this.page, 'YES')
-    markAsComplete = new Element.Button(this.page, 'YES')
+    saveAndContinue = new Element.Button(this.page, `button[value='YES']`)
+    markAsComplete = new Element.Button(this.page, `button[value='YES']`)
     returnToOASys = new Element.Link(this.page, 'Return to OASys')
 
-    constructor(page: Page, section: SanSection) {
-        super(page)
-        this.title = `${section} - Strengths and needs`
-        this.idPrefix = idPrefixes[section]
-    }
-}
-
-const idPrefixes: { [key: string]: string } = {
-    'Accommodation': 'accommodation',
-    'Employment and education': 'emplyment_education',
-    'Finances': 'finance',
-    'Drug use': 'drug_use',
-    'Alcohol use': 'alcohol_use',
-    'Health and wellbeing': '',
-    'Personal relationships and community': 'personal_relationships_community',
-    'Thinking, behaviours and attitudes': 'thinking-behaviours-attitudes',
 }

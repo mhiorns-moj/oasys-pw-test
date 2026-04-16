@@ -26,9 +26,14 @@ export class San {
     readonly landingPage = new pages.LandingPage(this.page)
     readonly accommodation1 = new pages.Accommodation1(this.page)
     readonly accommodation2 = new pages.Accommodation2(this.page)
+    readonly drugs1 = new pages.Drugs1(this.page)
+    readonly drugs2 = new pages.Drugs2(this.page)
+    readonly drugs3 = new pages.Drugs3(this.page)
+    readonly drugs4 = new pages.Drugs4(this.page)
+    readonly drugsPractitionerAnalysis = new pages.DrugsPractitionerAnalysis(this.page)
     readonly relationships1 = new pages.Relationships1(this.page)
     readonly relationships2 = new pages.Relationships2(this.page)
-    readonly relationshipsLanding = new pages.SectionLandingPage(this.page, 'Personal relationships and community')
+    readonly informationSummary = new pages.InformationSummary(this.page)
 
     readonly queries = new Queries(this.oasysDb, this.oasys)
 

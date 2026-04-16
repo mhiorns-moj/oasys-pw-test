@@ -102,7 +102,9 @@ export class Queries {
     async checkSectionAnswers(assessmentPk: number, section: string, expectedAnswers: OasysAnswer[], suppressLog = false): Promise<boolean> {
 
         let failed = false
-        log('', `Checking section ${section} answers`)
+        if (!suppressLog) {
+            log('', `Checking section ${section} answers`)
+        }
 
         const data = await this.oasysDb.getData(sectionQuery(assessmentPk, section))
 

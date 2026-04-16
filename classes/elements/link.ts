@@ -5,20 +5,20 @@ export class Link {
 
     selector: Locator
 
-    constructor(page: Page, selector: string) {
+    constructor(readonly page: Page, selector: string) {
 
-        this.selector = selector.startsWith('#') || selector.includes('[')
+        this.selector = selector.startsWith('#') || selector.includes('[') || selector.includes('.')
             ? page.locator(selector)
             : page.getByRole('link', { name: selector })
     }
 
     async click() {
 
-        await this.selector.click()
-        // oasys.Nav.waitForPageUpdate()
+        await this.selector.first().click()
+        await waitForPageUpdate(this.page)
     }
 
-    async checkStatus(expectedStatus: ElementStatus) {
+    async checkStatus(expectedStatus: ElementStatus) {  // TODO 
 
         // cy.get('#content').then((containerDiv) => {
 
