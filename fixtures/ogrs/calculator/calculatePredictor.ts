@@ -1,12 +1,11 @@
 import { Decimal } from 'decimal.js'
 
-import { coefficients } from './data/coefficients'
-import { TestCaseParameters, ScoreType, OutputParameters, ScoreBand } from './types'
-import { OgrsOffenceCat, OgrsFeatures } from './types'
+import { coefficients } from './coefficients'
+import { OgrsInputParams, OutputParameters, OgrsOffenceCat, OgrsFeatures } from '../types'
 import { addOutputParameter, reportScores } from './createOutput'
 import { checkMissingQuestions } from './missingQuestions'
 
-export function calculate(scoreType: ScoreType, params: TestCaseParameters, outputParams: OutputParameters, skipCalculation: boolean = false) {
+export function calculatePredictor(scoreType: ScoreType, params: OgrsInputParams, outputParams: OutputParameters, skipCalculation: boolean = false) {
 
     // Calculate any of the scores other than OSP and RSR.  The selected coefficient set (depending on scoreType) determines which components make up the score.
 
@@ -123,7 +122,7 @@ function addDecimalsWithNull(runningTotal: Decimal, addition: Decimal): Decimal 
     return addition == null ? runningTotal : runningTotal.add(addition)
 }
 
-function calculatePolynomial(scoreType: ScoreType, coefs: object, type: 'aai' | 'ofm', input: number, outputParams: OutputParameters, gender?: string): Decimal {
+function calculatePolynomial(scoreType: ScoreType, coefs: { [key: string]: Decimal }, type: 'aai' | 'ofm', input: number, outputParams: OutputParameters, gender?: string): Decimal {
 
     // Calculate a 2 or 4 level polynomial depending on which coefficients are available
 
@@ -150,7 +149,7 @@ function calculatePolynomial(scoreType: ScoreType, coefs: object, type: 'aai' | 
     return result
 }
 
-function calculateCopas(scoreType: ScoreType, coefs: object, type: 'g' | 'v' | 'violent' | 'squared', params: TestCaseParameters, outputParams: OutputParameters): Decimal {
+function calculateCopas(scoreType: ScoreType, coefs: { [key: string]: Decimal }, type: 'g' | 'v' | 'violent' | 'squared', params: OgrsInputParams, outputParams: OutputParameters): Decimal {
 
     const boost = type == 'v' ? 12 : type == 'violent' ? 30 : 26
     const count = type == 'violent' ? params.TOTAL_VIOLENT_SANCTIONS : params.TOTAL_SANCTIONS_COUNT
@@ -176,7 +175,7 @@ function calculateCopas(scoreType: ScoreType, coefs: object, type: 'g' | 'v' | '
     return result
 }
 
-function calculateConditional(scoreType: ScoreType, coefs: object, item: OgrsFeatures, condition: boolean, outputParams: OutputParameters): Decimal {
+function calculateConditional(scoreType: ScoreType, coefs: { [key: string]: Decimal }, item: OgrsFeatures, condition: boolean, outputParams: OutputParameters): Decimal {
 
     const coef = coefs[item]
     const result = (coef == null || coef == undefined || !condition) ? new Decimal(0) : coef
@@ -185,7 +184,7 @@ function calculateConditional(scoreType: ScoreType, coefs: object, item: OgrsFea
     return result
 }
 
-function calculateMultiplier(scoreType: ScoreType, coefs: object, item: OgrsFeatures, value: number, outputParams: OutputParameters): Decimal {
+function calculateMultiplier(scoreType: ScoreType, coefs: { [key: string]: Decimal }, item: OgrsFeatures, value: number, outputParams: OutputParameters): Decimal {
 
     const coef = coefs[item]
     const result = coef == null || coef == undefined ? null : value == 0 || value == null ? new Decimal(0) : coef.times(value)
@@ -194,7 +193,7 @@ function calculateMultiplier(scoreType: ScoreType, coefs: object, item: OgrsFeat
     return result
 }
 
-function calculateOffence(scoreType: ScoreType, coefs: object, offenceCat: OgrsOffenceCat, outputParams: OutputParameters): Decimal {
+function calculateOffence(scoreType: ScoreType, coefs: { [key: string]: Decimal }, offenceCat: OgrsOffenceCat, outputParams: OutputParameters): Decimal {
 
     let coef = coefs[offenceCat.cat]
     let result = coef == null ? new Decimal(0) : coef

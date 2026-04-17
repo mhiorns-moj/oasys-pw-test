@@ -135,7 +135,6 @@ export class OasysDb {
 
     /**
      * Generic async to run a query and return data as a 2-d string array.  Errors result in a null return with an error message written to the log.
-     * The returned data is accessed using `cy.get<string[][]>(alias)` with the provided alias.
      */
     async getData(query: string): Promise<string[][]> {
 
@@ -144,20 +143,6 @@ export class OasysDb {
         expect(result.error).toBeNull()
         return result.data as string[][]
     }
-
-    // /**
-    //  * Set the password for a given user
-    //  */
-    // async setPassword(username: string, password: string) {
-
-    //     cy.task('setPassword', { username: username, password: password }).then((result: DbResponse) => {
-    //         if (result.error != null) {
-    //             log(result.error)
-    //         }
-    //     })
-    // }
-
-
 
     /**
      * Runs a count query and returns the count.
@@ -179,6 +164,14 @@ export class OasysDb {
 
         expect(result.error).toBeNull()
         return result.data as number
+    }
+
+    async callFunction(functionCall: string): Promise<string> {
+
+        const result = await this.db.callOracleFunction(functionCall)
+
+        expect(result.error).toBeNull()
+        return result.data as string
     }
 
     /** 

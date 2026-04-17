@@ -121,33 +121,22 @@ export class Db {
         }
     }
 
-
-    /** 
-     * Executes an Oracle update to set a password for a given user.
-     * 
-     * This function is called via cypress.config.ts using `cy.task('setPassword', {username: 'user', password: 'password'})`
-     */
-    async setPassword(username: string, password: string): Promise<DbResponse> {
+    async callOracleFunction(functionCall: string): Promise<DbResponse> {
 
         if (this.connection == null) {
             const connectError = await this.connect()
-            if (connectError != null) return { data: null, error: connectError }
+            if (connectError != null) return null
         }
-
-        const update = `BEGIN
-                        update eor.oasys_user set password_encrypted = eor.authentication_pkg.encrypt_password('${password}'), 
-                            password_change_date = sysdate, user_status_elm = 'ACTIVE' where oasys_user_code = '${username}';
-                        COMMIT;
-                    END;`
 
         try {
-            let result = await this.connection.execute(update)
-            return { data: null, error: null }
+
+            const result = await this.connection.execute(functionCall, { ret: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 10000 } })
+
+            return { data: result.outBinds.ret, error: null }
         }
         catch (e) {
-            return { data: null, error: `Error running password update '${update}': ${e}` }
+            return { data: null, error: `Error running function '${functionCall}': ${e}` }
         }
     }
-
 
 }

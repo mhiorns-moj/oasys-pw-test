@@ -1,6 +1,6 @@
 import { Decimal } from 'decimal.js'
 
-import { OgrsCoefficients } from '../types'
+import { OgrsCoefficients } from 'fixtures/ogrs/types'
 
 export const coefficients: { [keys: string]: OgrsCoefficients } = {
     general_brief: {

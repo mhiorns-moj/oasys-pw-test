@@ -67,7 +67,7 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
     })
 
     await sections.predictors.goto()
-    await sections.predictors.rsrScore.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
+    await sections.predictors.csrpScore.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
 
     log(`Check that the Summary screen is showing the correct information for the Criminogenic Needs and threshold section and that in the Predictors Scores % 
         and Risk Category OGRS, OGP and OVP just show dashes, both OSP rows show N/A,  the RSR row shows N/A and then two dashes`, 'Test step')

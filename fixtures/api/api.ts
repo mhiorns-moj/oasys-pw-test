@@ -20,7 +20,7 @@ import * as restApiDb from './data/restApiDb'
 
 export class Api {
 
-    constructor(readonly oasys: Oasys, readonly oasysDb: OasysDb) { }
+    constructor() { }
 
     /** 
      * Tests all endpoints for all assessments for given offender CRN; returns an OffenderApisResult object including pass/fail, reporting output and timing stats.

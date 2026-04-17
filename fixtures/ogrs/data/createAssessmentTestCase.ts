@@ -1,10 +1,9 @@
 import { Temporal } from '@js-temporal/polyfill'
-import { OgrsAssessment } from '../../../cypress/support/ogrs/getTestData/dbClasses'
-import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q4_2Lookup, q88, yesNo1_0Lookup } from 'fixtures/ogrs/common'
-import { TestCaseParameters } from './types'
+import { OgrsAssessment } from './dbClasses'
+import { addCalculatedInputParameters, da, dailyDrugUser, getDrugsUsage, getDrugUsed, q141, q22, q4_2Lookup, q88, yesNo1_0Lookup } from './common'
+import { OgrsInputParams } from '../types'
 
-export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {}, versions: {},
-    dateParam: string | Temporal.PlainDate = null): TestCaseParameters {
+export function createAssessmentInputParams(assessment: OgrsAssessment, dateParam: string | Temporal.PlainDate = null): OgrsInputParams {
 
     const after6_30 = oasysDateTime.checkIfAfterRelease('6.30', assessment.initiationDate)
     const after6_35 = oasysDateTime.checkIfAfterRelease('6.35', assessment.initiationDate)
@@ -41,7 +40,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
         AGE_AT_FIRST_SANCTION: utils.lookupInteger('1.8', assessment.qaData),
         LAST_SANCTION_DATE: oasysDateTime.stringToDate(utils.lookupString('1.29', assessment.qaData)),
         DATE_RECENT_SEXUAL_OFFENCE: oasysDateTime.stringToDate(utils.lookupString('1.33', assessment.qaData)),
-        CURR_SEX_OFF_MOTIVATION: q141(utils.lookupString('1.30', assessment.qaData), utils.lookupString('1.41', assessment.qaData), assessment.offence, offences),
+        CURR_SEX_OFF_MOTIVATION: q141(utils.lookupString('1.30', assessment.qaData), utils.lookupString('1.41', assessment.qaData), assessment.offence),
         MOST_RECENT_OFFENCE: oasysDateTime.stringToDate(utils.lookupString('1.43', assessment.qaData)),
         COMMUNITY_DATE: oasysDateTime.stringToDate(utils.lookupString('1.38', assessment.qaData)),
         ONE_POINT_THIRTY: utils.lookupString('1.30', assessment.qaData, utils.yesNoToYNLookup),
@@ -93,7 +92,7 @@ export function createAssessmentTestCase(assessment: OgrsAssessment, offences: {
         CUSTODY_IND: assessment.prisonInd == 'C' ? 'Y' : 'N',
     }
 
-    addCalculatedInputParameters(result, offences)
+    addCalculatedInputParameters(result)
     return result
 
 }

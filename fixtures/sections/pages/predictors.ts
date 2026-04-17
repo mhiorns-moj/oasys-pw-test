@@ -38,16 +38,16 @@ export class Predictors extends BaseAssessmentPage {
      *  Note: might not work if you try to go to it straight after 1.38 as field isn't necessarily visible yet */
     o1_43 = new Element.Textbox<OasysDate>(this.page, '#itm_1_43', true)
 
-    /** All reoffending predictor */
-    arp = new Element.Text(this.page, "td:has-text('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
-    /** Violent reoffending predictor */
-    vrp = new Element.Text(this.page, ":nth-match(td:has-text('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td,1)")
-    /** Servious violent reoffending predictor */
-    svrp = new Element.Text(this.page, "td:has-text('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
-    ospDc = new Element.Textbox<string>(this.page, '#textarea_D6')
-    ospIic = new Element.Textbox<string>(this.page, '#textarea_D5')
-    rsrScore = new Element.Textbox<string>(this.page, '#textarea_D3')
-    rsrErrors = new Element.Textbox<string>(this.page, '#textarea_D4')
+    arpText = new Element.Text(this.page, "td:has-text('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    vrpText = new Element.Text(this.page, ":nth-match(td:has-text('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td,1)")
+    svrpText = new Element.Text(this.page, "td:has-text('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    ospDcText = new Element.Textbox<string>(this.page, '#textarea_D6')
+    ospIicText = new Element.Textbox<string>(this.page, '#textarea_D5')
+    dcSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('DC-SRP')>text,1)")
+    iicSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('IIC-SRP')>text,1)")
+    csrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text,1)")
+    csrpType = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(2),1)")
+    csrpScore = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(4),1)")
 
 
     async populateMinimal() {

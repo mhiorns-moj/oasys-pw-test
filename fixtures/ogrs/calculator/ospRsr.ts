@@ -1,12 +1,12 @@
 import Decimal from 'decimal.js'
 
-import { ospCoefficients } from './data/ospCoefficients'
-import { OutputParameters, ScoreBand, TestCaseParameters } from './types'
-import { calculateProbability, calculateBand, probabilityToPercentage } from './calculateScore'
+import { ospCoefficients } from './ospCoefficients'
+import { OutputParameters, OgrsInputParams } from '../types'
+import { calculateProbability, calculateBand, probabilityToPercentage } from './calculatePredictor'
 import { reportScores, addOutputParameter } from './createOutput'
 import { checkMissingQuestions } from './missingQuestions'
 
-export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParameters) {
+export function ospRsrCalc(params: OgrsInputParams, outputParams: OutputParameters) {
 
     // Calculate OSP-C, OSP-I and RSR
 
@@ -89,7 +89,7 @@ export function ospRsrCalc(params: TestCaseParameters, outputParams: OutputParam
     }
 }
 
-function ospBand(params: TestCaseParameters, totalScore: number): { band: ScoreBand, reduced: 'Y' | 'N' } {
+function ospBand(params: OgrsInputParams, totalScore: number): { band: ScoreBand, reduced: 'Y' | 'N' } {
 
     const band: ScoreBand = totalScore < 22 ? 'Low' : totalScore < 30 ? 'Medium' : totalScore < 36 ? 'High' : 'Very High'
 

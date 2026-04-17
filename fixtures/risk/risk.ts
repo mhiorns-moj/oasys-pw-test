@@ -58,7 +58,6 @@ export class Risk {
         await this.screeningSection2to4.populateFull()
         await this.screeningSection5.populateFull()
 
-
         await this.fullAnalysisSection62.populateFull(params.maxStrings)
         await this.fullAnalysisSection7.goto()
         await this.childAtRisk.populateFullChild1(params.maxStrings)
