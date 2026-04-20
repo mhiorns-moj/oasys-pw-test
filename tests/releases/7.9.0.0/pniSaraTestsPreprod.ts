@@ -1,6 +1,6 @@
 import { test } from 'fixtures'
 
-test('Pre-prod tests for PNI SARA parameters', async ({ oasysDb, api }) => {
+test('Pre-prod tests for PNI SARA parameters', async ({ api }) => {
 
     const testCases = [
         // First set return incorrect values for SARA parameters
@@ -27,14 +27,14 @@ test('Pre-prod tests for PNI SARA parameters', async ({ oasysDb, api }) => {
         console.log(`Offender ${count++}: ${offender[0]} / ${offender[1]}`)
 
         if (offender[0] != null) {  // call with probation CRN
-            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, true, oasysDb)
+            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, true)
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true
             }
         }
         if (offender[1] != null) {  // call with NomisId
-            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, true, oasysDb)  // skipPrisSubsequents if already done for prob crn
+            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, true)  // skipPrisSubsequents if already done for prob crn
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true

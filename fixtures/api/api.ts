@@ -1,4 +1,6 @@
-import { Oasys, OasysDb } from 'fixtures'
+import { APIRequestContext } from '@playwright/test'
+
+import { OasysDb } from 'fixtures'
 import * as rest from './apiClasses'
 import * as dbClasses from './data/dbClasses'
 import * as restApi from './getApiResponse'
@@ -20,7 +22,7 @@ import * as restApiDb from './data/restApiDb'
 
 export class Api {
 
-    constructor() { }
+    constructor(private readonly oasysDb: OasysDb, private readonly request: APIRequestContext) { }
 
     /** 
      * Tests all endpoints for all assessments for given offender CRN; returns an OffenderApisResult object including pass/fail, reporting output and timing stats.
@@ -32,8 +34,8 @@ export class Api {
      *  - skipPkOnlyCalls - if true, any APIs that are called with just an assessment PK will be skipped on the basis that the calling script is repeating an offender 
      *                      (selected this time using the prison CRN instead of probation) so these calls will be identical.
      */
-    async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean, oasysDb: OasysDb,
-        stats: EndpointStat[] = null, limitEndpoints: Endpoint[] = null): Promise<boolean> {
+    async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean,
+        stats: EndpointStat[] = null, limitEndpoints: Endpoint[] = []): Promise<boolean> {
 
         const v1Endpoints: Endpoint[] = [
             'offences',
@@ -83,7 +85,7 @@ export class Api {
         let failed = false
 
         // Get all relevant data from the OASys database
-        const offenderData = await restApiDb.getOffenderWithAssessments(crnSource, crn, oasysDb)
+        const offenderData = await restApiDb.getOffenderWithAssessments(crnSource, crn, this.oasysDb)
         log('', '')
         log('', `Offender ${crnSource == 'prob' ? 'CRN' : 'NOMIS Id'}: ${crn}`)
 
@@ -167,11 +169,11 @@ export class Api {
                 apiParams.push(custodyParams)
             }
 
-            const filteredParamsList = limitEndpoints == null ? apiParams : apiParams.filter((param) => limitEndpoints.includes(param.endpoint))
+            const filteredParamsList = limitEndpoints.length == 0 ? apiParams : apiParams.filter((param) => limitEndpoints.includes(param.endpoint))
             ///////////////////////////////////////////////////////////
             // Work out the expected responses, then call the endpoints
             const expectedValues = await rest.GetExpectedResponses.getExpectedResponses(offenderData, filteredParamsList)
-            const actualValues = await restApi.getMultipleRestData(filteredParamsList)
+            const actualValues = await restApi.getMultipleRestData(filteredParamsList, this.request)
 
             ////////////////////////////////////
             // Compare results for each endpoint
@@ -200,7 +202,7 @@ export class Api {
 
                 // Check response time and add to stats table, mark as SLOW if > 99ms
                 let slow = actualValues[i].responseTime > 500 ? '**** VERY SLOW ****' : actualValues[i].responseTime > 99 ? '**** SLOW ****' : ''
-                if (slow != '' || reportPasses) {
+                if (slow != '') {
                     log(`${actualValues[i].responseTime}ms ${slow}`)
                 }
                 stats?.push({ endpoint: filteredParamsList[i].endpoint, responseTime: actualValues[i].responseTime })

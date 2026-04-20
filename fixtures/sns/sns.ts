@@ -101,7 +101,7 @@ export class Sns {
 
     }
 
-    async getAssessment(crn: string, type: AssessmentOrRsr): Promise<DbAssessmentOrRsr> {
+    private async getAssessment(crn: string, type: AssessmentOrRsr): Promise<DbAssessmentOrRsr> {
 
         const query = type == 'assessment' ? DbAssessmentOrRsr.assessmentQuery(crn) : DbAssessmentOrRsr.rsrQuery(crn)
         const assessmentData = await this.oasysDb.getData(query)
@@ -113,7 +113,7 @@ export class Sns {
         }
     }
 
-    buildExpectedMessages(assessment: DbAssessmentOrRsr, crn: string): SnsMessage[] {
+    private buildExpectedMessages(assessment: DbAssessmentOrRsr, crn: string): SnsMessage[] {
 
         const expectedSnsMessages: SnsMessage[] = []
         const excludedAssessmentTypes = ['Risk of Harm Assessment', 'TSP Assessment', 'RSR Only']
@@ -136,13 +136,13 @@ export class Sns {
         return expectedSnsMessages
     }
 
-    getLastActualSnsMessage(actualSnsMessages: DbSns[], messageType: SnsMessageType): DbSns {
+    private getLastActualSnsMessage(actualSnsMessages: DbSns[], messageType: SnsMessageType): DbSns {
 
         const filtered = actualSnsMessages.filter(m => m.messageType == messageType)
         return filtered.length == 0 ? null : filtered[0]
     }
 
-    validateSNS(expected: object, received: object): boolean {
+    private validateSNS(expected: object, received: object): boolean {
 
         if (expected == undefined && received == undefined) return false
         if (expected == undefined || received == undefined) return true

@@ -167,8 +167,8 @@ export const test = base.extend<OasysFixtures>({
         await use(sara)
     },
 
-    api: async ({ }, use: Function) => {
-        const api = new Api()
+    api: async ({ oasysDb, request }, use: Function) => {
+        const api = new Api(oasysDb, request)
         await use(api)
     },
 
@@ -177,7 +177,7 @@ export const test = base.extend<OasysFixtures>({
         await use(ogrs)
     },
 
-    maintenance: async ({page} , use: Function) => {
+    maintenance: async ({ page }, use: Function) => {
         const maintenance = new Maintenance(page)
         await use(maintenance)
     },

@@ -2,7 +2,7 @@ import { test } from 'fixtures'
 
 // Test for incorrect missing questions result in PNI endpoint
 
-test('NOD-1228', async ({ oasysDb, oasys, offender, assessment, sections, signing, api }) => {
+test('NOD-1228', async ({ oasys, offender, assessment, sections, signing, api }) => {
 
     await oasys.login(oasys.users.probHeadPdu)
 
@@ -17,7 +17,7 @@ test('NOD-1228', async ({ oasysDb, oasys, offender, assessment, sections, signin
 
     await signing.signAndLock({ expectRsrWarning: true, page: 'isp' })
 
-    const failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true, oasysDb)
+    const failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true)
     expect(failed).toBeFalsy()
 
     await oasys.logout()

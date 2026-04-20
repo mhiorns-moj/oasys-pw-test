@@ -4,7 +4,7 @@ import { test } from 'fixtures'
 // Offender has a completed assessment with 2.3 Physical Violence and not 6.7DA, complete SARA with high/medium
 // Second assessment with SARA rejected
 
-test('NOD-1201', async ({ oasysDb, oasys, offender, assessment, sections, risk, sara, sentencePlan, signing, api }) => {
+test('NOD-1201', async ({ oasys, offender, assessment, sections, risk, sara, sentencePlan, signing, api }) => {
 
     await oasys.login(oasys.users.probHeadPdu)
 
@@ -33,7 +33,7 @@ test('NOD-1201', async ({ oasysDb, oasys, offender, assessment, sections, risk, 
     await sentencePlan.ispSection52to8.populateMinimal()
     await signing.signAndLock({ expectRsrWarning: true })
 
-    let failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true, oasysDb)
+    let failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true)
     expect(failed).toBeFalsy()
 
     // Create assessment 2
@@ -49,7 +49,7 @@ test('NOD-1201', async ({ oasysDb, oasys, offender, assessment, sections, risk, 
 
     await signing.signAndLock({ page: 'rsp', expectRsrWarning: true })
 
-    failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true, oasysDb)
+    failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true)
     expect(failed).toBeFalsy()
 
     // Create assessment 3
@@ -74,7 +74,7 @@ test('NOD-1201', async ({ oasysDb, oasys, offender, assessment, sections, risk, 
     await oasys.clickButton('Continue with Signing')
     await oasys.clickButton('Confirm Sign & Lock')
 
-    failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true, oasysDb)
+    failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true)
     expect(failed).toBeFalsy()
     await oasys.logout()
 })

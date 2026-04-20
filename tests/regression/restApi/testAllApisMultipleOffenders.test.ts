@@ -110,14 +110,14 @@ async function runTest(offenders: string[][], api: Api, oasysDb: OasysDb): Promi
         offendersTested++
 
         if (offender[0] != null) {  // call with probation CRN
-            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, reportPasses, oasysDb, stats, limitEndpoints)
+            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, reportPasses, stats, limitEndpoints)
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true
             }
         }
         if (offender[1] != null) {  // call with NomisId
-            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, reportPasses, oasysDb, stats, limitEndpoints)  // skipPrisSubsequents if already done for prob crn
+            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, reportPasses, stats, limitEndpoints)  // skipPrisSubsequents if already done for prob crn
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true
