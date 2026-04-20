@@ -1,26 +1,5 @@
 import * as dbClasses from 'fixtures/api/data/dbClasses'
 
-export class SanCrimNeedScore {
-
-    accomSanScore: number
-    empAndEduSanScore: number
-    persRelAndCommSanScore: number
-    lifeAndAssocSanScore: number
-    drugUseSanScore: number
-    alcoUseSanScore: number
-    thinkBehavAndAttiSanScore: number
-
-    constructor(dbAssessment: dbClasses.DbAssessment) {
-        this.accomSanScore = dbAssessment.sections.find((s) => s.sectionCode == '3')?.sanCrimNeedScore
-        this.empAndEduSanScore = dbAssessment.sections.find((s) => s.sectionCode == '4')?.sanCrimNeedScore
-        this.persRelAndCommSanScore = dbAssessment.sections.find((s) => s.sectionCode == '6')?.sanCrimNeedScore
-        this.lifeAndAssocSanScore = dbAssessment.sections.find((s) => s.sectionCode == '7')?.sanCrimNeedScore
-        this.drugUseSanScore = dbAssessment.sections.find((s) => s.sectionCode == '8')?.sanCrimNeedScore
-        this.alcoUseSanScore = dbAssessment.sections.find((s) => s.sectionCode == '9')?.sanCrimNeedScore
-        this.thinkBehavAndAttiSanScore = dbAssessment.sections.find((s) => s.sectionCode == 'SAN')?.sanCrimNeedScore
-    }
-}
-
 /**
  * Base class for all API endpoints, defining the response data that is common to all.
  * 

@@ -32,7 +32,8 @@ export class Api {
      *  - skipPkOnlyCalls - if true, any APIs that are called with just an assessment PK will be skipped on the basis that the calling script is repeating an offender 
      *                      (selected this time using the prison CRN instead of probation) so these calls will be identical.
      */
-    async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean, stats: EndpointStat[] = null): Promise<boolean> {
+    async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean,
+        stats: EndpointStat[] = null, limitEndpoints: Endpoint[] = null): Promise<boolean> {
 
         const v1Endpoints: Endpoint[] = [
             'offences',
@@ -166,19 +167,29 @@ export class Api {
                 apiParams.push(custodyParams)
             }
 
+            const filteredParamsList = limitEndpoints == null ? apiParams : apiParams.filter((param) => limitEndpoints.includes(param.endpoint))
             ///////////////////////////////////////////////////////////
             // Work out the expected responses, then call the endpoints
-            const expectedValues = await rest.GetExpectedResponses.getExpectedResponses(offenderData, apiParams)
-            const actualValues = await restApi.getMultipleRestData(apiParams)
+            const expectedValues = await rest.GetExpectedResponses.getExpectedResponses(offenderData, filteredParamsList)
+            const actualValues = await restApi.getMultipleRestData(filteredParamsList)
 
             ////////////////////////////////////
             // Compare results for each endpoint
             let lastPkReported = 0
-            for (let i = 0; i < apiParams.length; i++) {
-                if (apiParams[i].endpoint == 'apAsslist' || apiParams[i].endpoint == 'v4AssList') {
+            for (let i = 0; i < filteredParamsList.length; i++) {
+
+                if (filteredParamsList[i].endpoint == 'apAsslist' || filteredParamsList[i].endpoint == 'v4AssList') {
                     delete actualValues[i].result['assessments']  // spurious empty array object gets added to the asslist and allasslist endpoints, ignore for this test
                 }
 
+                if (filteredParamsList[i].assessmentPk && (filteredParamsList[i].assessmentPk != lastPkReported)) {
+                    // Write some assessment details to the log, including OASys version at initiation date
+                    const assessmentData = offenderData.assessments.filter((ass) => ass.assessmentPk == filteredParamsList[i].assessmentPk)[0]
+                    const assVersion = assessmentData.assessmentType == 'STANDALONE' ? '' : ` v${(assessmentData as dbClasses.DbAssessment).assessmentVersion}`
+                    log('', `\n${assessmentData.assessmentType}${assVersion} assessment (${assessmentData.assessmentPk}), initiation date ${assessmentData.initiationDate.substring(0, 10)} (${assessmentData.appVersion})`)
+                    fileLog(`${assessmentData.assessmentType}${assVersion} assessment (${assessmentData.assessmentPk}), initiation date ${assessmentData.initiationDate.substring(0, 10)} (${assessmentData.appVersion})`)
+                    lastPkReported = filteredParamsList[i].assessmentPk
+                }
 
                 // Compare expected vs actuals and write results to the log
                 const result = await checkApiResponse.checkApiResponse(expectedValues[i], actualValues[i], reportPasses)
@@ -187,21 +198,12 @@ export class Api {
                     failed = true
                 }
 
-                if (apiParams[i].assessmentPk && apiParams[i].assessmentPk != lastPkReported && (result || reportPasses)) {
-                    // Write some assessment details to the log, including OASys version at initiation date
-                    const assessmentData = offenderData.assessments.filter((ass) => ass.assessmentPk == apiParams[i].assessmentPk)[0]
-                    const assVersion = assessmentData.assessmentType == 'STANDALONE' ? '' : ` v${(assessmentData as dbClasses.DbAssessment).assessmentVersion}`
-                    log('', `\n${assessmentData.assessmentType}${assVersion} assessment (${assessmentData.assessmentPk}), initiation date ${assessmentData.initiationDate.substring(0, 10)} (${assessmentData.appVersion})`)
-                    fileLog(`${assessmentData.assessmentType}${assVersion} assessment (${assessmentData.assessmentPk}), initiation date ${assessmentData.initiationDate.substring(0, 10)} (${assessmentData.appVersion})`)
-                    lastPkReported = apiParams[i].assessmentPk
-                }
-
                 // Check response time and add to stats table, mark as SLOW if > 99ms
                 let slow = actualValues[i].responseTime > 500 ? '**** VERY SLOW ****' : actualValues[i].responseTime > 99 ? '**** SLOW ****' : ''
                 if (slow != '' || reportPasses) {
                     log(`${actualValues[i].responseTime}ms ${slow}`)
                 }
-                stats?.push({ endpoint: apiParams[i].endpoint, responseTime: actualValues[i].responseTime })
+                stats?.push({ endpoint: filteredParamsList[i].endpoint, responseTime: actualValues[i].responseTime })
                 log('')
             }
         }
