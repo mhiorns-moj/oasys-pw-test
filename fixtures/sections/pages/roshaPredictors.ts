@@ -102,14 +102,14 @@ export class RoshaPredictors extends BaseAssessmentPage {
     o11_2 = new Element.Select<ProblemsAnswer>(this.page, '#P5_QU_11_2')
     o11_4 = new Element.Select<ProblemsAnswer>(this.page, '#P5_QU_11_4')
     o12_1 = new Element.Select<ProblemsAnswer>(this.page, '#P5_QU_12_1')
-    arpText = new Element.Text(this.page, "td:contains('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
-    vrpText = new Element.Text(this.page, "td:contains('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS'):first+td")
-    svrpText = new Element.Text(this.page, "td:contains('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
-    dcSrpBand = new Element.Text(this.page, "svg:contains('DC-SRP')>text:first")
-    iicSrpBand = new Element.Text(this.page, "svg:contains('IIC-SRP')>text:first")
-    csrpBand = new Element.Text(this.page, "svg:contains('CSRP')>text:first")
-    csrpType = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(2):first")
-    csrpScore = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(4):first")
+    arpText = new Element.Text(this.page, "td:has-text('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    vrpText = new Element.Text(this.page, ":nth-match(td:has-text('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td,1)")
+    svrpText = new Element.Text(this.page, "td:has-text('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    dcSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('DC-SRP')>text,1)")
+    iicSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('IIC-SRP')>text,1)")
+    csrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text,1)")
+    csrpType = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(2),1)")
+    csrpScore = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(4),1)")
 
     async populateMinimal(withDateFirstSanction = true) {
 

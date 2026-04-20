@@ -25,14 +25,17 @@ export default defineConfig({
     headless: true,
     actionTimeout: 10_000,
     navigationTimeout: 10_000,
-    launchOptions: { downloadsPath: './test-results/downloads'    }
+    launchOptions: {
+      downloadsPath: './test-results/downloads',
+      args: ['--disable-pdf-viewer'],
+    }
   },
 
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      
+
     },
   ],
 })

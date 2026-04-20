@@ -1,0 +1,12 @@
+import { test } from 'fixtures'
+import { ogrsOracleTest } from './ogrsCalculator/ogrsTest'
+
+const pk = 4192377  // fully populated
+// const pk = 9527359  // old 2.2 weapon
+
+
+test(`OGRS calculator test - Assessment pk ${pk}`, async ({ ogrs }) => {
+
+    await ogrsOracleTest('assessment', 1, `oasys_set_pk = ${pk}`, 'verbose', ogrs)
+})
+

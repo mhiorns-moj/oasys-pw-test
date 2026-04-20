@@ -318,9 +318,7 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
     const failed = await assessment.queries.checkAnswers(pk1, testData.dataFromSan, true)
     expect(failed).toBeFalsy()
 
-    log(`Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13, SAQ and Skills Checker
-        Select to print 'All Assessment Sections' - ensure the printout has NOT included sections 2 to 13, SAQ and Skills Checker.  
-            Revisions made to existing screens MUST be included in the printout`, 'Test step')
+    log(`Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13, SAQ and Skills Checker`, 'Test step')
 
     await assessment.openLatest()
     await assessment.printAssessment.goto()
@@ -338,34 +336,6 @@ test('SAN integration - test ref 17', async ({ page, oasys, offender, assessment
     await assessment.printAssessment.section13.checkStatus('notVisible')
     await assessment.printAssessment.selfAssessmentForm.checkStatus('notVisible')
     await assessment.printAssessment.allSections.setValue(true)
-
-    const inclusions = [
-        '1 - Offence & Sentence Information',
-        'SAN Section',
-        'Accommodation',
-        'Employment and', 'education',
-        'Finance',
-        'Drug use',
-        'Alcohol use',
-        'Health and', 'wellbeing',
-        'Personal', 'relationships and', 'community',
-        'Thinking,', 'behaviours and', 'attitudes',
-        'Lifestyle &', 'Associates',
-    ]
-    const exclusions = [, '2 - Analysis of Offences', '3 - Accommodation',
-        '4 - Education, Training and Employability', '5 - Financial Management and Income',
-        '6 - Relationships', '7 - Lifestyle and Associates',
-        '8 - Drug Misuse', '9 - Alcohol Misuse',
-        '10 - Emotional Well-being', '11 - Thinking and Behaviour',
-        '12 - Attitudes', '13 - Health and Other Considerations',
-        'Self Assessment Form']
-
-    // TODO PDF testing
-    // await assessment.printAssessment.print.click()
-
-    // oasys.Pdf.checkPdf(() => { print.print.click() }, inclusions, exclusions, 'pdf')
-    // print.cancel.click()
-    // cy.get<boolean>('@pdf').then((failed) => expect(failed).equal(false))
 
     await oasys.logout()
 })

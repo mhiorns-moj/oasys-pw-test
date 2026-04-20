@@ -16,6 +16,8 @@ import { SentencePlan } from './sentencePlan/sentencePlan'
 import { Signing } from './signing/signing'
 import { Sara } from './sara/sara'
 import { Api } from './api/api'
+import { Ogrs } from './ogrs/ogrs'
+import { Maintenance } from './maintenance/maintenance'
 import { OasysDateTime } from 'lib/oasysDateTime'
 import { Utils } from 'lib/utils'
 
@@ -33,6 +35,8 @@ export { SentencePlan } from './sentencePlan/sentencePlan'
 export { Signing } from './signing/signing'
 export { Sara } from './sara/sara'
 export { Api } from './api/api'
+export { Ogrs } from './ogrs/ogrs'
+export { Maintenance } from './maintenance/maintenance'
 
 
 const oasysLog: Log[] = []
@@ -79,6 +83,8 @@ type OasysFixtures = {
     sara: Sara,
     sns: Sns,
     api: Api,
+    ogrs: Ogrs,
+    maintenance: Maintenance,
 }
 
 const fileLogFilename = 'test-results/fileLog.txt'
@@ -86,31 +92,24 @@ const fileLogFilename = 'test-results/fileLog.txt'
 export const test = base.extend<OasysFixtures>({
 
     oasysDb: async ({ }, use: Function) => {
+
         const oasysDb = new OasysDb()
-        await use(oasysDb)
-    },
-
-    oasys: async ({ page, oasysDb }, use, testInfo) => {
-
-        fs.remove(fileLogFilename)
-        const oasys = new Oasys(page, testInfo)
-        oasysLog.length = 0
         appConfig = await oasysDb.getAppConfig()
-
-        log(`OASys ${appConfig.currentVersion} (${testEnvironment.name})`, 'Environment')
         await oasysDb.getLatestElogAndUnprocEventTime('store')
+        log(`OASys ${appConfig.currentVersion} (${testEnvironment.name})`, 'Environment')
 
-        await page.goto(testEnvironment.url)
-        await use(oasys)
+        await use(oasysDb)
 
         await oasysDb.getLatestElogAndUnprocEventTime('check')
         await oasysDb.closeConnection()
-        for (let log of oasysLog) {
-            testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
-        }
-        if (fileLog.length > 0) {
-            fs.writeFile(fileLogFilename, fileLog.join('\n'))
-        }
+    },
+
+    oasys: async ({ page }, use, testInfo) => {
+
+        const oasys = new Oasys(page, testInfo)
+        await page.goto(testEnvironment.url)
+
+        await use(oasys)
     },
 
     cms: async ({ page, oasys }, use: Function, testInfo: TestInfo) => {
@@ -153,8 +152,8 @@ export const test = base.extend<OasysFixtures>({
         await use(signing)
     },
 
-    assessment: async ({ page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan }, use: Function) => {
-        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan)
+    assessment: async ({ page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan, ogrs }, use: Function) => {
+        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan, ogrs)
         await use(assessment)
     },
 
@@ -168,8 +167,36 @@ export const test = base.extend<OasysFixtures>({
         await use(sara)
     },
 
-    api: async ({ oasys, oasysDb }, use: Function) => {
-        const api = new Api(oasys, oasysDb)
+    api: async ({ }, use: Function) => {
+        const api = new Api()
         await use(api)
     },
+
+    ogrs: async ({ oasysDb }, use: Function) => {
+        const ogrs = new Ogrs(oasysDb)
+        await use(ogrs)
+    },
+
+    maintenance: async ({page} , use: Function) => {
+        const maintenance = new Maintenance(page)
+        await use(maintenance)
+    },
+})
+
+// TODO allow for parallel running
+test.beforeEach(() => {
+
+    fs.remove(fileLogFilename)
+    oasysLog.length = 0
+    fileLog.length = 0
+})
+
+test.afterEach(({ }, testInfo) => {
+
+    for (let log of oasysLog) {
+        testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
+    }
+    if (fileLog.length > 0) {
+        fs.writeFile(fileLogFilename, fileLog.join('\n'))
+    }
 })

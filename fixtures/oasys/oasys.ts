@@ -133,7 +133,6 @@ export class Oasys {
 
     async gotoSigningPage(signingPage: SigningPage) {
 
-        // TODO complete this
         switch (signingPage) {
             case 'basic':
                 await new BasicSentencePlan(this.page).goto(true)

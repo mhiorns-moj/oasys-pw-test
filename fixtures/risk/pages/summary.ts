@@ -10,11 +10,11 @@ export class Summary extends BaseAssessmentPage {
     insertNames = new Element.Button(this.page, "//input[@type='button' and contains(@value,'Insert children')]")
     r10_2 = new Element.Textbox(this.page, '#textarea_SUM2')
 
-    dcSrpBand = new Element.Text(this.page, "svg:contains('DC-SRP')>text:first")
-    iicSrpBand = new Element.Text(this.page, "svg:contains('IIC-SRP')>text:first")
-    csrpBand = new Element.Text(this.page, "svg:contains('CSRP')>text:first")
-    csrpType = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(2):first")  // TODO change to :nth-match(), and contains to has-text
-    csrpScore = new Element.Text(this.page, "svg:contains('CSRP')>text:nth-of-type(4):first")
+    dcSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('DC-SRP')>text,1)")
+    iicSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('IIC-SRP')>text,1)")
+    csrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text,1)")
+    csrpType = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(2),1)")
+    csrpScore = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(4),1)")
 
     riskFactorAnslysis = new Element.Textbox(this.page, '#textarea_SUM9')
     r10_5 = new Element.Textbox(this.page, '#textarea_SUM10')

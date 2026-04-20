@@ -134,16 +134,13 @@ export class StandaloneCsrp extends OasysPage {
     kidnappingPrevious = new Element.Select<YesNoAnswer>(this.page, '#P5_KIDNAP_PREV')
     firearmPrevious = new Element.Select<YesNoAnswer>(this.page, '#P5_FIREARM_PREV')
     robberyPrevious = new Element.Select<YesNoAnswer>(this.page, '#P5_ROBBERY_PREV')
-    /**
-     * OSP - Indecent Image and Indirect Sexual Reoffending Risk
-     */
-    ospIic = new Element.Textbox<string>(this.page, '#P5_OSPIIC_TEXTAREA')
-    /**
-     * OSP - Direct Contact Sexual Reoffending Risk
-     */
-    ospDc = new Element.Textbox<string>(this.page, '#P5_OSPDC_TEXTAREA')
-    /**
-     * RSR Score
-     */
-    rsrScore = new Element.Textbox<string>(this.page, '#P5_RSR_TEXT_1')
+    
+    arpText = new Element.Text(this.page, "td:has-text('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    vrpText = new Element.Text(this.page, ":nth-match(td:has-text('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td,1)")
+    svrpText = new Element.Text(this.page, "td:has-text('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
+    dcSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('DC-SRP')>text,1)")
+    iicSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('IIC-SRP')>text,1)")
+    csrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text,1)")
+    csrpType = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(2),1)")
+    csrpScore = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text:nth-of-type(4),1)")
 }

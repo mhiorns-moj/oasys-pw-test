@@ -1,6 +1,6 @@
-import { TestCaseParameters, ScoreType, MissingQuestionsResult } from './types'
+import { OgrsInputParams, MissingQuestionsResult } from '../types'
 
-export function checkMissingQuestions(scoreType: ScoreType, params: TestCaseParameters, rsrDynamic: boolean = false): MissingQuestionsResult {
+export function checkMissingQuestions(scoreType: ScoreType, params: OgrsInputParams, rsrDynamic: boolean = false): MissingQuestionsResult {
 
     const missing: string[] = []
     const paramListId = scoreType == 'rsr' ? (rsrDynamic ? 'rsr_extended' : 'rsr_brief') : scoreType
@@ -102,7 +102,7 @@ export function checkMissingQuestions(scoreType: ScoreType, params: TestCasePara
     return { status: missing.length > 0 ? 'E' : 'Y', count: missing.length, errorText: result }
 }
 
-function standardCheck(params: TestCaseParameters, required: string[], missing: string[], param: keyof TestCaseParameters) {
+function standardCheck(params: OgrsInputParams, required: string[], missing: string[], param: keyof OgrsInputParams) {
     if (params[param] == null && required.includes(param)) {
         missing.push(getErrorText(param))
     }
