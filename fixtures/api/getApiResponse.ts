@@ -40,8 +40,13 @@ export async function getRestData(parameters: EndpointParams, request: APIReques
     try {
         await getTokenIfRequired()
         oasysDateTime.startTimer('restResponse')
-        const response = await request.get(url, {
-            headers: { 'authorization': 'Bearer ' + token },
+
+        const response = await request.get(`${restConfig.baseUrl}${url}`, {
+
+            headers: {
+                'authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json',
+            },
         })
         restResponse.result = await response.json()
 

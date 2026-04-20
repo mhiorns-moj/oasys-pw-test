@@ -1,4 +1,4 @@
-import { test, OasysDb, Api } from 'fixtures'
+import { test, Api } from 'fixtures'
 
 
 // Number of offenders for each date range
@@ -71,7 +71,7 @@ test('RestAPI regression tests', async ({ oasysDb, api }) => {
                                         where rownum <= ${dateConditions[i].count}`
 
         const offenders = await oasysDb.getData(offenderQuery)
-        const setFailed = await runTest(offenders, api, oasysDb)
+        const setFailed = await runTest(offenders, api)
         if (setFailed) {
             failed = true
         }
@@ -99,7 +99,7 @@ test('RestAPI regression tests', async ({ oasysDb, api }) => {
     expect(failed).toBeFalsy()
 })
 
-async function runTest(offenders: string[][], api: Api, oasysDb: OasysDb): Promise<boolean> {
+async function runTest(offenders: string[][], api: Api): Promise<boolean> {
 
     let failed = false
     let count = 1

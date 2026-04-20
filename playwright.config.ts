@@ -30,10 +30,6 @@ export default defineConfig({
       downloadsPath: './test-results/downloads',
       args: ['--disable-pdf-viewer'],
     },
-    baseURL: testEnvironment.rest.baseUrl,
-    extraHTTPHeaders: {
-      'Content-Type': 'application/json'
-    },
   },
 
   projects: [
