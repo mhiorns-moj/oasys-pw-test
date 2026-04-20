@@ -9,7 +9,7 @@ const testCases = [
     // ['H923484', null],    // SARA
     // ['X450397', null],    // SUM
     // ['ZLHECUL', null],       // OASys-SP layer 1
-    // ['ZEEDUBH', null],
+    ['ZSZGXOP', null],
 ]
 
 test('All endpoint regression tests - extra test for specific cases', async ({ api }) => {

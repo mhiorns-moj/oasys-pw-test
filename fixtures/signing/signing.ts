@@ -4,6 +4,7 @@ import * as fs from 'fs-extra'
 import { Oasys, Assessment, Tasks } from 'fixtures'
 import * as pages from './pages'
 import { User } from 'classes/user'
+import { BaseAssessmentPage } from 'classes'
 
 export class Signing {
 
@@ -31,8 +32,6 @@ export class Signing {
      *   - countersignCancel: allows you to cancel out after confirming that a countersignature is required
      *   - countersigner: either a predefined User object, or a string to enter as the countersigner
      *   - countersignComment: countersigner comment (a generic comment will be entered if this is not specified)
-     *   - offender: an OffenderDef object, if specified the OGRS4 calculations will be checked
-     *   - pk: if provided, the OGRS4 scores will be checked
      */
     async signAndLock(
         params?: {
@@ -42,7 +41,7 @@ export class Signing {
 
         log(`Sign & lock assessment`)
         await this.oasys.gotoSigningPage(params?.page)
-
+        
         await this.oasys.clickButton('Sign & Lock', true)
 
         if (params?.expectOutstandingQuestions) {
@@ -71,9 +70,6 @@ export class Signing {
                 await this.cPage.confirm.click()
             }
         }
-
-        // Check the OGRS4 calculations
-        // checkOgrs4CalcsPk(params.pk) // TODO
 
         // Check for unwanted countersigning
         if (!params?.countersignCancel) {
