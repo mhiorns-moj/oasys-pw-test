@@ -32,7 +32,7 @@ export class Api {
      *  - skipPkOnlyCalls - if true, any APIs that are called with just an assessment PK will be skipped on the basis that the calling script is repeating an offender 
      *                      (selected this time using the prison CRN instead of probation) so these calls will be identical.
      */
-    async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean,
+    async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean, oasysDb: OasysDb,
         stats: EndpointStat[] = null, limitEndpoints: Endpoint[] = null): Promise<boolean> {
 
         const v1Endpoints: Endpoint[] = [
@@ -83,7 +83,7 @@ export class Api {
         let failed = false
 
         // Get all relevant data from the OASys database
-        const offenderData = await restApiDb.getOffenderWithAssessments(crnSource, crn)
+        const offenderData = await restApiDb.getOffenderWithAssessments(crnSource, crn, oasysDb)
         log('', '')
         log('', `Offender ${crnSource == 'prob' ? 'CRN' : 'NOMIS Id'}: ${crn}`)
 

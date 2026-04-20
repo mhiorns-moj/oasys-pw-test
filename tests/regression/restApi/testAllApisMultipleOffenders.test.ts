@@ -1,4 +1,4 @@
-import { Api, test } from 'fixtures'
+import { test, OasysDb, Api } from 'fixtures'
 
 
 // Number of offenders for each date range
@@ -27,8 +27,8 @@ const dateConditions = [
 
 ]
 
-// const limitEndpoints: Endpoint[] = []
-const limitEndpoints: Endpoint[] = ['crimNeeds','pni']
+const limitEndpoints: Endpoint[] = []
+// const limitEndpoints: Endpoint[] = ['crimNeeds','pni']
 
 // Hide details from the report for passes
 const reportPasses = false
@@ -71,7 +71,7 @@ test('RestAPI regression tests', async ({ oasysDb, api }) => {
                                         where rownum <= ${dateConditions[i].count}`
 
         const offenders = await oasysDb.getData(offenderQuery)
-        const setFailed = await runTest(offenders, api)
+        const setFailed = await runTest(offenders, api, oasysDb)
         if (setFailed) {
             failed = true
         }
@@ -99,7 +99,7 @@ test('RestAPI regression tests', async ({ oasysDb, api }) => {
     expect(failed).toBeFalsy()
 })
 
-async function runTest(offenders: string[][], api: Api): Promise<boolean> {
+async function runTest(offenders: string[][], api: Api, oasysDb: OasysDb): Promise<boolean> {
 
     let failed = false
     let count = 1
@@ -110,14 +110,14 @@ async function runTest(offenders: string[][], api: Api): Promise<boolean> {
         offendersTested++
 
         if (offender[0] != null) {  // call with probation CRN
-            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, reportPasses, stats, limitEndpoints)
+            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, reportPasses, oasysDb, stats, limitEndpoints)
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true
             }
         }
         if (offender[1] != null) {  // call with NomisId
-            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, reportPasses, stats, limitEndpoints)  // skipPrisSubsequents if already done for prob crn
+            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, reportPasses, oasysDb, stats, limitEndpoints)  // skipPrisSubsequents if already done for prob crn
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true

@@ -3,7 +3,7 @@ import { test } from 'fixtures'
 
 // Offender has a completed assessment and incomplete SARA (rejected at S/L) with high/medium
 
-test('NOD-1225', async ({ oasys, offender, assessment, sections, risk, sara, sentencePlan, signing, api }) => {
+test('NOD-1225', async ({ oasysDb, oasys, offender, assessment, sections, risk, sara, sentencePlan, signing, api }) => {
 
     await oasys.login(oasys.users.probHeadPdu)
 
@@ -44,7 +44,7 @@ test('NOD-1225', async ({ oasys, offender, assessment, sections, risk, sara, sen
     await oasys.clickButton('Continue with Signing')
     await oasys.clickButton('Confirm Sign & Lock')
 
-    const failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true)
+    const failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true, oasysDb)
     expect(failed).toBeFalsy()
 
     await oasys.logout()

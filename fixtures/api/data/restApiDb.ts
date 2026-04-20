@@ -10,11 +10,10 @@ import { QaData } from './qaData'
  * 
  * This function is called via cypress.config.ts using `cy.task('getOffenderWithAssessments', crn)`
  */
-export async function getOffenderWithAssessments(crnSource: Provider, crn: string): Promise<DbOffenderWithAssessments> {
+export async function getOffenderWithAssessments(crnSource: Provider, crn: string, oasysDb: OasysDb): Promise<DbOffenderWithAssessments> {
 
     // Database queries are (mostly) defined in the relevant class definitions
 
-    const oasysDb = new OasysDb()
     oasysDateTime.startTimer('getOffenderWithAssessments')
 
     // Get offender data
