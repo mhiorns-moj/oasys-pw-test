@@ -1,5 +1,5 @@
 import { test } from 'fixtures'
-import { ogrsOracleTest } from './ogrsCalculator/ogrsTest'
+import { ogrsOracleTest } from './testLib'
 
 const pk = 4192377  // fully populated
 // const pk = 9527359  // old 2.2 weapon

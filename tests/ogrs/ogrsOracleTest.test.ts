@@ -1,5 +1,5 @@
 import { test } from 'fixtures'
-import { ogrsOracleTest } from './ogrsCalculator/ogrsTest'
+import { ogrsOracleTest } from './testLib'
 
 const count = 1000
 const reportMode: ReportMode = 'normal'

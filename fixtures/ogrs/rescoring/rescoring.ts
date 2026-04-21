@@ -48,8 +48,7 @@ export class Rescoring {
                 staticCalc = 'Y'
             }
         }
-        // TODO convert to standard util functions or reuse from OGRS test
-
+        
         const p: OgrsInputParams = {
             ASSESSMENT_DATE: useCurrentDate ? oasysDateTime.testStartDate : oasysDateTime.stringToDate(assessment.completedDate),
             STATIC_CALC: staticCalc,

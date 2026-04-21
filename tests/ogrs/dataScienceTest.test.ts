@@ -1,5 +1,5 @@
 import { test } from 'fixtures'
-import { ogrsCsvTest } from './ogrsCalculator/ogrsTest'
+import { ogrsCsvTest } from './testLib'
 
 const dataFile = 'tests/ogrs/data/dsTestCases.csv'
 const outputFileY = 'test-results/dsTestResultsY.csv'
