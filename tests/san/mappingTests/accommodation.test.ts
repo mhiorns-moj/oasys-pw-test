@@ -2,7 +2,7 @@ import { test } from 'fixtures'
 import { mappingTest } from './xMappingTest'
 import * as data from '../data/mapping'
 
-// Ensure tests/data/local/mappingTestsOffender.txt has been updated by running aaSanMappingTestOffender first.
+// Ensure tests/data/local/mappingTestsOffender.txt has been updated by running tests/setup/sanMappingTestOffender first.
 
 test('Mapping test: accommodation', async ({ oasys, offender, assessment, sections, san }) => {
 

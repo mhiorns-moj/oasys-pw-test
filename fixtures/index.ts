@@ -2,7 +2,7 @@ import { test as base, TestInfo, expect, Page } from '@playwright/test'
 import * as fs from 'fs-extra'
 
 import { OasysDb } from './oasysDb/oasysDb'
-import { testEnvironment } from 'localSettings'
+import { testEnvironment, userSuffixes } from 'localSettings'
 import { Oasys } from './oasys/oasys'
 import { Cms } from './cms/cms'
 import { Offender } from './offender/offender'
@@ -39,12 +39,10 @@ export { Ogrs } from './ogrs/ogrs'
 export { Maintenance } from './maintenance/maintenance'
 
 
-const oasysLog: Log[] = []
-const fileLog: string[] = []
-
 globalThis.expect = expect
 globalThis.oasysDateTime = new OasysDateTime()
 globalThis.utils = new Utils()
+globalThis.appConfig = null
 
 globalThis.waitForPageUpdate = async (page: Page, initialDelay?: number) => {
 
@@ -57,17 +55,43 @@ globalThis.waitForPageUpdate = async (page: Page, initialDelay?: number) => {
     }
 }
 
+const oasysLogs: { [key: number]: Log[] } = {}
+const fileLog: { [key: number]: string[] } = {}
+
 globalThis.log = (logtext: string, type?: string) => {
 
-    oasysLog.push({ logText: logtext, type: type })
+    const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
+    oasysLogs[testProcess].push({ logText: logtext, type: type })
 }
 
 globalThis.fileLog = (logtext: string) => {
 
-    fileLog.push(logtext)
+    const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
+    fileLog[testProcess].push(logtext)
 }
 
-globalThis.appConfig = null
+async function initialiseLogs() {
+
+    fs.remove(fileLogFilename)
+    const testProcesses = userSuffixes.length
+    for (let i = 0; i < testProcesses; i++) {
+        oasysLogs[i] = []
+    }
+    for (let i = 0; i < testProcesses; i++) {
+        fileLog[i] = []
+    }
+}
+
+async function finaliseLogs(testInfo: TestInfo) {
+
+    const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
+    for (let log of oasysLogs[testProcess]) {
+        testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
+    }
+    if (fileLog[testProcess].length > 0) {
+        await fs.writeFile(testInfo.outputPath(fileLogFilename), fileLog[testProcess].join('\n'))
+    }
+}
 
 type OasysFixtures = {
     oasysDb: OasysDb,
@@ -85,6 +109,7 @@ type OasysFixtures = {
     api: Api,
     ogrs: Ogrs,
     maintenance: Maintenance,
+    logs: void,
 }
 
 const fileLogFilename = 'test-results/fileLog.txt'
@@ -180,22 +205,11 @@ export const test = base.extend<OasysFixtures>({
         const maintenance = new Maintenance(page)
         await use(maintenance)
     },
+
+    logs: [async ({ }, use: Function, testInfo: TestInfo) => {
+        await initialiseLogs()
+        await use()
+        await finaliseLogs(testInfo)
+    }, { auto: true }],
 })
 
-// TODO allow for parallel running
-test.beforeEach(() => {
-
-    fs.remove(fileLogFilename)
-    oasysLog.length = 0
-    fileLog.length = 0
-})
-
-test.afterEach(({ }, testInfo) => {
-
-    for (let log of oasysLog) {
-        testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
-    }
-    if (fileLog.length > 0) {
-        fs.writeFile(fileLogFilename, fileLog.join('\n'))
-    }
-})

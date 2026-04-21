@@ -1,10 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
+import { userSuffixes } from 'localSettings'
 
 export default defineConfig({
   testDir: 'tests',
   testMatch: '**/*.test.ts',
-  fullyParallel: false,
-  workers: 1,
+  fullyParallel: true,
+  workers: userSuffixes.length,
   timeout: 600_000,
 
   reporter: [['html', { open: 'never', noSnippets: false }]],

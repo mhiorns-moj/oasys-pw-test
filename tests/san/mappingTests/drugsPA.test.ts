@@ -1,7 +1,5 @@
-import * as fs from 'fs-extra'
-
 import { test, Oasys, Offender, Assessment, San } from 'fixtures'
-import { mappingTestOffenderFile } from './xMappingTest'
+import { getMappingTestOffender } from './xMappingTest'
 
 type TextType = 'normal' | 'max' | 'empty'
 type Motivation = 'noMotivation' | 'someMotivation' | 'motivated' | 'unknown'
@@ -21,8 +19,7 @@ async function paTest(oasys: Oasys, offender: Offender, assessment: Assessment, 
 
     // Get offender details (run aaSanMappingTestOffender if required to create the offender)
 
-    const offenderDetails = await fs.readFile(mappingTestOffenderFile)
-    const mappingTestOffender = JSON.parse(offenderDetails.toString()) as OffenderDef
+    const mappingTestOffender = await getMappingTestOffender()
 
     // Delete previous assessments so no data gets cloned
     await oasys.login(oasys.users.admin, oasys.users.probationSan)

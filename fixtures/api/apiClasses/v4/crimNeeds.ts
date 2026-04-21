@@ -169,7 +169,7 @@ export class SanCrimNeedScore {
         persRelAndCommSanStrength?: string
     } = {}
 
-    lifeAndAssocSan: {  // TODO is this correct?
+    lifeAndAssocSan: {
         lifeAndAssocSanThreshold?: number
         lifeAndAssocSanScore?: number
     } = {}
