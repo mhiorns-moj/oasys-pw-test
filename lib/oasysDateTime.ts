@@ -31,9 +31,14 @@ export class OasysDateTime {
         return !param ? null : Temporal.PlainDateTime.from(param)
     }
 
+    dateToOracleFormatString(param: Temporal.PlainDate): string {
+
+        return !param ? null : `'${String(param.day).padStart(2, '0')}-${monthLookup[param.month]}-${param.year.toString().substring(2)}'`
+    }
+
     dateParameterToString(param: Temporal.PlainDate): string {
 
-        return param == null ? 'null' : `to_date('${param?.toLocaleString().replace('/', '-')}','DD-MM-YYYY')`
+        return param == null ? 'null' : `to_date('${param?.toLocaleString().replaceAll('/', '-')}','DD-MM-YYYY')`
     }
 
     dateParameterToCsvOutputString(param: Temporal.PlainDate): string {
@@ -190,4 +195,20 @@ const versionLookup = {
     '6.30': '6.30.0.0',
     '6.35': '6.35.0.0',
     '6.49': '6.49.0.0',
+}
+
+
+const monthLookup: { [key: number]: string } = {
+    1: 'JAN',
+    2: 'FEB',
+    3: 'MAR',
+    4: 'APR',
+    5: 'MAY',
+    6: 'JUN',
+    7: 'JUL',
+    8: 'AUG',
+    9: 'SEP',
+    10: 'OCT',
+    11: 'NOV',
+    12: 'DEC',
 }

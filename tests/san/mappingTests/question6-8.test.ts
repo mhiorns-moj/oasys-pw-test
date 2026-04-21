@@ -1,7 +1,5 @@
-import * as fs from 'fs-extra'
-
 import { test, Oasys, Assessment, San } from 'fixtures'
-import { mappingTestOffenderFile } from './xMappingTest'
+import { getMappingTestOffender } from './xMappingTest'
 
 
 type AccommodationOptions = 'family' | 'friends' | 'partner' | 'child' | 'other' | 'unknown' | 'alone'
@@ -22,8 +20,7 @@ test('Mapping test for question 6.8', async ({ oasys, offender, assessment, san,
 
     let failed = false
 
-    const offenderDetails = await fs.readFile(mappingTestOffenderFile)
-    const mappingTestOffender = JSON.parse(offenderDetails.toString()) as OffenderDef
+    const mappingTestOffender = await getMappingTestOffender()
 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
     await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)

@@ -404,8 +404,7 @@ export function testRef8(offender1: OffenderDef, pks: number[]) {
         await san.queries.checkCountOfQuestionsInSection(pk2, 'SAN', 12)
 
         log(`Open up the completed OASys-SAN asessment - now shows all READ ONLY.  
-        Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13 and the SAQ
-        Select to print 'All Assessment Sections' - ensure the printout has NOT included sections 2 to 13 or the SAQ.  Revisions made to existing screens MUST be included in the printout`, 'Test step')
+        Click on the <Print> button - check that the initial print screen does NOT show options for sections 2 to 13 and the SAQ`, 'Test step')
 
         await assessment.openLatest()
         await sections.offenderInformation.religion.checkStatus('readonly')
@@ -426,32 +425,6 @@ export function testRef8(offender1: OffenderDef, pks: number[]) {
         await assessment.printAssessment.section13.checkStatus('notVisible')
         await assessment.printAssessment.selfAssessmentForm.checkStatus('notVisible')
         await assessment.printAssessment.allSections.setValue(true)
-
-        const inclusions = [
-            '1 - Offence & Sentence Information',
-            'SAN Section',
-            'Accommodation',
-            'Employment and', 'education',
-            'Finance',
-            'Drug use',
-            'Alcohol use',
-            'Health and', 'wellbeing',
-            'Personal', 'relationships and', 'community',
-            'Thinking,', 'behaviours and', 'attitudes',
-            'Lifestyle &', 'Associates',
-        ]
-        const exclusions = [, '2 - Analysis of Offences', '3 - Accommodation',
-            '4 - Education, Training and Employability', '5 - Financial Management and Income',
-            '6 - Relationships', '7 - Lifestyle and Associates',
-            '8 - Drug Misuse', '9 - Alcohol Misuse',
-            '10 - Emotional Well-being', '11 - Thinking and Behaviour',
-            '12 - Attitudes', '13 - Health and Other Considerations',
-            'Self Assessment Form']
-
-        // TODO printing
-        // oasys.Pdf.checkPdf(() => { print.print.click() }, inclusions, exclusions, 'pdf')
-        // print.cancel.click()
-        // cy.get<boolean>('@pdf').then((failed) => expect(failed).equal(false))
 
         await oasys.logout()
     })

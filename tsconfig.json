@@ -6,19 +6,25 @@
             "dom"
         ],
         "rootDir": ".",
-        "baseUrl": ".",
-        "module": "esnext",
-        "moduleResolution": "node",
+        "module": "commonjs",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "useDefineForClassFields": false,
         "strictNullChecks": false,
-        "ignoreDeprecations": "6.0"
+        "paths": {
+            "*": [
+                "./*"
+            ],
+        },
+        "skipLibCheck": true
     },
     "include": [
         "**/*.ts"
     ],
     "exclude": [
+        "node_modules/**/.*",
+        "playwright-report",
+        "test-results",
         "archivedCypressCode"
     ],
 }

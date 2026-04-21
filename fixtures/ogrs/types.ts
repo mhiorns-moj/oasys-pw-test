@@ -1,10 +1,7 @@
 import { Decimal } from 'decimal.js'
 import { Temporal } from '@js-temporal/polyfill'
 
-export type ReportMode = 'verbose' | 'normal' | 'minimal' | 'none'
-
 export type OgrsTestParameters = {
-    testType: 'csv' | 'db'
     csvDetails?: {
         dataFile: string,
         start?: number,
@@ -18,64 +15,18 @@ export type OgrsTestParameters = {
     staticFlag: 'Y' | 'N',
     reportMode: ReportMode,
     includeObjects: boolean,
-    cypressOnly?: boolean,
-}
-
-export type OgrsTestScriptResult = {
-    testCaseResults: TestCaseResult[],
-    cases: number,
-    failures: number,
-    offenceCodeErrors: string[],
-    packageTimestamp: string,
 }
 
 export type TestCaseResult = {
-    logText: string[],
-    inputParams: TestCaseParameters,
-    outputParams: OutputParameters,
+    inputParams: OgrsInputParams,
+    outputParams: OgrsOutputParams,
     failed: boolean,
     identifier: string,
 }
 
-export type RescoringTestParameters = {
-    dataFile: string,
-    runNumber: string,
-    start?: number,
-    end?: number,
-    staticFlag: 'Y' | 'N',
-    includeLayer1: boolean,
-    useCurrentDate: boolean,
-    reportMode: ReportMode,
-    outputFile: string,
-    appConfig: AppConfig,
-}
-
-export type RescoringResult = {
-    crn: string,
-    pk: number,
-}
-
-export type TieringTestParameters = {
-    whereClause: string,
-    count: number,
-    checkOgrs4: boolean,
-    includeStatic: boolean,
-    reportAll: boolean,
-}
-
-export type TieringTestResult = {
-    logText: string[],
-    failed: number,
-    passed: 0,
-}
-
-export type Tier = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'M'
-export type ScoreType = 'serious_violence_brief' | 'serious_violence_extended' | 'general_brief' | 'violence_brief' | 'general_extended' | 'violence_extended' | 'osp_c' | 'osp_i' | 'rsr'
-export type ScoreBand = 'Low' | 'Medium' | 'High' | 'Very High' | 'N/A'
-
 export type OgrsOffenceCat = { cat: string, addVatpFlag: boolean }
 
-export type TestCaseParameters = {
+export type OgrsInputParams = {
     ASSESSMENT_DATE: Temporal.PlainDate,
     STATIC_CALC: string,
     DOB: Temporal.PlainDate,
@@ -168,7 +119,7 @@ export type MissingQuestionsResult = {
     errorText: string
 }
 
-export type OutputParameters = {
+export type OgrsOutputParams = {
     ASSESSMENT_DATE: string,
     OGRS4G_CALCULATED: ScoreStatus,
     OGRS4G_YEAR_TWO: Decimal,
@@ -466,3 +417,21 @@ export type OgrsFeatures =
     'r1q2_arson_prev'
 
 export type OgrsCoefficients = { [keys in OgrsFeatures]?: Decimal }
+export type Ogrs4CalcResult = {
+
+    outputParams: OgrsOutputParams
+    arpText: string
+    vrpText: string
+    svrpText: string
+    dcSrpBand: string
+    iicSrpBand: string
+    csrpType: string
+    csrpBand: string
+    csrpScore: string
+}
+
+export type OgrsTestResult = {
+
+    result: Ogrs4CalcResult
+    failed: boolean
+}

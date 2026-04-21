@@ -6,14 +6,15 @@ import { test } from 'fixtures'
 
 const testCases = [
     ['ZABUOBO', null],    // fully populated L3/L1v2/L1v1
-    // ['H923484', null],    // SARA
-    // ['X450397', null],    // SUM
-    // ['ZLHECUL', null],       // OASys-SP layer 1
+    ['H923484', null],    // SARA
+    ['X450397', null],    // SUM
+    ['ZLHECUL', null],       // OASys-SP layer 1
     ['ZUHJFAA', null],      // SAN assessments
+    ['ZSZGXOP', null],
 ]
 
-// const limitEndpoints: Endpoint[] = []
-const limitEndpoints: Endpoint[] = ['crimNeeds']
+const limitEndpoints: Endpoint[] = []
+// const limitEndpoints: Endpoint[] = ['apAsslist']
 
 test('All endpoint regression tests - extra test for specific cases', async ({ api }) => {
 
@@ -24,7 +25,7 @@ test('All endpoint regression tests - extra test for specific cases', async ({ a
         console.log(`Offender ${count++}: ${offender[0]} / ${offender[1]}`)
 
         if (offender[0] != null) {  // call with probation CRN
-            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, false, null, limitEndpoints)
+            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, true,  null, limitEndpoints)
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true

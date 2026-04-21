@@ -2,17 +2,15 @@ import * as fs from 'fs-extra'
 
 import { Oasys, Offender, Assessment, Sections, San } from 'fixtures'
 
-
 /**
  * Test script used by all of the mapping tests.  Need to run the aaSanMappingTestOffender script first to create an offender and store the details in a local file.
  */
 
-export const mappingTestOffenderFile = 'tests/data/local/mappingTestsOffender.txt'
+export const mappingTestOffenderFile = 'tests/data/local/mappingTestsOffender'
 
 export async function mappingTest(oasys: Oasys, offender: Offender, assessment: Assessment, sections: Sections, san: San, script: SanScript, reset130: boolean = false) {
 
-    const offenderDetails = await fs.readFile(mappingTestOffenderFile)
-    const mappingTestOffender = JSON.parse(offenderDetails.toString()) as OffenderDef
+    const mappingTestOffender = await getMappingTestOffender()
 
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
     await offender.searchAndSelectByCrn(mappingTestOffender.probationCrn)
@@ -28,4 +26,11 @@ export async function mappingTest(oasys: Oasys, offender: Offender, assessment: 
     expect(failed).toBeFalsy()
 
     await oasys.logout()
+}
+
+export async function getMappingTestOffender(): Promise<OffenderDef> {
+
+    const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
+    const offenderDetails = await fs.readFile(`${mappingTestOffenderFile}${testProcess}`)
+    return JSON.parse(offenderDetails.toString()) as OffenderDef
 }

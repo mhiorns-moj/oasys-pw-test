@@ -1,4 +1,4 @@
-import { Api, test } from 'fixtures'
+import { test, Api } from 'fixtures'
 
 
 // Number of offenders for each date range
@@ -27,8 +27,8 @@ const dateConditions = [
 
 ]
 
-// const limitEndpoints: Endpoint[] = []
-const limitEndpoints: Endpoint[] = ['crimNeeds','pni']
+const limitEndpoints: Endpoint[] = []
+// const limitEndpoints: Endpoint[] = ['crimNeeds','pni']
 
 // Hide details from the report for passes
 const reportPasses = false

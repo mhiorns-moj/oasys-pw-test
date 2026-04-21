@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test'
 
-import { Oasys, Cms, Offender, OasysDb, Sections, San, Risk, SentencePlan } from 'fixtures'
+import { Oasys, Cms, Offender, OasysDb, Sections, San, Risk, SentencePlan, Ogrs } from 'fixtures'
 import * as pages from './pages'
 import { BaseAssessmentPage } from 'classes'
 import { TaskManager } from 'fixtures/tasks/pages/taskManager'
@@ -11,7 +11,7 @@ export class Assessment {
 
     constructor(private readonly page: Page, private readonly oasys: Oasys, private readonly cms: Cms,
         private readonly offender: Offender, private readonly oasysDb: OasysDb, private readonly sections: Sections, private readonly san: San,
-        private readonly risk: Risk, private readonly sentencePlan: SentencePlan) { }
+        private readonly risk: Risk, private readonly sentencePlan: SentencePlan, private readonly ogrs: Ogrs) { }
 
     assessmentPk: number // Updated on creating an assessment.  Used at lock incomplete and sign&lock to call the OGRS4 regression test
 
@@ -242,8 +242,7 @@ export class Assessment {
         log('Locked assessment incomplete')
 
         // Check the OGRS4 calculations
-        // checkOgrs4CalcsPk(pk) // TODO
-
+        await this.ogrs.checkOgrsInOasysSet(pk)
     }
 
     // /**

@@ -18,16 +18,11 @@ export class Link {
         await waitForPageUpdate(this.page)
     }
 
-    async checkStatus(expectedStatus: ElementStatus) {  // TODO 
+    async checkStatus(expectedStatus: ElementStatus) {
 
-        // cy.get('#content').then((containerDiv) => {
-
-        //     const element = this.selector.startsWith('#') || this.selector.includes('[') ? containerDiv.find(this.selector) : containerDiv.find(`a:contains('${this.selector}')`)
-        //     const actualStatus = element.length > 0 ? 'enabled' : 'notVisible'
-        //     if (expectedStatus != actualStatus) {
-        //         throw new Error(`Incorrect status for ${this.selector} - expected ${expectedStatus}, found ${actualStatus}`)
-        //     }
-        // })
+        const count = await this.selector.count()
+        const actualStatus = count > 0 ? 'enabled' : 'notVisible'
+        expect (actualStatus).toBe(expectedStatus)
     }
 
     async getFullText(): Promise<string> {

@@ -6,22 +6,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.59.1",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.6.0",
     "@types/oracledb": "^6.10.0",
-    "@types/pdf-parse": "^1.1.4",
     "decimal.js": "^10.6.0",
-    "fs-extra": "^11.3.2",
+    "fs-extra": "^11.3.4",
     "oracledb": "^6.10.0",
-    "pdf-parse": "^2.4.5",
-    "ts-loader": "^9.5.4",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@badgateway/oauth2-client": "^3.3.1",
     "@js-temporal/polyfill": "^0.5.1",
-    "axios": "^1.13.2",
     "flat": "^6.0.1"
   },
   "scripts": {}

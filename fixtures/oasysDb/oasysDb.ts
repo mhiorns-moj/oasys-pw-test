@@ -1,5 +1,5 @@
 import { Db } from './db'
-import { testEnvironment, userSuffix } from 'localSettings'
+import { testEnvironment, userSuffixes } from 'localSettings'
 
 export class OasysDb {
 
@@ -51,8 +51,10 @@ export class OasysDb {
         let surname = ''
         let count = 1
 
+        const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
         do {
-            surname = `Auto${userSuffix} `
+
+            surname = `Auto${userSuffixes[testProcess]} `
 
             for (var i = 0; i < 5; i++) {
                 surname += getRandomChar()
@@ -135,7 +137,6 @@ export class OasysDb {
 
     /**
      * Generic async to run a query and return data as a 2-d string array.  Errors result in a null return with an error message written to the log.
-     * The returned data is accessed using `cy.get<string[][]>(alias)` with the provided alias.
      */
     async getData(query: string): Promise<string[][]> {
 
@@ -144,20 +145,6 @@ export class OasysDb {
         expect(result.error).toBeNull()
         return result.data as string[][]
     }
-
-    // /**
-    //  * Set the password for a given user
-    //  */
-    // async setPassword(username: string, password: string) {
-
-    //     cy.task('setPassword', { username: username, password: password }).then((result: DbResponse) => {
-    //         if (result.error != null) {
-    //             log(result.error)
-    //         }
-    //     })
-    // }
-
-
 
     /**
      * Runs a count query and returns the count.
@@ -179,6 +166,14 @@ export class OasysDb {
 
         expect(result.error).toBeNull()
         return result.data as number
+    }
+
+    async callFunction(functionCall: string): Promise<string> {
+
+        const result = await this.db.callOracleFunction(functionCall)
+
+        expect(result.error).toBeNull()
+        return result.data as string
     }
 
     /** 
@@ -220,15 +215,17 @@ export class OasysDb {
 
     async getLatestElogAndUnprocEventTime(mode: 'store' | 'check') {
 
+        const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
+
         const opdCondition = testEnvironment.ignoreOpdElogErrors ? `and error_stack not like '%network access denied by access control list (ACL)%'` : ''
         const elogQuery = `select to_char(time_stamp, 'YYYY-MM-DD HH24:MI:SS') from eor.elog 
                         where error_stack not like '%STUB:%'
-                        and (username like 'AUTO%${userSuffix}' or username = 'EOR')
+                        and (username like 'AUTO%${userSuffixes[testProcess]}' or username = 'EOR')
                         ${opdCondition}
                         order by time_stamp desc fetch first 1 row only`
 
         const unprocEventQuery = `select to_char(create_date, 'YYYY-MM-DD HH24:MI:SS') from eor.san_unprocessed_events 
-                        where create_user like 'AUTO%${userSuffix}'
+                        where create_user like 'AUTO%${userSuffixes[testProcess]}'
                         order by create_date desc fetch first 1 row only`
 
         let result = await this.db.selectData(elogQuery)

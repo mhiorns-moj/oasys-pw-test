@@ -1,8 +1,7 @@
-import * as fs from 'fs-extra'
 import { Page } from '@playwright/test'
 
 import { test, Oasys, Offender, Assessment, San } from 'fixtures'
-import { mappingTestOffenderFile } from './xMappingTest'
+import { getMappingTestOffender } from './xMappingTest'
 
 type TestCase = { ref: number, lastSix: boolean, frequency: DrugsFrequency, injectedLastSix: boolean, injectedMoreThanSix: boolean }
 
@@ -90,8 +89,7 @@ test.describe.serial('Mapping test for drugs - individual drugs details', () => 
 
 async function drugTest(drugType: DrugType, page: Page, oasys: Oasys, offender: Offender, assessment: Assessment, san: San) {
 
-    const offenderDetails = await fs.readFile(mappingTestOffenderFile)
-    const mappingTestOffender = JSON.parse(offenderDetails.toString()) as OffenderDef
+    const mappingTestOffender = await getMappingTestOffender()
 
     // Delete previous assessments so no data gets cloned
     await oasys.login(oasys.users.admin, oasys.users.probationSan)
@@ -134,7 +132,7 @@ async function drugTest(drugType: DrugType, page: Page, oasys: Oasys, offender: 
     console.log(`Testing ${drugType}`)
 
     expectedAnswers = JSON.parse(JSON.stringify(expectedAnswersTemplate)) as OasysAnswer[]  // take a copy to modify for this drug
-    
+
     for (const test of testCases) {
         if (injectableDrug(drugType) || (test.injectedLastSix == null && test.injectedMoreThanSix == null)) {  // skip injection tests for non-injectable drugs
             // Get to the right starting screen

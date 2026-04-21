@@ -206,7 +206,7 @@ export class Offender {
     }
 
     async demerge(oasys: Oasys) {
-        // TODO create a demerge page
+
         await oasys.clickButton('Demerge')
         await oasys.clickButton('Confirm Demerge')
         await oasys.clickButton('Demerge')
