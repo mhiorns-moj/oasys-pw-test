@@ -38,7 +38,7 @@ export class OasysDateTime {
 
     dateParameterToString(param: Temporal.PlainDate): string {
 
-        return param == null ? 'null' : `to_date('${param?.toLocaleString().replace('/', '-')}','DD-MM-YYYY')`
+        return param == null ? 'null' : `to_date('${param?.toLocaleString().replaceAll('/', '-')}','DD-MM-YYYY')`
     }
 
     dateParameterToCsvOutputString(param: Temporal.PlainDate): string {

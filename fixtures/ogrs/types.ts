@@ -19,7 +19,7 @@ export type OgrsTestParameters = {
 
 export type TestCaseResult = {
     inputParams: OgrsInputParams,
-    outputParams: OutputParameters,
+    outputParams: OgrsOutputParams,
     failed: boolean,
     identifier: string,
 }
@@ -119,7 +119,7 @@ export type MissingQuestionsResult = {
     errorText: string
 }
 
-export type OutputParameters = {
+export type OgrsOutputParams = {
     ASSESSMENT_DATE: string,
     OGRS4G_CALCULATED: ScoreStatus,
     OGRS4G_YEAR_TWO: Decimal,
@@ -419,7 +419,7 @@ export type OgrsFeatures =
 export type OgrsCoefficients = { [keys in OgrsFeatures]?: Decimal }
 export type Ogrs4CalcResult = {
 
-    outputParams: OutputParameters
+    outputParams: OgrsOutputParams
     arpText: string
     vrpText: string
     svrpText: string

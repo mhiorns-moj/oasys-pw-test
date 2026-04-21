@@ -7,7 +7,7 @@ import { Data } from './data/data'
 import { Rescoring } from './rescoring/rescoring'
 import { Tiering } from './tiering/tiering'
 import { OgrsAssessment, OgrsRsr } from './data/dbClasses'
-import { OgrsInputParams, TestCaseResult, OutputParameters, Ogrs4CalcResult, OgrsTestResult } from './types'
+import { OgrsInputParams, TestCaseResult, OgrsOutputParams, Ogrs4CalcResult, OgrsTestResult } from './types'
 import { createAssessmentInputParams } from 'fixtures/ogrs/data/createAssessmentTestCase'
 import { ogrsFunctionCall } from './data/ogrsFunctionCall'
 import { loadParameterSet } from './data/loadTestData'
@@ -27,7 +27,7 @@ export class Ogrs {
     /**
      * Calculate OGRS results from a set of input parameters
      */
-    calculate(calculatorParams: OgrsInputParams): OutputParameters {
+    calculate(calculatorParams: OgrsInputParams): OgrsOutputParams {
 
         return this.calculator.calculate(calculatorParams)
     }
@@ -49,13 +49,13 @@ export class Ogrs {
         return ogrsFunctionCall(params)
     }
 
-    async getOracleResult(functionCall: string): Promise<OutputParameters> {
+    async getOracleResult(functionCall: string): Promise<OgrsOutputParams> {
 
         const oracleResponse = await this.oasysDb.callFunction(functionCall)
         return this.data.loadOracleOutputValues(oracleResponse.split('|'))
     }
 
-    createInputFromCsvLine(line: string) :OgrsInputParams {
+    createInputFromCsvLine(line: string): OgrsInputParams {
         return loadParameterSet(line)
     }
 
@@ -137,7 +137,7 @@ export class Ogrs {
     /**
      * Generate a calculation for a specified set of inputs, and compare it to a known set of outputs
      */
-    calculateOgrsAndCompare(testCaseParams: OgrsInputParams, expectedResults: OutputParameters, testCaseRef: string, reportMode: ReportMode): TestCaseResult {
+    calculateOgrsAndCompare(testCaseParams: OgrsInputParams, expectedResults: OgrsOutputParams, testCaseRef: string, reportMode: ReportMode): TestCaseResult {
 
         Decimal.set({ precision: precision })
         const testCaseResult: TestCaseResult = {
@@ -191,7 +191,7 @@ function checkScore(description: string, expectedValue: string | number, actualV
     return failed
 }
 
-function checkResults(expectedResults: OutputParameters, actualResults: OutputParameters, reportMode: ReportMode, logText: string[]): boolean {
+function checkResults(expectedResults: OgrsOutputParams, actualResults: OgrsOutputParams, reportMode: ReportMode, logText: string[]): boolean {
 
     // Compare the complete result set for a single test case, line by line, to determine failure and generate report
 

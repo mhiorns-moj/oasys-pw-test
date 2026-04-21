@@ -1,4 +1,4 @@
-import { OgrsInputParams, OutputParameters } from '../types'
+import { OgrsInputParams, OgrsOutputParams } from '../types'
 import { calculatePredictor } from './calculatePredictor'
 import { createOutputObject } from './createOutput'
 import { ospRsrCalc } from 'fixtures/ogrs/calculator/ospRsr'
@@ -6,7 +6,7 @@ import { ospRsrCalc } from 'fixtures/ogrs/calculator/ospRsr'
 
 export class Calculator {
 
-    calculate(calculatorParams: OgrsInputParams): OutputParameters {
+    calculate(calculatorParams: OgrsInputParams): OgrsOutputParams {
 
         const result = createOutputObject()
 

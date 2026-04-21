@@ -1,7 +1,7 @@
-import { OgrsInputParams, OutputParameters } from '../types'
+import { OgrsInputParams, OgrsOutputParams } from '../types'
 import { RescoringOffenderWithAssessment } from './dbClasses'
 
-export function createOutputLine(params: OgrsInputParams, offender: RescoringOffenderWithAssessment, outputParams: OutputParameters, runNumber: string): string {
+export function createOutputLine(params: OgrsInputParams, offender: RescoringOffenderWithAssessment, outputParams: OgrsOutputParams, runNumber: string): string {
 
     const metadata: string[] = []
     metadata.push(runNumber)

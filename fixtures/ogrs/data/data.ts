@@ -4,7 +4,7 @@ import { Decimal } from 'decimal.js'
 import { OasysDb } from 'fixtures'
 import { OgrsAssessment } from './dbClasses'
 import { OgrsRsr } from './dbClasses'
-import { OgrsInputParams, OutputParameters } from '../types'
+import { OgrsInputParams, OgrsOutputParams } from '../types'
 import { createAssessmentInputParams } from './createAssessmentTestCase'
 import { createRsrInputParams } from './createRsrTestCase'
 import { createOutputObject } from '../calculator/createOutput'
@@ -79,7 +79,7 @@ export class Data {
         return createRsrInputParams(assessment)
     }
 
-    loadOracleOutputValues(values: string[]): OutputParameters {
+    loadOracleOutputValues(values: string[]): OgrsOutputParams {
 
         const result = createOutputObject()
 

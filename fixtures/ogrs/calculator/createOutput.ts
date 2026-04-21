@@ -1,8 +1,8 @@
 import { Decimal } from 'decimal.js'
 
-import { OutputParameters, ScoreStatus } from '../types'
+import { OgrsOutputParams, ScoreStatus } from '../types'
 
-export function createOutputObject(): OutputParameters {
+export function createOutputObject(): OgrsOutputParams {
 
     return {
         ASSESSMENT_DATE: null,
@@ -210,7 +210,7 @@ export function createOutputObject(): OutputParameters {
     }
 }
 
-export function reportScores(outputParams: OutputParameters, scoreType: ScoreType, zScore: Decimal, percentage: Decimal, band: string, status: ScoreStatus, missingCount: number, missingQuestions: string) {
+export function reportScores(outputParams: OgrsOutputParams, scoreType: ScoreType, zScore: Decimal, percentage: Decimal, band: string, status: ScoreStatus, missingCount: number, missingQuestions: string) {
 
     addOutputParameter(outputParams, scoreType, 'score', zScore)
     addOutputParameter(outputParams, scoreType, 'percentage',
@@ -223,7 +223,7 @@ export function reportScores(outputParams: OutputParameters, scoreType: ScoreTyp
     addOutputParameter(outputParams, scoreType, 'missingQuestions', missingQuestions)
 }
 
-export function addOutputParameter(outputParams: OutputParameters, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus | ScoreBand) {
+export function addOutputParameter(outputParams: OgrsOutputParams, scoreType: ScoreType, item: string, value: string | Decimal | number | ScoreStatus | ScoreBand) {
 
     const parameterName = getOutputParameterName(scoreType, item)
     if (parameterName != null && parameterName in outputParams) {

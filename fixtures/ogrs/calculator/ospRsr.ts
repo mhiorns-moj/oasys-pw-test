@@ -1,12 +1,12 @@
 import Decimal from 'decimal.js'
 
 import { ospCoefficients } from './ospCoefficients'
-import { OutputParameters, OgrsInputParams } from '../types'
+import { OgrsOutputParams, OgrsInputParams } from '../types'
 import { calculateProbability, calculateBand, probabilityToPercentage } from './calculatePredictor'
 import { reportScores, addOutputParameter } from './createOutput'
 import { checkMissingQuestions } from './missingQuestions'
 
-export function ospRsrCalc(params: OgrsInputParams, outputParams: OutputParameters) {
+export function ospRsrCalc(params: OgrsInputParams, outputParams: OgrsOutputParams) {
 
     // Calculate OSP-C, OSP-I and RSR
 

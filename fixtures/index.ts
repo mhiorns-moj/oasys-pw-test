@@ -101,7 +101,6 @@ export const test = base.extend<OasysFixtures>({
         await use(oasysDb)
 
         await oasysDb.getLatestElogAndUnprocEventTime('check')
-        await oasysDb.closeConnection()
     },
 
     oasys: async ({ page }, use, testInfo) => {

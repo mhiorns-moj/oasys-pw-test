@@ -1,7 +1,7 @@
 import { OasysDb } from 'fixtures'
 import { RescoringOffenderWithAssessment, RescoringAssessment } from './dbClasses'
 
-import { OgrsInputParams, OutputParameters } from '../types'
+import { OgrsInputParams, OgrsOutputParams } from '../types'
 import { addCalculatedInputParameters, getOffenceCat } from 'fixtures/ogrs/data/common'
 import { createOutputLine } from './output'
 
@@ -122,7 +122,7 @@ export class Rescoring {
         return p
     }
 
-    getOutputLine(params: OgrsInputParams, offender: RescoringOffenderWithAssessment, outputParams: OutputParameters, runNumber: string): string {
+    getOutputLine(params: OgrsInputParams, offender: RescoringOffenderWithAssessment, outputParams: OgrsOutputParams, runNumber: string): string {
 
         return createOutputLine(params, offender, outputParams, runNumber)
     }
