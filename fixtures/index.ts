@@ -59,20 +59,21 @@ const oasysLogs: { [key: number]: Log[] } = {}
 const fileLog: { [key: number]: string[] } = {}
 
 globalThis.log = (logtext: string, type?: string) => {
-
+    
     const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
     oasysLogs[testProcess].push({ logText: logtext, type: type })
 }
 
 globalThis.fileLog = (logtext: string) => {
-
+    
     const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
     fileLog[testProcess].push(logtext)
 }
 
+const fileLogFolder= 'test-results/'
+
 async function initialiseLogs() {
 
-    fs.remove(fileLogFilename)
     const testProcesses = userSuffixes.length
     for (let i = 0; i < testProcesses; i++) {
         oasysLogs[i] = []
@@ -89,7 +90,7 @@ async function finaliseLogs(testInfo: TestInfo) {
         testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
     }
     if (fileLog[testProcess].length > 0) {
-        await fs.writeFile(testInfo.outputPath(fileLogFilename), fileLog[testProcess].join('\n'))
+        await fs.writeFile(`${fileLogFolder}${testInfo.title.replaceAll('/','')}.txt`, fileLog[testProcess].join('\n'))
     }
 }
 
@@ -112,7 +113,6 @@ type OasysFixtures = {
     logs: void,
 }
 
-const fileLogFilename = 'test-results/fileLog.txt'
 
 export const test = base.extend<OasysFixtures>({
 
