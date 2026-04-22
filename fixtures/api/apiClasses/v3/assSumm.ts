@@ -62,6 +62,12 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
     currentConcernsEscape: string
     currentConcernsDisruptive: string
     currentConcernsBreachOfTrust: string
+    concernsRiskOfSuicide: string
+    concernsRiskOfSelfHarm: string
+    concernsCopingInCustody: string
+    concernsVulnerability: string
+    concernsEscapeAscond: string
+    currentControlBehaveTrust: string
     analysisSuicideSelfharm: string
     analysisCoping: string
     analysisVulnerabilities: string
@@ -107,6 +113,12 @@ export class AssSummAssessment extends v3Common.V3AssessmentCommon {
         this.currentConcernsEscape = dbAssessment.qaData.getString('FA51')
         this.currentConcernsDisruptive = dbAssessment.qaData.getString('FA55')
         this.currentConcernsBreachOfTrust = dbAssessment.qaData.getString('FA58')
+        this.concernsRiskOfSuicide = dbAssessment.qaData.getString('R3.1')
+        this.concernsRiskOfSelfHarm = dbAssessment.qaData.getString('R3.2')
+        this.concernsCopingInCustody = dbAssessment.qaData.getString('R3.3')
+        this.concernsVulnerability = dbAssessment.qaData.getString('R3.4')
+        this.concernsEscapeAscond = dbAssessment.qaData.getString('R4.1')
+        this.currentControlBehaveTrust = dbAssessment.qaData.getString('R4.6')
         this.analysisSuicideSelfharm = dbAssessment.qaData.getString('FA62')
         this.analysisCoping = dbAssessment.qaData.getString('FA63')
         this.analysisVulnerabilities = dbAssessment.qaData.getString('FA64')

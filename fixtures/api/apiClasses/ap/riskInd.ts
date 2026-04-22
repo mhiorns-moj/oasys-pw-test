@@ -42,6 +42,9 @@ export class APRiskIndAssessment extends apCommon.APAssessmentCommon {
 
     concernsRiskOfSuicide: string
     concernsRiskOfSelfHarm: string
+    concernsCopingInCustody: string
+    concernsVulnerability: string
+    concernsEscapeAscond: string
     currentConcernsRiskOfSuicide: string
     currentConcernsRiskOfSelfHarm: string
     currentConcernsSelfHarmSuicide: string
@@ -61,12 +64,16 @@ export class APRiskIndAssessment extends apCommon.APAssessmentCommon {
     analysisControlBehaveTrust: string
 
 
+
     addRiskIndDetails(assessment: dbClasses.DbAssessment) {
 
         this.concernsRiskOfSuicide = assessment.qaData.getString('R3.1')
         this.concernsRiskOfSelfHarm = assessment.qaData.getString('R3.2')
+        this.concernsCopingInCustody = assessment.qaData.getString('R3.3')
+        this.concernsVulnerability = assessment.qaData.getString('R3.4')
+        this.concernsEscapeAscond = assessment.qaData.getString('R4.1')
         this.concernsBreachOfTrust = assessment.qaData.getString('R4.3')
-
+        this.currentControlBehaveTrust = assessment.qaData.getString('R4.6')
         this.currentConcernsRiskOfSuicide = assessment.qaData.getString('FA31')
         this.currentConcernsRiskOfSelfHarm = assessment.qaData.getString('FA32')
         this.currentConcernsSelfHarmSuicide = assessment.qaData.getString('FA33')
@@ -78,7 +85,6 @@ export class APRiskIndAssessment extends apCommon.APAssessmentCommon {
         this.riskOfSeriousHarm = assessment.qaData.getString('FA49.t')
         this.currentConcernsBreachOfTrust = assessment.qaData.getString('FA58')
         this.currentConcernsBreachOfTrustText = assessment.qaData.getString('FA58.t')
-        this.currentControlBehaveTrust = assessment.qaData.getString('R4.6')
         this.analysisSuicideSelfharm = assessment.qaData.getString('FA62')
         this.analysisCoping = assessment.qaData.getString('FA63')
         this.analysisVulnerabilities = assessment.qaData.getString('FA64')

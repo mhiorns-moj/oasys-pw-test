@@ -242,8 +242,8 @@ function addSanSectionDetails(result: { [key: string]: any }, dbAssessment: dbCl
         result[`${prefix}LinkedToReoffending`] = null
         result[`${prefix}Strength`] = null
     } else if (sectionCode != '7') {
-        result[`${prefix}LinkedToHarm`] = dbAssessment.qaData.getString(harm)?.toUpperCase()        // TODO remove workaround when fixed
-        result[`${prefix}LinkedToReoffending`] = dbAssessment.qaData.getString(reoffending)?.toUpperCase()      // TODO remove workaround when fixed
-        result[`${prefix}Strength`] = dbAssessment.qaData.getString(`${sectionCode == 'SAN' ? 'TBA' : sectionCode}_SAN_STRENGTH`)?.toUpperCase()       // TODO remove workaround when fixed
+        result[`${prefix}LinkedToHarm`] = dbAssessment.qaData.getString(harm)
+        result[`${prefix}LinkedToReoffending`] = dbAssessment.qaData.getString(reoffending)
+        result[`${prefix}Strength`] = dbAssessment.qaData.getString(`${sectionCode == 'SAN' ? 'TBA' : sectionCode}_SAN_STRENGTH`)
     }
 }

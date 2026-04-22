@@ -102,7 +102,12 @@ export class RoshFullAssessment extends v4Common.V4AssessmentCommon {
     analysisEscapeAbscond: string
     analysisControlBehaveTrust: string
     analysisBehavioursIncidents: string
-
+    concernsRiskOfSuicide: string
+    concernsRiskOfSelfHarm: string
+    concernsCopingInCustody: string
+    concernsVulnerability: string
+    concernsEscapeAscond: string
+    currentControlBehaveTrust: string
 
 
     addDetails(dbAssessment: dbClasses.DbAssessment) {
@@ -170,6 +175,11 @@ export class RoshFullAssessment extends v4Common.V4AssessmentCommon {
         this.analysisEscapeAbscond = dbAssessment.qaData.getString('FA65')
         this.analysisControlBehaveTrust = dbAssessment.qaData.getString('FA66')
         this.analysisBehavioursIncidents = dbAssessment.qaData.getString('FA67')
-
+        this.concernsRiskOfSuicide = dbAssessment.qaData.getString('R3.1')
+        this.concernsRiskOfSelfHarm = dbAssessment.qaData.getString('R3.2')
+        this.concernsCopingInCustody = dbAssessment.qaData.getString('R3.3')
+        this.concernsVulnerability = dbAssessment.qaData.getString('R3.4')
+        this.concernsEscapeAscond = dbAssessment.qaData.getString('R4.1')
+        this.currentControlBehaveTrust = dbAssessment.qaData.getString('R4.6')
     }
 }
