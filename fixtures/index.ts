@@ -1,8 +1,7 @@
-import { test as base, TestInfo, expect, Page } from '@playwright/test'
-import * as fs from 'fs-extra'
+import { test as base, TestInfo } from '@playwright/test'
 
 import { OasysDb } from './oasysDb/oasysDb'
-import { testEnvironment, userSuffixes } from 'localSettings'
+import { testEnvironment } from 'localSettings'
 import { Oasys } from './oasys/oasys'
 import { Cms } from './cms/cms'
 import { Offender } from './offender/offender'
@@ -18,8 +17,8 @@ import { Sara } from './sara/sara'
 import { Api } from './api/api'
 import { Ogrs } from './ogrs/ogrs'
 import { Maintenance } from './maintenance/maintenance'
-import { OasysDateTime } from 'lib/oasysDateTime'
-import { Utils } from 'lib/utils'
+import { Logs } from 'lib/logs'
+import { initialiseGlobals } from 'lib/lib'
 
 export { OasysDb } from './oasysDb/oasysDb'
 export { Oasys } from './oasys/oasys'
@@ -39,61 +38,6 @@ export { Ogrs } from './ogrs/ogrs'
 export { Maintenance } from './maintenance/maintenance'
 
 
-globalThis.expect = expect
-globalThis.oasysDateTime = new OasysDateTime()
-globalThis.utils = new Utils()
-globalThis.appConfig = null
-
-globalThis.waitForPageUpdate = async (page: Page, initialDelay?: number) => {
-
-    let updatingElement = page.locator('*[class~="blockUI"],*[class~="u-Processing"]')
-
-    await page.waitForTimeout(initialDelay ?? 250)
-    let pleaseWaitCount = await updatingElement.count()
-    while (pleaseWaitCount > 0) {
-        pleaseWaitCount = await updatingElement.count()
-    }
-}
-
-const oasysLogs: { [key: number]: Log[] } = {}
-const fileLog: { [key: number]: string[] } = {}
-
-globalThis.log = (logtext: string, type?: string) => {
-    
-    const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
-    oasysLogs[testProcess].push({ logText: logtext, type: type })
-}
-
-globalThis.fileLog = (logtext: string) => {
-    
-    const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
-    fileLog[testProcess].push(logtext)
-}
-
-const fileLogFolder= 'test-results/'
-
-async function initialiseLogs() {
-
-    const testProcesses = userSuffixes.length
-    for (let i = 0; i < testProcesses; i++) {
-        oasysLogs[i] = []
-    }
-    for (let i = 0; i < testProcesses; i++) {
-        fileLog[i] = []
-    }
-}
-
-async function finaliseLogs(testInfo: TestInfo) {
-
-    const testProcess = Number.parseInt(process.env.TEST_PARALLEL_INDEX)
-    for (let log of oasysLogs[testProcess]) {
-        testInfo.annotations.push({ type: (log.type ?? ''), description: `${log.type && log.logText != '' ? '\n' : ''}${log.logText}` })
-    }
-    if (fileLog[testProcess].length > 0) {
-        await fs.writeFile(`${fileLogFolder}${testInfo.title.replaceAll('/','')}.txt`, fileLog[testProcess].join('\n'))
-    }
-}
-
 type OasysFixtures = {
     oasysDb: OasysDb,
     oasys: Oasys,
@@ -110,7 +54,7 @@ type OasysFixtures = {
     api: Api,
     ogrs: Ogrs,
     maintenance: Maintenance,
-    logs: void,
+    logs: Logs,
 }
 
 
@@ -207,9 +151,14 @@ export const test = base.extend<OasysFixtures>({
     },
 
     logs: [async ({ }, use: Function, testInfo: TestInfo) => {
-        await initialiseLogs()
-        await use()
-        await finaliseLogs(testInfo)
+        
+        initialiseGlobals()
+        const logs = new Logs(testInfo)
+        await logs.initialise()
+
+        await use(logs)
+        
+        await logs.finalise()
     }, { auto: true }],
 })
 

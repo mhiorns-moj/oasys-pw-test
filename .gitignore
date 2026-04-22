@@ -3,7 +3,6 @@ node_modules
 localSettings.ts
 **/local
 vsc.bat
-report
 /package-lock.json
 .DS_Store
 
@@ -13,3 +12,4 @@ report
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/logs/
