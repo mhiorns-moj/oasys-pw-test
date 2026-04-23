@@ -420,18 +420,17 @@ export type OgrsCoefficients = { [keys in OgrsFeatures]?: Decimal }
 export type Ogrs4CalcResult = {
 
     outputParams: OgrsOutputParams
-    arpText: string
-    vrpText: string
-    svrpText: string
-    dcSrpBand: string
-    iicSrpBand: string
-    csrpType: string
-    csrpBand: string
-    csrpScore: string
-}
-
-export type OgrsTestResult = {
-
-    result: Ogrs4CalcResult
-    failed: boolean
+    arpText?: string
+    vrpText?: string
+    svrpText?: string
+    csrpText?: string
+    dcSrpText?: string
+    iicSrpText?: string
+    dcSrpBand?: string
+    iicSrpBand?: string
+    csrpType?: string
+    csrpBand?: string
+    csrpScore?: string
+    arpMissing?: string[]
+    vrpMissing?: string[]
 }

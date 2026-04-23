@@ -84,7 +84,7 @@ test.describe.serial('Mapping test for drugs - individual drugs details', () => 
     test('spice', async ({ page, oasys, offender, assessment, san }) => { await drugTest('spice', page, oasys, offender, assessment, san) })
     test('steroids', async ({ page, oasys, offender, assessment, san }) => { await drugTest('steroids', page, oasys, offender, assessment, san) })
     test('other', async ({ page, oasys, offender, assessment, san }) => { await drugTest('other', page, oasys, offender, assessment, san) })
-
+// TODO add ketamine (16)
 })
 
 async function drugTest(drugType: DrugType, page: Page, oasys: Oasys, offender: Offender, assessment: Assessment, san: San) {

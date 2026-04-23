@@ -15,18 +15,15 @@ export abstract class OasysPage {
 
     constructor(public readonly page: Page) { }
 
-
     floatingMenu = this.page.locator('#leftmenuul')
 
     /**
      * Sets the value of a multiple element on the pages, each identified by the element name
      * If you provide a PageData type (e.g. setValues<LoginData>(...)), Typescript provides a dropdown for the elements available.
-     * 
-     * Returns the page object so you can chain other commands.
-     * 
+     *      * 
      * Writes to the log, unless suppressLog (optional) is true.
      */
-    async setValues(elementValues: PageData, suppressLog: boolean = false): Promise<typeof this> {
+    async setValues(elementValues: PageData, suppressLog: boolean = false) {
 
         for (let elementName of Object.keys(elementValues)) {
 

@@ -120,8 +120,8 @@ export const test = base.extend<OasysFixtures>({
         await use(signing)
     },
 
-    assessment: async ({ page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan, ogrs }, use: Function) => {
-        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan, ogrs)
+    assessment: async ({ page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan }, use: Function) => {
+        const assessment = new Assessment(page, oasys, cms, offender, oasysDb, sections, san, risk, sentencePlan)
         await use(assessment)
     },
 
@@ -140,8 +140,8 @@ export const test = base.extend<OasysFixtures>({
         await use(api)
     },
 
-    ogrs: async ({ oasysDb }, use: Function) => {
-        const ogrs = new Ogrs(oasysDb)
+    ogrs: async ({ oasysDb, sections, risk }, use: Function) => {
+        const ogrs = new Ogrs(oasysDb, sections, risk)
         await use(ogrs)
     },
 

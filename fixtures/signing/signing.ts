@@ -13,7 +13,7 @@ export class Signing {
 
 
     readonly signingStatus = new pages.SigningStatus(this.page)
-    readonly rsrConfirm = new pages.RsrConfirm(this.page)
+    readonly csrpConfirm = new pages.CsrpConfirm(this.page)
     readonly cPage = new pages.CountersignatureRequired(this.page)
     readonly countersigning = new pages.Countersigning(this.page)
     readonly countersigningOverview = new pages.CountersigningOverview(this.page)
@@ -26,7 +26,7 @@ export class Signing {
      * 
      *   - page: an assessment page to select, e.g. pages.SentencePlan.IspSection52to8
      *   - expectOutstandingQuestion: if true, expect to get an Outstanding Question page
-     *   - expectRsrScore: if true, expect to get an RSR Score page
+     *   - expectCsrpScore: if true, expect to get an CSRP Score page
      *   - expectRsrWarning: if true, expect to get an RSR Warning page
      *   - expectCountersigner: if true, expect countersigning
      *   - countersignCancel: allows you to cancel out after confirming that a countersignature is required
@@ -35,20 +35,23 @@ export class Signing {
      */
     async signAndLock(
         params?: {
-            page?: SigningPage, expectOutstandingQuestions?: boolean, expectRsrScore?: boolean, expectRsrWarning?: boolean,
+            page?: SigningPage, expectOutstandingQuestions?: boolean, expectCsrpScore?: boolean, csrpScoreMessage?: string, expectRsrWarning?: boolean,
             expectCountersigner?: boolean, countersignCancel?: boolean, countersigner?: any, countersignComment?: string
         }) {
 
         log(`Sign & lock assessment`)
         await this.oasys.gotoSigningPage(params?.page)
-        
+
         await this.oasys.clickButton('Sign & Lock', true)
 
         if (params?.expectOutstandingQuestions) {
             await this.signingStatus.continueWithSigning.click()
         }
-        if (params?.expectRsrScore) {
-            await this.rsrConfirm.ok.click()
+        if (params?.expectCsrpScore) {
+            if (params.csrpScoreMessage) {
+                await this.csrpConfirm.csrpDetails.checkValue(params.csrpScoreMessage, true)
+            }
+            await this.csrpConfirm.ok.click()
         }
         if (params?.expectRsrWarning) {
             await this.signingStatus.continueWithSigning.click()

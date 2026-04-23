@@ -10,6 +10,9 @@ export class Summary extends BaseAssessmentPage {
     insertNames = new Element.Button(this.page, "//input[@type='button' and contains(@value,'Insert children')]")
     r10_2 = new Element.Textbox(this.page, '#textarea_SUM2')
 
+    csrpText = new Element.Text(this.page, "tr:has-text('COMBINED SERIOUS REOFFENDING PREDICTOR')+tr")
+    dcSrpText = new Element.Text(this.page, ":nth-match(tr:has-text('DIRECT CONTACT - SEXUAL REOFFENDING PREDICTOR')+tr,1)")
+    iicSrpText = new Element.Text(this.page, "tr:has-text('IMAGES AND INDIRECT CONTACT - SEXUAL REOFFENDING PREDICTOR')+tr")
     dcSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('DC-SRP')>text,1)")
     iicSrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('IIC-SRP')>text,1)")
     csrpBand = new Element.Text(this.page, ":nth-match(svg:has-text('CSRP')>text,1)")

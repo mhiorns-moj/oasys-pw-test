@@ -67,6 +67,9 @@ export class ScreeningSection1 extends BaseAssessmentPage {
     save = new Element.Button(this.page, '#P2_BT_SAVE_BOTT')
 
 
+    /**
+     * Answer all questions as No
+     */
     async populateMinimal() {
 
         log('RoSH screening section 1 - no risks')

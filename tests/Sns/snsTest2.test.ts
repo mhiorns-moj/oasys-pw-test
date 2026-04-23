@@ -17,7 +17,7 @@ test.describe('Create assessments and check SNS messages - layer 1', () => {
         await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' })
         await assessment.populateMinimal({ layer: 'Layer 1V2' })
 
-        await signing.signAndLock({ page: 'riskScreening', expectRsrScore: true })
+        await signing.signAndLock({ page: 'riskScreening', expectCsrpScore: true })
         await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])
 
         // First L1
@@ -43,7 +43,7 @@ test.describe('Create assessments and check SNS messages - layer 1', () => {
         await oasys.history(offender1)
         await assessment.createProb({ purposeOfAssessment: 'Risk of Harm Assessment' }, 'Yes')
 
-        await signing.signAndLock({ page: 'riskScreening', expectRsrScore: true })
+        await signing.signAndLock({ page: 'riskScreening', expectCsrpScore: true })
         await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm'])  // Defect NOD-980
 
         // Second L1

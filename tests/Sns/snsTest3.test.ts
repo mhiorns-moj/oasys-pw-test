@@ -38,7 +38,7 @@ test('Create assessments and check SNS messages - RoSHA plus layer 1', async ({ 
     await risk.screeningSection2to4.r4_4.setValue(`Don't know`)
     await risk.screeningSection2to4.next.click()
 
-    await signing.signAndLock({ expectRsrScore: true })
+    await signing.signAndLock({ expectCsrpScore: true })
     await sns.testSnsMessageData(offender1.probationCrn, 'assessment', ['AssSumm', 'OGRS', 'RSR'])
 
     // First L1

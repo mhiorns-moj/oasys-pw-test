@@ -18,7 +18,6 @@ export class FullAnalysisSection8 extends BaseAssessmentPage {
 
         log('Fully populating RoSH FA section 8')
         await this.goto(true)
-        await this.goto(true)
         await this.suicideSelfHarm.setValue(params?.maxStrings ? utils.oasysString(4000) : 'SuicideHarmDetails')
         await this.custodyAnalysis.setValue(params?.maxStrings ? utils.oasysString(4000) : 'CustodyDetails')
         await this.vulnerabilityAnalysis.setValue(params?.maxStrings ? utils.oasysString(4000) : 'VulnerabilityDetails')

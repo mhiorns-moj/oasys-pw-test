@@ -1,13 +1,13 @@
 import { Decimal } from 'decimal.js'
 import { Temporal } from '@js-temporal/polyfill'
 
-import { OasysDb } from 'fixtures'
+import { OasysDb, Risk, Sections } from 'fixtures'
 import { Calculator } from './calculator/calculator'
 import { Data } from './data/data'
 import { Rescoring } from './rescoring/rescoring'
 import { Tiering } from './tiering/tiering'
 import { OgrsAssessment, OgrsRsr } from './data/dbClasses'
-import { OgrsInputParams, TestCaseResult, OgrsOutputParams, Ogrs4CalcResult, OgrsTestResult } from './types'
+import { OgrsInputParams, TestCaseResult, OgrsOutputParams, Ogrs4CalcResult } from './types'
 import { createAssessmentInputParams } from 'fixtures/ogrs/data/createAssessmentTestCase'
 import { ogrsFunctionCall } from './data/ogrsFunctionCall'
 import { loadParameterSet } from './data/loadTestData'
@@ -17,7 +17,7 @@ const precision = 40
 
 export class Ogrs {
 
-    constructor(private readonly oasysDb: OasysDb) { }
+    constructor(private readonly oasysDb: OasysDb, private readonly sections: Sections, private readonly risk: Risk) { }
 
     private readonly calculator = new Calculator()
     private readonly data = new Data(this.oasysDb)
@@ -60,48 +60,43 @@ export class Ogrs {
     }
 
     /**
-     * Checks the calculation stored in oasys_set for a given pk.  Fails the test unless the optional second parameter is passed as false.
-     * Returns an OgrsTestResult object
+     * Checks the calculation stored in oasys_set for a given pk.
+     * Returns an Ogrs4CalcResult object
      */
-    async checkOgrsInOasysSet(assessmentPk: number, stopOnFail = true): Promise<OgrsTestResult> {
+    async checkOgrsInOasysSet(assessmentPk: number): Promise<Ogrs4CalcResult> {
 
         const assessment = await this.data.getOneAssessment(assessmentPk)
         const calculatorParams = createAssessmentInputParams(assessment)
 
         const result: Ogrs4CalcResult = {
             outputParams: this.calculate(calculatorParams),
-            arpText: '',
-            vrpText: '',
-            svrpText: '',
-            dcSrpBand: '',
-            iicSrpBand: '',
-            csrpType: '',
-            csrpBand: '',
-            csrpScore: '',
         }
 
         // Compile results
         const arp = result.outputParams.OGP2_CALCULATED == 'Y' ? result.outputParams.OGP2_PERCENTAGE : result.outputParams.OGRS4G_PERCENTAGE
         const arpBand = result.outputParams.OGP2_CALCULATED == 'Y' ? result.outputParams.OGP2_BAND : result.outputParams.OGRS4G_BAND
         const arpType = result.outputParams.OGP2_CALCULATED == 'Y' ? 'DYNAMIC' : result.outputParams.OGRS4G_CALCULATED ? 'STATIC' : ''
-        result.arpText = `${arpType}  ${arp}%   ${arpBand}`
+        result.arpText = arp ? `${arpType}  ${arp.toFixed(2).padStart(5)}%   ${arpBand}` : 'Unable to calculate due to'
 
         const vrp = result.outputParams.OVP2_CALCULATED == 'Y' ? result.outputParams.OVP2_PERCENTAGE : result.outputParams.OGRS4V_PERCENTAGE
         const vrpBand = result.outputParams.OVP2_CALCULATED == 'Y' ? result.outputParams.OVP2_BAND : result.outputParams.OGRS4V_BAND
         const vrpType = result.outputParams.OVP2_CALCULATED == 'Y' ? 'DYNAMIC' : result.outputParams.OGRS4V_CALCULATED ? 'STATIC' : ''
-        result.vrpText = `${vrpType}  ${vrp}%   ${vrpBand}`
+        result.vrpText = vrp ? `${vrpType}  ${vrp.toFixed(2).padStart(5)}%   ${vrpBand}` : 'Unable to calculate due to'
 
         const svrp = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? result.outputParams.SNSV_PERCENTAGE_DYNAMIC : result.outputParams.SNSV_PERCENTAGE_STATIC
         const svrpBand = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? result.outputParams.SNSV_BAND_DYNAMIC : result.outputParams.SNSV_BAND_STATIC
         const svrpType = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? 'DYNAMIC' : result.outputParams.SNSV_CALCULATED_STATIC ? 'STATIC' : ''
-        result.svrpText = `${svrpType}  ${svrp}%   ${svrpBand}`
+        result.svrpText = svrp ? `${svrpType}  ${svrp.toFixed(2).padStart(5)}%   ${svrpBand}` : 'Unable to calculate due to'
 
-        result.dcSrpBand = result.outputParams.OSP_DC_BAND?.toUpperCase()
-        result.iicSrpBand = result.outputParams.OSP_IIC_BAND?.toUpperCase()
+        result.dcSrpBand = result.outputParams.OSP_DC_BAND?.toUpperCase() ?? null
+        result.dcSrpText = result.dcSrpBand ? '' : 'Unable to calculate DC-SRP due to missing details'
+        result.iicSrpBand = result.outputParams.OSP_IIC_BAND?.toUpperCase() ?? null
+        result.iicSrpText = result.iicSrpBand ? '' : 'Unable to calculate IIC-SRP due to missing details'
 
-        result.csrpBand = result.outputParams.RSR_BAND?.toUpperCase()
+        result.csrpBand = result.outputParams.RSR_BAND?.toUpperCase() ?? null
         result.csrpType = result.outputParams.RSR_DYNAMIC == 'Y' ? 'DYNAMIC' : result.outputParams.RSR_CALCULATED == 'Y' ? 'STATIC' : ''
-        result.csrpScore = ` ${result.outputParams.RSR_PERCENTAGE}`
+        result.csrpScore = result.csrpBand ? `${result.outputParams.RSR_PERCENTAGE.toFixed(2).padStart(6)}` : ''
+        result.csrpText = result.csrpBand ? '' : 'Unable to calculate CSRP due to missing details'
 
         log('', 'Checking OGRS4 calculations')
         let failed = checkScore('ARP static score', result.outputParams.OGRS4G_PERCENTAGE?.toNumber() ?? null, assessment.ogrs4gYr2)
@@ -127,10 +122,8 @@ export class Ogrs {
             log(JSON.stringify(calculatorParams))
             log(JSON.stringify(result))
         }
-        if (stopOnFail) {
-            expect(failed).toBeFalsy()
-        }
-        return { result: result, failed: failed }
+        expect(failed).toBeFalsy()
+        return result
 
     }
 
@@ -180,6 +173,76 @@ export class Ogrs {
         return testCaseResult
     }
 
+    async checkResultsOnRoshaPredictorsScreen(ogrsResult: Ogrs4CalcResult) {
+
+        await this.sections.roshaPredictors.goto()
+        await this.sections.roshaPredictors.arpText.checkValue(ogrsResult.arpText, true)
+        await this.sections.roshaPredictors.vrpText.checkValue(ogrsResult.vrpText, true)
+        await this.sections.roshaPredictors.svrpText.checkValue(ogrsResult.svrpText, true)
+        if (ogrsResult.dcSrpBand) {
+            await this.sections.roshaPredictors.dcSrpBand.checkValue(ogrsResult.dcSrpBand)
+        } else {
+            await this.sections.roshaPredictors.dcSrpText.checkValue('Not Applicable')
+        }
+        if (ogrsResult.iicSrpBand) {
+            await this.sections.roshaPredictors.iicSrpBand.checkValue(ogrsResult.iicSrpBand)
+        } else {
+            await this.sections.roshaPredictors.iicSrpText.checkValue('Not Applicable')
+        }
+        if (ogrsResult.csrpBand) {
+            await this.sections.roshaPredictors.csrpBand.checkValue(ogrsResult.csrpBand)
+            await this.sections.roshaPredictors.csrpType.checkValue(ogrsResult.csrpType)
+            await this.sections.roshaPredictors.csrpScore.checkValue(ogrsResult.csrpScore)
+        } else {
+            await this.sections.roshaPredictors.csrpText.checkValue('Unable to calculate due to', true)
+        }
+    }
+
+    async checkResultsOnRiskSummary(ogrsResult: Ogrs4CalcResult) {
+
+        await this.risk.summary.goto(true)
+        if (ogrsResult.csrpBand == null) {
+            await this.risk.summary.csrpText.checkValue(ogrsResult.csrpText, true)
+        } else {
+            await this.risk.summary.csrpBand.checkValue(ogrsResult.csrpBand)
+            await this.risk.summary.csrpType.checkValue(ogrsResult.csrpType)
+            await this.risk.summary.csrpScore.checkValue(ogrsResult.csrpScore)
+        }
+        if (ogrsResult.dcSrpBand == null) {
+            await this.risk.summary.dcSrpText.checkValue(ogrsResult.dcSrpText, true)
+        } else {
+            await this.risk.summary.dcSrpBand.checkValue(ogrsResult.dcSrpBand)
+        }
+        if (ogrsResult.iicSrpBand == null) {
+            await this.risk.summary.iicSrpText.checkValue(ogrsResult.iicSrpText, true)
+        } else {
+            await this.risk.summary.iicSrpBand.checkValue(ogrsResult.iicSrpBand)
+        }
+    }
+
+    async checkFeatureLines(ogrsResult: Ogrs4CalcResult, pk: number) {
+
+        log('', `Checking OGRS4 feature lines for PK ${pk}`)
+        let query = 'select '
+        for (const key of Object.keys(featureColumns)) {
+            query = `${query}${key},`
+        }
+        query = `${query.slice(0, -1)} from eor.predictor_feature_lines where oasys_set_pk = ${pk}`
+
+        const row = (await this.oasysDb.getData(query))[0]
+
+        let i = 0
+        let failed = false
+        for (const key of Object.keys(featureColumns)) {
+            const expected = ogrsResult.outputParams[featureColumns[key]]?.toString()?.replaceAll(`'`, '') ?? ''
+            const actual = row[i++] ?? ''
+            if (expected.substring(0, 10) != actual.substring(0, 10)) {  // Ignore minor precision differences
+                log(`${key}: expected ${expected}, found ${actual}`)
+                failed = true
+            }
+        }
+        expect(failed).toBeFalsy()
+    }
 }
 
 function checkScore(description: string, expectedValue: string | number, actualValue: string | number): boolean {
@@ -261,4 +324,209 @@ function checkResults(expectedResults: OgrsOutputParams, actualResults: OgrsOutp
     })
 
     return failed
+}
+
+const featureColumns: { [key: string]: keyof OgrsOutputParams } = {
+
+    OGP2_AAEAD: 'OGP2_AAEAD',
+    OGP2_AMPHETAMINES: 'OGP2_AMPHETAMINES',
+    OGP2_BAND: 'OGP2_BAND',
+    OGP2_BENZODIAZEPINES: 'OGP2_BENZODIAZEPINES',
+    OGP2_BINGE_DRINKER: 'OGP2_BINGE_DRINKER',
+    OGP2_CALCULATED: 'OGP2_CALCULATED',
+    OGP2_CANNABIS: 'OGP2_CANNABIS',
+    OGP2_CHRONIC_DRINKER: 'OGP2_CHRONIC_DRINKER',
+    OGP2_COCAINE: 'OGP2_COCAINE',
+    OGP2_COPASG: 'OGP2_COPASG',
+    OGP2_COPASG_SQUARED: 'OGP2_COPASG_SQUARED',
+    OGP2_CRACK: 'OGP2_CRACK',
+    OGP2_CRIMINAL_ATTITUDE: 'OGP2_CRIMINAL_ATTITUDE',
+    OGP2_DAILY_DRUG_USER: 'OGP2_DAILY_DRUG_USER',
+    OGP2_DRUG_MOTIVATION: 'OGP2_DRUG_MOTIVATION',
+    OGP2_DV: 'OGP2_DV',
+    OGP2_ECSTASY: 'OGP2_ECSTASY',
+    OGP2_FEMALE: 'OGP2_FEMALE',
+    OGP2_FIRST_SANCTION: 'OGP2_FIRST_SANCTION',
+    OGP2_HEROIN: 'OGP2_HEROIN',
+    OGP2_IMPULSIVE: 'OGP2_IMPULSIVE',
+    OGP2_LIVE_IN_RELATIONSHIP: 'OGP2_LIVE_IN_RELATIONSHIP',
+    OGP2_METHADONE: 'OGP2_METHADONE',
+    OGP2_MISSING_COUNT: 'OGP2_MISSING_COUNT',
+    OGP2_MISSING_QUESTIONS: 'OGP2_MISSING_QUESTIONS',
+    OGP2_MISUSE_PRESCRIBED: 'OGP2_MISUSE_PRESCRIBED',
+    OGP2_MULTIPLIC_RELATIONSHIP: 'OGP2_MULTIPLIC_RELATIONSHIP',
+    OGP2_OFFENCE: 'OGP2_OFFENCE',
+    OGP2_OFM: 'OGP2_OFM',
+    OGP2_OTHER_DRUGS: 'OGP2_OTHER_DRUGS',
+    OGP2_OTHER_OPIATE: 'OGP2_OTHER_OPIATE',
+    OGP2_PERCENTAGE: 'OGP2_PERCENTAGE',
+    OGP2_REGULAR_ACTIVITIES: 'OGP2_REGULAR_ACTIVITIES',
+    OGP2_RELATIONSHIP: 'OGP2_RELATIONSHIP',
+    OGP2_SECOND_SANCTION: 'OGP2_SECOND_SANCTION',
+    OGP2_SECOND_SANCTION_GAP: 'OGP2_SECOND_SANCTION_GAP',
+    OGP2_STEROIDS: 'OGP2_STEROIDS',
+    OGP2_SUITABLE_ACC: 'OGP2_SUITABLE_ACC',
+    OGP2_TOTAL_SANCTIONS: 'OGP2_TOTAL_SANCTIONS',
+    OGP2_TOTAL_SCORE: 'OGP2_TOTAL_SCORE',
+    OGP2_UNEMPLOYED: 'OGP2_UNEMPLOYED',
+    OGP2_YEAR_TWO: 'OGP2_YEAR_TWO',
+    OGRS4G_AAEAD: 'OGRS4G_AAEAD',
+    OGRS4G_BAND: 'OGRS4G_BAND',
+    OGRS4G_CALCULATED: 'OGRS4G_CALCULATED',
+    OGRS4G_COPASG: 'OGRS4G_COPASG',
+    OGRS4G_COPASG_SQUARED: 'OGRS4G_COPASG_SQUARED',
+    OGRS4G_FEMALE: 'OGRS4G_FEMALE',
+    OGRS4G_FIRST_SANCTION: 'OGRS4G_FIRST_SANCTION',
+    OGRS4G_MISSING_COUNT: 'OGRS4G_MISSING_COUNT',
+    OGRS4G_MISSING_QUESTIONS: 'OGRS4G_MISSING_QUESTIONS',
+    OGRS4G_OFFENCE: 'OGRS4G_OFFENCE',
+    OGRS4G_OFM: 'OGRS4G_OFM',
+    OGRS4G_PERCENTAGE: 'OGRS4G_PERCENTAGE',
+    OGRS4G_SCORE: 'OGRS4G_SCORE',
+    OGRS4G_SECOND_SANCTION: 'OGRS4G_SECOND_SANCTION',
+    OGRS4G_SECOND_SANCTION_GAP: 'OGRS4G_SECOND_SANCTION_GAP',
+    OGRS4G_TOTAL_SANCTIONS: 'OGRS4G_TOTAL_SANCTIONS',
+    OGRS4G_YEAR_TWO: 'OGRS4G_YEAR_TWO',
+    OGRS4V_AAEAD: 'OGRS4V_AAEAD',
+    OGRS4V_BAND: 'OGRS4V_BAND',
+    OGRS4V_CALCULATED: 'OGRS4V_CALCULATED',
+    OGRS4V_COPASV: 'OGRS4V_COPASV',
+    OGRS4V_COPAS_VIOLENT: 'OGRS4V_COPAS_VIOLENT',
+    OGRS4V_FEMALE: 'OGRS4V_FEMALE',
+    OGRS4V_FIRST_SANCTION: 'OGRS4V_FIRST_SANCTION',
+    OGRS4V_MISSING_COUNT: 'OGRS4V_MISSING_COUNT',
+    OGRS4V_MISSING_QUESTIONS: 'OGRS4V_MISSING_QUESTIONS',
+    OGRS4V_NEVER_VIOLENT: 'OGRS4V_NEVER_VIOLENT',
+    OGRS4V_OFFENCE: 'OGRS4V_OFFENCE',
+    OGRS4V_OFM: 'OGRS4V_OFM',
+    OGRS4V_ONCE_VIOLENT: 'OGRS4V_ONCE_VIOLENT',
+    OGRS4V_PERCENTAGE: 'OGRS4V_PERCENTAGE',
+    OGRS4V_SCORE: 'OGRS4V_SCORE',
+    OGRS4V_SECOND_SANCTION: 'OGRS4V_SECOND_SANCTION',
+    OGRS4V_SECOND_SANCTION_GAP: 'OGRS4V_SECOND_SANCTION_GAP',
+    OGRS4V_TOTAL_SANCTIONS: 'OGRS4V_TOTAL_SANCTIONS',
+    OGRS4V_TOT_VIOLENT_SANCTIONS: 'OGRS4V_TOT_VIOLENT_SANCTIONS',
+    OGRS4V_YEAR_TWO: 'OGRS4V_YEAR_TWO',
+    OSP_DC_BAND: 'OSP_DC_BAND',
+    OSP_DC_CALCULATED: 'OSP_DC_CALCULATED',
+    OSP_DC_MISSING_COUNT: 'OSP_DC_MISSING_COUNT',
+    OSP_DC_MISSING_QUESTIONS: 'OSP_DC_MISSING_QUESTIONS',
+    OSP_DC_PERCENTAGE: 'OSP_DC_PERCENTAGE',
+    OSP_DC_RISK_REDUCTION: 'OSP_DC_RISK_REDUCTION',
+    OSP_DC_SCORE: 'OSP_DC_SCORE',
+    OSP_IIC_BAND: 'OSP_IIC_BAND',
+    OSP_IIC_CALCULATED: 'OSP_IIC_CALCULATED',
+    OSP_IIC_MISSING_COUNT: 'OSP_IIC_MISSING_COUNT',
+    OSP_IIC_MISSING_QUESTIONS: 'OSP_IIC_MISSING_QUESTIONS',
+    OSP_IIC_PERCENTAGE: 'OSP_IIC_PERCENTAGE',
+    OVP2_AAEAD: 'OVP2_AAEAD',
+    OVP2_AMPHETAMINES: 'OVP2_AMPHETAMINES',
+    OVP2_BAND: 'OVP2_BAND',
+    OVP2_BENZODIAZEPINES: 'OVP2_BENZODIAZEPINES',
+    OVP2_BINGE_DRINKER: 'OVP2_BINGE_DRINKER',
+    OVP2_CALCULATED: 'OVP2_CALCULATED',
+    OVP2_CANNABIS: 'OVP2_CANNABIS',
+    OVP2_CHRONIC_DRINKER: 'OVP2_CHRONIC_DRINKER',
+    OVP2_COCAINE: 'OVP2_COCAINE',
+    OVP2_COPASV: 'OVP2_COPASV',
+    OVP2_COPAS_VIOLENT: 'OVP2_COPAS_VIOLENT',
+    OVP2_CRACK: 'OVP2_CRACK',
+    OVP2_CRIMINAL_ATTITUDE: 'OVP2_CRIMINAL_ATTITUDE',
+    OVP2_DRUG_MOTIVATION: 'OVP2_DRUG_MOTIVATION',
+    OVP2_DV: 'OVP2_DV',
+    OVP2_ECSTASY: 'OVP2_ECSTASY',
+    OVP2_FEMALE: 'OVP2_FEMALE',
+    OVP2_FIRST_SANCTION: 'OVP2_FIRST_SANCTION',
+    OVP2_HEROIN: 'OVP2_HEROIN',
+    OVP2_IMPULSIVE: 'OVP2_IMPULSIVE',
+    OVP2_LIVE_IN_RELATIONSHIP: 'OVP2_LIVE_IN_RELATIONSHIP',
+    OVP2_MISSING_COUNT: 'OVP2_MISSING_COUNT',
+    OVP2_MISSING_QUESTIONS: 'OVP2_MISSING_QUESTIONS',
+    OVP2_MISUSE_PRESCRIBED: 'OVP2_MISUSE_PRESCRIBED',
+    OVP2_MULTIPLIC_RELATIONSHIP: 'OVP2_MULTIPLIC_RELATIONSHIP',
+    OVP2_NEVER_VIOLENT: 'OVP2_NEVER_VIOLENT',
+    OVP2_OFFENCE: 'OVP2_OFFENCE',
+    OVP2_OFM: 'OVP2_OFM',
+    OVP2_ONCE_VIOLENT: 'OVP2_ONCE_VIOLENT',
+    OVP2_PERCENTAGE: 'OVP2_PERCENTAGE',
+    OVP2_REGULAR_ACTIVITIES: 'OVP2_REGULAR_ACTIVITIES',
+    OVP2_RELATIONSHIP: 'OVP2_RELATIONSHIP',
+    OVP2_SECOND_SANCTION: 'OVP2_SECOND_SANCTION',
+    OVP2_SECOND_SANCTION_GAP: 'OVP2_SECOND_SANCTION_GAP',
+    OVP2_STEROIDS: 'OVP2_STEROIDS',
+    OVP2_SUITABLE_ACC: 'OVP2_SUITABLE_ACC',
+    OVP2_TEMPER: 'OVP2_TEMPER',
+    OVP2_TOTAL_SANCTIONS: 'OVP2_TOTAL_SANCTIONS',
+    OVP2_TOTAL_SCORE: 'OVP2_TOTAL_SCORE',
+    OVP2_TOTAL_VIOLENT_SANCTIONS: 'OVP2_TOTAL_VIOLENT_SANCTIONS',
+    OVP2_UNEMPLOYED: 'OVP2_UNEMPLOYED',
+    OVP2_YEAR_TWO: 'OVP2_YEAR_TWO',
+    RSR_BAND: 'RSR_BAND',
+    RSR_CALCULATED: 'RSR_CALCULATED',
+    RSR_DYNAMIC: 'RSR_DYNAMIC',
+    RSR_MISSING_COUNT: 'RSR_MISSING_COUNT',
+    RSR_MISSING_QUESTIONS: 'RSR_MISSING_QUESTIONS',
+    RSR_PERCENTAGE: 'RSR_PERCENTAGE',
+    SNSV_AAEAD_DYNAMIC: 'SNSV_AAEAD_DYNAMIC',
+    SNSV_AAEAD_STATIC: 'SNSV_AAEAD_STATIC',
+    SNSV_AGG_BURGLARY_DYNAMIC: 'SNSV_AGG_BURGLARY_DYNAMIC',
+    SNSV_ARSON_DYNAMIC: 'SNSV_ARSON_DYNAMIC',
+    SNSV_BAND_DYNAMIC: 'SNSV_BAND_DYNAMIC',
+    SNSV_BAND_STATIC: 'SNSV_BAND_STATIC',
+    SNSV_BINGE_DRINKER_DYNAMIC: 'SNSV_BINGE_DRINKER_DYNAMIC',
+    SNSV_CALCULATED_DYNAMIC: 'SNSV_CALCULATED_DYNAMIC',
+    SNSV_CALCULATED_STATIC: 'SNSV_CALCULATED_STATIC',
+    SNSV_CHRONIC_DRINKER_DYNAMIC: 'SNSV_CHRONIC_DRINKER_DYNAMIC',
+    SNSV_COPASV_DYNAMIC: 'SNSV_COPASV_DYNAMIC',
+    SNSV_COPASV_STATIC: 'SNSV_COPASV_STATIC',
+    SNSV_COPAS_VIOLENT_DYNAMIC: 'SNSV_COPAS_VIOLENT_DYNAMIC',
+    SNSV_COPAS_VIOLENT_STATIC: 'SNSV_COPAS_VIOLENT_STATIC',
+    SNSV_CRIM_ATTITUDE_DYNAMIC: 'SNSV_CRIM_ATTITUDE_DYNAMIC',
+    SNSV_CRIM_DAMAGE_LIFE_DYNAMIC: 'SNSV_CRIM_DAMAGE_LIFE_DYNAMIC',
+    SNSV_DV_DYNAMIC: 'SNSV_DV_DYNAMIC',
+    SNSV_FEMALE_DYNAMIC: 'SNSV_FEMALE_DYNAMIC',
+    SNSV_FEMALE_STATIC: 'SNSV_FEMALE_STATIC',
+    SNSV_FIREARMS_DYNAMIC: 'SNSV_FIREARMS_DYNAMIC',
+    SNSV_FIRST_SANCTION_DYNAMIC: 'SNSV_FIRST_SANCTION_DYNAMIC',
+    SNSV_FIRST_SANCTION_STATIC: 'SNSV_FIRST_SANCTION_STATIC',
+    SNSV_GBH_DYNAMIC: 'SNSV_GBH_DYNAMIC',
+    SNSV_HOMICIDE_DYNAMIC: 'SNSV_HOMICIDE_DYNAMIC',
+    SNSV_IMPULSIVE_DYNAMIC: 'SNSV_IMPULSIVE_DYNAMIC',
+    SNSV_KIDNAP_DYNAMIC: 'SNSV_KIDNAP_DYNAMIC',
+    SNSV_MISSING_COUNT_DYNAMIC: 'SNSV_MISSING_COUNT_DYNAMIC',
+    SNSV_MISSING_COUNT_STATIC: 'SNSV_MISSING_COUNT_STATIC',
+    SNSV_MISSING_QUESTIONS_DYNAMIC: 'SNSV_MISSING_QUESTIONS_DYNAMIC',
+    SNSV_MISSING_QUESTIONS_STATIC: 'SNSV_MISSING_QUESTIONS_STATIC',
+    SNSV_NEVER_VIOLENT_DYNAMIC: 'SNSV_NEVER_VIOLENT_DYNAMIC',
+    SNSV_NEVER_VIOLENT_STATIC: 'SNSV_NEVER_VIOLENT_STATIC',
+    SNSV_OFFENCE_DYNAMIC: 'SNSV_OFFENCE_DYNAMIC',
+    SNSV_OFFENCE_STATIC: 'SNSV_OFFENCE_STATIC',
+    SNSV_OFM_DYNAMIC: 'SNSV_OFM_DYNAMIC',
+    SNSV_OFM_STATIC: 'SNSV_OFM_STATIC',
+    SNSV_ONCE_VIOLENT_DYNAMIC: 'SNSV_ONCE_VIOLENT_DYNAMIC',
+    SNSV_ONCE_VIOLENT_STATIC: 'SNSV_ONCE_VIOLENT_STATIC',
+    SNSV_PERCENTAGE_DYNAMIC: 'SNSV_PERCENTAGE_DYNAMIC',
+    SNSV_PERCENTAGE_STATIC: 'SNSV_PERCENTAGE_STATIC',
+    SNSV_RELATION_QUALITY_DYNAMIC: 'SNSV_RELATION_QUALITY_DYNAMIC',
+    SNSV_ROBBERY_DYNAMIC: 'SNSV_ROBBERY_DYNAMIC',
+    SNSV_SCORE_DYNAMIC: 'SNSV_SCORE_DYNAMIC',
+    SNSV_SCORE_STATIC: 'SNSV_SCORE_STATIC',
+    SNSV_SECOND_SANCTION_DYNAMIC: 'SNSV_SECOND_SANCTION_DYNAMIC',
+    SNSV_SECOND_SANCTION_STATIC: 'SNSV_SECOND_SANCTION_STATIC',
+    SNSV_SECOND_SANC_GAP_DYNAMIC: 'SNSV_SECOND_SANC_GAP_DYNAMIC',
+    SNSV_SECOND_SANC_GAP_STATIC: 'SNSV_SECOND_SANC_GAP_STATIC',
+    SNSV_SUITABLE_ACC_DYNAMIC: 'SNSV_SUITABLE_ACC_DYNAMIC',
+    SNSV_TEMPER_DYNAMIC: 'SNSV_TEMPER_DYNAMIC',
+    SNSV_TOTAL_SANCTIONS_DYNAMIC: 'SNSV_TOTAL_SANCTIONS_DYNAMIC',
+    SNSV_TOTAL_SANCTIONS_STATIC: 'SNSV_TOTAL_SANCTIONS_STATIC',
+    SNSV_TOT_VIOLENT_SANC_DYNAMIC: 'SNSV_TOT_VIOLENT_SANC_DYNAMIC',
+    SNSV_TOT_VIOLENT_SANC_STATIC: 'SNSV_TOT_VIOLENT_SANC_STATIC',
+    SNSV_UNEMPLOYED_DYNAMIC: 'SNSV_UNEMPLOYED_DYNAMIC',
+    SNSV_WEAPONS_NOT_GUNS_DYNAMIC: 'SNSV_WEAPONS_NOT_GUNS_DYNAMIC',
+    SNSV_WEAPON_DYNAMIC: 'SNSV_WEAPON_DYNAMIC',
+    SNSV_YEAR_TWO_DYNAMIC: 'SNSV_YEAR_TWO_DYNAMIC',
+    SNSV_YEAR_TWO_STATIC: 'SNSV_YEAR_TWO_STATIC',
+    OVP2_METHADONE: 'OVP2_METHADONE',
+    OVP2_OTHER_DRUG: 'OVP2_OTHER_DRUGS',
+    OVP2_OTHER_OPIATE: 'OVP2_OTHER_OPIATE',
 }

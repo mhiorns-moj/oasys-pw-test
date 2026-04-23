@@ -212,7 +212,7 @@ test('SAN integration - test ref 27 part 3', async ({ oasys, signing, offender, 
 
     // Leave the offender ready for part 5
     await oasys.history(offender1)
-    await assessment.lockIncomplete(o1pk3, 'Do you wish to lock the assessment as incomplete? This assessment is currently awaiting countersignature')
+    await assessment.lockIncomplete('Do you wish to lock the assessment as incomplete? This assessment is currently awaiting countersignature')
 
     await oasys.logout()
 
