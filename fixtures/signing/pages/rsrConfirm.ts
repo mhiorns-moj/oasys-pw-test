@@ -1,10 +1,10 @@
 ﻿import { OasysPage, Element } from 'classes'
 
-export class RsrConfirm extends OasysPage {
+export class CsrpConfirm extends OasysPage {
 
-    name = 'RsrConfirm'
+    name = 'CsrpConfirm'
 
     ok = new Element.Button(this.page, 'OK')
     cancel = new Element.Button(this.page, 'Cancel')
-    rsrDetails = new Element.Text(this.page, '#P3_RSR_ALERT_DISPLAY')
+    csrpDetails = new Element.Text(this.page, '#P3_RSR_ALERT_DISPLAY')
 }

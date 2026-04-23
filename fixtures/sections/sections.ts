@@ -23,6 +23,25 @@ export class Sections {
     // Layer 1
     readonly layer1Section2 = new pages.Layer1Section2(this.page)
     readonly predictorQuestions = new pages.PredictorQuestions(this.page)
+
+    /**    
+     * - A Heroin
+     * - B Methadone(not prescribed)
+     * - C Other opiates
+     * - D Crack/Cocaine
+     * - E Cocaine Hydrochloride
+     * - F Misused prescribed drugs
+     * - G Benzodiazepines
+     * - H Amphetamines
+     * - I Hallucinogens
+     * - J Ecstasy
+     * - K Cannabis
+     * - L Solvents
+     * - M Steroids
+     * - P Spice
+     * - Q Ketamine
+     * - N Other
+     */
     readonly roshaPredictors = new pages.RoshaPredictors(this.page)
 
     // Layer 3
@@ -79,7 +98,7 @@ export class Sections {
                 await this.victim.victim1()
                 await this.victim.victim2()
                 await this.selfAssessmentForm.populateFull()
-                break                                                                                                                                                                                                                                                                             
+                break
             case 'Layer 1V2':
                 await this.roshaPredictors.populateFull()
                 break

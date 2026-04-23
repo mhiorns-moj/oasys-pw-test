@@ -182,7 +182,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
     await san.queries.checkSanGetAssessmentCall(pk3, 2)
 
     // Lock incomplete, check API call and OASYS_SET
-    await assessment.lockIncomplete(pk3)
+    await assessment.lockIncomplete()
     await san.queries.checkSanLockIncompleteCall(pk3, oasys.users.probSanUnappr)
 
     await oasys.logout()

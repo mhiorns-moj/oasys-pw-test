@@ -13,7 +13,7 @@ test('Example test - create a prison offender and RoSHA assessment', async ({ oa
     // await assessment.populateMinimal({ layer: 'Layer 1V2', provider: 'pris' })
     await assessment.populateFull({ layer: 'Layer 1V2', provider: 'pris', maxStrings: false })
 
-    await signing.signAndLock({ expectRsrScore: true })
+    await signing.signAndLock({ expectCsrpScore: true })
 
     await oasys.logout()
 
