@@ -7,6 +7,7 @@ export class TieringCase {
     assessmentPk: number
     offenderPk: number
     dateCompleted: string
+    o1_30: string
     arpCsrp: {
         ncRsrPercentageScore: number
         rsrStaticOrDynamic: string
@@ -63,6 +64,7 @@ export class TieringCase {
         this.assessmentPk = Number.parseInt(tieringData[i++])
         this.offenderPk = Number.parseInt(tieringData[i++])
         this.dateCompleted = tieringData[i++]
+        this.o1_30 = tieringData[i++]
         this.arpCsrp = {
             ncRsrPercentageScore: getDbFloat(tieringData[i++]),
             rsrStaticOrDynamic: tieringData[i++],
@@ -117,7 +119,8 @@ export class TieringCase {
         const where = whereClause == null ? '' : `where ${whereClause}`
         return `select 
                     cms_prob_number, cms_pris_number, oasys_set_pk, offender_pk,
-                    to_char(date_completed, '${dateFormat}'), 
+                    to_char(date_completed, '${dateFormat}'),
+                    one_point_thirty,
                     nc_rsr_percentage_score, nc_rsr_static_or_dynamic,
                     snsv_percentage_2yr_static, snsv_percentage_2yr_dynamic,
                     ogrs4g_percentage_2yr, ogp2_percentage_2yr, 

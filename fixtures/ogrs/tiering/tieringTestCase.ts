@@ -34,15 +34,17 @@ export function testTieringCase(tieringCase: TieringCase, includeStatic: boolean
     const roshMappa = calculateRoshMappa(rosh, tieringCase.mappa)
     const lifer = calculateLifer(tieringCase)
     const daStalkingCp = calculateDaStalkingCp(tieringCase)
+    const pCoSos = calculatePCoSos(tieringCase)
 
     // Determine the final result
     let finalResult = getHigherTier(initialResult, roshMappa)
     finalResult = getHigherTier(finalResult, lifer)
     finalResult = getHigherTier(finalResult, daStalkingCp)
+    finalResult = getHigherTier(finalResult, pCoSos)
 
     // If no CSRP, only accept the final result if it's A
     if (arpCsrp == null && finalResult != 'A') {
-            finalResult = null
+        finalResult = null
     }
 
     logText.push(`        ARP/CSRP   - ${arpCsrp}`)
@@ -142,6 +144,11 @@ function calculateDaStalkingCp(tieringCase: TieringCase): Tier {
         return 'F'
     }
     return null
+}
+
+function calculatePCoSos(tieringCase: TieringCase): Tier {
+
+    return tieringCase.o1_30 == 'Y' ? 'E' : null
 }
 
 function getHigherTier(t1: Tier, t2: Tier): Tier {
