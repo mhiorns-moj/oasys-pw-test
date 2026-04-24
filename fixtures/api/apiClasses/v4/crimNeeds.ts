@@ -126,7 +126,7 @@ export class CrimNeedsAssessment extends v4Common.V4AssessmentCommon {
         addSectionDetails(this.think, dbAssessment, 'think', '11', '11.98', '11.99')
         addSectionDetails(this.att, dbAssessment, 'att', '12', '12.98', '12.99')
 
-        if (dbAssessment.assessmentType == 'LAYER3') {
+        if (dbAssessment.assessmentType == 'LAYER3' && dbAssessment.assessmentVersion == 2 && dbAssessment.lastUpdateFromSan != null) {
             this.sanCrimNeedScore = new SanCrimNeedScore(dbAssessment)
         } else {
             this.sanCrimNeedScore = null
@@ -225,7 +225,6 @@ export class SanCrimNeedScore {
         addSanSectionDetails(this.thinkBehavAndAttiSan, dbAssessment, 'thinkBehavAndAttiSan', 'SAN', '11.98', '11.99')
         addSanSectionDetails(this.financeSan, dbAssessment, 'financeSan', '5', '5.98', '5.99')
         addSanSectionDetails(this.healthAndWellbeingSan, dbAssessment, 'healthAndWellbeingSan', '10', '10.98', '10.99')
-
     }
 }
 
@@ -242,8 +241,8 @@ function addSanSectionDetails(result: { [key: string]: any }, dbAssessment: dbCl
         result[`${prefix}LinkedToReoffending`] = null
         result[`${prefix}Strength`] = null
     } else if (sectionCode != '7') {
-        result[`${prefix}LinkedToHarm`] = dbAssessment.qaData.getString(harm)?.toUpperCase()        // TODO remove workaround when fixed
-        result[`${prefix}LinkedToReoffending`] = dbAssessment.qaData.getString(reoffending)?.toUpperCase()      // TODO remove workaround when fixed
-        result[`${prefix}Strength`] = dbAssessment.qaData.getString(`${sectionCode == 'SAN' ? 'TBA' : sectionCode}_SAN_STRENGTH`)?.toUpperCase()       // TODO remove workaround when fixed
+        result[`${prefix}LinkedToHarm`] = dbAssessment.qaData.getString(harm)
+        result[`${prefix}LinkedToReoffending`] = dbAssessment.qaData.getString(reoffending)
+        result[`${prefix}Strength`] = dbAssessment.qaData.getString(`${sectionCode == 'SAN' ? 'TBA' : sectionCode}_SAN_STRENGTH`)
     }
 }

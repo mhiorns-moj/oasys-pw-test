@@ -24,11 +24,13 @@ const dateConditions = [
     { date: `2024-${randomMonth()}-${randomDay()}`, count: offenderCount },
     { date: `2025-${randomMonth()}-${randomDay()}`, count: offenderCount },
     { date: 'today', count: offenderCount },
-
 ]
 
 const limitEndpoints: Endpoint[] = []
-// const limitEndpoints: Endpoint[] = ['crimNeeds','pni']
+// const limitEndpoints: Endpoint[] = ['crimNeeds']
+
+// const excludeEndpoints: Endpoint[] = []
+const excludeEndpoints: Endpoint[] = ['pni']
 
 // Hide details from the report for passes
 const reportPasses = false
@@ -110,14 +112,14 @@ async function runTest(offenders: string[][], api: Api): Promise<boolean> {
         offendersTested++
 
         if (offender[0] != null) {  // call with probation CRN
-            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, reportPasses, stats, limitEndpoints)
+            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, reportPasses, stats, limitEndpoints, excludeEndpoints)
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true
             }
         }
         if (offender[1] != null) {  // call with NomisId
-            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, reportPasses, stats, limitEndpoints)  // skipPrisSubsequents if already done for prob crn
+            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, reportPasses, stats, limitEndpoints, excludeEndpoints)  // skipPrisSubsequents if already done for prob crn
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true
