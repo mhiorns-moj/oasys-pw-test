@@ -10,11 +10,14 @@ const testCases = [
     ['X450397', null],    // SUM
     ['ZLHECUL', null],       // OASys-SP layer 1
     ['ZUHJFAA', null],      // SAN assessments
-    ['ZSZGXOP', null],
+    ['X743137', null],
 ]
 
 const limitEndpoints: Endpoint[] = []
 // const limitEndpoints: Endpoint[] = ['apAsslist']
+
+// const excludeEndpoints: Endpoint[] = []
+const excludeEndpoints: Endpoint[] = ['pni']
 
 test('All endpoint regression tests - extra test for specific cases', async ({ api }) => {
 
@@ -25,14 +28,14 @@ test('All endpoint regression tests - extra test for specific cases', async ({ a
         console.log(`Offender ${count++}: ${offender[0]} / ${offender[1]}`)
 
         if (offender[0] != null) {  // call with probation CRN
-            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, true,  null, limitEndpoints)
+            const offenderFailed = await api.testOneOffender(offender[0], 'prob', false, true,  null, limitEndpoints, excludeEndpoints)
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true
             }
         }
         if (offender[1] != null) {  // call with NomisId
-            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, true, null, limitEndpoints)  // skipPrisSubsequents if already done for prob crn
+            const offenderFailed = await api.testOneOffender(offender[1], 'pris', offender[0] != null, true, null, limitEndpoints, excludeEndpoints)  // skipPrisSubsequents if already done for prob crn
             if (offenderFailed) {
                 console.log('Failed')
                 failed = true

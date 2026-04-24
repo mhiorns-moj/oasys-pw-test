@@ -35,7 +35,7 @@ export class Api {
      *                      (selected this time using the prison CRN instead of probation) so these calls will be identical.
      */
     async testOneOffender(crn: string, crnSource: Provider, skipPkOnlyCalls: boolean, reportPasses: boolean,
-        stats: EndpointStat[] = null, limitEndpoints: Endpoint[] = []): Promise<boolean> {
+        stats: EndpointStat[] = null, limitEndpoints: Endpoint[] = [], excludeEndpoints: Endpoint[] = []): Promise<boolean> {
 
         const v1Endpoints: Endpoint[] = [
             'offences',
@@ -169,7 +169,8 @@ export class Api {
                 apiParams.push(custodyParams)
             }
 
-            const filteredParamsList = limitEndpoints.length == 0 ? apiParams : apiParams.filter((param) => limitEndpoints.includes(param.endpoint))
+            // Filter to a limited list if specified, and remove anything in the exclusions list
+            const filteredParamsList = (limitEndpoints.length == 0 ? apiParams : apiParams.filter((param) => limitEndpoints.includes(param.endpoint))).filter((param) => !excludeEndpoints.includes(param.endpoint))
             ///////////////////////////////////////////////////////////
             // Work out the expected responses, then call the endpoints
             const expectedValues = await rest.GetExpectedResponses.getExpectedResponses(offenderData, filteredParamsList)
