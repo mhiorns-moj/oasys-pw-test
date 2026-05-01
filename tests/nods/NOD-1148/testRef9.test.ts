@@ -10,7 +10,7 @@ import { test } from 'fixtures'
  * Use same offender to then create a L1 V1 assessment and then a L3 V1 assessment.  In both cases ensure screens show and report correctly that predictors cannot score.  
  */
 
-test('OGRS regression test ref 9', async ({ oasys, offender, assessment, sections, risk, signing, sns, sentencePlan, ogrs }) => {
+test('OGRS regression test ref 9', async ({ oasys, offender, assessment, sections, signing, sns, sentencePlan, ogrs }) => {
 
     log(`Log in as as Prison Assessor to a NON-resettlement prison 								
         Create a reception event with sentence details for a new offender > 18 yrs of age with a GENDER of 'Not Specified'

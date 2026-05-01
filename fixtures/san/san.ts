@@ -9,7 +9,7 @@
 import { Page } from '@playwright/test'
 
 import { Element } from 'classes'
-import { Oasys, OasysDb, Risk, Sections, SentencePlan } from 'fixtures'
+import { Oasys, OasysDb, Risk, Sections } from 'fixtures'
 import * as pages from './pages'
 import { sanIds } from './sanIds'
 import * as exampleTest from './exampleTest'
@@ -35,7 +35,7 @@ export class San {
     readonly relationships2 = new pages.Relationships2(this.page)
     readonly informationSummary = new pages.InformationSummary(this.page)
 
-    readonly queries = new Queries(this.oasysDb, this.oasys)
+    readonly queries = new Queries(this.oasysDb)
 
     async populateMinimal(from: 'assessment' | 'offender' = 'assessment') {
 

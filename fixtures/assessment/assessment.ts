@@ -233,14 +233,8 @@ export class Assessment {
      */
     async lockIncomplete(message = 'Do you wish to lock the assessment as incomplete?') {
 
-        this.page.once('dialog', async (dialog) => {
-            expect(dialog.message()).toBe(message)
-            await dialog.accept()
-        })
-
-        await this.oasys.clickButton('Lock Incomplete', true)
+        await this.oasys.handleAlert('Lock Incomplete', message)
         log('Locked assessment incomplete')
-
     }
 
     // /**

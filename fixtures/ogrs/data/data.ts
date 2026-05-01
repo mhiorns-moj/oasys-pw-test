@@ -6,7 +6,7 @@ import { OgrsAssessment } from './dbClasses'
 import { OgrsRsr } from './dbClasses'
 import { OgrsInputParams, OgrsOutputParams } from '../types'
 import { createAssessmentInputParams } from './createAssessmentTestCase'
-import { createRsrInputParams } from './createRsrTestCase'
+import { createCsrpInputParams } from './createCsrpTestCase'
 import { createOutputObject } from '../calculator/createOutput'
 
 
@@ -56,7 +56,16 @@ export class Data {
         return result
     }
 
-    async getRsrTestData(rows: number, whereClause: string): Promise<OgrsRsr[]> {
+    async getOneCsrp(csrpPk: number): Promise<OgrsRsr> {
+
+        const csrps = await this.getCsrpTestData(1, `offender_rsr_scores_pk = '${csrpPk}'`)
+        if (csrps.length == 0) {
+            throw new Error(`Standalone CSRP not found: ${csrpPk}`)
+        }
+        return csrps[0]
+    }
+
+    async getCsrpTestData(rows: number, whereClause: string): Promise<OgrsRsr[]> {
 
         const rsrs = await this.oasysDb.getData(OgrsRsr.query(rows, whereClause))
 
@@ -76,7 +85,7 @@ export class Data {
 
     getRsrInputParams(assessment: OgrsRsr): OgrsInputParams {
 
-        return createRsrInputParams(assessment)
+        return createCsrpInputParams(assessment)
     }
 
     loadOracleOutputValues(values: string[]): OgrsOutputParams {

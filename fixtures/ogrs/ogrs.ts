@@ -1,7 +1,7 @@
 import { Decimal } from 'decimal.js'
 import { Temporal } from '@js-temporal/polyfill'
 
-import { OasysDb, Risk, Sections } from 'fixtures'
+import { OasysDb, Offender, Risk, Sections } from 'fixtures'
 import { Calculator } from './calculator/calculator'
 import { Data } from './data/data'
 import { Rescoring } from './rescoring/rescoring'
@@ -9,15 +9,17 @@ import { Tiering } from './tiering/tiering'
 import { OgrsAssessment, OgrsRsr } from './data/dbClasses'
 import { OgrsInputParams, TestCaseResult, OgrsOutputParams, Ogrs4CalcResult } from './types'
 import { createAssessmentInputParams } from 'fixtures/ogrs/data/createAssessmentTestCase'
+import { createCsrpInputParams } from 'fixtures/ogrs/data/createCsrpTestCase'
 import { ogrsFunctionCall } from './data/ogrsFunctionCall'
 import { loadParameterSet } from './data/loadTestData'
+import { Text } from 'classes/elements'
 
 const tolerance = new Decimal('1E-37')
 const precision = 40
 
 export class Ogrs {
 
-    constructor(private readonly oasysDb: OasysDb, private readonly sections: Sections, private readonly risk: Risk) { }
+    constructor(private readonly oasysDb: OasysDb, private readonly offender: Offender, private readonly sections: Sections, private readonly risk: Risk) { }
 
     private readonly calculator = new Calculator()
     private readonly data = new Data(this.oasysDb)
@@ -34,7 +36,7 @@ export class Ogrs {
 
     async getOasysData(type: AssessmentOrRsr, count: number, whereClause: string): Promise<OgrsAssessment[] | OgrsRsr[]> {
 
-        const result = type == 'assessment' ? await this.data.getAssessmentTestData(count, whereClause) : await this.data.getRsrTestData(count, whereClause)
+        const result = type == 'assessment' ? await this.data.getAssessmentTestData(count, whereClause) : await this.data.getCsrpTestData(count, whereClause)
         return result
     }
 
@@ -72,31 +74,7 @@ export class Ogrs {
             outputParams: this.calculate(calculatorParams),
         }
 
-        // Compile results
-        const arp = result.outputParams.OGP2_CALCULATED == 'Y' ? result.outputParams.OGP2_PERCENTAGE : result.outputParams.OGRS4G_PERCENTAGE
-        const arpBand = result.outputParams.OGP2_CALCULATED == 'Y' ? result.outputParams.OGP2_BAND : result.outputParams.OGRS4G_BAND
-        const arpType = result.outputParams.OGP2_CALCULATED == 'Y' ? 'DYNAMIC' : result.outputParams.OGRS4G_CALCULATED ? 'STATIC' : ''
-        result.arpText = arp ? `${arpType}  ${arp.toFixed(2).padStart(5)}%   ${arpBand}` : 'Unable to calculate due to'
-
-        const vrp = result.outputParams.OVP2_CALCULATED == 'Y' ? result.outputParams.OVP2_PERCENTAGE : result.outputParams.OGRS4V_PERCENTAGE
-        const vrpBand = result.outputParams.OVP2_CALCULATED == 'Y' ? result.outputParams.OVP2_BAND : result.outputParams.OGRS4V_BAND
-        const vrpType = result.outputParams.OVP2_CALCULATED == 'Y' ? 'DYNAMIC' : result.outputParams.OGRS4V_CALCULATED ? 'STATIC' : ''
-        result.vrpText = vrp ? `${vrpType}  ${vrp.toFixed(2).padStart(5)}%   ${vrpBand}` : 'Unable to calculate due to'
-
-        const svrp = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? result.outputParams.SNSV_PERCENTAGE_DYNAMIC : result.outputParams.SNSV_PERCENTAGE_STATIC
-        const svrpBand = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? result.outputParams.SNSV_BAND_DYNAMIC : result.outputParams.SNSV_BAND_STATIC
-        const svrpType = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? 'DYNAMIC' : result.outputParams.SNSV_CALCULATED_STATIC ? 'STATIC' : ''
-        result.svrpText = svrp ? `${svrpType}  ${svrp.toFixed(2).padStart(5)}%   ${svrpBand}` : 'Unable to calculate due to'
-
-        result.dcSrpBand = result.outputParams.OSP_DC_BAND?.toUpperCase() ?? null
-        result.dcSrpText = result.dcSrpBand ? '' : 'Unable to calculate DC-SRP due to missing details'
-        result.iicSrpBand = result.outputParams.OSP_IIC_BAND?.toUpperCase() ?? null
-        result.iicSrpText = result.iicSrpBand ? '' : 'Unable to calculate IIC-SRP due to missing details'
-
-        result.csrpBand = result.outputParams.RSR_BAND?.toUpperCase() ?? null
-        result.csrpType = result.outputParams.RSR_DYNAMIC == 'Y' ? 'DYNAMIC' : result.outputParams.RSR_CALCULATED == 'Y' ? 'STATIC' : ''
-        result.csrpScore = result.csrpBand ? `${result.outputParams.RSR_PERCENTAGE.toFixed(2).padStart(6)}` : ''
-        result.csrpText = result.csrpBand ? '' : 'Unable to calculate CSRP due to missing details'
+        this.compileAndCheckResult(result)
 
         log('', 'Checking OGRS4 calculations')
         let failed = checkScore('ARP static score', result.outputParams.OGRS4G_PERCENTAGE?.toNumber() ?? null, assessment.ogrs4gYr2)
@@ -124,6 +102,80 @@ export class Ogrs {
         }
         expect(failed).toBeFalsy()
         return result
+    }
+
+    /**
+      * Checks the calculation stored in offender_rsr_scores for a given pk.
+      * Returns an Ogrs4CalcResult object
+      */
+    async checkOgrsInStandaloneCsrp(csrpPk: number): Promise<Ogrs4CalcResult> {
+
+        const csrp = await this.data.getOneCsrp(csrpPk)
+        const calculatorParams = createCsrpInputParams(csrp)
+
+        const result: Ogrs4CalcResult = {
+            outputParams: this.calculate(calculatorParams),
+        }
+
+        this.compileAndCheckResult(result, true)
+
+        log('', 'Checking OGRS4 calculations')
+        let failed = checkScore('ARP static score', result.outputParams.OGRS4G_PERCENTAGE?.toNumber() ?? null, csrp.ogrs4gYr2)
+        failed = checkScore('ARP static band', result.outputParams.OGRS4G_BAND?.substring(0, 1) ?? null, csrp.ogrs4gBand) || failed
+        failed = checkScore('ARP static calculated', result.outputParams.OGRS4G_CALCULATED, csrp.ogrs4gCalculated) || failed
+        failed = checkScore('ARP dynamic score', result.outputParams.OGP2_PERCENTAGE?.toNumber() ?? null, csrp.ogp2Yr2) || failed
+        failed = checkScore('ARP dynamic band', result.outputParams.OGP2_BAND?.substring(0, 1) ?? null, csrp.ogp2Band) || failed
+        failed = checkScore('ARP dynamic calculated', result.outputParams.OGP2_CALCULATED, csrp.ogp2Calculated) || failed
+        failed = checkScore('VRP static score', result.outputParams.OGRS4V_PERCENTAGE?.toNumber() ?? null, csrp.ogrs4vYr2) || failed
+        failed = checkScore('VRP static band', result.outputParams.OGRS4V_BAND?.substring(0, 1) ?? null, csrp.ogrs4vBand) || failed
+        failed = checkScore('VRP static calculated', result.outputParams.OGRS4V_CALCULATED, csrp.ogrs4vCalculated) || failed
+        failed = checkScore('VRP dynamic score', result.outputParams.OVP2_PERCENTAGE?.toNumber() ?? null, csrp.ovp2Yr2) || failed
+        failed = checkScore('VRP dynamic band', result.outputParams.OVP2_BAND?.substring(0, 1) ?? null, csrp.ovp2Band) || failed
+        failed = checkScore('VRP dynamic calculated', result.outputParams.OVP2_CALCULATED, csrp.ovp2Calculated) || failed
+        failed = checkScore('SVRP static score', result.outputParams.SNSV_PERCENTAGE_STATIC?.toNumber() ?? null, csrp.snsvStaticYr2) || failed
+        failed = checkScore('SVRP static band', result.outputParams.SNSV_BAND_STATIC?.substring(0, 1) ?? null, csrp.snsvStaticYr2Band) || failed
+        failed = checkScore('SVRP static calculated', result.outputParams.SNSV_CALCULATED_STATIC, csrp.snsvStaticCalculated) || failed
+        failed = checkScore('SVRP dynamic score', result.outputParams.SNSV_PERCENTAGE_DYNAMIC?.toNumber() ?? null, csrp.snsvDynamicYr2) || failed
+        failed = checkScore('SVRP dynamic band', result.outputParams.SNSV_BAND_DYNAMIC?.substring(0, 1) ?? null, csrp.snsvDynamicYr2Band) || failed
+        failed = checkScore('SVRP dynamic calculated', result.outputParams.SNSV_CALCULATED_DYNAMIC, csrp.snsvDynamicCalculated) || failed
+
+        if (failed) {
+            log(JSON.stringify(calculatorParams))
+            log(JSON.stringify(result))
+        }
+        expect(failed).toBeFalsy()
+        return result
+    }
+
+    private compileAndCheckResult(result: Ogrs4CalcResult, standaloneCsrp = false) {
+
+        const padding = standaloneCsrp ? 6 : 5
+
+        // Compile results
+        const arp = result.outputParams.OGP2_CALCULATED == 'Y' ? result.outputParams.OGP2_PERCENTAGE : result.outputParams.OGRS4G_PERCENTAGE
+        const arpBand = result.outputParams.OGP2_CALCULATED == 'Y' ? result.outputParams.OGP2_BAND : result.outputParams.OGRS4G_BAND
+        const arpType = result.outputParams.OGP2_CALCULATED == 'Y' ? 'DYNAMIC' : result.outputParams.OGRS4G_CALCULATED ? 'STATIC' : ''
+        result.arpText = arp ? `${arpType}  ${arp.toFixed(2).padStart(padding)}%   ${arpBand}` : 'Unable to calculate due to'
+
+        const vrp = result.outputParams.OVP2_CALCULATED == 'Y' ? result.outputParams.OVP2_PERCENTAGE : result.outputParams.OGRS4V_PERCENTAGE
+        const vrpBand = result.outputParams.OVP2_CALCULATED == 'Y' ? result.outputParams.OVP2_BAND : result.outputParams.OGRS4V_BAND
+        const vrpType = result.outputParams.OVP2_CALCULATED == 'Y' ? 'DYNAMIC' : result.outputParams.OGRS4V_CALCULATED ? 'STATIC' : ''
+        result.vrpText = vrp ? `${vrpType}  ${vrp.toFixed(2).padStart(padding)}%   ${vrpBand}` : 'Unable to calculate due to'
+
+        const svrp = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? result.outputParams.SNSV_PERCENTAGE_DYNAMIC : result.outputParams.SNSV_PERCENTAGE_STATIC
+        const svrpBand = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? result.outputParams.SNSV_BAND_DYNAMIC : result.outputParams.SNSV_BAND_STATIC
+        const svrpType = result.outputParams.SNSV_CALCULATED_DYNAMIC == 'Y' ? 'DYNAMIC' : result.outputParams.SNSV_CALCULATED_STATIC ? 'STATIC' : ''
+        result.svrpText = svrp ? `${svrpType}  ${svrp.toFixed(2).padStart(padding)}%   ${svrpBand}` : 'Unable to calculate due to'
+
+        result.dcSrpBand = result.outputParams.OSP_DC_BAND?.toUpperCase() ?? null
+        result.dcSrpText = result.dcSrpBand ? '' : 'Unable to calculate DC-SRP due to missing details'
+        result.iicSrpBand = result.outputParams.OSP_IIC_BAND?.toUpperCase() ?? null
+        result.iicSrpText = result.iicSrpBand ? '' : 'Unable to calculate IIC-SRP due to missing details'
+
+        result.csrpBand = result.outputParams.RSR_BAND?.toUpperCase() ?? null
+        result.csrpType = result.outputParams.RSR_DYNAMIC == 'Y' ? 'DYNAMIC' : result.outputParams.RSR_CALCULATED == 'Y' ? 'STATIC' : ''
+        result.csrpScore = result.csrpBand ? `${result.outputParams.RSR_PERCENTAGE.toFixed(2).padStart(6)}` : ''
+        result.csrpText = result.csrpBand ? '' : 'Unable to calculate CSRP due to missing details'
 
     }
 
@@ -223,6 +275,43 @@ export class Ogrs {
         }
     }
 
+    async checkResultsOnStandaloneCsrpScreen(ogrsResult: Ogrs4CalcResult) {
+
+        await this.offender.standaloneCsrp.arpText.checkValue(ogrsResult.arpText, true)
+        await this.offender.standaloneCsrp.vrpText.checkValue(ogrsResult.vrpText, true)
+        await this.offender.standaloneCsrp.svrpText.checkValue(ogrsResult.svrpText, true)
+        if (ogrsResult.dcSrpBand) {
+            await this.offender.standaloneCsrp.dcSrpBand.checkValue(ogrsResult.dcSrpBand)
+        } else {
+            await this.offender.standaloneCsrp.dcSrpText.checkValue('Not Applicable')
+        }
+        if (ogrsResult.iicSrpBand) {
+            await this.offender.standaloneCsrp.iicSrpBand.checkValue(ogrsResult.iicSrpBand)
+        } else {
+            await this.offender.standaloneCsrp.iicSrpText.checkValue('Not Applicable')
+        }
+        if (ogrsResult.csrpBand) {
+            await this.offender.standaloneCsrp.csrpBand.checkValue(ogrsResult.csrpBand)
+            await this.offender.standaloneCsrp.csrpType.checkValue(ogrsResult.csrpType)
+            await this.offender.standaloneCsrp.csrpScore.checkValue(ogrsResult.csrpScore)
+        } else {
+            await this.offender.standaloneCsrp.csrpText.checkValue('Unable to calculate due to', true)
+        }
+
+        if (ogrsResult.outputParams.OGRS4G_CALCULATED == 'Y') {
+            await checkErrors(this.offender.standaloneCsrp.arpErrorText, ogrsResult.outputParams.OGP2_MISSING_QUESTIONS, 'Unable to calculate DYNAMIC All Reoffending Predictor score due to:')
+        }
+        if (ogrsResult.outputParams.OGRS4V_CALCULATED == 'Y') {
+            await checkErrors(this.offender.standaloneCsrp.vrpErrorText, ogrsResult.outputParams.OVP2_MISSING_QUESTIONS, 'Unable to calculate DYNAMIC Violent Reoffending Predictor score due to:')
+        }
+        if (ogrsResult.outputParams.SNSV_CALCULATED_STATIC == 'Y') {
+            await checkErrors(this.offender.standaloneCsrp.svrpErrorText, ogrsResult.outputParams.SNSV_MISSING_QUESTIONS_DYNAMIC, 'Unable to calculate DYNAMIC Serious Violent Reoffending Predictor score due to:')
+        }
+        if (ogrsResult.outputParams.RSR_CALCULATED == 'Y' && ogrsResult.outputParams.RSR_DYNAMIC == 'N') {
+            await checkErrors(this.offender.standaloneCsrp.csrpErrorText, ogrsResult.outputParams.RSR_MISSING_QUESTIONS, 'Unable to calculate DYNAMIC CSRP score due to:')
+        }
+    }
+
     async checkResultsOnRiskSummary(ogrsResult: Ogrs4CalcResult) {
 
         await this.risk.summary.goto(true)
@@ -289,6 +378,14 @@ export class Ogrs {
             }
         }
         expect(failed).toBeFalsy()
+    }
+}
+
+async function checkErrors(text: Text, missingQuestions: string, header: string) {
+
+    await text.checkValue(header, true)
+    for (const error of missingQuestions.substring(1, missingQuestions.length - 2).split('\n')) {
+        await text.checkValue(error, true)
     }
 }
 

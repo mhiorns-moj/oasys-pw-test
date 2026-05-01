@@ -3,6 +3,7 @@ import { Page, TestInfo } from '@playwright/test'
 import { Oasys, Cms, OasysDb } from 'fixtures'
 import * as pages from './pages'
 import * as offenders from './offenderLib'
+import {Queries} from './queries'
 import { User } from 'classes'
 
 
@@ -14,10 +15,30 @@ export class Offender {
     readonly offenderDetails = new pages.OffenderDetails(this.page)
     readonly offenderManagementTab = new pages.OffenderManagementTab(this.page)
     readonly rfi = new pages.Rfi(this.page)
-    readonly standaloneCsrp = new pages.StandaloneRsr(this.page)
+
+    /**    
+     * - A Heroin
+     * - B Methadone(not prescribed)
+     * - C Other opiates
+     * - D Crack/Cocaine
+     * - E Cocaine Hydrochloride
+     * - F Misused prescribed drugs
+     * - G Benzodiazepines
+     * - H Amphetamines
+     * - I Hallucinogens
+     * - J Ecstasy
+     * - K Cannabis
+     * - L Solvents
+     * - M Steroids
+     * - P Spice
+     * - Q Ketamine
+     * - N Other
+     */
+    readonly standaloneCsrp = new pages.StandaloneCsrp(this.page)
     readonly lao = new pages.Lao(this.page)
     readonly requestTransferPage = new pages.RequestTransfer(this.page)
 
+    readonly queries = new Queries(this.oasysDb)
 
     /**
      * Create a probation offender using the details provided in an Offender type object.

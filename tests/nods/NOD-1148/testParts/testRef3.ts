@@ -31,14 +31,14 @@ export function testRef3(offender1: OffenderDef, pks: { [key: number]: number })
         await ogrs.checkResultsOnRiskSummary(ogrsResult)
 
         log(`Enter in a date at 'Date of first sanction' to get 1.8 Age at first sanction' populated
-        At 1.32 total number of sanctions enter 4
-        At 1.40 How many of the total number of sanctions involved violent offences ? LEAVE BLANK
-        At 1.29 enter in a date for 'Date of current conviction'
-        At 1.30 select 'No'
-        At 1.38 enter in a date for 'Date of commencement of community sentence or earliest possible release from custody'
-        If 1.43 'Since dd/mm/yyyy, has Offender name committed any offences?  If Yes, what is the date the most recent offence was committed?' is shown on screen just leave it blank
-        DO NOT ENTER ANY OTHER DATA   
-        Click on the < SAVE > button and screen refreshes`, 'Test step')
+            At 1.32 total number of sanctions enter 4
+            At 1.40 How many of the total number of sanctions involved violent offences ? LEAVE BLANK
+            At 1.29 enter in a date for 'Date of current conviction'
+            At 1.30 select 'No'
+            At 1.38 enter in a date for 'Date of commencement of community sentence or earliest possible release from custody'
+            If 1.43 'Since dd/mm/yyyy, has Offender name committed any offences?  If Yes, what is the date the most recent offence was committed?' is shown on screen just leave it blank
+            DO NOT ENTER ANY OTHER DATA   
+            Click on the < SAVE > button and screen refreshes`, 'Test step')
 
         await sections.roshaPredictors.goto()
         await sections.roshaPredictors.dateFirstSanction.setValue({ years: -3 })
@@ -61,15 +61,15 @@ export function testRef3(offender1: OffenderDef, pks: { [key: number]: number })
         await ogrs.checkResultsOnRoshaPredictorsScreen(ogrsResult)
 
         log(`On the Predictors screen compete entry of ALL the dynamic questions as below:
-            2.2 weapon = No, 3.4 = 1 Some problems, 4.2 = 0 Not available for work, 6.4 = 2 significant problems, 6.7 = No, 6.8 = In a relationship living together, 7.2 = 1-Some problems'
-            8.1 = Yes, Drugs table: for 'crack/cocaine' select 'Daily' for current usage and tick the other 3 checkboxes, for 'Ecstasy' select 'Occasional' and tick previous usage,
-            for 'Spice' select 'Monthly' but leave previous usage blank
-            8.8 = 1 some problems, 9.1 through to 12.1 select '1 some problems' for all of them
-        Navigate to the next screen.
-        Check the OASYS_SET record and ensure that along with other fields, OGP2_CALCULATED = 'Y' and the fields OGP2_PERCENTAGE_2YR and OGP2_BAND_RISK_RECON_ELM are populated,
-        OVP2_CALCULATED = 'Y' and  the fields OVP2_PERCENTAGE_2YR and OVP2_BAND_RISK_RECON_ELM are populated
-        Note: other fields maybe populated but these fields being populated means the code was called as we now have dynamic scores
-        Also check that the original OGRS3 fields are set on the OASYS_SET record`, 'Test step')
+                2.2 weapon = No, 3.4 = 1 Some problems, 4.2 = 0 Not available for work, 6.4 = 2 significant problems, 6.7 = No, 6.8 = In a relationship living together, 7.2 = 1-Some problems'
+                8.1 = Yes, Drugs table: for 'crack/cocaine' select 'Daily' for current usage and tick the other 3 checkboxes, for 'Ecstasy' select 'Occasional' and tick previous usage,
+                for 'Spice' select 'Monthly' but leave previous usage blank
+                8.8 = 1 some problems, 9.1 through to 12.1 select '1 some problems' for all of them
+            Navigate to the next screen.
+            Check the OASYS_SET record and ensure that along with other fields, OGP2_CALCULATED = 'Y' and the fields OGP2_PERCENTAGE_2YR and OGP2_BAND_RISK_RECON_ELM are populated,
+            OVP2_CALCULATED = 'Y' and  the fields OVP2_PERCENTAGE_2YR and OVP2_BAND_RISK_RECON_ELM are populated
+            Note: other fields maybe populated but these fields being populated means the code was called as we now have dynamic scores
+            Also check that the original OGRS3 fields are set on the OASYS_SET record`, 'Test step')
 
         await sections.roshaPredictors.o1_39.setValue('Yes')
         await sections.roshaPredictors.o2_2.setValue('No')

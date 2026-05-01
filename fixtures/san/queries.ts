@@ -1,8 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill'
 
-import { OasysDb } from '../oasysDb/oasysDb'
 import { User } from 'classes'
-import { Oasys } from 'fixtures'
+import { OasysDb } from 'fixtures'
 import { Queries as AssessmentQueries } from 'fixtures/assessment/queries'
 
 type OasysSetSanData = {
@@ -15,7 +14,7 @@ type OasysSetSanData = {
 
 export class Queries {
 
-    constructor(readonly oasysDb: OasysDb, readonly oasys: Oasys) { }
+    constructor(private readonly oasysDb: OasysDb) { }
 
 
     async getOasysSetSanData(pk: number): Promise<OasysSetSanData> {

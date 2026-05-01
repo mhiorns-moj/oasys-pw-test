@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra'
 import { TestInfo } from '@playwright/test'
 
-import { testEnvironment, userSuffixes } from 'localSettings'
+import { userSuffixes } from 'localSettings'
 
 const oasysLogs: { [key: number]: Log[] } = {}
 const fileLog: { [key: number]: string[] } = {}

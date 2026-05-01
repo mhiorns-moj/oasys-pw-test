@@ -140,8 +140,8 @@ export const test = base.extend<OasysFixtures>({
         await use(api)
     },
 
-    ogrs: async ({ oasysDb, sections, risk }, use: Function) => {
-        const ogrs = new Ogrs(oasysDb, sections, risk)
+    ogrs: async ({ oasysDb, offender, sections, risk }, use: Function) => {
+        const ogrs = new Ogrs(oasysDb, offender, sections, risk)
         await use(ogrs)
     },
 
@@ -151,13 +151,13 @@ export const test = base.extend<OasysFixtures>({
     },
 
     logs: [async ({ }, use: Function, testInfo: TestInfo) => {
-        
+
         initialiseGlobals()
         const logs = new Logs(testInfo)
         await logs.initialise()
 
         await use(logs)
-        
+
         await logs.finalise()
     }, { auto: true }],
 })

@@ -169,17 +169,17 @@ export class Oasys {
 
     /**
      * Clicks the button that should trigger an alert, optionally checks the alert text then and accepts the alert.
-     * Alternatively, just let Playwright dismiss the alert automatically
      */
     async handleAlert(buttonToClick: string, exptectedText: string = null) {
 
         // Trap the alert
-        this.page.on('dialog', async (dialog: Dialog) => {
+        this.page.once('dialog', async (dialog) => {
             if (exptectedText != null) {
-                expect(dialog.message).toBe(exptectedText)
+                expect(dialog.message()).toBe(exptectedText)
+                await dialog.accept()
             }
         })
-        await this.clickButton(buttonToClick)
+        await this.clickButton(buttonToClick, true)
     }
 
     async screenshot() {

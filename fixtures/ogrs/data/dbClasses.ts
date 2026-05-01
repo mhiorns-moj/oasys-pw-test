@@ -1,12 +1,134 @@
 import { Temporal } from '@js-temporal/polyfill'
 
+import { assignValues, buildQuery } from 'lib/queryBuilder'
+
+
+/*
+ogrs4g_missing_questions
+ogp2_missing_count
+ogp2_missing_questions
+ogrs4v_missing_questions
+ovp2_missing_count
+ovp2_missing_questions
+snsv_missing_questions_static
+snsv_missing_count_dynamic
+snsv_missing_questions_dynamic
+osp_dc_calculated
+osp_dc_missing_count
+osp_dc_missing_questions
+osp_iic_calculated
+osp_iic_missing_count
+osp_iic_missing_questions
+*/
+
+const csrpColumns: Columns = {
+    pk: { name: 'offender_rsr_scores_pk', type: 'integer' },
+    status: { name: 'rsr_status', type: 'string' },
+    dob: { name: 'date_of_birth', type: 'date' },
+    gender: { name: 'gender_elm', type: 'string' },
+    offence: { name: 'offence_code || offence_subcode', type: 'string' },
+    ogrs4gYr2: { name: 'ogrs4g_percentage_2yr', type: 'float' },
+    ogrs4gBand: { name: 'ogrs4g_band_risk_recon_elm', type: 'string' },
+    ogrs4gCalculated: { name: 'ogrs4g_calculated', type: 'string' },
+    ogrs4vYr2: { name: 'ogrs4v_percentage_2yr', type: 'float' },
+    ogrs4vBand: { name: 'ogrs4v_band_risk_recon_elm', type: 'string' },
+    ogrs4vCalculated: { name: 'ogrs4v_calculated', type: 'string' },
+    ogp2Yr2: { name: 'ogp2_percentage_2yr', type: 'float' },
+    ogp2Band: { name: 'ogp2_band_risk_recon_elm', type: 'string' },
+    ogp2Calculated: { name: 'ogp2_calculated', type: 'string' },
+    ovp2Yr2: { name: 'ovp2_percentage_2yr', type: 'float' },
+    ovp2Band: { name: 'ovp2_band_risk_recon_elm', type: 'string' },
+    ovp2Calculated: { name: 'ovp2_calculated', type: 'string' },
+    snsvStaticYr2: { name: 'snsv_percentage_2yr_static', type: 'float' },
+    snsvStaticYr2Band: { name: 'snsv_stat_band_risk_recon_elm', type: 'string' },
+    snsvStaticCalculated: { name: 'snsv_calculated_static', type: 'string' },
+    snsvDynamicYr2: { name: 'snsv_percentage_2yr_dynamic', type: 'float' },
+    snsvDynamicYr2Band: { name: 'snsv_dyn_band_risk_recon_elm', type: 'string' },
+    snsvDynamicCalculated: { name: 'snsv_calculated_dynamic', type: 'string' },
+    s1_32_total_sanctions: { name: 's1_32_total_sanctions', type: 'integer' },
+    s1_40_violent_sanctions: { name: 's1_40_violent_sanctions', type: 'integer' },
+    s1_34_contact_adult_score: { name: 's1_34_contact_adult_score', type: 'integer' },
+    s1_45_dc_child_score: { name: 's1_45_dc_child_score', type: 'integer' },
+    s1_46_iic_child_score: { name: 's1_46_iic_child_score', type: 'integer' },
+    s1_37_non_contact_score: { name: 's1_37_non_contact_score', type: 'integer' },
+    s1_44_dc_stranger_victim: { name: 's1_44_dc_stranger_victim', type: 'string' },
+    s1_8_age_at_first_sanction: { name: 's1_8_age_at_first_sanction', type: 'integer' },
+    s1_29_date_current_conviction: { name: 's1_29_date_current_conviction', type: 'date' },
+    s1_33_date_recent_sex_offence: { name: 's1_33_date_recent_sex_offence', type: 'date' },
+    s1_41_current_sexual_mot: { name: 's1_41_current_sexual_mot', type: 'string' },
+    s1_43_last_offence_date: { name: 's1_43_last_offence_date', type: 'date' },
+    s1_38_community_date: { name: 's1_38_community_date', type: 'date' },
+    s1_30_sexual_element: { name: 's1_30_sexual_element', type: 'string' },
+    s2_2_weapon: { name: 's2_2_weapon', type: 'string' },
+    s3_q4_suitable_accom: { name: 's3_q4_suitable_accom', type: 'string' },
+    s4_q2_unemployed: { name: 's4_q2_unemployed', type: 'string' },
+    s6_q4_partner_relationship: { name: 's6_q4_partner_relationship', type: 'string' },
+    s6_q7_dom_abuse: { name: 's6_q7_dom_abuse', type: 'string' },
+    s6_q7_perpetrator_partner: { name: 's6_q7_perpetrator_partner', type: 'string' },
+    s6_q8_cur_rel_status: { name: 's6_q8_cur_rel_status', type: 'string' },
+    s7_q2_reg_activities: { name: 's7_q2_reg_activities', type: 'string' },
+    s8_q1_drugs_misused: { name: 's8_q1_drugs_misused', type: 'string' },
+    amphetamines_curr_use: { name: 'amphetamines_curr_use', type: 'string' },
+    benzodiazepines_curr_use: { name: 'benzodiazepines_curr_use', type: 'string' },
+    cannabis_curr_use: { name: 'cannabis_curr_use', type: 'string' },
+    crack_cocaine_curr_use: { name: 'crack_cocaine_curr_use', type: 'string' },
+    ecstasy_curr_use: { name: 'ecstasy_curr_use', type: 'string' },
+    hallucinogens_curr_use: { name: 'hallucinogens_curr_use', type: 'string' },
+    heroin_curr_use: { name: 'heroin_curr_use', type: 'string' },
+    ketamine_curr_use: { name: 'ketamine_curr_use', type: 'string' },
+    methadone_curr_use: { name: 'methadone_curr_use', type: 'string' },
+    misused_prescribed_curr_use: { name: 'misused_prescribed_curr_use', type: 'string' },
+    other_curr_use: { name: 'other_curr_use', type: 'string' },
+    other_opiate_curr_use: { name: 'other_opiate_curr_use', type: 'string' },
+    cocaine_hydrochloride_curr_use: { name: 'cocaine_hydrochloride_curr_use', type: 'string' },
+    solvents_curr_use: { name: 'solvents_curr_use', type: 'string' },
+    spice_curr_use: { name: 'spice_curr_use', type: 'string' },
+    steroids_curr_use: { name: 'steroids_curr_use', type: 'string' },
+    s8_q8_motiv_drug_misuse: { name: 's8_q8_motiv_drug_misuse', type: 'string' },
+    s9_q1_alcohol: { name: 's9_q1_alcohol', type: 'string' },
+    s9_q2_binge_drink: { name: 's9_q2_binge_drink', type: 'string' },
+    s11_q2_impulsivity: { name: 's11_q2_impulsivity', type: 'string' },
+    s11_q4_temper_control: { name: 's11_q4_temper_control', type: 'string' },
+    s12_q1_pro_criminal: { name: 's12_q1_pro_criminal', type: 'string' },
+    r1_2_past_aggr_burglary: { name: 'r1_2_past_aggr_burglary', type: 'string' },
+    r1_2_past_arson: { name: 'r1_2_past_arson', type: 'string' },
+    r1_2_past_cd_life: { name: 'r1_2_past_cd_life', type: 'string' },
+    r1_2_past_firearm: { name: 'r1_2_past_firearm', type: 'string' },
+    r1_2_past_wounding_gbh: { name: 'r1_2_past_wounding_gbh', type: 'string' },
+    r1_2_past_murder: { name: 'r1_2_past_murder', type: 'string' },
+    r1_2_past_kidnapping: { name: 'r1_2_past_kidnapping', type: 'string' },
+    r1_2_past_robbery: { name: 'r1_2_past_robbery', type: 'string' },
+    r1_2_past_weapon: { name: 'r1_2_past_weapon', type: 'string' },
+    prison_ind: { name: 'prison_ind', type: 'string' },
+}
+
 export class OgrsRsr {
 
     pk: number
     status: string
-    dob: string
+    dob: Temporal.PlainDate
     gender: string
     offence: string
+
+    ogrs4gYr2: number
+    ogrs4gBand: string
+    ogrs4gCalculated: string
+    ogrs4vYr2: number
+    ogrs4vBand: string
+    ogrs4vCalculated: string
+    ogp2Yr2: number
+    ogp2Band: string
+    ogp2Calculated: string
+    ovp2Yr2: number
+    ovp2Band: string
+    ovp2Calculated: string
+    snsvStaticYr2: number
+    snsvStaticYr2Band: string
+    snsvStaticCalculated: string
+    snsvDynamicYr2: number
+    snsvDynamicYr2Band: string
+    snsvDynamicCalculated: string
+
     s1_32_total_sanctions: number
     s1_40_violent_sanctions: number
     s1_34_contact_adult_score: number
@@ -15,11 +137,11 @@ export class OgrsRsr {
     s1_37_non_contact_score: number
     s1_44_dc_stranger_victim: string
     s1_8_age_at_first_sanction: number
-    s1_29_date_current_conviction: string
-    s1_33_date_recent_sex_offence: string
+    s1_29_date_current_conviction: Temporal.PlainDate
+    s1_33_date_recent_sex_offence: Temporal.PlainDate
     s1_41_current_sexual_mot: string
-    s1_43_last_offence_date: string
-    s1_38_community_date: string
+    s1_43_last_offence_date: Temporal.PlainDate
+    s1_38_community_date: Temporal.PlainDate
     s1_30_sexual_element: string
     s2_2_weapon: string
     s3_q4_suitable_accom: string
@@ -31,7 +153,7 @@ export class OgrsRsr {
     s7_q2_reg_activities: string
     s8_q1_drugs_misused: string
     amphetamines_curr_use: string
-    benzodiazipines_curr_use: string
+    benzodiazepines_curr_use: string
     cannabis_curr_use: string
     crack_cocaine_curr_use: string
     ecstasy_curr_use: string
@@ -45,7 +167,7 @@ export class OgrsRsr {
     cocaine_hydrochloride_curr_use: string
     solvents_curr_use: string
     spice_curr_use: string
-    steriods_curr_use: string
+    steroids_curr_use: string
     s8_q8_motiv_drug_misuse: string
     s9_q1_alcohol: string
     s9_q2_binge_drink: string
@@ -65,89 +187,12 @@ export class OgrsRsr {
 
     constructor(rsrData: string[]) {
 
-        let i = 0
-        this.pk = Number.parseInt(rsrData[i++])
-        this.status = rsrData[i++]
-        this.dob = rsrData[i++]
-        this.gender = rsrData[i++]
-        this.offence = rsrData[i++]
-        this.s1_32_total_sanctions = Number.parseInt(rsrData[i++]) || null
-        this.s1_40_violent_sanctions = Number.parseInt(rsrData[i++]) || null
-        this.s1_34_contact_adult_score = Number.parseInt(rsrData[i++]) || null
-        this.s1_45_dc_child_score = Number.parseInt(rsrData[i++]) || null
-        this.s1_46_iic_child_score = Number.parseInt(rsrData[i++]) || null
-        this.s1_37_non_contact_score = Number.parseInt(rsrData[i++]) || null
-        this.s1_44_dc_stranger_victim = rsrData[i++]
-        this.s1_8_age_at_first_sanction = Number.parseInt(rsrData[i++]) || null
-        this.s1_29_date_current_conviction = rsrData[i++]
-        this.s1_33_date_recent_sex_offence = rsrData[i++]
-        this.s1_41_current_sexual_mot = rsrData[i++]
-        this.s1_43_last_offence_date = rsrData[i++]
-        this.s1_38_community_date = rsrData[i++]
-        this.s1_30_sexual_element = rsrData[i++]
-        this.s2_2_weapon = rsrData[i++]
-        this.s3_q4_suitable_accom = rsrData[i++]
-        this.s4_q2_unemployed = rsrData[i++]
-        this.s6_q4_partner_relationship = rsrData[i++]
-        this.s6_q7_dom_abuse = rsrData[i++]
-        this.s6_q7_perpetrator_partner = rsrData[i++]
-        // this.s6_q8_cur_rel_status = rsrData[i++]
-        // this.s7_q2_reg_activities = rsrData[i++]
-        // this.s8_q1_drugs_misused = rsrData[i++]
-        // this.amphetamines_curr_use = rsrData[i++]
-        // this.benzodiazipines_curr_use = rsrData[i++]
-        // this.cannabis_curr_use = rsrData[i++]
-        // this.crack_cocaine_curr_use = rsrData[i++]
-        // this.ecstasy_curr_use = rsrData[i++]
-        // this.hallucinogens_curr_use = rsrData[i++]
-        // this.heroin_curr_use = rsrData[i++]
-        // this.ketamine_curr_use = rsrData[i++]
-        // this.methadone_curr_use = rsrData[i++]
-        // this.misused_prescribed_curr_use = rsrData[i++]
-        // this.other_curr_use = rsrData[i++]
-        // this.other_opiate_curr_use = rsrData[i++]
-        // this.cocaine_hydrochloride_curr_use = rsrData[i++]
-        // this.solvents_curr_use = rsrData[i++]
-        // this.spice_curr_use = rsrData[i++]
-        // this.steriods_curr_use = rsrData[i++]
-        // this.s8_q8_motiv_drug_misuse = rsrData[i++]
-        this.s9_q1_alcohol = rsrData[i++]
-        this.s9_q2_binge_drink = rsrData[i++]
-        this.s11_q2_impulsivity = rsrData[i++]
-        this.s11_q4_temper_control = rsrData[i++]
-        this.s12_q1_pro_criminal = rsrData[i++]
-        this.r1_2_past_aggr_burglary = rsrData[i++]
-        this.r1_2_past_arson = rsrData[i++]
-        this.r1_2_past_cd_life = rsrData[i++]
-        this.r1_2_past_firearm = rsrData[i++]
-        this.r1_2_past_wounding_gbh = rsrData[i++]
-        this.r1_2_past_murder = rsrData[i++]
-        this.r1_2_past_kidnapping = rsrData[i++]
-        this.r1_2_past_robbery = rsrData[i++]
-        this.r1_2_past_weapon = rsrData[i++]
-        this.prison_ind = rsrData[i++]
+        assignValues(this, csrpColumns, rsrData, 0, true)
     }
 
     static query(rows: number, whereClause: string): string {
-        // TODO add drugs details.  Use query builder from API code?
 
-        return `select offender_rsr_scores_pk, rsr_status,
-                    to_char(date_of_birth, '${oasysDateTime.dateFormat}'), gender_elm, offence_code || offence_subcode,
-                    s1_32_total_sanctions, s1_40_violent_sanctions, 
-                    s1_34_contact_adult_score, s1_45_dc_child_score, s1_46_iic_child_score, s1_37_non_contact_score,
-
-                    s1_44_dc_stranger_victim, s1_8_age_at_first_sanction, to_char(s1_29_date_current_conviction, '${oasysDateTime.dateFormat}'), 
-                    to_char(s1_33_date_recent_sex_offence, '${oasysDateTime.dateFormat}'), s1_41_current_sexual_mot, 
-                    to_char(s1_43_last_offence_date, '${oasysDateTime.dateFormat}'), to_char(s1_38_community_date, '${oasysDateTime.dateFormat}'), s1_30_sexual_element, 
-                    s2_2_weapon, s3_q4_suitable_accom, s4_q2_unemployed, s6_q4_partner_relationship, 
-                    s6_q7_dom_abuse, s6_q7_perpetrator_partner,  
-                    s9_q1_alcohol, s9_q2_binge_drink, s11_q2_impulsivity, s11_q4_temper_control, 
-                    s12_q1_pro_criminal, r1_2_past_aggr_burglary, r1_2_past_arson, r1_2_past_cd_life, r1_2_past_firearm, 
-                    r1_2_past_wounding_gbh, r1_2_past_murder, r1_2_past_kidnapping, r1_2_past_robbery, r1_2_past_weapon, prison_ind
-                    
-                    from eor.offender_rsr_scores
-                    where ${whereClause}
-                    order by initiation_date desc fetch first ${rows} rows only`
+        return buildQuery(csrpColumns, ['offender_rsr_scores'], whereClause, `offender_rsr_scores.initiation_date desc fetch first ${rows} rows only`)
     }
 }
 

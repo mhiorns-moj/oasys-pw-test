@@ -22,9 +22,7 @@ export function buildQuery(columns: Columns, tables: Table[], whereCondition: st
                         `)
 }
 
-
-
-export function getColumns(columns: Columns, defaultTable: string): string {
+function getColumns(columns: Columns, defaultTable: string): string {
 
     let result = ''
     Object.keys(columns).forEach((key) => {
@@ -42,14 +40,18 @@ function column(column: ColumnDef, defaultTable: string): string {
         : `${table}.${column.name},`
 }
 
-export function assignValues(obj: { [key: string]: any }, columns: Columns, data: string[], startIndex: number) {
+export function assignValues(obj: { [key: string]: any }, columns: Columns, data: string[], startIndex: number, datesAsTemporal = false) {
 
     let i = startIndex
     Object.keys(columns).forEach((key) => {
         const column = columns[key]
         switch (column.type) {
             case 'date':
-                obj[key] = data[i++]
+                if (datesAsTemporal) {
+                    obj[key] = oasysDateTime.stringToDate(data[i++])
+                } else {
+                    obj[key] = data[i++]
+                }
                 break
             case 'float':
                 obj[key] = utils.stringToFloat(data[i++])

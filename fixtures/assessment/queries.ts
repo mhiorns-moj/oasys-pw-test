@@ -1,11 +1,11 @@
 import { Temporal } from '@js-temporal/polyfill'
 
-import { OasysDb } from '../oasysDb/oasysDb'
+import { OasysDb } from 'fixtures'
 
 
 export class Queries {
 
-    constructor(readonly oasysDb: OasysDb) { }
+    constructor(private readonly oasysDb: OasysDb) { }
 
     /**
      * Returns all assessment PKs for a given offender, including deleted unless the optional second parameter is true.
