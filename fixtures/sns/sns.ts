@@ -101,6 +101,14 @@ export class Sns {
 
     }
 
+    async checkNoMessagesForAssessment(pk: number) {
+
+        log(`Checking no messages have been sent for assessment PK ${pk}`)
+        // Get SNS messages from the database for the assessment - limit to last 5 seconds
+        const snsData = await this.oasysDb.getData(DbSns.query(pk, 'assessment', 5))
+        expect(snsData.length).toBe(0)
+    }
+
     private async getAssessment(crn: string, type: AssessmentOrRsr): Promise<DbAssessmentOrRsr> {
 
         const query = type == 'assessment' ? DbAssessmentOrRsr.assessmentQuery(crn) : DbAssessmentOrRsr.rsrQuery(crn)

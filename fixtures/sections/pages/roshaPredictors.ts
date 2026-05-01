@@ -122,6 +122,8 @@ export class RoshaPredictors extends BaseAssessmentPage {
     o11_2 = new Element.Select<ProblemsAnswer>(this.page, '#P5_QU_11_2')
     o11_4 = new Element.Select<ProblemsAnswer>(this.page, '#P5_QU_11_4')
     o12_1 = new Element.Select<ProblemsAnswer>(this.page, '#P5_QU_12_1')
+    
+    predictorsText = new Element.Text(this.page, "h2:has-text('ACTUARIAL PREDICTORS')+table>tbody>tr>td")
     arpText = new Element.Text(this.page, "td:has-text('ALL REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")
     vrpText = new Element.Text(this.page, ":nth-match(td:has-text('VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td,1)")
     svrpText = new Element.Text(this.page, "td:has-text('SERIOUS VIOLENT REOFFENDING PREDICTOR OVER THE NEXT TWO YEARS')+td")

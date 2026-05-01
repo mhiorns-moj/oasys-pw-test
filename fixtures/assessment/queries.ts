@@ -279,7 +279,7 @@ export class Queries {
         const oldData = await this.oasysDb.getData(sectionQuery(oldPk, section))
 
         if (newData.length != oldData.length) {
-            log(`New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0} `)
+            log(`Section ${section} - New count: ${newData.length ?? 0}, old count: ${oldData.length ?? 0} `)
             failed = true
         } else {
             for (let i = 0; i < newData.length; i++) {

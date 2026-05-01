@@ -22,6 +22,25 @@ export class Sections {
 
     // Layer 1
     readonly layer1Section2 = new pages.Layer1Section2(this.page)
+    
+    /**    
+     * - A Heroin
+     * - B Methadone(not prescribed)
+     * - C Other opiates
+     * - D Crack/Cocaine
+     * - E Cocaine Hydrochloride
+     * - F Misused prescribed drugs
+     * - G Benzodiazepines
+     * - H Amphetamines
+     * - I Hallucinogens
+     * - J Ecstasy
+     * - K Cannabis
+     * - L Solvents
+     * - M Steroids
+     * - P Spice
+     * - Q Ketamine
+     * - N Other
+     */
     readonly predictorQuestions = new pages.PredictorQuestions(this.page)
 
     /**    

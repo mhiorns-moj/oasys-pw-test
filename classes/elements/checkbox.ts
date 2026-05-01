@@ -60,7 +60,7 @@ export class Checkbox {
         const disabled = await this.selector.isDisabled()
 
         result.status = !visible ? 'notVisible' : disabled ? 'visible' : 'enabled'
-        result.value = this.selector.isChecked().toString()
+        result.value = (await this.selector.isChecked()).toString()
 
         return result
     }

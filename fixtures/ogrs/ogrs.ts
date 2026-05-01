@@ -173,6 +173,31 @@ export class Ogrs {
         return testCaseResult
     }
 
+    async checkResultsOnPredictorsScreen(ogrsResult: Ogrs4CalcResult) {
+
+        await this.sections.predictors.goto()
+        await this.sections.predictors.arpText.checkValue(ogrsResult.arpText, true)
+        await this.sections.predictors.vrpText.checkValue(ogrsResult.vrpText, true)
+        await this.sections.predictors.svrpText.checkValue(ogrsResult.svrpText, true)
+        if (ogrsResult.dcSrpBand) {
+            await this.sections.predictors.dcSrpBand.checkValue(ogrsResult.dcSrpBand)
+        } else {
+            await this.sections.predictors.dcSrpText.checkValue('Not Applicable')
+        }
+        if (ogrsResult.iicSrpBand) {
+            await this.sections.predictors.iicSrpBand.checkValue(ogrsResult.iicSrpBand)
+        } else {
+            await this.sections.predictors.iicSrpText.checkValue('Not Applicable')
+        }
+        if (ogrsResult.csrpBand) {
+            await this.sections.predictors.csrpBand.checkValue(ogrsResult.csrpBand)
+            await this.sections.predictors.csrpType.checkValue(ogrsResult.csrpType)
+            await this.sections.predictors.csrpScore.checkValue(ogrsResult.csrpScore)
+        } else {
+            await this.sections.predictors.csrpText.checkValue('Unable to calculate due to', true)
+        }
+    }
+
     async checkResultsOnRoshaPredictorsScreen(ogrsResult: Ogrs4CalcResult) {
 
         await this.sections.roshaPredictors.goto()
@@ -218,6 +243,28 @@ export class Ogrs {
         } else {
             await this.risk.summary.iicSrpBand.checkValue(ogrsResult.iicSrpBand)
         }
+    }
+
+    async checkNonMFResultOnPredictorsPage() {
+
+        await this.sections.predictors.goto()
+        await this.sections.predictors.predictorsText.checkValue(`The All Reoffending Predictor and the Violent Reoffending Predictor scores cannot be calculated when the Gender selected for the offender is not 'Male' or 'Female'.`, true)
+        await this.sections.predictors.arpText.checkStatus('notVisible')
+        await this.sections.predictors.vrpText.checkStatus('notVisible')
+        await this.sections.predictors.dcSrpText.checkValue('Not Applicable')
+        await this.sections.predictors.iicSrpText.checkValue('Not Applicable')
+        await this.sections.predictors.csrpText.checkValue(`Combined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
+    }
+
+    async checkNonMFResultOnRoshaPredictorsPage() {
+
+        await this.sections.roshaPredictors.goto()
+        await this.sections.roshaPredictors.predictorsText.checkValue(`The All Reoffending Predictor and the Violent Reoffending Predictor scores cannot be calculated when the Gender selected for the offender is not 'Male' or 'Female'.`)
+        await this.sections.roshaPredictors.arpText.checkStatus('notVisible')
+        await this.sections.roshaPredictors.vrpText.checkStatus('notVisible')
+        await this.sections.roshaPredictors.dcSrpText.checkValue('Not Applicable')
+        await this.sections.roshaPredictors.iicSrpText.checkValue('Not Applicable')
+        await this.sections.roshaPredictors.csrpText.checkValue(`Combined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
     }
 
     async checkFeatureLines(ogrsResult: Ogrs4CalcResult, pk: number) {
