@@ -34,13 +34,13 @@ export class Ogrs {
         return this.calculator.calculate(calculatorParams)
     }
 
-    async getOasysData(type: AssessmentOrRsr, count: number, whereClause: string): Promise<OgrsAssessment[] | OgrsRsr[]> {
+    async getOasysData(type: AssessmentOrCsrp, count: number, whereClause: string): Promise<OgrsAssessment[] | OgrsRsr[]> {
 
         const result = type == 'assessment' ? await this.data.getAssessmentTestData(count, whereClause) : await this.data.getCsrpTestData(count, whereClause)
         return result
     }
 
-    getInputParams(type: AssessmentOrRsr, assessmentOrRsr: OgrsAssessment | OgrsRsr, dateParam: string | Temporal.PlainDate = null): OgrsInputParams {
+    getInputParams(type: AssessmentOrCsrp, assessmentOrRsr: OgrsAssessment | OgrsRsr, dateParam: string | Temporal.PlainDate = null): OgrsInputParams {
 
         const result = type == 'assessment' ? this.data.getAssessmentInputParams(assessmentOrRsr as OgrsAssessment, dateParam) : this.data.getRsrInputParams(assessmentOrRsr as OgrsRsr)
         return result
@@ -356,14 +356,14 @@ export class Ogrs {
         await this.sections.roshaPredictors.csrpText.checkValue(`Combined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
     }
 
-    async checkFeatureLines(ogrsResult: Ogrs4CalcResult, pk: number) {
+    async checkFeatureLines(ogrsResult: Ogrs4CalcResult, pk: number, type: AssessmentOrCsrp = 'assessment') {
 
         log('', `Checking OGRS4 feature lines for PK ${pk}`)
         let query = 'select '
         for (const key of Object.keys(featureColumns)) {
             query = `${query}${key},`
         }
-        query = `${query.slice(0, -1)} from eor.predictor_feature_lines where oasys_set_pk = ${pk}`
+        query = `${query.slice(0, -1)} from eor.predictor_feature_lines where ${type == 'assessment' ? 'oasys_set_pk' : 'offender_rsr_scores_pk'} = ${pk}`
 
         const row = (await this.oasysDb.getData(query))[0]
 

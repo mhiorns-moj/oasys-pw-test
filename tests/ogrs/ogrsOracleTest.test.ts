@@ -42,9 +42,9 @@ test.describe('OGRS calculator tests', () => {
         await ogrsOracleTest('assessment', count, whereClause, reportMode, ogrs)
     })
 
-    test(`Standalone RSR complete`, async ({ ogrs }) => {
+    test(`Standalone CSRP complete`, async ({ ogrs }) => {
 
         const whereClause = `deleted_date is null and rsr_status = 'COMPLETE'`
-        await ogrsOracleTest('rsr', count, whereClause, reportMode, ogrs)
+        await ogrsOracleTest('csrp', count, whereClause, reportMode, ogrs)
     })
 })

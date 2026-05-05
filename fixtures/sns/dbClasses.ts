@@ -7,7 +7,7 @@
  */
 export class DbAssessmentOrRsr {
 
-    type: AssessmentOrRsr
+    type: AssessmentOrCsrp
     pk: number
     status: string
     initiationDate: string
@@ -57,7 +57,7 @@ export class DbAssessmentOrRsr {
     snsvDynamicYr2Band: string
     rsrAlgorithmVersion: number
 
-    constructor(assessmentData: string[], type: AssessmentOrRsr) {
+    constructor(assessmentData: string[], type: AssessmentOrCsrp) {
 
         const tzOffset = oasysDateTime.timeZoneOffset()
 
@@ -123,6 +123,20 @@ export class DbAssessmentOrRsr {
             this.ogrs2yrBand = assessmentData[38]
         } else {
             this.assessmentDate = this.completedDate
+            this.ogrs4gYr2 = fixDp(assessmentData[18])
+            this.ogrs4gBand = assessmentData[19]
+            this.ogrs4vYr2 = fixDp(assessmentData[20])
+            this.ogrs4vBand = assessmentData[21]
+            this.ogp2Yr2 = fixDp(assessmentData[22])
+            this.ogp2Band = assessmentData[23]
+            this.ovp2Yr2 = fixDp(assessmentData[24])
+            this.ovp2Band = assessmentData[25]
+            this.snsvStaticYr2 = fixDp(assessmentData[26])
+            this.snsvStaticYr2Band = assessmentData[27]
+            this.snsvDynamicYr2 = fixDp(assessmentData[28])
+            this.snsvDynamicYr2Band = assessmentData[29]
+            this.rsrAlgorithmVersion = Number.parseInt(assessmentData[30])
+            this.ogrs2yrBand = assessmentData[31]
         }
     }
 
@@ -160,14 +174,21 @@ export class DbAssessmentOrRsr {
                     and q.oasys_section_pk = s.oasys_section_pk and a.oasys_question_pk = q.oasys_question_pk and q.ref_question_code = 'RA'`
     }
 
-    static rsrQuery(crn: string): string {
+    static csrpQuery(crn: string): string {
 
         return `select r.offender_rsr_scores_pk, r.rsr_status, o.cms_event_number, 
                     to_char(r.initiation_date, '${oasysDateTime.oracleTimestampFormat}'), to_char(r.date_completed, '${oasysDateTime.oracleTimestampFormat}'), 
                     r.ogrs3_1year, r.ogrs3_2year,
                     r.rsr_percentage_score, r.rsr_risk_recon_elm, r.rsr_static_or_dynamic, 
                     r.osp_i_percentage_score, r.osp_c_percentage_score, r.osp_i_risk_recon_elm, r.osp_c_risk_recon_elm, 
-                    r.osp_iic_percentage_score, r.osp_iic_risk_recon_elm, r.osp_dc_percentage_score, r.osp_dc_risk_recon_elm  
+                    r.osp_iic_percentage_score, r.osp_iic_risk_recon_elm, r.osp_dc_percentage_score, r.osp_dc_risk_recon_elm,
+                    r.ogrs4g_percentage_2yr, r.ogrs4g_band_risk_recon_elm, 
+                    r.ogrs4v_percentage_2yr, r.ogrs4v_band_risk_recon_elm,
+                    r.ogp2_percentage_2yr, r.ogp2_band_risk_recon_elm, 
+                    r.ovp2_percentage_2yr, r.ovp2_band_risk_recon_elm, 
+                    r.snsv_percentage_2yr_static, r.snsv_stat_band_risk_recon_elm, 
+                    r.snsv_percentage_2yr_dynamic, r.snsv_dyn_band_risk_recon_elm,
+                    r.rsr_algorithm_version, r.ogrs3_risk_recon_elm
                     from eor.offender_rsr_scores r, eor.offender o 
                     where r.offender_pk = o.offender_pk and o.cms_prob_number = '${crn}' and o.deleted_date is null and r.deleted_date is null 
                     order by r.initiation_date desc`
@@ -189,7 +210,7 @@ export class DbSns {
         this.messageSubject = snsData[2]
     }
 
-    static query(assessmentPk: number, type: AssessmentOrRsr, maxDelay: number) {
+    static query(assessmentPk: number, type: AssessmentOrCsrp, maxDelay: number) {
 
         return `select message_type, translate(message_data, 'x' || CHR(13) || CHR(10), 'x'), message_subject from eor.sns_message 
                     where ${type == 'assessment' ? 'oasys_set_pk' : 'offender_rsr_scores_pk'} = ${assessmentPk}

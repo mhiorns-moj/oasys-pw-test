@@ -46,6 +46,7 @@ declare type ProblemsAnswer = '0-No problems' | '1-Some problems' | '2-Significa
 declare type ProblemsMissingAnswer = '0-No problems' | '1-Some problems' | '2-Significant problems' | 'Missing' | ''
 declare type OasysDate = string | { days?: number, months?: number, years?: number }
 declare type Q6_8Answer = 'In a relationship, living together' | 'In a relationship, not living together' | 'Not in a relationship'
+declare type Q6_8AnswerNoCommas = 'In a relationship living together' | 'In a relationship not living together' | 'Not in a relationship'
 declare type DrugsUsage = 'Daily' | 'Weekly' | 'Monthly' | 'Occasional'
 
 declare type CreateAssessmentDetails = {

@@ -2,7 +2,7 @@ import { Page, expect } from '@playwright/test'
 import { flatten } from 'flat' // https://www.npmjs.com/package/flat
 
 import { Oasys, OasysDb } from 'fixtures'
-import { DbAssessmentOrRsr, DbSns } from './dbClasses'
+import { DbAssessmentOrRsr as DbAssessmentOrCsrp, DbSns } from './dbClasses'
 import { SnsMessage } from './snsClasses'
 
 export class Sns {
@@ -19,7 +19,7 @@ export class Sns {
      * 
      * The third optional parameter can be a list of expected message types, allowing confirmation that the data is in the right state to generate those messages.
      */
-    async testSnsMessageData(crn: string, type: AssessmentOrRsr, expectingMessages?: ('AssSumm' | 'OGRS' | 'OPD' | 'RSR')[]) {
+    async testSnsMessageData(crn: string, type: AssessmentOrCsrp, expectingMessages?: ('AssSumm' | 'OGRS' | 'OPD' | 'RSR')[]) {
 
         let failed = false
         const actualSnsMessages: DbSns[] = []
@@ -35,7 +35,7 @@ export class Sns {
         } else {
             // For RoSHA assessments - check if risk assessment has been completed.
             if (type == 'assessment' && assessment.purposeOfAssessment == 'Risk of Harm Assessment') {
-                const roshaQuestionData = await this.oasysDb.getData(DbAssessmentOrRsr.roshaQuestionQuery(assessment.pk))
+                const roshaQuestionData = await this.oasysDb.getData(DbAssessmentOrCsrp.roshaQuestionQuery(assessment.pk))
                 if (roshaQuestionData.length > 0) {
                     assessment.roshaRiskAssessmentCompleted = roshaQuestionData[0][0] == 'YES'
                 }
@@ -109,19 +109,19 @@ export class Sns {
         expect(snsData.length).toBe(0)
     }
 
-    private async getAssessment(crn: string, type: AssessmentOrRsr): Promise<DbAssessmentOrRsr> {
+    private async getAssessment(crn: string, type: AssessmentOrCsrp): Promise<DbAssessmentOrCsrp> {
 
-        const query = type == 'assessment' ? DbAssessmentOrRsr.assessmentQuery(crn) : DbAssessmentOrRsr.rsrQuery(crn)
+        const query = type == 'assessment' ? DbAssessmentOrCsrp.assessmentQuery(crn) : DbAssessmentOrCsrp.csrpQuery(crn)
         const assessmentData = await this.oasysDb.getData(query)
 
         if (assessmentData.length == 0) {
             return null
         } else {
-            return new DbAssessmentOrRsr(assessmentData[0], type)
+            return new DbAssessmentOrCsrp(assessmentData[0], type)
         }
     }
 
-    private buildExpectedMessages(assessment: DbAssessmentOrRsr, crn: string): SnsMessage[] {
+    private buildExpectedMessages(assessment: DbAssessmentOrCsrp, crn: string): SnsMessage[] {
 
         const expectedSnsMessages: SnsMessage[] = []
         const excludedAssessmentTypes = ['Risk of Harm Assessment', 'TSP Assessment', 'RSR Only']

@@ -46,7 +46,7 @@ export async function ogrsCsvTest(dataFile: string, staticFlag: 'Y' | 'N', repor
 
 
 // Create test cases using OASys assessment data
-export async function ogrsOracleTest(type: AssessmentOrRsr, count: number, whereClause: string, reportMode: ReportMode, ogrs: Ogrs) {
+export async function ogrsOracleTest(type: AssessmentOrCsrp, count: number, whereClause: string, reportMode: ReportMode, ogrs: Ogrs) {
 
     let failures = 0
     let cases = 0

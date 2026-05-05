@@ -9,7 +9,7 @@ export class Section6 extends BaseAssessmentPage {
     noIssues = new Element.Button(this.page, 'No Issues')
     o6_1 = new Element.Select<ProblemsMissingAnswer>(this.page, '#itm_6_1')
     o6_3 = new Element.Select<ProblemsAnswer>(this.page, '#itm_6_3')
-    o6_8 = new Element.Select<Q6_8Answer>(this.page, '#itm_6_8')
+    o6_8 = new Element.Select<Q6_8AnswerNoCommas>(this.page, '#itm_6_8')
     o6_4 = new Element.Select<ProblemsAnswer>(this.page, '#itm_6_4')
     o6_6 = new Element.Select<ProblemsAnswer>(this.page, '#itm_6_6')
     o6_7 = new Element.Select<YesNoAnswer>(this.page, '#itm_6_7da')
