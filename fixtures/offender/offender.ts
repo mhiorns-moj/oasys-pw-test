@@ -3,7 +3,7 @@ import { Page, TestInfo } from '@playwright/test'
 import { Oasys, Cms, OasysDb } from 'fixtures'
 import * as pages from './pages'
 import * as offenders from './offenderLib'
-import {Queries} from './queries'
+import { Queries } from './queries'
 import { User } from 'classes'
 
 
@@ -63,6 +63,9 @@ export class Offender {
         }
         if (params?.forename1) {
             offender.forename1 = params.forename1
+        }
+        if (params?.age) {
+            offender.dateOfBirth = { years: -params.age }
         }
 
         return offender

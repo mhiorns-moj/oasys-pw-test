@@ -94,4 +94,4 @@ declare type Alias = {
 declare type Provider = 'prob' | 'pris'
 declare type StandardOffenderType = 'burglary' | 'sexual' | 'twoOffences' | 'noEvent'
 
-declare type OffenderLibParams = { gender?: Gender, forename1?: string, type?: StandardOffenderType }
+declare type OffenderLibParams = { gender?: Gender, forename1?: string, type?: StandardOffenderType, age?: number }

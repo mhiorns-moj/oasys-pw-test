@@ -30,7 +30,7 @@ export class OffendingInformation extends BaseAssessmentPage {
     resentencingForBreach = new Element.Select(this.page, '#P6_RESENTENCE_FOR_BREACH_IND')
     orderAmended = new Element.Select(this.page, '#P6_ORDER_AMENDED')
     dateAmended = new Element.Textbox<OasysDate>(this.page, '#P6_DATE_AMENDED', true)
-    sentence = new Element.Select(this.page, '#P6_SENTENCE_CODE')
+    sentence = new Element.Select<Sentence>(this.page, '#P6_SENTENCE_CODE')
     disqualificationOrder = new Element.Select(this.page, '#P6_DISQUALIFICATION_ORDER')
     custodyInMonths = new Element.Textbox(this.page, '#P6_SENTENCE_LENGTH_CRO_M')
     sentenceLengthInDays = new Element.Textbox(this.page, '#P6_SENTENCE_LENGTH_CUST_DAYS')

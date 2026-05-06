@@ -6,7 +6,7 @@ export class Section8 extends BaseAssessmentPage {
     title = '8 - Drug Misuse'
     menu: Menu = { type: 'Floating', level1: 'Section 2 to 13', level2: '8 - Drug Misuse' }
 
-    o8_1 = new Element.Select(this.page, '#itm_8_1')
+    o8_1 = new Element.Select<YesNoAnswer>(this.page, '#itm_8_1')
     aCurrent = new Element.Select(this.page, '#itm_8_2_1_1')
     aCurrentlyInjected = new Element.Checkbox(this.page, '#itm_8_2_1_2_YES')
     aPrevious = new Element.Checkbox(this.page, '#itm_8_2_1_3_YES')
@@ -61,11 +61,11 @@ export class Section8 extends BaseAssessmentPage {
     o8_4 = new Element.Select(this.page, '#itm_8_4')
     o8_5 = new Element.Select(this.page, '#itm_8_5')
     o8_6 = new Element.Select(this.page, '#itm_8_6')
-    o8_8 = new Element.Select(this.page, '#itm_8_8')
-    o8_9 = new Element.Select(this.page, '#itm_8_9')
+    o8_8 = new Element.Select<ProblemsMissingAnswer>(this.page, '#itm_8_8')
+    o8_9 = new Element.Select<ProblemsMissingAnswer>(this.page, '#itm_8_9')
     identifyIssues = new Element.Textbox(this.page, '#textarea_8_97')
-    linkedToRisk = new Element.Select(this.page, '#itm_8_98')
-    linkedToBehaviour = new Element.Select(this.page, '#itm_8_99')
+    linkedToRisk = new Element.Select<YesNoAnswer>(this.page, '#itm_8_98')
+    linkedToBehaviour = new Element.Select<YesNoAnswer>(this.page, '#itm_8_99')
 
 
     async populateNoIssues(suppressLog: boolean = false) {
