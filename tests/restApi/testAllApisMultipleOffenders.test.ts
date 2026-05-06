@@ -29,8 +29,8 @@ const dateConditions = [
 const limitEndpoints: Endpoint[] = []
 // const limitEndpoints: Endpoint[] = ['crimNeeds']
 
-// const excludeEndpoints: Endpoint[] = []
-const excludeEndpoints: Endpoint[] = ['pni']
+const excludeEndpoints: Endpoint[] = []
+// const excludeEndpoints: Endpoint[] = ['pni']
 
 // Hide details from the report for passes
 const reportPasses = false
