@@ -55,7 +55,7 @@ export class Db {
 
         try {
             let result = await this.connection.execute(query)
-            return { data: result['rows'][0].toString(), error: null }
+            return { data: result['rows'][0]?.toString() ?? null, error: null }
         }
         catch (e) {
             return { data: null, error: `Error running query '${query}': ${e}` }

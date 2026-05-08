@@ -296,11 +296,11 @@ export function testRef8(offender1: OffenderDef, pks: number[]) {
         const expectedPredictorsValues: ColumnValues[] = [
             {
                 name: 'scoreDescription',
-                values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
+                values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
             },
             {
                 name: 'twoYear',
-                values: [' 29.05', '  3.71', '  0.43', 'N/A', 'N/A', '  9.94']
+                values: [' 29.05', '  3.71', '  0.43', '  0.00', '  0.00', '  9.94']
             },
             {
                 name: 'category',

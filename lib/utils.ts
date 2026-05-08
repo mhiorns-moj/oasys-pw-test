@@ -5,7 +5,7 @@ export class Utils {
     }
 
     getInteger(param: string): number {
-        return param == '' || param == null || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
+        return param == '' || param == null || param == undefined || param.toLowerCase() == 'null' ? null : Number.parseInt(param)
     }
 
     lookupString(value: string, lookup: { [keys: string]: string }, translation: { [keys: string]: string } = null): string {

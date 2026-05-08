@@ -67,7 +67,7 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
     })
 
     await sections.predictors.goto()
-    await sections.predictors.csrpScore.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
+    await sections.predictors.csrpText.checkValue(`Unable to calculate due to: \nCombined Serious Reoffending Predictor can't be calculated on gender other than Male and Female.`, true)
 
     log(`Check that the Summary screen is showing the correct information for the Criminogenic Needs and threshold section and that in the Predictors Scores % 
         and Risk Category OGRS, OGP and OVP just show dashes, both OSP rows show N/A,  the RSR row shows N/A and then two dashes`, 'Test step')
@@ -93,11 +93,11 @@ test('SAN integration - test refs 23 and 33', async ({ oasys, offender, assessme
     const expectedPredictorsValues: ColumnValues[] = [
         {
             name: 'scoreDescription',
-            values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
+            values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
         },
         {
             name: 'twoYear',
-            values: ['-', '-', '-', 'N/A', 'N/A', '-']
+            values: ['-', '-', '-', '  0.00', '  0.00', '-']
         },
         {
             name: 'category',

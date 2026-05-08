@@ -3,7 +3,7 @@ import { test, Api } from 'fixtures'
 
 // Number of offenders for each date range
 const offenderCountEarly = 25     // Used for pre-2023
-const offenderCount = 75          // 2023 and later
+const offenderCount = 100         // 2023 and later
 
 // Response time thresholds
 const slow = 100
@@ -12,11 +12,6 @@ const failure = 1000
 
 // Define date parameters for sets of offender data
 const dateConditions = [
-    { date: `2015-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-    { date: `2016-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-    { date: `2017-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-    { date: `2018-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
-    { date: `2019-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
     { date: `2020-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
     { date: `2021-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },
     { date: `2022-${randomMonth()}-${randomDay()}`, count: offenderCountEarly },

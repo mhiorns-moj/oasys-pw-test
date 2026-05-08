@@ -16,6 +16,7 @@ import { Signing } from './signing/signing'
 import { Sara } from './sara/sara'
 import { Api } from './api/api'
 import { Ogrs } from './ogrs/ogrs'
+import { Pni } from './pni/pni'
 import { Maintenance } from './maintenance/maintenance'
 import { Logs } from 'lib/logs'
 import { initialiseGlobals } from 'lib/lib'
@@ -35,6 +36,7 @@ export { Signing } from './signing/signing'
 export { Sara } from './sara/sara'
 export { Api } from './api/api'
 export { Ogrs } from './ogrs/ogrs'
+export { Pni } from './pni/pni'
 export { Maintenance } from './maintenance/maintenance'
 
 
@@ -53,6 +55,7 @@ type OasysFixtures = {
     sns: Sns,
     api: Api,
     ogrs: Ogrs,
+    pni: Pni,
     maintenance: Maintenance,
     logs: Logs,
 }
@@ -143,6 +146,11 @@ export const test = base.extend<OasysFixtures>({
     ogrs: async ({ oasysDb, offender, sections, risk }, use: Function) => {
         const ogrs = new Ogrs(oasysDb, offender, sections, risk)
         await use(ogrs)
+    },
+
+    pni: async ({ oasysDb, assessment }, use: Function) => {
+        const pni = new Pni(oasysDb, assessment)
+        await use(pni)
     },
 
     maintenance: async ({ page }, use: Function) => {

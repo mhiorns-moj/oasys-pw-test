@@ -174,7 +174,7 @@ export class Ogrs {
 
         result.csrpBand = result.outputParams.RSR_BAND?.toUpperCase() ?? null
         result.csrpType = result.outputParams.RSR_DYNAMIC == 'Y' ? 'DYNAMIC' : result.outputParams.RSR_CALCULATED == 'Y' ? 'STATIC' : ''
-        result.csrpScore = result.csrpBand ? `${result.outputParams.RSR_PERCENTAGE.toFixed(2).padStart(6)}` : ''
+        result.csrpScore = result.csrpBand ? `${result.outputParams.RSR_PERCENTAGE.toFixed(2).padStart(6)}% ` : ''
         result.csrpText = result.csrpBand ? '' : 'Unable to calculate CSRP due to missing details'
 
     }
