@@ -109,8 +109,8 @@ export class Signing {
 
         if (params?.expectSecondCountersigner) {
 
-            this.cPage.comments.setValue('Sending for second countersignature')
-            this.cPage.confirm.click()
+            await this.cPage.comments.setValue('Sending for second countersignature')
+            await this.cPage.confirm.click()
         }
 
         await this.tasks.taskManager.checkCurrent(true)

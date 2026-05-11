@@ -23,7 +23,6 @@ export class Risk {
 
         await this.screeningSection1.populateMinimal()
         await this.screeningSection2to4.populateMinimal(withRationale)
-        await this.screeningSection5.noRisks()
     }
 
     /**

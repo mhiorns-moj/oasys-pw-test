@@ -300,11 +300,11 @@ export function testRef8(offender1: OffenderDef, pks: number[]) {
             },
             {
                 name: 'twoYear',
-                values: [' 29.05', '  3.71', '  0.43', '  0.00', '  0.00', '  9.94']
+                values: [' 29.05', '  3.71', '  0.43', '  6.18', '  3.33', '  9.94']
             },
             {
                 name: 'category',
-                values: ['Low  (DYNAMIC)', 'Low  (DYNAMIC)', 'Low  (DYNAMIC)', 'Medium', 'Very High', 'Very High  (DYNAMIC)']
+                values: ['Low  (DYNAMIC)', 'Low  (DYNAMIC)', 'Low  (DYNAMIC)', 'Very High', 'Medium', 'Very High  (DYNAMIC)']
             },
         ]
         await assessment.summarySheet.predictorsTable.checkData(expectedPredictorsValues)
