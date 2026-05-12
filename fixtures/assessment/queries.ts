@@ -116,7 +116,7 @@ export class Queries {
             if (dataRow.length > 0) {
                 if (answerType == 'multipleRefAnswer') {
                     actualResult = ''
-                    dataRow.forEach(r => { actualResult += `${r[1]}, ` })
+                    dataRow.forEach(r => { actualResult += `${r[1]},` })
                     if (actualResult == 'null,') { actualResult = null }
                 } else {
                     actualResult = answerType == 'refAnswer' ? dataRow[0][1] : answerType == 'freeFormat' ? dataRow[0][2] : dataRow[0][3]

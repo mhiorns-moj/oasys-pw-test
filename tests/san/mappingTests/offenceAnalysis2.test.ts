@@ -6,5 +6,5 @@ import * as data from '../data/mapping'
 
 test('Mapping test: offence analysis part 2', async ({ oasys, offender, assessment, sections, san }) => {
 
-    await mappingTest(oasys, offender, assessment, sections, san, data.OffenceAnalysis2.script)
+    await mappingTest(oasys, offender, assessment, sections, san, data.OffenceAnalysis2.script, true)
 })
