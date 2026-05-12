@@ -1,5 +1,5 @@
 import { test } from 'fixtures'
-import { testEnvironment } from '../../localSettings'
+import { testEnvironment } from 'localSettings'
 
 const t2 = testEnvironment.name.includes('T2')
 

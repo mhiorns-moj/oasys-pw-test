@@ -1,6 +1,6 @@
 import { test, Oasys, Maintenance } from 'fixtures'
 import { User } from 'classes/user'
-import { testEnvironment } from '../../localSettings'
+import { testEnvironment } from 'localSettings'
 
 const t2 = testEnvironment.name.includes('T2')
 
