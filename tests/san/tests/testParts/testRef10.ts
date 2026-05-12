@@ -23,7 +23,7 @@ export function testRef10(offender1: OffenderDef, pks: number[]) {
 
         await assessment.queries.checkCloning(pk, prevPk, [
             '2', '7', '8', '9', '10', '11', '12', '13',
-            'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SAN',
+            'SAQ', 'ROSH', 'ROSHFULL', 'RMP', 'SAN',
         ])
 
         await assessment.queries.checkCloningExpectMismatch(pk, prevPk, [

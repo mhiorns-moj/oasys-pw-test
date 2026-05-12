@@ -3,15 +3,15 @@ import { test } from 'fixtures'
 
 // Offender has a completed assessment and incomplete SARA (rejected at S/L) with high/medium
 
-test('NOD-1225', async ({ oasys, offender, assessment, sections, risk, sara, sentencePlan, signing, api }) => {
+test('NOD-1225', async ({ oasys, offender, assessment, sections, risk, sara, sentencePlan, signing, api, pni }) => {
 
     await oasys.login(oasys.users.probHeadPdu)
 
     // Offender 1
     const offender1 = await offender.createProbFromStandardOffender()
 
-    await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
-    await assessment.populateMinimal({ populate6_11: 'No', sentencePlan: 'isp' })
+    const pk1 = await assessment.createProb({ purposeOfAssessment: 'Start of Community Order', assessmentLayer: 'Full (Layer 3)' })
+    await assessment.populateMinimal({ populate6_11: 'No', layer: 'Layer 3', sentencePlan: 'isp' })
 
     // Set 6.7 to trigger the SARA
     await sections.section6.goto()
@@ -44,6 +44,7 @@ test('NOD-1225', async ({ oasys, offender, assessment, sections, risk, sara, sen
     await oasys.clickButton('Continue with Signing')
     await oasys.clickButton('Confirm Sign & Lock')
 
+    await pni.checkAssessmentCalc(offender1.probationCrn, pk1)
     const failed = await api.testOneOffender(offender1.probationCrn, 'prob', false, true)
     expect(failed).toBeFalsy()
 

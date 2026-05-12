@@ -1,3 +1,6 @@
+import { OasysDateTime } from 'lib/oasysDateTime'
+
+const oasysDateTime = new OasysDateTime()
 
 export const sanPopulation1: SanPopulation = [
     {

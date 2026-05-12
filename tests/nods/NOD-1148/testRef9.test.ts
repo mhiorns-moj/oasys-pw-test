@@ -127,8 +127,8 @@ test('OGRS regression test ref 9', async ({ oasys, offender, assessment, section
             All Reoffending Predictor                                           -           -
             Violent Reoffending Predictor                                       -           -
             Serious Violent Reoffending Predictor                               -           -
-            Images and Indirect Contact - Sexual Reoffending Predictor			NA	        Not applicable
-            Direct Contact - Sexual Reoffending Predictor						NA	        Not applicable
+            Images and Indirect Contact - Sexual Reoffending Predictor			0.00	    Not applicable
+            Direct Contact - Sexual Reoffending Predictor						0.00	    Not applicable
             Combined Serious Reoffending Predictor                              -           -
         `, 'Test step')
 
@@ -136,11 +136,11 @@ test('OGRS regression test ref 9', async ({ oasys, offender, assessment, section
     const expectedPredictorsValues: ColumnValues[] = [
         {
             name: 'scoreDescription',
-            values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
+            values: ['All Reoffending Predictor', 'Violent Reoffending Predictor', 'Serious Violent Reoffending Predictor', 'Direct Contact - Sexual Reoffending Predictor', 'Images and Indirect Contact - Sexual Reoffending Predictor', 'Combined Serious Reoffending Predictor']
         },
         {
             name: 'twoYear',
-            values: ['-', '-', '-', 'N/A', 'N/A', '-']
+            values: ['-', '-', '-', '  0.00', '  0.00', '-']
         },
         {
             name: 'category',

@@ -143,7 +143,9 @@ export class San {
             if (updateTimeFailed || getAssessmentCallFailed || answersFailed) {
                 failed = true
                 log('', `Scenario ${scenario.name} FAILED`)
-            }
+            } else (
+                log('', `Scenario ${scenario.name} passed`)
+            )
 
             if (reset130) {  // OA testing requires 1.30 to be reset between scenarios because a YES will not be overwritten
                 await this.gotoSan()
@@ -255,22 +257,18 @@ export class San {
             case 'back':
                 await this.page.locator('.govuk-back-link').first().click()
                 break
-            // case 'backIfVisible':
-            //     cy.get('#main-content').then((container) => {  // inconsistent behaviour in drugs section, so check for visibility of Back link
-            //         const backLinks = container.find('.govuk-back-link:visible')
-            //         if (backLinks.length > 0) {
-            //             backLinks[0].click()
-            //         }
-            //     })
-            //     break
-            // case 'changeIfVisible':
-            //     cy.get('#main-content').then((container) => {
-            //         const changeLinks = container.find('.govuk-link:visible:contains("Change")')
-            //         if (changeLinks.length > 0) {
-            //             changeLinks[0].click()
-            //         }
-            //     })
-            //     break
+            case 'backIfVisible':
+                const backLinks = await this.page.locator('.govuk-back-link').count()
+                if (backLinks > 0) {
+                    await this.page.locator('.govuk-back-link').first().click()
+                }
+                break
+            case 'changeIfVisible':
+                const changeLinks = await this.page.locator('.govuk-link:visible').filter({ hasText: 'Change' }).count()
+                if (changeLinks > 0) {
+                    await this.page.locator('.govuk-link:visible').filter({ hasText: 'Change' }).first().click()
+                }
+                break
             case 'practitionerAnalysis':
                 await this.page.locator('#tab_practitioner-analysis').first().click()
                 break
@@ -305,26 +303,6 @@ export class San {
         await sections.selfAssessmentForm.checkMenuVisibility(!sanMode)
         await this.sanSections.checkMenuVisibility(sanMode)
     }
-
-    // /**
-    //  * Checks that the sections (plus SAF) are all either marked as complete on not.
-    //  */
-    // async checkSections2To13AndSafCompletionStatus(expectedStatus: boolean) {
-
-    //     new oasys.Pages.Assessment.Section2().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section3().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section4().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section5().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section6().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section7().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section8().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section9().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section10().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section11().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section12().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.Section13().checkCompletionStatus(expectedStatus)
-    //     new oasys.Pages.Assessment.SelfAssessmentForm().checkCompletionStatus(expectedStatus)
-    // }
 
     /**
      * Checks that the sections in an OASys SAN assessment are all marked complete or not on the floating menu.

@@ -16,8 +16,8 @@ const testCases = [
 const limitEndpoints: Endpoint[] = []
 // const limitEndpoints: Endpoint[] = ['apAsslist']
 
-// const excludeEndpoints: Endpoint[] = []
-const excludeEndpoints: Endpoint[] = ['pni']
+const excludeEndpoints: Endpoint[] = []
+// const excludeEndpoints: Endpoint[] = ['pni']
 
 test('All endpoint regression tests - extra test for specific cases', async ({ api }) => {
 

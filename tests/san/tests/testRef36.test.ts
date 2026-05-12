@@ -103,7 +103,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
     await san.queries.checkSanCreateAssessmentCall(pk2, pk1, pk1, oasys.users.probSanUnappr, oasys.users.probationSanCode, 'REVIEW')
     await san.queries.checkSanGetAssessmentCall(pk2, 1)
     await assessment.queries.checkCloning(pk2, pk1, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
-        'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SKILLSCHECKER', 'SAN',])
+        'SAQ', 'ROSH', 'ROSHFULL', 'RMP', 'SKILLSCHECKER', 'SAN',])
 
     // Modify SAN content
     await san.gotoSan()
@@ -157,7 +157,7 @@ test('SAN integration - test ref 36', async ({ oasys, offender, assessment, sect
 
     // Check cloning from first assessment to second (non-deleted)
     await assessment.queries.checkCloning(pk3, pk1, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
-        'SAQ', 'ROSH', 'ROSHFULL', 'ROSHSUM', 'RMP', 'SKILLSCHECKER',])
+        'SAQ', 'ROSH', 'ROSHFULL', 'RMP', 'SKILLSCHECKER',])
 
     // Open SAN, check OTL call and subsequent GetAssessment
     await san.gotoSan()

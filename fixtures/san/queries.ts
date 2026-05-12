@@ -127,7 +127,7 @@ export class Queries {
     async checkSanCreateAssessmentCall(pk: number, previousSanPk: number, previousSpPk: number,
         expectedUser: User, expectedProvider: string, expectedPlanType: 'INITIAL' | 'REVIEW') {
 
-        log('', `Check CreateAssessment API call for ${pk}, previous ${previousSanPk}`)
+        log('', `Check CreateAssessment API call for ${pk}, previous SAN: ${previousSanPk}, previous SP: ${previousSpPk}`)
         const query = `select log_text from eor.clog where log_source like '%${pk}%SAN_CREATE%' order by time_stamp desc`
         const clogData = await this.oasysDb.getData(query)
         let failed = false
